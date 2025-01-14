@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+package org.eclipse.persistence.testing.tests.jpa.advanced.testmodel;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.jpa.junit.EntityContainerTestBase;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+
+/**
+ * Besides the existing tests in this model, this test adds a couple of sanity
+ * checks for the XML/Annotation merging of the Employee descriptor.
+ *
+ * @author Guy Pelletier
+ */
+public class XMLAnnotationMergingTest extends EntityContainerTestBase  {
+    protected boolean reset = false;    // reset gets called twice on error
+    protected Exception m_exception;
+
+    @Override
+    public void setup () {
+        super.setup();
+        this.reset = true;
+
+        // Clear the cache so we are working from scratch.
+        ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+    }
+
+    @Override
+    public void reset () {
+        if (reset) {
+            reset = false;
+        }
+        super.reset();
+    }
+
+    @Override
+    public void test() {
+        try {
+            getEntityManager().createNamedQuery("findAllEmployeesByFirstName").setParameter("firstname", "Guy").getResultList();
+        } catch (Exception e) {
+            m_exception = e;
+        }
+    }
+
+    @Override
+    public void verify() {
+        // Check that the named query from employee was found.
+        if (m_exception != null) {
+            throw new TestErrorException("Our named query from Employee was lost in the XML/Annotation merging. " + m_exception);
+        }
+
+        // Check that the descriptor contains those mappings we expect from
+        // annotations.
+        ClassDescriptor descriptor = ((EntityManagerImpl)getEntityManager()).getActiveSession().getClassDescriptor(Employee.class);
+
+        if (descriptor.getMappingForAttributeName("lastName") == null ) {
+            throw new TestErrorException("The mapping for [lastName] was was lost in the XML/Annotation merging.");
+        }
+
+        if (descriptor.getMappingForAttributeName("manager") == null ) {
+            throw new TestErrorException("The mapping for [manager] was lost in the XML/Annotation merging.");
+        }
+    }
+}

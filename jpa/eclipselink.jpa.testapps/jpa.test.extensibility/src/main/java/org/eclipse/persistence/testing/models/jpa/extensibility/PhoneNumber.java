@@ -1,0 +1,123 @@
+/*
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     tware - initial implementation as part of extensibility feature
+package org.eclipse.persistence.testing.models.jpa.extensibility;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
+import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+/**
+ * <p><b>Purpose</b>: Describes an Employee's phone number.
+ *    <p><b>Description</b>: Used in a 1:M relationship from an employee.
+ */
+@Entity(name="ExtensibilityPhone")
+//@Extensible
+@Table(name="EXTENS_PHONE")
+public class PhoneNumber implements Serializable {
+
+    private String number;
+    private String type;
+    private Integer id;
+    private String areaCode;
+    private long version;
+
+    public PhoneNumber() {
+        this("", "###", "#######");
+    }
+
+    public PhoneNumber(String type, String theAreaCode, String theNumber) {
+        this.type = type;
+        this.areaCode = theAreaCode;
+        this.number = theNumber;
+    }
+
+
+    @Id
+    @GeneratedValue
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Column(name="NUMB")
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    @Column(name="TYPE")
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Column(name="AREA_CODE")
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    @Version
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    /**
+     * Example: Phone[Work]: (613) 225-8812
+     */
+    public String toString() {
+        StringWriter writer = new StringWriter();
+
+        writer.write("PhoneNumber[");
+        writer.write(getType());
+        writer.write("]: (");
+        if(!(this instanceof FetchGroupTracker)) {
+            writer.write(getAreaCode());
+            writer.write(") ");
+
+            int numberLength = this.getNumber().length();
+            writer.write(getNumber().substring(0, Math.min(3, numberLength)));
+            if (numberLength > 3) {
+                writer.write("-");
+                writer.write(getNumber().substring(3, Math.min(7, numberLength)));
+            }
+        }
+
+        return writer.toString();
+    }
+
+}

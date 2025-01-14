@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     tware - test for bug 293827
 package org.eclipse.persistence.testing.models.jpa.validationfailed;
 
-import static jakarta.persistence.CascadeType.ALL;
-
-import java.util.Map;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.Map;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
 @Table(name="CMP3_MWMAPHOLDER")
@@ -41,10 +41,10 @@ public class MultipleWritableMapHolder {
     public void setId(int id) {
         this.id = id;
     }
-    public Map getMap() {
+    public Map<Integer, MultipleWritableMapValue> getMap() {
         return map;
     }
-    public void setMap(Map map) {
+    public void setMap(Map<Integer, MultipleWritableMapValue> map) {
         this.map = map;
     }
 }

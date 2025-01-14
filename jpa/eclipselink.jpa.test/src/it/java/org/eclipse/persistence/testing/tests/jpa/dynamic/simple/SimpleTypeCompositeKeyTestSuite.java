@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,35 +19,28 @@
 //
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple;
 
+import jakarta.persistence.EntityManager;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
+import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
+import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.Calendar;
+
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-//javase imports
-import java.util.Calendar;
-
-//java eXtensions
-import jakarta.persistence.EntityManager;
-
-//EclipseLink imports
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.jpa.dynamic.DynamicIdentityPolicy;
-import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
-//domain-specific (testing) imports
-import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
@@ -65,7 +58,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         if (emf != null && emf.isOpen()) {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
@@ -95,7 +88,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id2").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
@@ -117,7 +110,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id1"), foundEntity.<Number>get("id1"));
         assertEquals(simpleInstance.<Number>get("id2"), foundEntity.<Number>get("id2"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,6 @@
 
         <!-- mapping files that are packaged in xml-merge-model-tests.jar-->
         <mapping-file>META-INF/orm-annotation-merge-advanced-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/orm-annotation-merge-relationships-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/incomplete-nonowning-entity-mappings.xml</mapping-file>
-        <mapping-file>META-INF/incomplete-owning-entity-mappings.xml</mapping-file>
 
         <!-- this is here for testing purposes - ensures a persistence unit can load even with a file that does not exist.  Please do not add an xml file called: META-INF/non-existant-orm-file.xml -->
         <mapping-file>META-INF/non-existant-orm-file.xml</mapping-file>
@@ -87,123 +84,6 @@
             <property name="eclipselink.logging.level" value="OFF"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
         </properties>
-    </persistence-unit>
-    <persistence-unit name="ignore" transaction-type="JTA">
-        <description>This PU is for validation purpose only - it should not
-                break the rest of the tests</description>
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>jdbc/__default</jta-data-source>
-    </persistence-unit>
-    <persistence-unit name="isolated1053">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.relationships.Item</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.session-name" value="isolated-session1053"/>
-            <property name="eclipselink.cache.shared.default" value="false"/>
-        </properties>
-    </persistence-unit>
-    <persistence-unit name="ALL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-         <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>ALL</shared-cache-mode>
-    </persistence-unit>
-    <persistence-unit name="NONE">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>NONE</shared-cache-mode>
-    </persistence-unit>
-    <persistence-unit name="ENABLE_SELECTIVE">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-    </persistence-unit>
-    <persistence-unit name="DISABLE_SELECTIVE">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableRelationshipsEntity</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
-    </persistence-unit>
-
-    <persistence-unit name="UNSPECIFIED">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/cacheable-entity-mappings.xml</mapping-file>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetail</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableFalseDetailWithBackPointer</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableForceProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableProtectedEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ChildCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.CacheableTrueMappedSuperclass</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableFalseEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SubCacheableNoneEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedRelationshipsEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ForceProtectedEntityWithComposite</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.ProtectedEmbeddable</class>
-        <class>org.eclipse.persistence.testing.models.jpa.cacheable.SharedEmbeddable</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <shared-cache-mode>UNSPECIFIED</shared-cache-mode>
     </persistence-unit>
 
     <!-- following persistence unit is for CASE_SENSITIVITY testing-->

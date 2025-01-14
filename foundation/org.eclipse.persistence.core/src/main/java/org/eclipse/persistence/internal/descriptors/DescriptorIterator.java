@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@
 package org.eclipse.persistence.internal.descriptors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ public abstract class DescriptorIterator {
     public static final int CascadePrivateParts = 2;
     public static final int CascadeAllParts = 3;
     protected Map visitedObjects;
+    protected Map<Integer, DatabaseMapping> visitedMappings;
     protected Stack visitedStack;
     protected AbstractSession session;
     protected DatabaseMapping currentMapping;
@@ -92,6 +94,7 @@ public abstract class DescriptorIterator {
     public DescriptorIterator() {
         // 2612538 - the default size of Map (32) is appropriate
         this.visitedObjects = new IdentityHashMap();
+        this.visitedMappings = new HashMap<>();
         this.visitedStack = new Stack();
         this.cascadeDepth = CascadeAllParts;
         this.shouldIterateOverIndirectionObjects = true;// process the objects contained by ValueHolders...
@@ -156,6 +159,10 @@ public abstract class DescriptorIterator {
 
     public Map getVisitedObjects() {
         return visitedObjects;
+    }
+
+    public Map<Integer, DatabaseMapping> getVisitedMappings() {
+        return visitedMappings;
     }
 
     /**
@@ -271,8 +278,15 @@ public abstract class DescriptorIterator {
             internalIterateIndirectContainer(container);
         }
 
-        if (shouldIterateOverUninstantiatedIndirectionObjects() || (shouldIterateOverIndirectionObjects() && container.isInstantiated()) || isForDetach()) {
+        //Extended condition to allow to detach entities in the lazy loaded collections but without instantiation
+        //and basic check to avoid StackOverflowError in cyclic detach
+        if (shouldIterateOverUninstantiatedIndirectionObjects() ||
+                (shouldIterateOverIndirectionObjects() && container.isInstantiated()) ||
+                (isForDetach() && !getVisitedMappings().containsKey(mapping.hashCode() + container.hashCode()) && getVisitedMappings().size() < 100)) {
             // force instantiation only if specified
+            if (isForDetach()) {
+                getVisitedMappings().put(mapping.hashCode() + container.hashCode(), mapping);
+            }
             mapping.iterateOnRealAttributeValue(this, container);
         } else if (shouldIterateOverIndirectionObjects()) {
             // PERF: Allow the indirect container to iterate any cached elements.
@@ -441,7 +455,9 @@ public abstract class DescriptorIterator {
             this.currentItem = currentItemOriginal;
         } else {
             for (DatabaseMapping mapping : mappings) {
-                mapping.iterate(this);
+                if (this.cascadeCondition.shouldCascade(mapping)) {
+                    mapping.iterate(this);
+                }
             }
         }
     }
@@ -685,8 +701,13 @@ public abstract class DescriptorIterator {
     }
 
     public class CascadeCondition{
+
+        public boolean shouldCascade(DatabaseMapping mapping){
+            return shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned());
+        }
+
         public boolean shouldNotCascade(DatabaseMapping mapping){
-            return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));
+            return !shouldCascade(mapping);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -102,9 +102,6 @@ public class JUnitTestCaseHelper {
             if (puProperties == null) {
                 if (puName.equals("composite-advanced") || puName.equals("xml-composite-advanced") || puName.equals("xml-extended-composite-advanced")) {
                     String prefix = puName;
-                    if (puName.equals("xml-extended-composite-advanced")) {
-                        prefix = "xml-composite-advanced";
-                    }
                     String[] sessions = {"member_1", "member_2", "member_3"};
                     for(int i=0; i < sessions.length; i++) {
                         sessions[i] = prefix + "-" + sessions[i];

@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2010, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025 Laird Nelson. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     01/07/2010-2.0.1 Laird Nelson
+//       - 282075: DDL generation is unpredictable
+//     11/17/2010-2.2.0 Chris Delahunt
+//       - 214519: Allow appending strings to CREATE TABLE statements
+//     04/04/2013-2.4.3 Guy Pelletier
+//       - 388564: Generated DDL does not match annotation
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * This class is only usable within the ddlTableSuffix persistence unit
+ */
+@Entity(name = "Many")
+@Table(name = "m")
+public class Many implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", scale = 10, precision = 0, nullable = false)
+    private long id;
+
+    @ManyToMany
+    @JoinTable(name="DDL_MANY_MANY")
+    private List<Many> many;
+
+    @ManyToOne
+    @JoinColumn(name = "o", referencedColumnName = "id", columnDefinition = "NUMERIC(10) NULL")
+    private One one;
+
+    public Many() {
+        super();
+    }
+
+    public List<Many> getMany() {
+        return many;
+    }
+
+    public void setMany(List<Many> many) {
+        this.many = many;
+    }
+
+    public void setOne(final One one) {
+        this.one = one;
+    }
+
+    public One getOne() {
+        return this.one;
+    }
+}

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -85,6 +85,7 @@ customizing descriptors and sessions:
 * link:#metadatasourcepropertiesfile[`metadata-source.properties.file`]
 * link:#metadatasourcesendrefreshcommand[`metadata-source.send-refresh-command`]
 * link:#metadatasourcexmlurl[`metadata-source.xml.url`]
+* link:#loginencryptor[`login.encryptor`]
 
 [[CACJHFEC2]][[TLJPA1051]]
 
@@ -287,6 +288,7 @@ The following lists the EclipseLink persistence property
 * link:#loggingsession[`logging.session`]
 * link:#loggingthread[`logging.thread`]
 * link:#loggingtimestamp[`logging.timestamp`]
+* link:#login-encryptor[`login.encryptor`]
 * link:#metadatasource[`metadata-source`]
 * link:#metadatasourcepropertiesfile[`metadata-source.properties.file`]
 * link:#metadatasourcesendrefreshcommand[`metadata-source.send-refresh-command`]
@@ -5316,6 +5318,47 @@ _Solutions Guide for EclispeLink_
 * link:#logginglevel["logging.level"]
 
 [[metadatasource]][[TLJPA1099]]
+
+'''''
+
+=== login.encryptor
+Use the `eclipselink.login.encryptor` property to specify a custom
+implementation of class that implements the
+`org.eclipse.persistence.security.Securable` interface. The class
+must provide a default, no argument constructor.
+*Values*
+link:#CHDGBEFGA[Table 5-89] describes this persistence property's values.
+[[CHDGBEFGA]]
+*_Table 5-89 Valid Values for login.encryptor_*
+|======================================================================
+|*Value* |*Description*
+|class name |Fully qualified class name of custom implementation `org.eclipse.persistence.security.Securable` class.
+|======================================================================
+*Usage*
+It is used to encrypt and decrypt database password loaded from
+`jakarta.persistence.jdbc.password` property.
+Usage of this property avoids limitation of link:#sessioncustomizer[`session.customizer`] which is called when all other
+properties have been processed (too late when database login needs to be configured).
+*Examples*
+link:#CHDFBIEIA[Example 5-109] shows how to use this property in the
+`persistence.xml` file.
+[[CHDFBIEIA]][[TLJPA1015]]
+*_Example 5-109 Using login.encryptor in persistence.xml_*
+[source,oac_no_warn]
+----
+<property name="eclipselink.login.encryptor"
+value="acme.sessions.MyEncryptor"/>
+----
+link:#CHDJEDJGA[Example 5-110] shows how to use this property in a
+property map.
+[[CHDJEDJGA]][[TLJPA1016]]
+*_Example 5-110 Using session.customizer in a Property Map_*
+[source,oac_no_warn]
+----
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+propertiesMap.put(PersistenceUnitProperties.LOGIN_ENCRYPTOR,
+"acme.sessions.MyEncryptor");
+----
 
 '''''
 

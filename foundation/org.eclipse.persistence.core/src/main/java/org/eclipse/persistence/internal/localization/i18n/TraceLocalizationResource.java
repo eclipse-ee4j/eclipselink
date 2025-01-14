@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -510,6 +510,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "jmx_mbean_classloader_in_use", "EclipseLink JMX Runtime Services is referencing the [{0}] ClassLoader at: [{1}]" },
         { "metamodel_itentifiableType_javaclass_null_cannot_set_supertype", "Metamodel processing: Unable to set the superclass Hierarchy because the javaClass field is null for the relationalDescriptor [{0}] for the identifiableType [{1}]." },
         { "metamodel_relationaldescriptor_not_fully_initialized_yet", "Metamodel processing: The relationalDescriptor [{0}] for the managedType [{1}] is not fully initialized yet - the Metamodel instance will be incomplete before at least one entityManger session login (after a full deploy)." },
+        { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },
+        { "metamodel_not_preinit", "Metamodel for composite member [{0}] not preinitialized"},
         { "no_weaved_vh_method_found_verify_weaving_and_module_order", "An expected weaving method [{0}] was not found on the accessor [{2}] on the mapping [{1}] - verify that the processing order of your modules places the one containing a persistence unit ahead of modules that use it in your deployment descriptor, or disable weaving for the persistence context or the mapping using FetchType.EAGER." },
         { "proxy_connection_customizer_already_proxy_session", "{0}:{1}: proxy session with unknown properties is already opened. Closing it."},
         { "proxy_connection_customizer_opened_proxy_session",  "{0}:{1}: opened proxy session."},

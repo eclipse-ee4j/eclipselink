@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,19 +20,9 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple;
 
 //javase imports
-import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.Calendar;
-
-//java eXtensions
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -44,14 +34,20 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.Server;
-//domain-specific (testing) imports
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
-//JUnit4 imports
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Calendar;
+
+import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleTypeTestSuite {
 
@@ -61,7 +57,7 @@ public class SimpleTypeTestSuite {
     static DynamicType simpleType = null;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicClassLoader dcl = helper.getDynamicClassLoader();
@@ -79,7 +75,7 @@ public class SimpleTypeTestSuite {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown() {
         if (emf != null && emf.isOpen()) {
             EntityManager em = emf.createEntityManager();
             em.getTransaction().begin();
@@ -120,7 +116,7 @@ public class SimpleTypeTestSuite {
         EntityManager em = emf.createEntityManager();
         DynamicEntity simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = 1", simpleInstance);
-        simpleInstance = find(em, Integer.valueOf(1));
+        simpleInstance = find(em, 1);
         assertNotNull("Could not find simple instance with id = Integer(1)", simpleInstance);
     }
 
@@ -141,14 +137,14 @@ public class SimpleTypeTestSuite {
     }
 
     @Test
-    public void verifyDefaultValuesFromEntityType() throws Exception {
+    public void verifyDefaultValuesFromEntityType() {
         assertNotNull(simpleType);
         DynamicEntity simpleInstance = simpleType.newDynamicEntity();
         assertDefaultValues(simpleInstance);
     }
 
     @Test
-    public void verifyDefaultValuesFromDescriptor() throws Exception {
+    public void verifyDefaultValuesFromDescriptor() {
         DynamicTypeImpl simpleTypeImpl = (DynamicTypeImpl)simpleType;
         assertNotNull(simpleTypeImpl);
         DynamicEntity simpleInstance =
@@ -163,7 +159,7 @@ public class SimpleTypeTestSuite {
             0, simpleInstance.<Integer>get("id").intValue());
         assertFalse("value1 set on new instance", simpleInstance.isSet("value1"));
         assertEquals("value2 not default value on new instance",
-            false, simpleInstance.<Boolean>get("value2").booleanValue());
+            false, simpleInstance.<Boolean>get("value2"));
         assertFalse("value3 set on new instance", simpleInstance.isSet("value3"));
         assertFalse("value4 set on new instance", simpleInstance.isSet("value4"));
     }
@@ -182,13 +178,14 @@ public class SimpleTypeTestSuite {
         DynamicEntity foundEntity = find(em, 1);
         assertNotNull(foundEntity);
         assertEquals(simpleInstance.<Number>get("id"), foundEntity.<Number>get("id"));
-        assertEquals(simpleInstance.get("value1"), foundEntity.get("value1"));
+        assertEquals(simpleInstance.<String>get("value1"), foundEntity.<String>get("value1"));
         assertEquals(simpleInstance.<Boolean>get("value2"), foundEntity.<Boolean>get("value2"));
         em.close();
         return simpleInstance;
     }
 
+    @SuppressWarnings({"unchecked"})
     protected DynamicEntity find(EntityManager em, Object id) {
-        return em.<DynamicEntity>find((Class<DynamicEntity>)simpleType.getJavaClass(), id);
+        return em.find((Class<DynamicEntity>)simpleType.getJavaClass(), id);
     }
 }

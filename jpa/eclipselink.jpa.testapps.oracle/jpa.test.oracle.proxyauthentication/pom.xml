@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>org.eclipse.persistence.jpa.testapps.oracle</artifactId>
+        <groupId>org.eclipse.persistence</groupId>
+        <version>3.0.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>org.eclipse.persistence.jpa.testapps.oracle.proxyauthentication</artifactId>
+
+    <name>Test - oracle.proxyauthentication</name>
+    <dependencies>
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <proxyUser>PAS_PROXY</proxyUser>
+
+        <NONJTA_DS_NAME>${data-source-name-non-jta}</NONJTA_DS_NAME>
+        <pa.connection.user>PAS_CONN</pa.connection.user>
+        <pa.connection.password>${db.pwd}2</pa.connection.password>
+        <pa.proxyuser>${proxyUser}</pa.proxyuser>
+        <pa.proxyuser.password>password</pa.proxyuser.password>
+        <pa.proxyuser2>${pa.proxyuser}2</pa.proxyuser2>
+        <pa.proxyuser2.password>${pa.proxyuser.password}2</pa.proxyuser2.password>
+
+        <argLine/>
+        <!-- not supported/tested yet -->
+        <server.test.skip>true</server.test.skip>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <execution>
+                        <id>get-test-classpath-to-properties</id>
+                        <phase>process-test-classes</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
+                            <systemPropertyVariables combine.self="append">
+                                <proxy.user.name>${pa.connection.user}</proxy.user.name>
+                                <pa.connection.user>${pa.connection.user}</pa.connection.user>
+                                <pa.connection.password>${pa.connection.password}</pa.connection.password>
+                                <pa.proxyuser>${pa.proxyuser}</pa.proxyuser>
+                                <pa.proxyuser.password>${pa.proxyuser.password}</pa.proxyuser.password>
+                                <pa.proxyuser2>${pa.proxyuser2}</pa.proxyuser2>
+                                <pa.proxyuser2.password>${pa.proxyuser2.password}</pa.proxyuser2.password>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>server-test</id>
+                        <configuration>
+                            <systemPropertyVariables combine.self="append">
+                                <proxy.user.name>${pa.connection.user}</proxy.user.name>
+                                <pa.connection.user>${pa.connection.user}</pa.connection.user>
+                                <pa.connection.password>${pa.connection.password}</pa.connection.password>
+                                <pa.proxyuser>${pa.proxyuser}</pa.proxyuser>
+                                <pa.proxyuser.password>${pa.proxyuser.password}</pa.proxyuser.password>
+                                <pa.proxyuser2>${pa.proxyuser2}</pa.proxyuser2>
+                                <pa.proxyuser2.password>${pa.proxyuser2.password}</pa.proxyuser2.password>
+                            </systemPropertyVariables>
+                            <excludes>
+                                <exclude>**/ProxyAuthenticationTest</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>oracle</id>
+                <build>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>sql-maven-plugin</artifactId>
+                            <!-- common configuration shared by all executions -->
+                            <configuration>
+                                <username>${db.sys.user} as sysdba</username>
+                                <password>${db.sys.pwd}</password>
+                                <autocommit>true</autocommit>
+                                <onError>continue</onError>
+                                <!--all executions are ignored if -Dmaven.test.skip=true-->
+                                <!--                    <skip>${test-skip-oracle-extension}</skip>-->
+                            </configuration>
+                            <executions>
+                                <!-- create proxy user and grant permissions -->
+                                <execution>
+                                    <id>setup-connuser</id>
+                                    <phase>process-test-resources</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                    <configuration>
+                                        <sqlCommand>
+                                            DROP USER ${pa.connection.user} CASCADE;
+
+                                            CREATE USER ${pa.connection.user} IDENTIFIED BY ${pa.connection.password} ACCOUNT UNLOCK;
+                                            GRANT CONNECT TO ${pa.connection.user};
+                                            GRANT RESOURCE TO ${pa.connection.user};
+                                            GRANT CREATE SESSION TO ${pa.connection.user};
+                                            GRANT UNLIMITED TABLESPACE TO ${pa.connection.user};
+                                            GRANT CREATE ANY VIEW TO ${pa.connection.user};
+                                            GRANT CREATE ANY context TO ${pa.connection.user};
+                                            GRANT DROP ANY context TO ${pa.connection.user};
+                                            GRANT EXECUTE ON dbms_flashback TO ${pa.connection.user};
+                                            GRANT EXECUTE ON dbms_rls TO ${pa.connection.user};
+                                            GRANT EXECUTE ON dbms_session TO ${pa.connection.user};
+                                            GRANT change notification TO ${pa.connection.user};
+                                            GRANT CREATE ANY directory TO ${pa.connection.user};
+                                            GRANT DROP ANY directory TO ${pa.connection.user};
+                                        </sqlCommand>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>setup-proxy-authentication</id>
+                                    <phase>process-test-resources</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                    <configuration>
+                                        <sqlCommand>
+                                            DROP USER ${pa.proxyuser} CASCADE;
+                                            DROP USER ${pa.proxyuser2} CASCADE;
+
+                                            CREATE USER ${pa.proxyuser} IDENTIFIED BY ${pa.proxyuser.password} ACCOUNT UNLOCK;
+                                            CREATE USER ${pa.proxyuser2} IDENTIFIED BY ${pa.proxyuser2.password} ACCOUNT UNLOCK;
+                                            GRANT UNLIMITED TABLESPACE TO ${pa.proxyuser};
+                                            GRANT UNLIMITED TABLESPACE TO ${pa.proxyuser2};
+                                            GRANT CONNECT TO ${pa.proxyuser};
+                                            GRANT CONNECT TO ${pa.proxyuser2};
+                                            GRANT RESOURCE TO ${pa.proxyuser};
+                                            GRANT CREATE SESSION TO ${pa.proxyuser};
+                                            ALTER USER ${pa.proxyuser} GRANT CONNECT THROUGH ${pa.connection.user};
+                                            ALTER USER ${pa.proxyuser2} GRANT CONNECT THROUGH ${pa.connection.user};
+                                        </sqlCommand>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>setup-proxy-authentication-create-employee-table</id>
+                                    <phase>process-test-resources</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                    <configuration>
+                                        <username>${pa.connection.user}</username>
+                                        <password>${pa.connection.password}</password>
+                                        <sqlCommand>
+                                            CREATE TABLE JPA_PROXY_EMPLOYEE (
+                                                    EMP_ID NUMBER (15) NOT NULL,
+                                                    F_NAME VARCHAR2 (40) NULL,
+                                                    L_NAME VARCHAR2 (40) NULL,
+                                                    PRIMARY KEY (EMP_ID)
+                                            );
+                                            CREATE TABLE PROXY_EMPLOYEE_SEQ (
+                                                    SEQ_NAME  VARCHAR2 (50) NOT NULL,
+                                                    SEQ_COUNT NUMBER (38) NULL,
+                                                    PRIMARY KEY (SEQ_NAME)
+                                            );
+                                            INSERT INTO PROXY_EMPLOYEE_SEQ (SEQ_NAME, SEQ_COUNT) VALUES ('PROXY_EMPLOYEE_SEQ', 1);
+                                        </sqlCommand>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>setup-proxy-authentication-create-phonenumber-table</id>
+                                    <phase>process-test-resources</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                    <configuration>
+                                        <username>${pa.proxyuser}</username>
+                                        <password>${pa.proxyuser.password}</password>
+                                        <sqlCommand>
+                                            CREATE TABLE PROXY_PHONENUMBER (
+                                                    OWNER_ID  NUMBER (15) NOT NULL,
+                                                    TYPE      VARCHAR2 (15) NOT NULL,
+                                                    AREA_CODE VARCHAR2 (3) NULL,
+                                                    NUMB      VARCHAR2 (8) NULL,
+                                                    PRIMARY KEY (OWNER_ID, TYPE)
+                                            );
+                                        </sqlCommand>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>grant-permissions-to-proxyuser</id>
+                                    <phase>process-test-resources</phase>
+                                    <goals>
+                                        <goal>execute</goal>
+                                    </goals>
+                                    <configuration>
+                                        <sqlCommand>
+                                            GRANT ALTER ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+                                            GRANT DELETE ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+                                            GRANT INSERT ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+                                            GRANT SELECT ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+                                            GRANT UPDATE ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+                                            GRANT INDEX ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+
+                                            GRANT ALTER ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                            GRANT DELETE ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                            GRANT INSERT ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                            GRANT SELECT ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                            GRANT UPDATE ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                            GRANT INDEX ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+                                        </sqlCommand>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </build>
+        </profile>
+    </profiles>
+</project>
