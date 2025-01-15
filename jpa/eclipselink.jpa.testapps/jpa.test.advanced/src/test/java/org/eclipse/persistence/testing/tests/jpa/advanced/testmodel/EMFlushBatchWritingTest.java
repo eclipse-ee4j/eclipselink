@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     10/18/2010-2.2 Chris Delahunt
+//       - bug:323370 - flush() doesn't flush native queries if batch writing is enabled
+package org.eclipse.persistence.testing.tests.jpa.advanced.testmodel;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.testing.framework.jpa.junit.EntityContainerTestBase;
+
+/**
+ * @author cdelahun
+ *
+ */
+public class EMFlushBatchWritingTest extends EntityContainerTestBase {
+
+    //reset gets called twice on error
+    protected boolean reset = false;
+    /**
+     *
+     */
+    public EMFlushBatchWritingTest() {
+        setDescription("Test flush multiple times in EntityManager");
+    }
+    private boolean usesBatchWriting;
+    private boolean usesJDBCBatchWriting;
+    @Override
+    public void setup() {
+        super.setup();
+        JpaEntityManager em = JpaHelper.getEntityManager(getEntityManager());
+        DatabasePlatform platform = em.getServerSession().getPlatform();
+        usesBatchWriting = platform.usesBatchWriting();
+        usesJDBCBatchWriting = platform.usesJDBCBatchWriting();
+
+        platform.setUsesBatchWriting(true);
+        platform.setUsesJDBCBatchWriting(true);
+
+        em.close();
+
+        this.reset = true;
+    }
+
+    @Override
+    public void reset() {
+        if (reset){
+            JpaEntityManager em = JpaHelper.getEntityManager(getEntityManager());
+            DatabasePlatform platform = em.getServerSession().getPlatform();
+            platform.setUsesBatchWriting(usesBatchWriting);
+            platform.setUsesJDBCBatchWriting(usesJDBCBatchWriting);
+
+            em.close();
+            reset = false;
+        }
+        super.reset();
+    }
+
+    @Override
+    public void test(){
+        Exception expectedException = null;
+        try {
+            beginTransaction();
+            EntityManager em = getEntityManager();
+            //create a native query that will throw an exception on execution
+            Query query = em.createNativeQuery("unexecutable native sql query");
+
+            try {
+                query.executeUpdate();
+            } catch (Exception e) {
+                expectedException = e;
+            }
+            em.flush();
+        } finally {
+            this.rollbackTransaction();
+        }
+        assertNotNull("Native query did not get executed when EntityManager was flushed", expectedException);
+    }
+
+}

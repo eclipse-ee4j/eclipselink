@@ -1,0 +1,130 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     07/17/2009 - tware - added tests for DDL generation of maps
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static jakarta.persistence.CascadeType.ALL;
+
+@Entity
+@Table(name="DDL_MAP_HOLDER")
+public class MapHolder {
+
+    private int id;
+    private Map<EntityMapKey, String> directCollectionMap;
+    private Map<EntityMapKey, AggregateMapValue> aggregateCollectionMap;
+    private Map<AggregateMapKey, EntityMapValueWithBackPointer> oneToManyMap;
+    private Map<Integer, EntityMapValue> unidirectionalOneToManyMap;
+    private Map<EntityMapKey, MMEntityMapValue> manyToManyMap;
+    private MapHolderEmbeddable mapHolderEmbedded;
+    private Map<String, String> stringMap;
+
+    public MapHolder(){
+        directCollectionMap = new HashMap<>();
+        aggregateCollectionMap = new HashMap<>();
+        oneToManyMap = new HashMap<>();
+        unidirectionalOneToManyMap = new HashMap<>();
+        manyToManyMap = new HashMap<>();
+        mapHolderEmbedded = new MapHolderEmbeddable();
+        stringMap = new HashMap<>();
+    }
+
+    @Id
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @ElementCollection
+    @CascadeOnDelete
+    public Map<EntityMapKey, String> getDCMap() {
+        return directCollectionMap;
+    }
+    public void setDCMap(Map<EntityMapKey, String> directCollectionMap) {
+        this.directCollectionMap = directCollectionMap;
+    }
+
+    @ElementCollection
+    @CascadeOnDelete
+    public Map<EntityMapKey, AggregateMapValue> getACMap() {
+        return aggregateCollectionMap;
+    }
+    public void setACMap(
+            Map<EntityMapKey, AggregateMapValue> aggregateCollectionMap) {
+        this.aggregateCollectionMap = aggregateCollectionMap;
+    }
+
+    @OneToMany(targetEntity=EntityMapValueWithBackPointer.class, cascade=ALL)
+    public Map<AggregateMapKey, EntityMapValueWithBackPointer> getOTMMap() {
+        return oneToManyMap;
+    }
+    public void setOTMMap(
+            Map<AggregateMapKey, EntityMapValueWithBackPointer> oneToManyMap) {
+        this.oneToManyMap = oneToManyMap;
+    }
+
+    @OneToMany(targetEntity=EntityMapValue.class, cascade=ALL)
+    @JoinColumn(name="HOLDER_ID")
+    public Map<Integer, EntityMapValue> getUOTMMap() {
+        return unidirectionalOneToManyMap;
+    }
+    public void setUOTMMap(
+            Map<Integer, EntityMapValue> unidirectionalOneToManyMap) {
+        this.unidirectionalOneToManyMap = unidirectionalOneToManyMap;
+    }
+
+    @ManyToMany(cascade={ALL})
+    public Map<EntityMapKey, MMEntityMapValue> getMTMMap() {
+        return manyToManyMap;
+    }
+    public void setMTMMap(Map<EntityMapKey, MMEntityMapValue> manyToManyMap) {
+        this.manyToManyMap = manyToManyMap;
+    }
+
+    public MapHolderEmbeddable getMapHolderEmbedded() {
+        return this.mapHolderEmbedded;
+    }
+    public void setMapHolderEmbedded(MapHolderEmbeddable mapHolderEmbedded) {
+        this.mapHolderEmbedded = mapHolderEmbedded;
+    }
+
+    @BatchFetch(BatchFetchType.JOIN)
+    @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name="DDL_MAP_HOLDER_STRING_MAP")
+    public Map<String, String> getStringMap() {
+        return stringMap;
+    }
+
+    public void setStringMap(Map<String, String> stringMap) {
+        this.stringMap = stringMap;
+    }
+}
+

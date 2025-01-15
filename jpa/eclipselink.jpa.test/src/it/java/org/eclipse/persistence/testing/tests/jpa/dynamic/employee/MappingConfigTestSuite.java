@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,21 +20,8 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
 //java eXtension imports
+
 import jakarta.persistence.EntityManagerFactory;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
@@ -42,10 +29,18 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.sessions.server.Server;
-
-//domain-specific (testing) imports
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class MappingConfigTestSuite {
 
@@ -55,7 +50,7 @@ public class MappingConfigTestSuite {
     static Server serverSession = null;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         DynamicEmployeeSystem.buildProject(helper);
@@ -86,15 +81,15 @@ public class MappingConfigTestSuite {
     }
 
     @Test
-    public void verifyServerSession() throws Exception {
+    public void verifyServerSession() {
         assertNotNull(serverSession);
         assertTrue(serverSession.isConnected());
         assertTrue(serverSession.isServerSession());
-        assertTrue(serverSession.getName().equals(DYNAMIC_PERSISTENCE_NAME));
+        assertEquals(DYNAMIC_PERSISTENCE_NAME, serverSession.getName());
     }
 
     @Test
-    public void verifyEmployeeDescriptor() throws Exception {
+    public void verifyEmployeeDescriptor() {
         ClassDescriptor descriptor = serverSession.getDescriptorForAlias("Employee");
         assertNotNull(descriptor);
         assertEquals("Employee", descriptor.getAlias());
@@ -128,7 +123,7 @@ public class MappingConfigTestSuite {
 }
 
     @Test
-    public void verifyAddressDescriptor() throws Exception {
+    public void verifyAddressDescriptor() {
         ClassDescriptor descriptor = serverSession.getDescriptorForAlias("Address");
         assertNotNull(descriptor);
         assertEquals("Address", descriptor.getAlias());

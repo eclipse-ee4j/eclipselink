@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,24 +20,9 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.mappings;
 
 //javase imports
-import java.util.Collection;
-import java.util.List;
 
-//java eXtensions
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -49,7 +34,18 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.Collection;
+import java.util.List;
+
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class SimpleTypes_ManyToMany {
 
@@ -103,7 +99,7 @@ public class SimpleTypes_ManyToMany {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicType simpleTypeA = helper.getType("SimpleA");
@@ -193,7 +189,7 @@ public class SimpleTypes_ManyToMany {
         em.getTransaction().begin();
         DynamicEntity a = em.find(simpleTypeA.getJavaClass(), 1);
         assertNotNull(a);
-        List<DynamicEntity> bs = a.<List<DynamicEntity>>get("b");
+        List<DynamicEntity> bs = a.get("b");
         assertNotNull(bs);
         assertEquals(1, bs.size());
         bs.remove(0);

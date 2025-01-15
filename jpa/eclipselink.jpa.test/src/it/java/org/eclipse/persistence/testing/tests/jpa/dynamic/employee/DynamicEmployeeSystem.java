@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,19 +20,8 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
 //javase imports
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
-//java eXtension imports
 import jakarta.persistence.EntityManager;
-
-//JUnit4 imports
-import static org.junit.Assert.assertEquals;
-
-//EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
@@ -41,6 +30,14 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicEmployeeEntityComparator;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class DynamicEmployeeSystem {
 
@@ -62,13 +59,11 @@ public class DynamicEmployeeSystem {
 
     public void assertSame(List<DynamicEntity> dbEmps) {
         assertEquals("Incorrect quantity of employees", this.employees.length, dbEmps.size());
-        Collections.sort(dbEmps, new DynamicEmployeeEntityComparator());
+        dbEmps.sort(new DynamicEmployeeEntityComparator());
 
-        List<DynamicEntity> sampleEmps = new ArrayList<DynamicEntity>();
-        for (int index = 0; index < this.employees.length; index++) {
-            sampleEmps.add(this.employees[index]);
-        }
-        Collections.sort(sampleEmps, new DynamicEmployeeEntityComparator());
+        List<DynamicEntity> sampleEmps = new ArrayList<>();
+        Collections.addAll(sampleEmps, this.employees);
+        sampleEmps.sort(new DynamicEmployeeEntityComparator());
 
         for (int index = 0; index < this.employees.length; index++) {
             DynamicEntity emp = sampleEmps.get(index);
@@ -522,7 +517,7 @@ public class DynamicEmployeeSystem {
         phone.set("areaCode", areaCode);
         phone.set("number", number);
         phone.set("owner", employee);
-        employee.<Collection>get("phoneNumbers").add(phone);
+        employee.<Collection<DynamicEntity>>get("phoneNumbers").add(phone);
         return phone;
     }
 
@@ -537,9 +532,9 @@ public class DynamicEmployeeSystem {
     protected void addManagedEmployees(JPADynamicHelper dynamicHelper, DynamicEntity[] employees,
         int managerIndex, int[] employeeIndeces) {
         DynamicEntity manager = employees[managerIndex];
-        if (manager.<Collection> get("managedEmployees").isEmpty()) {
+        if (manager.<Collection<DynamicEntity>> get("managedEmployees").isEmpty()) {
             for (int index = 0; index < employeeIndeces.length; index++) {
-                manager.<Collection> get("managedEmployees").add(employees[employeeIndeces[index]]);
+                manager.<Collection<DynamicEntity>> get("managedEmployees").add(employees[employeeIndeces[index]]);
             }
         }
     }
@@ -549,7 +544,7 @@ public class DynamicEmployeeSystem {
         DynamicEntity[] projects, int empIndex, int[] projIndeces) {
         DynamicEntity employee = employees[empIndex];
         for (int index = 0; index < projIndeces.length; index++) {
-            employee.<Collection> get("projects").add(projects[projIndeces[index]]);
+            employee.<Collection<DynamicEntity>> get("projects").add(projects[projIndeces[index]]);
         }
     }
 

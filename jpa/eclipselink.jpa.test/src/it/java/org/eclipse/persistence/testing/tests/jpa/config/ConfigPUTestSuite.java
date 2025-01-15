@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,10 @@
 //     Guy Pelletier, dclarke - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.config;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATABASE_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
-import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
-
-import java.util.Map;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.jpa.config.persistenceunit.PersistenceUnitImpl;
@@ -47,12 +36,21 @@ import org.eclipse.persistence.jpa.config.ObjectTypeConverter;
 import org.eclipse.persistence.jpa.config.PersistenceUnit;
 import org.eclipse.persistence.jpa.config.RuntimeFactory;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-
 import org.junit.Assert;
-import junit.framework.Test;
-import junit.framework.TestSuite;
+
+import java.util.Map;
+
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_DATABASE_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION_MODE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.DROP_AND_CREATE;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_DRIVER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_PASSWORD;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_URL;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_USER;
+import static org.eclipse.persistence.config.PersistenceUnitProperties.LOGGING_LEVEL;
 
 /**
  * JPA scripting API implementation helper class.
@@ -92,7 +90,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         PersistenceUnit pu = new PersistenceUnitImpl("ConfigPUTestSuite", Thread.currentThread().getContextClassLoader());
 
         // Need to get the user specified database properties.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        Map<String, String> properties = JUnitTestCaseHelper.getDatabaseProperties();
         pu.setProperty(JDBC_DRIVER, properties.get(JDBC_DRIVER));
         pu.setProperty(JDBC_URL, properties.get(JDBC_URL));
         pu.setProperty(JDBC_USER, properties.get(JDBC_USER));
@@ -101,7 +99,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         pu.setProperty(DDL_GENERATION_MODE, DDL_DATABASE_GENERATION);
         pu.setProperty(DDL_GENERATION, DROP_AND_CREATE);
 
-        pu.setProperty(LOGGING_LEVEL, "FINE");
+        pu.setProperty(LOGGING_LEVEL, "INFO");
 
         Mappings mappings = pu.addMappings();
         mappings.setPersistenceUnitMetadata().setXmlMappingMetadataComplete(true).setPersitenceUnitDefault().setAccess("VIRTUAL");

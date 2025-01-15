@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.jpa;
 
 import org.eclipse.persistence.testing.framework.TestModel;
-import org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite;
 
 /**
  * <p><b>Purpose</b>: Test run for all CMP3 tests.
@@ -32,7 +31,6 @@ public class AllCMP3TestRunModel extends TestModel {
         }
 
         public AllCMP3TestRunModel() {
-            addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
         }
 }

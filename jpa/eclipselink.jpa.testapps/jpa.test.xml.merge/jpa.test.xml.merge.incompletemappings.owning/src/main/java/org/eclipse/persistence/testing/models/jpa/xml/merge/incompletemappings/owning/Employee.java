@@ -1,0 +1,200 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+
+package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Version;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Vector;
+
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
+
+/**
+ *
+ */
+@Entity(name="XMLIncompleteMergeEmplyee")
+@Table(name="CMP3_XML_MERGE_EMPLOYEE")
+@PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
+public class Employee implements Serializable {
+    private Integer id;
+    private int version;
+    private String firstName;
+    private String lastName;
+    private Address address;
+    private Collection<PhoneNumber> phoneNumbers;
+    private Collection<Project> projects;
+    private Collection<Employee> managedEmployees;
+    private Employee manager;
+    private SecurityBadge securityBadge;
+
+    public Employee () {
+        this.phoneNumbers = new Vector<>();
+        this.projects = new Vector<>();
+        this.managedEmployees = new Vector<>();
+    }
+
+    public Employee(String firstName, String lastName){
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    @Id
+    @GeneratedValue(strategy=TABLE, generator="XML_MERGE_EMPLOYEE_TABLE_GENERATOR")
+    @TableGenerator(
+        name="XML_MERGE_EMPLOYEE_TABLE_GENERATOR",
+        table="CMP3_XML_MERGE_EMPLOYEE_SEQ",
+        pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT",
+        pkColumnValue="XML_MERGE_EMPLOYEE_SEQ"
+    )
+    @Column(name="EMP_ID")
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Version
+    @Column(name="VERSION")
+    public int getVersion() {
+        return version;
+    }
+
+    protected void setVersion(int version) {
+        this.version = version;
+    }
+
+    @Column(name="F_NAME")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String name) {
+        this.firstName = name;
+    }
+
+    @Column(name="L_NAME")
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String name) {
+        this.lastName = name;
+    }
+
+    @ManyToOne(cascade=PERSIST, fetch=LAZY)
+    @JoinColumn(name="ADDR_ID")
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    @OneToMany(cascade=ALL, mappedBy="owner")
+    public Collection<PhoneNumber> getPhoneNumbers() {
+        return phoneNumbers;
+    }
+
+    public void setPhoneNumbers(Collection<PhoneNumber> phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
+    }
+
+    // the @JoinColumn will be ignored, as it is partially defined in XML
+    @OneToOne
+    @JoinColumn(name="SECURITYBADGE_BADGE_ID", referencedColumnName="BADGE_ID")
+    public SecurityBadge getSecurityBadge() {
+        return securityBadge;
+    }
+
+    public void setSecurityBadge(SecurityBadge securityBadge) {
+        this.securityBadge = securityBadge;
+    }
+
+    @OneToMany(cascade=ALL, mappedBy="manager")
+    public Collection<Employee> getManagedEmployees() {
+        return managedEmployees;
+    }
+
+    public void setManagedEmployees(Collection<Employee> managedEmployees) {
+        this.managedEmployees = managedEmployees;
+    }
+
+    // Not defined in the XML, this should get processed.
+    @ManyToOne(cascade=PERSIST, fetch=LAZY)
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
+
+    @ManyToMany(cascade=PERSIST)
+    @JoinTable(
+        name="CMP3_XML_MERGE_PROJ_EMP",
+        // Default for the project side and specify for the employee side
+        // Will test both defaulting and set values.
+        joinColumns=@JoinColumn(name="EMPLOYEES_EMP_ID", referencedColumnName="EMP_ID")
+        //inverseJoinColumns=@JoinColumn(name="PROJECTS_PROJ_ID", referencedColumnName="PROJ_ID")
+    )
+    public Collection<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Collection<Project> projects) {
+        this.projects = projects;
+    }
+
+    public void addManagedEmployee(Employee emp) {
+        getManagedEmployees().add(emp);
+        emp.setManager(this);
+    }
+
+    public void addPhoneNumber(PhoneNumber phone) {
+        phone.setOwner(this);
+        getPhoneNumbers().add(phone);
+    }
+
+    public void addProject(Project theProject) {
+        getProjects().add(theProject);
+    }
+
+    public String toString() {
+        return "Employee: " + getId();
+    }
+}

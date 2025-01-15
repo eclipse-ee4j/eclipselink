@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,8 @@
 //
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
-import static org.eclipse.persistence.logging.SessionLog.FINE;
-import static org.eclipse.persistence.logging.SessionLog.WARNING;
-import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
-import static org.junit.Assert.assertEquals;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -34,12 +28,15 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.testing.tests.jpa.config.ConfigPUTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.eclipse.persistence.logging.SessionLog.FINE;
+import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
 
 public class EmployeeSparseMergeTestSuite {
 
@@ -57,11 +54,7 @@ public class EmployeeSparseMergeTestSuite {
      * @throws DatabaseException when sequence does not exist.
      */
     private static void runCleanSequence(final Server serverSession) throws DatabaseException {
-        if (serverSession.getPlatform().isMySQL()) {
-            serverSession.executeNonSelectingSQL("UPDATE EMPLOYEE_SEQ SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
-        } else {
-            serverSession.executeNonSelectingSQL("UPDATE SEQUENCE SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
-        }
+        serverSession.executeNonSelectingSQL("UPDATE SEQUENCE SET SEQ_COUNT = 0 WHERE SEQ_NAME = 'EMP_SEQ'");
     }
 
     /**
@@ -70,35 +63,17 @@ public class EmployeeSparseMergeTestSuite {
      * @throws DatabaseException when sequence initialization failed.
      */
     private static void initSequence(final Server serverSession) throws DatabaseException {
-        boolean retry = false;
         // This may pass if SEQ_COUNT already exists.
         try {
             runCleanSequence(serverSession);
             log.log(FINE, "SEQ_COUNT sequence already exists and was cleaned up.");
         } catch (DatabaseException ex) {
             log.log(FINE, "SEQ_COUNT 1st sequence cleanup attempt failed: " + ex.getMessage());
-            retry = true;
-        }
-        // SEQ_COUNT does not exist so it must be created before clean up.
-        if (retry) {
-            // Test suite depends on SEQ_COUNT which is part of common JPA tests.
-            log.log(FINE, "Running SEQ_COUNT sequence initialization.");
-            ConfigPUTestSuite suite = new ConfigPUTestSuite();
-            suite.setUp();
-            suite.testCreateConfigPU();
-            suite.testVerifyConfigPU();
-            try {
-                runCleanSequence(serverSession);
-                log.log(FINE, "SEQ_COUNT sequence cleaned up after being created.");
-            } catch (DatabaseException ex) {
-                log.log(WARNING, "SEQ_COUNT sequence cleanup failed after initialization: " + ex.getMessage());
-                throw ex;
-            }
         }
     }
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
         helper = new JPADynamicHelper(emf);
         deSystem = DynamicEmployeeSystem.buildProject(helper);
@@ -157,7 +132,7 @@ public class EmployeeSparseMergeTestSuite {
         */
         sparseEmployee.set("firstName", "Mike");
         sparseEmployee.set("lastName", "Norman");
-        sparseEmployee.set("salary",Integer.valueOf(12345));
+        sparseEmployee.set("salary", 12345);
         em.getTransaction().begin();
         em.merge(sparseEmployee);
         em.getTransaction().commit();

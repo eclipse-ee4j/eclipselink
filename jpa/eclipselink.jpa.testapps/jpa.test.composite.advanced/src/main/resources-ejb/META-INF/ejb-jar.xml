@@ -1,0 +1,38 @@
+<!--
+
+    Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+          https://jakarta.ee/xml/ns/jakartaee/ejb-jar_4_0.xsd"
+         version="4.0">
+    <enterprise-beans>
+        <session>
+            <ejb-name>SingleUnitTestRunner</ejb-name>
+            <env-entry>
+                <env-entry-name>ejbLookup</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>true</env-entry-value>
+            </env-entry>
+            <persistence-context-ref>
+                <persistence-context-ref-name>persistence/composite-advanced/entity-manager</persistence-context-ref-name>
+                <persistence-unit-name>composite-advanced</persistence-unit-name>
+            </persistence-context-ref>
+            <persistence-unit-ref>
+                <persistence-unit-ref-name>persistence/composite-advanced/factory</persistence-unit-ref-name>
+                <persistence-unit-name>composite-advanced</persistence-unit-name>
+            </persistence-unit-ref>
+        </session>
+    </enterprise-beans>
+</ejb-jar>

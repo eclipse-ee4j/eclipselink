@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+package org.eclipse.persistence.testing.models.jpa.complexaggregate;
+
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+@Embeddable
+public class CoachVitals implements Serializable {
+    private HockeyTeam hockeyTeam;
+    private PersonalVitals personalVitals;
+    private Collection<String> nickNames;
+
+    public CoachVitals() {}
+
+    @OneToOne(fetch=jakarta.persistence.FetchType.LAZY)
+    @JoinColumn(name="TEAM_ID", referencedColumnName="ID")
+    public HockeyTeam getHockeyTeam() {
+        return hockeyTeam;
+    }
+
+    @Embedded
+    public PersonalVitals getPersonalVitals() {
+        return personalVitals;
+    }
+
+    public void setHockeyTeam(HockeyTeam hockeyTeam) {
+        this.hockeyTeam = hockeyTeam;
+    }
+
+    public void setPersonalVitals(PersonalVitals personalVitals) {
+        this.personalVitals = personalVitals;
+    }
+
+    @ElementCollection
+    public Collection<String> getNickNames() {
+        return nickNames;
+    }
+
+    public void setNickNames(Collection<String> nickNames) {
+        this.nickNames = nickNames;
+    }
+}

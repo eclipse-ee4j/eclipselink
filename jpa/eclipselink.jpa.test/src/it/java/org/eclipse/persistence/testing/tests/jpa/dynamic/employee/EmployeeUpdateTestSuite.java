@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,23 +20,10 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
 //javase imports
-import java.util.Date;
 
-//java eXtension imports
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
@@ -44,11 +31,18 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.server.Server;
-
-//domain-specific (testing) imports
-import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper;
+import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.Date;
+
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class EmployeeUpdateTestSuite {
 
@@ -60,7 +54,7 @@ public class EmployeeUpdateTestSuite {
   static QuerySQLTracker qTracker = null;
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUp() {
       emf = DynamicTestHelper.createEMF(DYNAMIC_PERSISTENCE_NAME);
       helper = new JPADynamicHelper(emf);
       deSystem = DynamicEmployeeSystem.buildProject(helper);

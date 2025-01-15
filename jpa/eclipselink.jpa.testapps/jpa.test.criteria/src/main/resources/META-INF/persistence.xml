@@ -1,0 +1,223 @@
+<!--
+
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="advanced" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Dealer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Equipment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.GoldBuyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.HugeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.LargeProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="advanced-compositepk" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Competency</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Office</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="advanced-derivedid" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.MasterCorporal</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.derivedid.Sargeant</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="inheritance" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.AAA</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.AbstractBus</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Apple</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.AppleExtractor</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Assassin</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Assignment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.BBB</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Betta</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Bicycle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Boat</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Bomb</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Bus</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.CCC</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Car</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.CitrusFruit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Company</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Computer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.ComputerSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.ContractedPersonel</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.DDD</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Desktop</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.DirectElimination</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.DirectWeapon</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Elimination</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.EliminationPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Engineer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Fish</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.FishTank</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.FueledVehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Gun</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Hotel</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.HotelId</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.ImaginaryCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.IndirectElimination</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.IndirectWeapon</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceModelExamples</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritancePopulator</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Knife</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Laptop</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Lawyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MacBook</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MacBookPro</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassJoined</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassSingleTable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassTablePerClass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.MudTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.NonFueledVehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.OffRoadTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.PassengerPerformanceTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Person</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.PetStore</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Poison</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.RockTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SchoolBus</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Seed</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SeededFruit</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Sheraton</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SmallAssignment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SocialClub</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SoftwareEngineer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SpecialAssassin</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityJoined</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntitySingleTable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityTablePerClass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityJoined</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntitySingleTable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityTablePerClass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.TireInfoMappedSuperclass</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.TireRating</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.TireRatingComment</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.VehicleDirectory</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inheritance.Weapon</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="inherited" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Accredidation</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Alpine</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Becks</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.BecksTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Beer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Beverage</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Birthday</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Blue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.BlueLight</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.BuildingBylaw</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Bylaw</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Canadian</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Certification</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Committee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.CommitteeDates</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Consumable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Corona</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.CoronaTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.EmbeddedTimeCaption</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Heineken</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.LawnMower</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Location</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.NodeImpl</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.NoiseBylaw</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Official</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.OfficialEntry</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.PowerTool</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.RatedBeerConsumer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Record</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.RedStripe</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.SerialNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.ServiceTime</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.TelephoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.TelephoneNumberPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.TrackableTime</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Venue</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.VenueHistory</class>
+        <class>org.eclipse.persistence.testing.models.jpa.inherited.Witness</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+</persistence>

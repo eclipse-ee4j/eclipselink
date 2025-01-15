@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -69,16 +70,17 @@ public class MetadataMirrorFactory extends MetadataFactory {
     // Thing to note: persistence units can be reloaded. We do not however
     // reload their associated projects. Once the project is created, it remains
     // around for the lifecycle of the compiler.
-    private Map<String, PersistenceUnit> persistenceUnits;
-    private Map<String, MetadataProject> metadataProjects;
+    private final Map<String, PersistenceUnit> persistenceUnits;
+    private final Map<String, MetadataProject> metadataProjects;
 
     // This is a map of element/metadata classes built per compile round. This
     // map is cleared for each compile round.
-    private Map<Element, MetadataClass> roundElements;
+    private final Map<Element, MetadataClass> roundElements;
 
     // This is a hash set of metadata classes per compile round. This set is
     // cleared for each compile round.
-    private HashSet<MetadataClass> roundMetadataClasses;
+    private final Set<MetadataClass> roundMetadataClasses;
+    private final Set<Element> processedElements;
 
     private ProcessingEnvironment processingEnv;
 
@@ -97,6 +99,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         roundMetadataClasses = new HashSet<>();
         persistenceUnits = new HashMap<>();
         metadataProjects = new HashMap<>();
+        processedElements = new HashSet<>();
     }
 
     /**
@@ -278,17 +281,25 @@ public class MetadataMirrorFactory extends MetadataFactory {
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      */
     public boolean isRoundElement(Element element) {
         return roundElements.containsKey(element);
     }
 
     /**
-     * INTENAL:
+     * INTERNAL:
      */
     public boolean isRoundElement(MetadataClass cls) {
         return roundMetadataClasses.contains(cls);
+    }
+
+    void addProcessed(Element name) {
+        processedElements.add(name);
+    }
+
+    boolean isProcessed(Element name) {
+        return processedElements.contains(name);
     }
 
     /**
@@ -311,6 +322,7 @@ public class MetadataMirrorFactory extends MetadataFactory {
         processingEnv = processingEnvironment;
         roundElements.clear();
         roundMetadataClasses.clear();
+        processedElements.clear();
 
         // Initialize the element visitor if it is null.
         if (elementVisitor == null) {

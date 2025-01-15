@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     06/02/2009-2.0 Guy Pelletier
+//       - 278768: JPA 2.0 Association Override Join Table
+package org.eclipse.persistence.testing.models.jpa.inherited;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
+@Embeddable
+public class Accredidation {
+    @Column(name="BOGUS_COLUMN_NAME")
+    // Expert beer consumer will use the attribute override from the
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level attribute override to override
+    // the above mentioned attribute override.
+    // If these overrides are not picked up, the column name will be picked up
+    // and errors will occur.
+    private String details;
+
+    @OneToMany(cascade={PERSIST, MERGE})
+    @JoinColumn(name="BOGUS_JOIN_COLUMN_NAME")
+    // Expert beer consumer will use the association overrides from the
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level association override to override
+    // the above mentioned association override.
+    // If these overrides are not picked up, this join column will be picked up
+    // and errors will occur.
+    private List<Official> officials;
+
+    @ManyToMany(cascade={PERSIST, MERGE})
+    @JoinTable(name="BOGUS_JOIN_TABLE_NAME")
+    // Expert beer consumer will use the association overrides from the
+    // accredidation mapping from RatedBeerConsumer, whereas, novice beer
+    // consumer will provide a class level association override to override
+    // the above mentioned association override.
+    // If these overrides are not picked up, the join table will default
+    // and errors will occur.
+    private List<Witness> witnesses;
+
+    public Accredidation() {
+        officials = new ArrayList<>();
+        witnesses = new ArrayList<>();
+    }
+
+    public void addOfficial(Official official) {
+        officials.add(official);
+    }
+
+    public void addWitness(Witness witness) {
+        witnesses.add(witness);
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public List<Official> getOfficials() {
+        return officials;
+    }
+
+    public List<Witness> getWitnesses() {
+        return witnesses;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public void setOfficials(List<Official> officials) {
+        this.officials = officials;
+    }
+
+    public void setWitnesses(List<Witness> witnesses) {
+        this.witnesses = witnesses;
+    }
+}

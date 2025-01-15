@@ -1,0 +1,147 @@
+<!--
+
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="multi-tenant-shared-emf">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createMafia_ddlGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMafia_ddlGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
+            <!-- Since we don't exclude unlisted classes here, we will       -->
+            <!-- eventually hit the multitenant entities which turn native   -->
+            <!-- sql queries off by default, so we need to be explicit here  -->
+            <!--  and turn them on                                           -->
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="multi-tenant-123">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="tenant.id" value="123"/>
+            <!--  this one will be appended in the test suite when creating the emf -->
+            <!-- property name="eclipselink.tenant-id" value="123"/ -->
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
+            <property name="eclipselink.session-name" value="multi-tenant-123"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="multi-tenant-vpd">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/multitenant-vpd.xml</mapping-file>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubTask</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.session-name" value="multi-tenant-vpd"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMultitenantVPD_ddlGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="multi-tenant-table-per-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="multi-tenant-table-per-tenant-C">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.tenant-id" value="C"/>
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
+            <property name="eclipselink.session-name" value="multi-tenant-C"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="multi-tenant-schema-per-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Customer</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

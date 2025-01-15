@@ -1,0 +1,101 @@
+/*
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+package org.eclipse.persistence.testing.models.jpa.complexaggregate;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+
+import java.io.Serializable;
+
+import static jakarta.persistence.GenerationType.TABLE;
+
+@Entity
+@Table(name="CMP3_HOCKEY_PLAYER")
+public class HockeyPlayer implements Serializable {
+    private int playerId;
+    private Vitals vitals;
+    private String lastName;
+    private String firstName;
+    private HockeyCoach coach;
+
+    public HockeyPlayer () {}
+
+    @Column(name="FNAME")
+    public String getFirstName() {
+        return firstName;
+    }
+
+    @Column(name="LNAME")
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Id
+    @GeneratedValue(strategy=TABLE, generator="HOCKEY_PLAYER_TABLE_GENERATOR")
+    @TableGenerator(
+        name="HOCKEY_PLAYER_TABLE_GENERATOR",
+        table="CMP3_HOCKEY_SEQ",
+        pkColumnName="SEQ_NAME",
+        valueColumnName="SEQ_COUNT",
+        pkColumnValue="HOCKEY_PLAYER_SEQ"
+    )
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    @Embedded
+    @AttributeOverride(name="teamVitals.jerseyNumber", column=@Column(name="JERSEY_NUMBER"))
+    public Vitals getVitals() {
+        return vitals;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setVitals(Vitals vitals) {
+        this.vitals = vitals;
+    }
+
+    @ManyToOne
+    public HockeyCoach getCoach() {
+        return coach;
+    }
+
+    public void setCoach(HockeyCoach coach) {
+        this.coach = coach;
+    }
+
+    public String toString() {
+        return "Hockey player: " + getFirstName() + " " + getLastName();
+    }
+}

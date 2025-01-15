@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,8 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.mappings;
 
 //java eXtensions
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -36,9 +38,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 
 import static org.eclipse.persistence.testing.tests.jpa.dynamic.DynamicTestHelper.DYNAMIC_PERSISTENCE_NAME;
 import static org.junit.Assert.assertEquals;
@@ -96,7 +95,7 @@ public class SimpleTypes_MultiTable {
     }
 
     @Test
-    public void verifyConfig() throws Exception {
+    public void verifyConfig() {
         ClassDescriptor descriptorA = helper.getSession().getClassDescriptorForAlias("SimpleA");
         assertNotNull("No descriptor found for alias='SimpleA'", descriptorA);
         DynamicType simpleTypeA = helper.getType("SimpleA");

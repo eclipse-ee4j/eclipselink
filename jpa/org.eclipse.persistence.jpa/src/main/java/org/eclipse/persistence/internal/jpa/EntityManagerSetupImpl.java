@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -628,7 +628,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public AbstractSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
         if (this.state != STATE_PREDEPLOYED && this.state != STATE_DEPLOYED && this.state != STATE_HALF_DEPLOYED) {
             if (mustBeCompositeMember()) {
-                throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(this.persistenceUnitInfo.getPersistenceUnitName()));
+                throw new IllegalStateException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(this.persistenceUnitInfo.getPersistenceUnitName()));
             }
             throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(this.persistenceUnitInfo.getPersistenceUnitName(), this.state, this.persistenceException));
         }
@@ -1757,7 +1757,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         return null;
                     } else {
                         // predeploy is used for static weaving
-                        throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(persistenceUnitInfo.getPersistenceUnitName()));
+                        throw new IllegalStateException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(persistenceUnitInfo.getPersistenceUnitName()));
                     }
                 }
             }
@@ -2510,6 +2510,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             login.setProperty(property, value);
         }
 
+
+        String encryptionClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.LOGIN_ENCRYPTOR, m, this.session);
+        if (encryptionClassName != null) {
+            this.securableObjectHolder.setEncryptionClassName(encryptionClassName);
+            login.setEncryptionClassName(encryptionClassName);
+        }
         // Note: This call does not checked the stored persistenceUnitInfo or extended properties because
         // the map passed into this method should represent the full set of properties we expect to process
 
@@ -4281,6 +4287,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @param factory
      */
     public void preInitializeCanonicalMetamodel(EntityManagerFactoryImpl factory){
+        if (mustBeCompositeMember()) {
+            // composite member
+            // composite-unit can login and initialize (pre)initialize metamodel
+            // if we are composite member, we cannot login, we have no session and no operations are allowed,
+            // yet the factory can still be created as long as subsequent calls to createEntityManager fail with IllegalStateException
+            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_not_preinit", getPersistenceUnitUniqueName());
+            return;
+        }
         // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
         if(null == metaModel.getManagedTypes() || metaModel.getManagedTypes().isEmpty()) {
             getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_type_collection_empty");

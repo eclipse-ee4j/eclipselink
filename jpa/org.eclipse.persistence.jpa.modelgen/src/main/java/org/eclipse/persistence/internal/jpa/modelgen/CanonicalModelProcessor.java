@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,6 +88,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
         if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
             add("java.persistence/jakarta.persistence.*");
+            add("jakarta.persistence/jakarta.persistence.*");
         }
         add("jakarta.persistence.*");
         add("org.eclipse.persistence.annotations.*");
@@ -392,6 +393,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                 writer.append(")\n");
             }
             writer.append("@StaticMetamodel(" + className + ".class)\n");
+            writer.append("@SuppressWarnings({\"rawtypes\", \"deprecation\"})\n");
 
             int modifier = accessor.getAccessibleObject().getModifiers();
             writer.append(java.lang.reflect.Modifier.toString(modifier) + " class " + canonicalName);
@@ -426,9 +428,10 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         for (Element roundElement : roundElements.keySet()) {
             MetadataClass roundClass = roundElements.get(roundElement);
 
-            if (persistenceUnit.containsClass(roundClass)) {
+            if (persistenceUnit.containsClass(roundClass) && !factory.isProcessed(roundElement)) {
                 log(SessionLog.FINEST, "Generating class: {0}", roundClass.getName());
                 generateCanonicalModelClass(roundClass, roundElement, persistenceUnit);
+                factory.addProcessed(roundElement);
             }
         }
     }
