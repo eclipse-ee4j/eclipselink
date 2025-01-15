@@ -134,6 +134,8 @@ public class WriteLockManager {
     private final Lock toWaitOnLock = new ReentrantLock();
     private final Lock instancePrevailingQueueLock = new ReentrantLock();
 
+    private static final String ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME = WriteLockManager.class.getName() + ".acquireLocksForClone(...)";
+
     public WriteLockManager() {
         this.prevailingQueue = new ExposedNodeLinkedList();
     }
@@ -169,9 +171,8 @@ public class WriteLockManager {
                 // of the concurrency manager that we use for creating the massive log dump
                 // to indicate that the current thread is now stuck trying to acquire some arbitrary
                 // cache key for writing
-                StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[1];
                 lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
-                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME);
 
                 // Since we know this one of those methods that can appear in the dead locks
                 // we threads frozen here forever inside of the wait that used to have no timeout

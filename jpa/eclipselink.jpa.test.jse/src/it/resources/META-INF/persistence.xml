@@ -60,44 +60,4 @@
           <exclude-unlisted-classes>true</exclude-unlisted-classes>
           <properties></properties>
      </persistence-unit>
-
-     <persistence-unit name="cachedeadlockdetection-pu" transaction-type="RESOURCE_LOCAL">
-          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-          <class>org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionMaster</class>
-          <class>org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionDetail</class>
-          <exclude-unlisted-classes>true</exclude-unlisted-classes>
-          <properties>
-               <property name="eclipselink.concurrency.manager.waittime" value="1"/>
-               <property name="eclipselink.concurrency.manager.maxsleeptime" value="2"/>
-               <property name="eclipselink.concurrency.manager.maxfrequencytodumptinymessage" value="800"/>
-               <property name="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="1000"/>
-               <property name="eclipselink.concurrency.manager.build.object.complete.waittime" value="5"/>
-               <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
-               <property name="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
-               <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>
-          </properties>
-     </persistence-unit>
-
-     <persistence-unit name="cachedeadlocksemaphore-pu" transaction-type="RESOURCE_LOCAL">
-          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-          <class>org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionMaster</class>
-          <class>org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionDetail</class>
-          <exclude-unlisted-classes>true</exclude-unlisted-classes>
-          <properties>
-               <property name="eclipselink.concurrency.manager.waittime" value="1"/>
-               <property name="eclipselink.concurrency.manager.maxsleeptime" value="2"/>
-               <property name="eclipselink.concurrency.manager.maxfrequencytodumptinymessage" value="1000"/>
-               <property name="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="2000"/>
-               <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
-               <property name="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
-               <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>
-               <property name="eclipselink.concurrency.manager.object.building.semaphore" value="true"/>
-               <property name="eclipselink.concurrency.manager.object.building.no.threads" value="5"/>
-               <property name="eclipselink.concurrency.manager.write.lock.manager.semaphore" value="true"/>
-               <property name="eclipselink.concurrency.manager.write.lock.manager.no.threads" value="6"/>
-               <property name="eclipselink.concurrency.semaphore.max.time.permit" value="7"/>
-               <property name="eclipselink.concurrency.semaphore.log.timeout" value="8"/>
-          </properties>
-     </persistence-unit>
-
 </persistence>
