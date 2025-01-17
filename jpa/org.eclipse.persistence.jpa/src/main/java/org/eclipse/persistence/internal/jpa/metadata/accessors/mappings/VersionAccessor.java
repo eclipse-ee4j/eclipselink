@@ -22,14 +22,14 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import java.time.Instant;
+import java.time.LocalDateTime;
+
+import org.eclipse.persistence.descriptors.AbstractTsLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -85,7 +85,9 @@ public class VersionAccessor extends BasicAccessor {
      * Returns true if the given class is a valid timestamp locking type.
      */
     protected boolean isValidTimestampVersionLockingType(MetadataClass cls) {
-        return cls.isClass(java.sql.Timestamp.class);
+        return cls.isClass(java.sql.Timestamp.class)
+                || cls.isClass(LocalDateTime.class)
+                || cls.isClass(Instant.class);
     }
 
     /**
@@ -120,7 +122,10 @@ public class VersionAccessor extends BasicAccessor {
 
             if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
-                    VersionLockingPolicy policy = isValidVersionLockingType(lockType) ? new VersionLockingPolicy(getDatabaseField()) : new TimestampLockingPolicy(getDatabaseField());
+                    VersionLockingPolicy policy = isValidVersionLockingType(lockType)
+                            ? new VersionLockingPolicy(getDatabaseField())
+                            //new TimestampLockingPolicy(getDatabaseField());
+                            : AbstractTsLockingPolicy.create(lockType.getName(), getDatabaseField());
                     policy.storeInObject();
                     policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
                     owningDescriptor.setOptimisticLockingPolicy(policy);

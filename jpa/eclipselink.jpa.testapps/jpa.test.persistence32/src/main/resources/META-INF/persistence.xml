@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,21 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="verify"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="persistence32_version" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.VersionEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.InstantVersionEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.LdtVersionEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersionEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>

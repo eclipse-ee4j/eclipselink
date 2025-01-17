@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 /**
  * {@link AbstractSuite} with Pokemon model.
  */
-public abstract class AbstractPokemon extends AbstractSuite {
+public abstract class AbstractPokemonSuite extends AbstractSuite {
 
     // Trainer's teams
     static final Team[] TEAMS = new Team[] {
@@ -63,18 +63,18 @@ public abstract class AbstractPokemon extends AbstractSuite {
     };
 
     /**
-     * Creates an instance of {@link AbstractPokemon}.
+     * Creates an instance of {@link AbstractPokemonSuite}.
      */
-    public AbstractPokemon() {
+    public AbstractPokemonSuite() {
         super();
     }
 
     /**
-     * Creates an instance of {@link AbstractPokemon} with custom test case name.
+     * Creates an instance of {@link AbstractPokemonSuite} with custom test case name.
      *
      * @param name name of the test case
      */
-    public AbstractPokemon(String name) {
+    public AbstractPokemonSuite(String name) {
         super(name);
         setPuName(getPersistenceUnitName());
     }

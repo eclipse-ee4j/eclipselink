@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.VersionEntity;
 /**
  * Verify jakarta.persistence 3.2 API changes in {@link jakarta.persistence.EntityManagerFactory}.
  */
-public class EntityManagerFactoryTest extends AbstractPokemon {
+public class EntityManagerFactoryTest extends AbstractPokemonSuite {
 
     public static Test suite() {
         return suite(

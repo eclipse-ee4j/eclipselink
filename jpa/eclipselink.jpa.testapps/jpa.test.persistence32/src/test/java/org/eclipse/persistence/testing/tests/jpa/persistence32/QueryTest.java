@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.junit.Assert;
 /**
  * Verify jakarta.persistence 3.2 API changes in queries.
  */
-public class QueryTest extends AbstractPokemon {
+public class QueryTest extends AbstractPokemonSuite {
 
     // Pokemons. Array index is ID value.
     // Value of ID = 0 does not exist so it's array instance is set to null.
@@ -108,4 +108,4 @@ public class QueryTest extends AbstractPokemon {
                         "SELECT p FROM Pokemon p ", Pokemon.class).getSingleResultOrNull()));
     }
 
-    }
+}
