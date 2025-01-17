@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -10,12 +9,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-
-// Contributors:
-//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -25,59 +22,61 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ModifyQuery;
 
 /**
- * <p><b>Purpose</b>: Used to allow a single version timestamp to be used for optimistic locking.
- *
- * @since TOPLink/Java 2.0
+ * Version policy used for optimistic locking with {@link Instant} field.
  */
-public class TimestampLockingPolicy extends AbstractTsLockingPolicy<Timestamp> {
+public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
 
     /**
-     * Create a new TimestampLockingPolicy.
+     * Create a new instance of version policy used for optimistic locking
+     * with {@link Instant} field.
      * Defaults to using the time retrieved from the server.
      */
-    public TimestampLockingPolicy() {
+    public InstantLockingPolicy() {
         super();
     }
 
     /**
-     * Create a new TimestampLockingPolicy.
+     * Create a new instance of version policy used for optimistic locking
+     * with {@link Instant} field.
      * Defaults to using the time retrieved from the server.
      *
      * @param fieldName the field where the write lock value will be stored
      */
-    public TimestampLockingPolicy(String fieldName) {
+    public InstantLockingPolicy(String fieldName) {
         super(fieldName);
     }
 
     /**
-     * Create a new TimestampLockingPolicy.
+     * Create a new instance of version policy used for optimistic locking
+     * with {@link Instant} field.
      * Defaults to using the time retrieved from the server.
      *
      * @param field the field where the write lock value will be stored
      */
-    TimestampLockingPolicy(DatabaseField field) {
+    InstantLockingPolicy(DatabaseField field) {
         super(field);
     }
 
     @Override
-    int compareTsLockValues(Timestamp value1, Timestamp value2) {
+    int compareTsLockValues(Instant value1, Instant value2) {
         return value1.compareTo(value2);
     }
 
     @Override
-    Class<Timestamp> getDefaultTsLockFieldType() {
-        return ClassConstants.TIMESTAMP;
+    Class<Instant> getDefaultTsLockFieldType() {
+        return ClassConstants.TIME_INSTANT;
     }
 
     @Override
-    Timestamp getBaseTsValue(){
-        return new Timestamp(0);
+    Instant getBaseTsValue() {
+        // LocalDateTime is immutable so constant is safe
+        return Instant.MIN;
     }
 
     @Override
-    Timestamp getInitialTsWriteValue(AbstractSession session) {
+    Instant getInitialTsWriteValue(AbstractSession session) {
         if (usesLocalTime()) {
-            return new Timestamp(System.currentTimeMillis());
+            return Instant.now();
         }
         if (usesServerTime()) {
             AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
@@ -85,41 +84,41 @@ public class TimestampLockingPolicy extends AbstractTsLockingPolicy<Timestamp> {
                 readSession = readSession.getParent()
                         .getSessionForClass(getDescriptor().getJavaClass());
             }
-
-            return readSession.getDatasourceLogin()
+            Timestamp ts = readSession.getDatasourceLogin()
                     .getDatasourcePlatform()
                     .getTimestampFromServer(session, readSession.getName());
+            return ts.toInstant();
         }
         return null;
     }
 
     @Override
-    Timestamp getNewTsLockValue(ModifyQuery query) {
+    Instant getNewTsLockValue(ModifyQuery query) {
         return getInitialTsWriteValue(query.getSession());
     }
 
     @Override
-    Timestamp getTsValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    Instant getTsValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return session.getDatasourcePlatform()
-                    .convertObject(row.get(getWriteLockField()), ClassConstants.TIMESTAMP);
+                    .convertObject(row.get(getWriteLockField()), ClassConstants.TIME_INSTANT);
         } else {
             return null;
         }
     }
 
     @Override
-    Timestamp getWriteTsLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
-        Timestamp writeLockFieldValue = null;
+    Instant getWriteTsLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+        Instant writeLockFieldValue = null;
         if (isStoredInCache()) {
-            writeLockFieldValue = (Timestamp) session.getIdentityMapAccessorInstance()
+            writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance()
                     .getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
         } else {
             //CR#2281 notStoredInCache prevent ClassCastException
             Object lockValue = lockValueFromObject(domainObject);
             if (lockValue != null) {
-                if (lockValue instanceof Timestamp) {
-                    writeLockFieldValue = (Timestamp) lockValueFromObject(domainObject);
+                if (lockValue instanceof Instant) {
+                    writeLockFieldValue = (Instant) lockValueFromObject(domainObject);
                 } else {
                     throw OptimisticLockException.needToMapJavaSqlTimestampWhenStoredInObject();
                 }
@@ -129,13 +128,13 @@ public class TimestampLockingPolicy extends AbstractTsLockingPolicy<Timestamp> {
     }
 
     @Override
-    boolean isNewerTsVersion(Timestamp current, Object domainObject, Object primaryKey, AbstractSession session) {
-        Timestamp writeLockFieldValue;
+    boolean isNewerTsVersion(Instant current, Object domainObject, Object primaryKey, AbstractSession session) {
+        Instant writeLockFieldValue;
         if (isStoredInCache()) {
-            writeLockFieldValue = (Timestamp) session.getIdentityMapAccessorInstance()
+            writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance()
                     .getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
         } else {
-            writeLockFieldValue = (Timestamp)lockValueFromObject(domainObject);
+            writeLockFieldValue = (Instant)lockValueFromObject(domainObject);
         }
 
         return isNewerTsVersion(current, writeLockFieldValue);
@@ -144,20 +143,20 @@ public class TimestampLockingPolicy extends AbstractTsLockingPolicy<Timestamp> {
 
     @Override
     boolean isNewerTsVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
-        Timestamp writeLockFieldValue;
-        Timestamp newWriteLockFieldValue = session.getDatasourcePlatform()
-                .convertObject(row.get(getWriteLockField()), ClassConstants.TIMESTAMP);
+        Instant writeLockFieldValue;
+        Instant newWriteLockFieldValue = session.getDatasourcePlatform()
+                .convertObject(row.get(getWriteLockField()), ClassConstants.TIME_INSTANT);
         if (isStoredInCache()) {
-            writeLockFieldValue = (Timestamp) session.getIdentityMapAccessorInstance()
+            writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance()
                     .getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());
         } else {
-            writeLockFieldValue = (Timestamp) lockValueFromObject(domainObject);
+            writeLockFieldValue = (Instant) lockValueFromObject(domainObject);
         }
         return isNewerTsVersion(newWriteLockFieldValue, writeLockFieldValue);
     }
 
     @Override
-    boolean isNewerTsVersion(Timestamp first, Timestamp second) {
+    boolean isNewerTsVersion(Instant first, Instant second) {
         // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
         if (first == null) {
             return false;
@@ -166,29 +165,25 @@ public class TimestampLockingPolicy extends AbstractTsLockingPolicy<Timestamp> {
         if (second == null) {
             return true;
         }
-        return first.after(second);
+        return first.isAfter(second);
     }
 
-    /**
-     * INTERNAL:
-     * Return the number of versions different between these objects.
-     */
     @Override
     public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKeys, AbstractSession session) {
-        Timestamp writeLockFieldValue;
-        Timestamp newWriteLockFieldValue = (Timestamp)currentValue;
+        Instant writeLockFieldValue;
+        Instant newWriteLockFieldValue = (Instant)currentValue;
         if (newWriteLockFieldValue == null) {
             return 0;//merge it as either the object is new or being forced merged.
         }
         if (isStoredInCache()) {
-            writeLockFieldValue = (Timestamp)session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKeys, domainObject.getClass(), getDescriptor());
+            writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance().getWriteLockValue(primaryKeys, domainObject.getClass(), getDescriptor());
         } else {
-            writeLockFieldValue = (Timestamp)lockValueFromObject(domainObject);
+            writeLockFieldValue = (Instant) lockValueFromObject(domainObject);
         }
-        if ((writeLockFieldValue != null) && (newWriteLockFieldValue.equals(writeLockFieldValue))) {
+        if ((newWriteLockFieldValue.equals(writeLockFieldValue))) {
             return 0;
         }
-        if ((writeLockFieldValue != null) && !(newWriteLockFieldValue.after(writeLockFieldValue))) {
+        if ((writeLockFieldValue != null) && (!newWriteLockFieldValue.isAfter(writeLockFieldValue))) {
             return -1;
         }
         return 1;

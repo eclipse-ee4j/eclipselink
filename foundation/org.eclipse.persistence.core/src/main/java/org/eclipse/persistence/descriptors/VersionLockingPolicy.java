@@ -14,6 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.expressions.Expression;
@@ -36,11 +41,6 @@ import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -200,14 +200,16 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     /**
      * INTERNAL:
      * This method compares two writeLockValues.
-     * The writeLockValues should be non-null and of type Number.
-     * Returns:
-     * -1 if value1 is less (older) than value2;
-     *  0 if value1 equals value2;
-     *  1 if value1 is greater (newer) than value2.
-     * Throws:
-     *  NullPointerException if the passed value is null;
-     *  ClassCastException if the passed value is of a wrong type.
+     * The writeLockValues should be non-null and of {@link java.time.LocalDateTime},
+     * {@link java.time.Instant} or {@link java.sql.Timestamp} type.
+     *
+     * @param value1 the 1st value to compare
+     * @param value2 the 2nd value to compare
+     * @return {@code -1} if value1 is less (older) than value2,
+     *         {@code 0} if value1 equals value2,
+     *         {@code 1} if value1 is greater (newer) than value2.
+     * @throws NullPointerException if the passed value is null
+     * @throws ClassCastException if the passed value is of a wrong type.
      */
     @Override
     public int compareWriteLockValues(Object value1, Object value2) {
@@ -218,7 +220,9 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * Return the default version locking filed java type, default is BigDecimal
+     * Return the default timestamp locking filed java type.
+     *
+     * @return the default timestamp locking filed java type
      */
     @SuppressWarnings({"unchecked"})
     protected <T> Class<T> getDefaultLockingFieldType() {
@@ -228,8 +232,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * This is the base value that is older than all other values, it is used in the place of
-     * null in some situations.
+     * Return base value that is older than all other values, it is used in the place of
+     * {@code null} in some situations.
+     *
+     * @return timestamp base value
      */
     @Override
     @SuppressWarnings({"unchecked"})
@@ -246,7 +252,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * returns the initial locking value
+     * Return initial locking value.
+     *
+     * @param session the database session
+     * @return the initial locking value
      */
     @SuppressWarnings({"unchecked"})
     protected <T> T getInitialWriteValue(AbstractSession session) {
@@ -268,7 +277,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
     /**
      * INTERNAL:
      * This method gets the write lock value from either the cache or
-     * the object stored in the query.  It then returns the new incremented value.
+     * the object stored in the query. It then returns the new incremented value.
+     *
+     * @param query modify query
+     * @return the new timestamp value
      */
     @SuppressWarnings({"unchecked"})
     public <T> T getNewLockValue(ModifyQuery query) {
@@ -307,6 +319,10 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      * INTERNAL:
      * Return the value that should be stored in the identity map.
      * If the value is stored in the object, then return a null.
+     *
+     * @param row the data row, e.g. database row
+     * @param session the database session
+     * @return the value that should be stored in the identity map
      */
     @Override
     @SuppressWarnings({"unchecked"})
@@ -375,7 +391,12 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * This method will return the optimistic lock value for the object
+     * Return the optimistic lock value for the object.
+     *
+     * @param domainObject the domain object (entity instance)
+     * @param primaryKey the primary key
+     * @param session the database session
+     * @return the optimistic lock value for the object
      */
     @Override
     @SuppressWarnings({"unchecked"})
@@ -464,8 +485,14 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * Compares the value with the value from the object (or cache).
-     * Will return true if the currentValue is newer than the domainObject.
+     * Compares two version values from the current value and from the object (or cache).
+     *
+     * @param currentValue the current value
+     * @param domainObject the domain object (entity instance)
+     * @param primaryKey the primary key
+     * @param session the database session
+     * @return value of {@code true} if the {@code first} is newer than the {@code second}
+     *         or {@code false} otherwise
      */
     @Override
     public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session) {
@@ -483,8 +510,14 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * Compares the value from the row and from the object (or cache).
-     * Will return true if the row is newer than the object.
+     * Compares two version values from the row and from the object (or cache).
+     *
+     * @param databaseRow the data row, e.g. database row
+     * @param domainObject the domain object (entity instance)
+     * @param primaryKey the primary key
+     * @param session the database session
+     * @return value of {@code true} if the {@code first} is newer than the {@code second}
+     *         or {@code false} otherwise
      */
     @Override
     public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session) {
@@ -501,8 +534,13 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
 
     /**
      * INTERNAL:
-     * Compares two values.
+     * Compares two version values.
      * Will return true if the firstLockFieldValue is newer than the secondWriteLockFieldValue.
+     *
+     * @param firstLockFieldValue first version value
+     * @param secondWriteLockFieldValue second version value
+     * @return value of {@code true} if the {@code first} is newer than the {@code second}
+     *         or {@code false} otherwise
      */
     public boolean isNewerVersion(Object firstLockFieldValue, Object secondWriteLockFieldValue) {
         Number firstValue = (Number)firstLockFieldValue;//domain object/clone
