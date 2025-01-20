@@ -57,6 +57,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -2035,8 +2036,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 int fieldsSize = fields.size();
                 values = new ArrayList<>(fieldsSize);
                 baseExpressions = new ArrayList<>(fieldsSize);
-                for(int i=0; i<fieldsSize; i++) {
-                    String aName = mapping.getReferenceDescriptor().getMappings().get(i).getAttributeName();
+                for(DatabaseMapping databaseMapping: mapping.getReferenceDescriptor().getMappings()) {
+                    String aName = databaseMapping.getAttributeName();
                     Expression attributeBaseExpression = baseExpression.get(aName);
                     baseExpressions.add(attributeBaseExpression);
                     ParameterExpression exp = (ParameterExpression) ((ParameterExpression)valueObject).clone().getField(new DatabaseField(aName));
