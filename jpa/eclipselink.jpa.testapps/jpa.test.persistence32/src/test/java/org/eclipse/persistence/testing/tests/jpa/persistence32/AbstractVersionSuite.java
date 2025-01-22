@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.models.jpa.persistence32.InstantVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.LdtVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersionEntity;
@@ -84,6 +85,15 @@ public abstract class AbstractVersionSuite extends AbstractSuite {
                 em.persist(TS_ENTITIES[i]);
             }
         });
+        // MySQL platform has version precision set to 1 sec. Make sure it gets incremented
+        // before running the tests.
+        if (emf.getDatabaseSession().getPlatform().isMySQL()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                emf.getDatabaseSession().logThrowable(SessionLog.FINEST, SessionLog.JPA, ex);
+            }
+        }
     }
 
 }
