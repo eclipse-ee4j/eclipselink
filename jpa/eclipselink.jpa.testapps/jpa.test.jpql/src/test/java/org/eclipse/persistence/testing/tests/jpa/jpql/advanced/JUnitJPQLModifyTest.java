@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,12 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * <p>
@@ -99,6 +102,8 @@ public class JUnitJPQLModifyTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTest("simpleUpdate"));
         suite.addTest(new JUnitJPQLModifyTest("updateWithSubquery"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbedded"));
+        suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedObjectWithValue"));
+        suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedObjectWithNull"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedFieldTest"));
         suite.addTest(new JUnitJPQLModifyTest("updateUnqualifiedAttributeInSet"));
         suite.addTest(new JUnitJPQLModifyTest("updateUnqualifiedAttributeInWhere"));
@@ -212,6 +217,78 @@ public class JUnitJPQLModifyTest extends JUnitTestCase {
                 em, "SELECT COUNT(e) FROM Employee e WHERE e.period.startDate IS NULL");
             assertEquals("updateEmbedded: unexpected number of changed values in the database",
                          nrOfEmps, nr);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        }
+    }
+
+    public void updateEmbeddedObjectWithValue()
+    {
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test updateEmbedded skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        EntityManager em = createEntityManager();
+
+        long nrOfEmps = executeJPQLReturningInt(
+                em, "SELECT COUNT(e) FROM Employee e");
+
+        // test query
+        EmploymentPeriod employmentPeriod = new EmploymentPeriod(java.sql.Date.valueOf(LocalDate.of(2020, 1, 1)), java.sql.Date.valueOf(LocalDate.of(2025, 12, 31)));
+        String update = "UPDATE Employee e SET e.period = ?1";
+        beginTransaction(em);
+        try {
+            Query updateQuery = em.createQuery(update);
+            updateQuery.setParameter(1, employmentPeriod);
+            int updated = updateQuery.executeUpdate();
+            assertEquals("updateEmbedded: wrong number of updated instances",
+                    nrOfEmps, updated);
+            commitTransaction(em);
+
+            // check database changes
+            Query selectQuery = em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.period.startDate = ?1", Long.class);
+            selectQuery.setParameter(1, employmentPeriod.getStartDate());
+            long nr = (long) selectQuery.getSingleResult();
+            assertEquals("updateEmbedded: unexpected number of changed values in the database",
+                    nrOfEmps, nr);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        }
+    }
+
+    public void updateEmbeddedObjectWithNull()
+    {
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test updateEmbedded skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        EntityManager em = createEntityManager();
+
+        int nrOfEmps = executeJPQLReturningInt(
+                em, "SELECT COUNT(e) FROM Employee e");
+
+        // test query
+        String update = "UPDATE Employee e SET e.period = ?1";
+        beginTransaction(em);
+        try {
+            Query q = em.createQuery(update);
+            q.setParameter(1, null);
+            int updated = q.executeUpdate();
+            assertEquals("updateEmbedded: wrong number of updated instances",
+                    nrOfEmps, updated);
+            commitTransaction(em);
+
+            // check database changes
+            int nr = executeJPQLReturningInt(
+                    em, "SELECT COUNT(e) FROM Employee e WHERE e.period.startDate IS NULL");
+            assertEquals("updateEmbedded: unexpected number of changed values in the database",
+                    nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
