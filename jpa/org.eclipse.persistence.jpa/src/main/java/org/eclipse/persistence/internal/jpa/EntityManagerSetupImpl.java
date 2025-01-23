@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -186,6 +186,7 @@ import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
+import org.eclipse.persistence.internal.helper.type.MergeManagerOperationMode;
 import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -2935,6 +2936,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateConcurrencyManagerAllowInterruptedExceptionFired(m);
             updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(m);
             updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(m);
+            updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(m);
             updateConcurrencyManagerUseObjectBuildingSemaphore(m);
             updateConcurrencyManagerUseWriteLockManagerSemaphore(m);
             updateConcurrencyManagerNoOfThreadsAllowedToObjectBuildInParallel(m);
@@ -3854,6 +3856,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(allowTakingStackTraceDuringReadLockAcquisition, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, exception));
+        }
+    }
+
+    /**
+     * Related to <a href="https://github.com/eclipse-ee4j/eclipselink/issues/2094">issue 2094</a>
+     * Setup of mode how {@code org.eclipse.persistence.internal.sessions.AbstractSession.getCacheKeyFromTargetSessionForMerge(Object, ObjectBuilder, ClassDescriptor, MergeManager)}
+     * get {@code org.eclipse.persistence.internal.identitymaps.CacheKey} and related object.
+     */
+    private void updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(Map persistenceProperties) {
+        String abstractSessionModeOfOperationOfMergeManagerGetCacheKey = EntityManagerFactoryProvider
+                .getConfigPropertyAsStringLogDebug(
+                        PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE,
+                        persistenceProperties, session);
+        if (abstractSessionModeOfOperationOfMergeManagerGetCacheKey != null) {
+            ConcurrencyUtil.SINGLETON.setConcurrencyManagerAllowGetCacheKeyForMergeMode(MergeManagerOperationMode.valueOf(abstractSessionModeOfOperationOfMergeManagerGetCacheKey.trim()));
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,9 +23,11 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
+import org.eclipse.persistence.internal.helper.type.MergeManagerOperationMode;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -34,8 +36,12 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionDetail;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.DeadLockDiagnosticTableCreator;
+import org.junit.Assert;
 
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CacheDeadLockManagersTest extends JUnitTestCase {
 
@@ -54,6 +60,8 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
         suite.setName("CacheDeadLockDetectionTest");
         suite.addTest(new CacheDeadLockManagersTest("testSetup"));
         suite.addTest(new CacheDeadLockManagersTest("testWriteLockManagerAcquireLocksForClone"));
+        suite.addTest(new CacheDeadLockManagersTest("testAbstractSessionCacheKeyFromTargetSessionForMerge"));
+        suite.addTest(new CacheDeadLockManagersTest("testAbstractSessionCacheKeyFromTargetSessionForMergeWithLockedCacheKey"));
         return suite;
     }
 
@@ -62,10 +70,12 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
      * execution in the server.
      */
     public void testSetup() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("cachedeadlockdetection-pu", JUnitTestCaseHelper.getDatabaseProperties());
+        final String PU_NAME = "cachedeadlockdetection-pu";
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, JUnitTestCaseHelper.getDatabaseProperties());
         EntityManager em = emf.createEntityManager();
         new DeadLockDiagnosticTableCreator().replaceTables(((JpaEntityManager)em).getServerSession());
-        clearCache("cachedeadlockdetection-pu");
+        clearCache(PU_NAME);
         try {
             em.getTransaction().begin();
             initData(em);
@@ -87,7 +97,9 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
     }
 
     public void testWriteLockManagerAcquireLocksForClone() {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("cachedeadlockdetection-pu", JUnitTestCaseHelper.getDatabaseProperties());
+        final String PU_NAME = "cachedeadlockdetection-pu";
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, JUnitTestCaseHelper.getDatabaseProperties());
         EntityManager em = emf.createEntityManager();
         AbstractSession serverSession = ((JpaEntityManager)em).getServerSession();
         LogWrapper logWrapper = new LogWrapper();
@@ -113,6 +125,146 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
                 if (em.isOpen()) {
                     em.close();
                 }
+            }
+        }
+    }
+
+    public void testAbstractSessionCacheKeyFromTargetSessionForMerge() {
+        final String PU_NAME = "cachedeadlockdetection-loopwait-pu";
+        final long MASTER_ID = 1000L;
+        final long DETAIL_ID_1 = 1111L;
+        final long DETAIL_ID_2 = 1112L;
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManager em = emf.createEntityManager();
+        assertEquals(MergeManagerOperationMode.WAITLOOP, ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode());
+        clearCache(PU_NAME);
+        try {
+            em.getTransaction().begin();
+            CacheDeadLockDetectionMaster cacheDeadLockDetectionMaster = new CacheDeadLockDetectionMaster(MASTER_ID, "M1000");
+            CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail1 = new CacheDeadLockDetectionDetail(DETAIL_ID_1, "D1111");
+            cacheDeadLockDetectionDetail1.setMaster(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionDetail1);
+            em.getTransaction().commit();
+
+            IdentityMapAccessor identityMapAccessor = (IdentityMapAccessor) ((JpaEntityManager)em).getServerSession().getIdentityMapAccessor();
+            CacheKey cacheKey = identityMapAccessor.getCacheKeyForObject(cacheDeadLockDetectionMaster);
+            Semaphore semaphore = new Semaphore(1);
+            semaphore.acquire();
+            Object backupObject = cacheKey.getObject();
+            //Lock existing cache key by another thread
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        cacheKey.acquire(true);
+                        cacheKey.setObject(null);
+                        semaphore.acquire();
+                        cacheKey.setObject(backupObject);
+                        cacheKey.release();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            thread.start();
+
+            em.getTransaction().begin();
+            CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail2 = new CacheDeadLockDetectionDetail(DETAIL_ID_2, "D1112");
+            cacheDeadLockDetectionDetail2.setMaster(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionDetail2);
+            //Release semaphore which block second thread and unlock cacheKey to allow process next piece of code without any issue.
+            semaphore.release();
+            em.getTransaction().commit();
+            CacheDeadLockDetectionDetail findResult = em.find(CacheDeadLockDetectionDetail.class, DETAIL_ID_2);
+            assertEquals(DETAIL_ID_2, findResult.getId());
+            assertEquals("D1112", findResult.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+            if (emf.isOpen()) {
+                emf.close();
+            }
+        }
+    }
+
+    public void testAbstractSessionCacheKeyFromTargetSessionForMergeWithLockedCacheKey() {
+        final String PU_NAME = "cachedeadlockdetection-loopwait-pu";
+        final long MASTER_ID = 2000L;
+        final long DETAIL_ID_1 = 2111L;
+        final long DETAIL_ID_2 = 2222L;
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory(PU_NAME, JUnitTestCaseHelper.getDatabaseProperties());
+        EntityManager em = emf.createEntityManager();
+        AbstractSession serverSession = ((JpaEntityManager)em).getServerSession();
+        LogWrapper logWrapper = new LogWrapper();
+        serverSession.setSessionLog(logWrapper);
+        AbstractSessionLog.setLog(logWrapper);
+        assertEquals(MergeManagerOperationMode.WAITLOOP, ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode());
+        clearCache(PU_NAME);
+        try {
+            em.getTransaction().begin();
+            CacheDeadLockDetectionMaster cacheDeadLockDetectionMaster = new CacheDeadLockDetectionMaster(MASTER_ID, "M2000");
+            CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail1 = new CacheDeadLockDetectionDetail(DETAIL_ID_1, "D2111");
+            cacheDeadLockDetectionDetail1.setMaster(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionDetail1);
+            em.getTransaction().commit();
+
+            IdentityMapAccessor identityMapAccessor = (IdentityMapAccessor) ((JpaEntityManager)em).getServerSession().getIdentityMapAccessor();
+            CacheKey cacheKey = identityMapAccessor.getCacheKeyForObject(cacheDeadLockDetectionMaster);
+            Semaphore semaphore = new Semaphore(1);
+            semaphore.acquire();
+            Object backupObject = cacheKey.getObject();
+            //Lock existing cache key by another thread
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        cacheKey.acquire(true);
+                        cacheKey.setObject(null);
+                        semaphore.acquire();
+                        cacheKey.setObject(backupObject);
+                        cacheKey.release();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+            thread.start();
+
+            em.getTransaction().begin();
+            CacheDeadLockDetectionDetail cacheDeadLockDetectionDetail2 = new CacheDeadLockDetectionDetail(DETAIL_ID_2, "D2222");
+            cacheDeadLockDetectionDetail2.setMaster(cacheDeadLockDetectionMaster);
+            em.persist(cacheDeadLockDetectionDetail2);
+            //Sleep is there to simulate, that main thread is doing some more time consuming operations and allow dead lock detection -> log messages.
+            Thread.sleep(1000);
+            em.getTransaction().commit();
+            CacheDeadLockDetectionDetail findResult = em.find(CacheDeadLockDetectionDetail.class, DETAIL_ID_2);
+            assertEquals(DETAIL_ID_2, findResult.getId());
+            assertEquals("D2222", findResult.getName());
+            assertEquals(1, logWrapper.getMessageCount("Page 08 start"));
+            assertEquals(1, logWrapper.getMessageCount("competing thread: " + thread));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+            if (emf.isOpen()) {
+                emf.close();
             }
         }
     }
