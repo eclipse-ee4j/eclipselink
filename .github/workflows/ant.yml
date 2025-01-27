@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  maven_version: 3.8.8
+  maven_version: 3.9.9
 jobs:
   build:
     name: Test on JDK ${{ matrix.java_version }}
@@ -81,13 +81,9 @@ jobs:
           echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
       - name: Build
         run: |
-          # export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
-          echo $M2_HOME
-          ls /usr/share/
-          type mvn
-          mvn -v
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml build
       - name: Verify
         run: |
-          # export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
+          export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
           ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-lrg
