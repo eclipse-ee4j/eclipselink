@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2025 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,11 +44,11 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
@@ -96,4 +96,4 @@ jobs:
           ant -f antbuild.xml build
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
