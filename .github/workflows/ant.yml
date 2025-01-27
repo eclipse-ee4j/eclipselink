@@ -85,6 +85,7 @@ jobs:
           echo $M2_HOME
           ls /usr/share/
           type mvn
+          mvn -v
           ant -f antbuild.xml build
       - name: Verify
         run: |
