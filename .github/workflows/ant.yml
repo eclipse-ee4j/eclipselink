@@ -82,7 +82,9 @@ jobs:
       - name: Build
         run: |
           # export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
+          echo ${{ env.maven_version }}
           echo $M2_HOME
+          ls /usr/share/
           type mvn
           ant -f antbuild.xml build
       - name: Verify
