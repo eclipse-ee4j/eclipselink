@@ -35,6 +35,7 @@
 //       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.internal.sessions;
 
+import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -2828,7 +2829,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                cacheKey.acquireDeferredLock();
 
                switch (ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode()) {
-                   case ORIGIN -> {
+                   case MergeManagerOperationMode.ORIGIN -> {
                        original = cacheKey.getObject();
                        if (original == null) {
                            cacheKey.getInstanceLock().lock();
@@ -2846,7 +2847,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                            }
                        }
                    }
-                   case WAITLOOP -> {
+                   case MergeManagerOperationMode.WAITLOOP -> {
                        final Thread currentThread = Thread.currentThread();
                        final String currentThreadName = currentThread.getName();
                        final long whileStartTimeMillis = System.currentTimeMillis();

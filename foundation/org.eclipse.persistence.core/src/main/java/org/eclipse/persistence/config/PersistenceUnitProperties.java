@@ -4056,7 +4056,7 @@ public final class PersistenceUnitProperties {
      * mechanism and related extended logging will be activated.
      * Default value is 0 (unit is ms). Allowed values are: long
      */
-    public static final String CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME = SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME;
+    public static final String CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME = "eclipselink.concurrency.manager.waittime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
@@ -4064,28 +4064,28 @@ public final class PersistenceUnitProperties {
      * should be identified as a potential deadlock source. It leads into some additional log messages.
      * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
      */
-    public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = SystemProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME;
+    public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
      * It controls how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
-    public static final String CONCURRENCY_MANAGER_MAX_SLEEP_TIME  = SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME;
+    public static final String CONCURRENCY_MANAGER_MAX_SLEEP_TIME  = "eclipselink.concurrency.manager.maxsleeptime";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
      * It controls how frequently the tiny dump log message is created.
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
-    public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE = SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE;
+    public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE = "eclipselink.concurrency.manager.maxfrequencytodumptinymessage";
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager and org.eclipse.persistence.internal.helper.ConcurrencyUtil.
      * It controls how frequently the massive dump log message is created.
      * Default value is 60000 (unit is ms). Allowed values are: long
      */
-    public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE;
+    public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = "eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage";
 
     /**
      * <p>
@@ -4103,7 +4103,7 @@ public final class PersistenceUnitProperties {
      * threads to progress.
      * </ul>
      */
-    public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION;
+    public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
 
     /**
      * <p>
@@ -4112,11 +4112,11 @@ public final class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
      * <ul>
-     * <li>{@code ORIGIN} (DEFAULT) - There is infinite {@code java.lang.Object.wait()} call in case of some conditions during time when object/entity referred from
+     * <li>{@code ORIGIN} (DEFAULT) - There is infinite {@linkplain java.lang.Object#wait()} call in case of some conditions during time when object/entity referred from
      * {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is locked and modified by another thread. In some cases it should leads into deadlock.
      * <li>{@code WAITLOOP} - Merge manager will try in the loop with timeout wait {@code cacheKey.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());}
-     * fetch object/entity from {@code org.eclipse.persistence.internal.identitymaps.CacheKey}. If fetch will be successful object/entity loop finish and continue
-     * with remaining code. If not @{code java.lang.InterruptedException} is thrown and caught and used {@code org.eclipse.persistence.internal.identitymaps.CacheKey} instance
+     * fetch object/entity from {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey}. If fetch will be successful object/entity loop finish and continue
+     * with remaining code. If not @{code java.lang.InterruptedException} is thrown and caught and used {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey} instance
      * status is set into invalidation state. This strategy avoid deadlock issue, but there should be impact to the performance.
      * </ul>
      */
@@ -4137,7 +4137,7 @@ public final class PersistenceUnitProperties {
      * locks and allow other threads to progress.
      * </ul>
      */
-    public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION;
+    public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = "eclipselink.concurrency.manager.allow.concurrencyexception";
 
     /**
      * <p>
@@ -4149,7 +4149,7 @@ public final class PersistenceUnitProperties {
      * <li>{@code true} - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
      * </ul>
      */
-    public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK;
+    public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
 
     /**
      * <p>
@@ -4167,7 +4167,7 @@ public final class PersistenceUnitProperties {
      * vanilla behavior).
      * </ul>
      */
-    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING = SystemProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING;
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING = "eclipselink.concurrency.manager.object.building.semaphore";
 
     /**
      * <p>
@@ -4186,7 +4186,7 @@ public final class PersistenceUnitProperties {
      * vanilla behavior).
      * </ul>
      */
-    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS = SystemProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS;
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS = "eclipselink.concurrency.manager.write.lock.manager.semaphore";
 
     /**
      * <p>
@@ -4195,7 +4195,7 @@ public final class PersistenceUnitProperties {
      * If "eclipselink.concurrency.manager.object.building.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
-    public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = SystemProperties.CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS;
+    public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = "eclipselink.concurrency.manager.object.building.no.threads";
 
     /**
      * <p>
@@ -4204,7 +4204,7 @@ public final class PersistenceUnitProperties {
      * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is {@code false} (DEFAULT) number of threads is unlimited.
      * </p>
      */
-    public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = SystemProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS;
+    public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = "eclipselink.concurrency.manager.write.lock.manager.no.threads";
 
     /**
      * <p>
@@ -4213,7 +4213,7 @@ public final class PersistenceUnitProperties {
      * Default value is 2000 (unit is ms). Allowed values are: long
      * </p>
      */
-    public static final String CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT = SystemProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT;
+    public static final String CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT = "eclipselink.concurrency.semaphore.max.time.permit";
 
     /**
      * <p>
@@ -4221,7 +4221,7 @@ public final class PersistenceUnitProperties {
      * Default value is 10000 (unit is ms). Allowed values are: long
      * </p>
      */
-    public static final String CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = SystemProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT;
+    public static final String CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = "eclipselink.concurrency.semaphore.log.timeout";
 
     /**
      * <p>

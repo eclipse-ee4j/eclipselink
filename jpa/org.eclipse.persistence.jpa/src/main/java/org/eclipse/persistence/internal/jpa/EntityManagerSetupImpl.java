@@ -182,11 +182,11 @@ import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
+import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
-import org.eclipse.persistence.internal.helper.type.MergeManagerOperationMode;
 import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -3870,7 +3870,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE,
                         persistenceProperties, session);
         if (abstractSessionModeOfOperationOfMergeManagerGetCacheKey != null) {
-            ConcurrencyUtil.SINGLETON.setConcurrencyManagerAllowGetCacheKeyForMergeMode(MergeManagerOperationMode.valueOf(abstractSessionModeOfOperationOfMergeManagerGetCacheKey.trim()));
+            ConcurrencyUtil.SINGLETON.setConcurrencyManagerAllowGetCacheKeyForMergeMode(abstractSessionModeOfOperationOfMergeManagerGetCacheKey.trim());
         }
     }
 

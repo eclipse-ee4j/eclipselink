@@ -29,12 +29,12 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.junit.Assert;
 
+import org.eclipse.persistence.config.MergeManagerOperationMode;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
-import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
-import org.eclipse.persistence.internal.helper.type.MergeManagerOperationMode;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionDetail;

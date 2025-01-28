@@ -15,11 +15,11 @@
 //     IBM - ConcurrencyUtil call of ThreadMXBean.getThreadInfo() needs doPriv
 package org.eclipse.persistence.internal.helper;
 
+import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationships;
 import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
 import org.eclipse.persistence.internal.helper.type.DeadLockComponent;
-import org.eclipse.persistence.internal.helper.type.MergeManagerOperationMode;
 import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
@@ -75,7 +75,7 @@ public class ConcurrencyUtil {
     private boolean useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks  = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS, DEFAULT_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS);
     private int noOfThreadsAllowedToObjectBuildInParallel = getIntProperty(SystemProperties.CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS, DEFAULT_CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS);
     private int noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel = getIntProperty(SystemProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS, DEFAULT_CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS);
-    private MergeManagerOperationMode concurrencyManagerAllowGetCacheKeyForMergeMode = (MergeManagerOperationMode)getEnumProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE, MergeManagerOperationMode.ORIGIN);
+    private String concurrencyManagerAllowGetCacheKeyForMergeMode = getStringProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE, MergeManagerOperationMode.ORIGIN);
     private long concurrencySemaphoreMaxTimePermit = getLongProperty(SystemProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT, DEFAULT_CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT);
     private long concurrencySemaphoreLogTimeout = getLongProperty(SystemProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, DEFAULT_CONCURRENCY_SEMAPHORE_LOG_TIMEOUT);
 
@@ -340,11 +340,11 @@ public class ConcurrencyUtil {
         this.noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel = noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel;
     }
 
-    public MergeManagerOperationMode getConcurrencyManagerAllowGetCacheKeyForMergeMode() {
+    public String getConcurrencyManagerAllowGetCacheKeyForMergeMode() {
         return concurrencyManagerAllowGetCacheKeyForMergeMode;
     }
 
-    public void setConcurrencyManagerAllowGetCacheKeyForMergeMode(MergeManagerOperationMode concurrencyManagerAllowGetCacheKeyForMergeMode) {
+    public void setConcurrencyManagerAllowGetCacheKeyForMergeMode(String concurrencyManagerAllowGetCacheKeyForMergeMode) {
         this.concurrencyManagerAllowGetCacheKeyForMergeMode = concurrencyManagerAllowGetCacheKeyForMergeMode;
     }
 
@@ -1748,13 +1748,17 @@ public class ConcurrencyUtil {
         return defaultValue;
     }
 
-    private Enum<?> getEnumProperty(final String key, final Enum<?> defaultValue) {
-        final String propertyValue = PrivilegedAccessHelper.callDoPrivileged(
-                () -> System.getProperty(key)
+    private String getStringProperty(final String key, final String defaultValue) {
+        final String value = PrivilegedAccessHelper.callDoPrivileged(
+                () -> System.getProperty(key, String.valueOf(defaultValue))
         );
-        if (propertyValue == null) {
-            return defaultValue;
+        if (value != null) {
+            try {
+                return value.trim();
+            } catch (Exception ignoreE) {
+                return defaultValue;
+            }
         }
-        return Enum.valueOf(defaultValue.getClass(), propertyValue);
+        return defaultValue;
     }
 }
