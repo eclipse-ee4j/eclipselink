@@ -22,7 +22,7 @@ import jakarta.persistence.Version;
 // Bug #2343 test to verify LocalDateTime as @Version attribute
 @Entity
 @Table(name="PERSISTENCE32_LDT_VERSION_ENTITY")
-public class LdtVersionEntity {
+public class LocalDateTimeVersionEntity {
 
     @Id
     private int id;
@@ -32,13 +32,13 @@ public class LdtVersionEntity {
 
     private String name;
 
-    public LdtVersionEntity(int id, LocalDateTime lastUpdated, String name) {
+    public LocalDateTimeVersionEntity(int id, LocalDateTime lastUpdated, String name) {
         this.id = id;
         this.lastUpdated = lastUpdated;
         this.name = name;
     }
 
-    public LdtVersionEntity() {
+    public LocalDateTimeVersionEntity() {
         this(-1, null, null);
     }
 
@@ -71,9 +71,9 @@ public class LdtVersionEntity {
         if (obj == null || obj.getClass() != this.getClass()) {
             return false;
         }
-        return id == ((LdtVersionEntity) obj).id
-                && Objects.equals(name, ((LdtVersionEntity) obj).name)
-                && Objects.equals(lastUpdated, ((LdtVersionEntity) obj).lastUpdated);
+        return id == ((LocalDateTimeVersionEntity) obj).id
+                && Objects.equals(name, ((LocalDateTimeVersionEntity) obj).name)
+                && Objects.equals(lastUpdated, ((LocalDateTimeVersionEntity) obj).lastUpdated);
     }
 
     @Override

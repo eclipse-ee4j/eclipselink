@@ -85,25 +85,18 @@ public class VersionAccessor extends BasicAccessor {
 
     /**
      * INTERNAL:
-     * Returns true if the given class is a valid timestamp locking type.
-     */
-    protected boolean isValidTimestampVersionLockingType(MetadataClass cls) {
-        return cls.isClass(java.sql.Timestamp.class)
-                || cls.isClass(LocalDateTime.class)
-                || cls.isClass(Instant.class);
-    }
-
-    /**
-     * INTERNAL:
      * Returns true if the given class is a valid version locking type.
      */
-    protected boolean isValidVersionLockingType(MetadataClass cls) {
+    private boolean isValidVersionLockingType(MetadataClass cls) {
         return (cls.isClass(int.class) ||
                 cls.isClass(Integer.class) ||
                 cls.isClass(short.class) ||
                 cls.isClass(Short.class) ||
                 cls.isClass(long.class) ||
-                cls.isClass(Long.class));
+                cls.isClass(Long.class) ||
+                cls.isClass(java.sql.Timestamp.class) ||
+                cls.isClass(LocalDateTime.class) ||
+                cls.isClass(Instant.class));
     }
 
     /**
@@ -123,11 +116,9 @@ public class VersionAccessor extends BasicAccessor {
             MetadataClass lockType = getRawClass();
             getDatabaseField().setTypeName(getJavaClassName(lockType));
 
-            if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
+            if (isValidVersionLockingType(lockType)) {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
-                    VersionLockingPolicy policy = isValidVersionLockingType(lockType)
-                            ? new VersionLockingPolicy(getDatabaseField())
-                            : createDateTimeVersionLockingPolicy(lockType.getName(), getDatabaseField());
+                    VersionLockingPolicy policy = createVersionLockingPolicy(lockType.getName(), getDatabaseField());
                     policy.storeInObject();
                     policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
                     owningDescriptor.setOptimisticLockingPolicy(policy);
@@ -138,9 +129,16 @@ public class VersionAccessor extends BasicAccessor {
         }
     }
 
-    // Create DateTime based VersionLockingPolicy corresponding to field type name
-    private static VersionLockingPolicy createDateTimeVersionLockingPolicy(String typeName, DatabaseField field) {
+    // Create VersionLockingPolicy corresponding to field type name
+    private static VersionLockingPolicy createVersionLockingPolicy(String typeName, DatabaseField field) {
         switch (typeName) {
+            case "int":
+            case "java.lang.Integer":
+            case "long":
+            case "java.lang.Long":
+            case "short":
+            case "java.lang.Short":
+                return new VersionLockingPolicy(field);
             case "java.sql.Timestamp":
                 return new TimestampLockingPolicy(field);
             case "java.time.LocalDateTime":
