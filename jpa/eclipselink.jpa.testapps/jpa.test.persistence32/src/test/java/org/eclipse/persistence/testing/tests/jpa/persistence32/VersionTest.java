@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.OptimisticLockException;
 import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.InstantVersionEntity;
-import org.eclipse.persistence.testing.models.jpa.persistence32.LdtVersionEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.LocalDateTimeVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersionEntity;
 
 /**
@@ -27,8 +27,8 @@ import org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersion
 public class VersionTest extends AbstractVersionSuite {
 
     // LdtVersionEntity instances
-    private static final LdtVersionEntity[] LDT_ENTITIES_INSERT = new LdtVersionEntity[] {
-            new LdtVersionEntity(4, LocalDateTime.now(), "Fourth"),
+    private static final LocalDateTimeVersionEntity[] LDT_ENTITIES_INSERT = new LocalDateTimeVersionEntity[] {
+            new LocalDateTimeVersionEntity(4, LocalDateTime.now(), "Fourth"),
     };
 
     // LdtVersionEntity instances
@@ -68,42 +68,42 @@ public class VersionTest extends AbstractVersionSuite {
     }
 
     public void testFindLdtVersionEntity() {
-        LdtVersionEntity entity = emf.callInTransaction(em -> em.find(LdtVersionEntity.class, 1));
+        LocalDateTimeVersionEntity entity = emf.callInTransaction(em -> em.find(LocalDateTimeVersionEntity.class, 1));
         assertEquals(LDT_ENTITIES[1], entity);
     }
 
     public void testPersistLdtVersionEntity() {
         emf.runInTransaction(em -> em.persist(LDT_ENTITIES_INSERT[0]));
-        LdtVersionEntity entity = emf.callInTransaction(em -> em
-                .createQuery("SELECT e FROM LdtVersionEntity e WHERE e.id=:id",
-                             LdtVersionEntity.class)
+        LocalDateTimeVersionEntity entity = emf.callInTransaction(em -> em
+                .createQuery("SELECT e FROM LocalDateTimeVersionEntity e WHERE e.id=:id",
+                             LocalDateTimeVersionEntity.class)
                 .setParameter("id", 4)
                 .getSingleResult());
         assertEquals(LDT_ENTITIES_INSERT[0], entity);
     }
 
     public void testMergeLdtVersionEntity() {
-        LdtVersionEntity entity = LDT_ENTITIES[2];
+        LocalDateTimeVersionEntity entity = LDT_ENTITIES[2];
         entity.setName(entity.getName() + "Modified");
         emf.runInTransaction(em -> em.merge(entity));
-        LdtVersionEntity dbEntity = emf.callInTransaction(em -> em.find(LdtVersionEntity.class, entity.getId()));
+        LocalDateTimeVersionEntity dbEntity = emf.callInTransaction(em -> em.find(LocalDateTimeVersionEntity.class, entity.getId()));
         // Version will differ so only ID and modified attribute is checked
         assertEquals(entity.getId(), dbEntity.getId());
         assertEquals(entity.getName(), dbEntity.getName());
     }
 
     public void testUpdateCollisionLdtVersionEntity() {
-        LdtVersionEntity entity1 = emf.callInTransaction(em -> em.find(LdtVersionEntity.class, LDT_ENTITIES[3].getId()));
-        LdtVersionEntity entity2 = emf.callInTransaction(em -> em.find(LdtVersionEntity.class, LDT_ENTITIES[3].getId()));
+        LocalDateTimeVersionEntity entity1 = emf.callInTransaction(em -> em.find(LocalDateTimeVersionEntity.class, LDT_ENTITIES[3].getId()));
+        LocalDateTimeVersionEntity entity2 = emf.callInTransaction(em -> em.find(LocalDateTimeVersionEntity.class, LDT_ENTITIES[3].getId()));
         // 1st attempt to persist entity1 shall pass, it will make entity2 invalid (old version)
         emf.runInTransaction(em -> {
-            LdtVersionEntity e = em.merge(entity1);
+            LocalDateTimeVersionEntity e = em.merge(entity1);
             e.setName(entity1.getName() + "1st");
         });
         // 2nd attempt to persist entity2 shall fail
         try {
             emf.runInTransaction(em -> {
-                LdtVersionEntity e = em.merge(entity2);
+                LocalDateTimeVersionEntity e = em.merge(entity2);
                 e.setName(entity1.getName() + "1st");
             });
             fail("Attempt to persist instance with old version shall fail.");

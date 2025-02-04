@@ -60,7 +60,7 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.VersionEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.InstantVersionEntity</class>
-        <class>org.eclipse.persistence.testing.models.jpa.persistence32.LdtVersionEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.LocalDateTimeVersionEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersionEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>

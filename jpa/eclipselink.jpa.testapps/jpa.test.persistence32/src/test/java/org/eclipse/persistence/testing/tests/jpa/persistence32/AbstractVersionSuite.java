@@ -17,17 +17,17 @@ import java.time.LocalDateTime;
 
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.models.jpa.persistence32.InstantVersionEntity;
-import org.eclipse.persistence.testing.models.jpa.persistence32.LdtVersionEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.LocalDateTimeVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.TimestampVersionEntity;
 
 public abstract class AbstractVersionSuite extends AbstractSuite {
 
     // LdtVersionEntity instances
-    static final LdtVersionEntity[] LDT_ENTITIES = new LdtVersionEntity[] {
+    static final LocalDateTimeVersionEntity[] LDT_ENTITIES = new LocalDateTimeVersionEntity[] {
             null, // Skip array index 0
-            new LdtVersionEntity(1, LocalDateTime.now(), "First"),
-            new LdtVersionEntity(2, LocalDateTime.now(), "Second"),
-            new LdtVersionEntity(3, LocalDateTime.now(), "Third")
+            new LocalDateTimeVersionEntity(1, LocalDateTime.now(), "First"),
+            new LocalDateTimeVersionEntity(2, LocalDateTime.now(), "Second"),
+            new LocalDateTimeVersionEntity(3, LocalDateTime.now(), "Third")
     };
 
     // InstantVersionEntity
