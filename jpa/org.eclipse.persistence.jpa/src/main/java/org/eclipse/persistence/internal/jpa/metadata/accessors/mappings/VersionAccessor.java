@@ -87,7 +87,7 @@ public class VersionAccessor extends BasicAccessor {
      * INTERNAL:
      * Returns true if the given class is a valid version locking type.
      */
-    private boolean isValidVersionLockingType(MetadataClass cls) {
+    protected boolean isValidVersionLockingType(MetadataClass cls) {
         return (cls.isClass(int.class) ||
                 cls.isClass(Integer.class) ||
                 cls.isClass(short.class) ||
