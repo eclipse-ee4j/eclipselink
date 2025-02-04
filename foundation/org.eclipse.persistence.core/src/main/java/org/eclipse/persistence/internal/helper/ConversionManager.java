@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2020 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -856,9 +856,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof java.sql.Timestamp) {
             localDate = ((java.sql.Timestamp) sourceObject).toLocalDateTime().toLocalDate();
         } else if (sourceObject instanceof java.util.Date) {
-            // handles sql.Time
-            java.util.Date date = (java.util.Date) sourceObject;
-            localDate = java.time.LocalDate.ofEpochDay(date.toInstant().getEpochSecond() / (60 * 60 * 24)); // Conv sec to day
+            // handles sql.Time too
+            localDate = ((java.util.Date) sourceObject).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
@@ -897,12 +896,12 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Calendar cal = Helper.allocateCalendar();
             cal.setTime((java.util.Date) sourceObject);
             localTime = java.time.LocalTime.of(
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             localTime = java.time.LocalTime.of(
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         } else if (sourceObject instanceof Long) {
             localTime = java.time.LocalTime.ofSecondOfDay((Long) sourceObject);
         } else {
@@ -937,13 +936,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             cal.setTime((java.util.Date) sourceObject);
             localDateTime = java.time.LocalDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             localDateTime = java.time.LocalDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         } else if (sourceObject instanceof Long) {
             localDateTime = java.time.LocalDateTime.ofInstant(
                     java.time.Instant.ofEpochSecond((Long) sourceObject), getDefaultZoneOffset());
@@ -978,14 +977,14 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             cal.setTime((java.util.Date) sourceObject);
             offsetDateTime = java.time.OffsetDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) * 1000000,
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) * 1000000,
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             offsetDateTime = java.time.OffsetDateTime.of(
                     cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND)  * 1000000,
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND)  * 1000000,
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetDateTime = java.time.OffsetDateTime.ofInstant(
@@ -1024,13 +1023,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Calendar cal = Helper.allocateCalendar();
             cal.setTime((java.util.Date) sourceObject);
             offsetTime = java.time.OffsetTime.of(
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             offsetTime = java.time.OffsetTime.of(
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
+                    cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND),
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetTime = java.time.OffsetTime.ofInstant(

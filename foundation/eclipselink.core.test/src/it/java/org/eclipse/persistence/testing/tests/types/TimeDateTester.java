@@ -50,7 +50,7 @@ public class TimeDateTester extends TypeTester {
     }
 
     public TimeDateTester(String nameOfTest, Calendar dateTime) {
-        this(nameOfTest, dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DATE), dateTime.get(Calendar.HOUR), dateTime.get(Calendar.MINUTE), dateTime.get(Calendar.SECOND), 0);
+        this(nameOfTest, dateTime.get(Calendar.YEAR), dateTime.get(Calendar.MONTH), dateTime.get(Calendar.DATE), dateTime.get(Calendar.HOUR_OF_DAY), dateTime.get(Calendar.MINUTE), dateTime.get(Calendar.SECOND), 0);
     }
 
     public static RelationalDescriptor descriptor() {
