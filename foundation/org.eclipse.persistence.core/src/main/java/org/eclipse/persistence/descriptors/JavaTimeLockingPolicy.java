@@ -11,10 +11,8 @@
  */
 package org.eclipse.persistence.descriptors;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -24,56 +22,20 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ModifyQuery;
 
 /**
- * Common timestamp version policy used for optimistic locking.
+ * Common {@link VersionLockingPolicy} based on {@code java.time} classes
+ * used for optimistic locking.
  */
-public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
+public abstract class JavaTimeLockingPolicy<T> extends VersionLockingPolicy {
 
-    /** Time from the server. */
-    public static final int SERVER_TIME = 1;
-    /** Local time. */
-    public static final int LOCAL_TIME = 2;
-
-    // Mapping of timestamp class name to corresponding AbstractTsLockingPolicy factory method
-    private static final Map<String, LockingPolicySupplier> FACTORY = Map.of(
-            Timestamp.class.getName(), AbstractTsLockingPolicy::createTimestampLockingPolicy,
-            LocalDateTime.class.getName(), AbstractTsLockingPolicy::createLocalDateTimeLockingPolicy,
-            Instant.class.getName(), AbstractTsLockingPolicy::createInstantLockingPolicy
-    );
-
-    /**
-     * AbstractTsLockingPolicy factory method.
-     *
-     * @param typeName raw {@code MetadataClass} name
-     * @param field version field
-     */
-    public static AbstractTsLockingPolicy<?> create(String typeName, DatabaseField field) {
-        LockingPolicySupplier factory = FACTORY.get(typeName);
-        if (factory == null) {
-            throw new UnsupportedOperationException(String.format("Cannot create AbstractTsLockingPolicy for %s", typeName));
-        }
-        return factory.create(field);
-    }
-
-    private int retrieveTimeFrom;
+    private TimeSource timeSource;
 
     /**
      * Creates an instance of timestamp version policy used for optimistic locking.
      * Defaults to using the time retrieved from the server.
      */
-    public AbstractTsLockingPolicy() {
+    public JavaTimeLockingPolicy() {
         super();
-        this.useServerTime();
-    }
-
-    /**
-     * Creates an instance of timestamp version policy used for optimistic locking.
-     * Defaults to using the time retrieved from the server.
-     *
-     * @param fieldName the field where the write lock value will be stored
-     */
-    public AbstractTsLockingPolicy(String fieldName) {
-        super(fieldName);
-        this.useServerTime();
+        this.timeSource = TimeSource.Server;
     }
 
     /**
@@ -82,19 +44,20 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      *
      * @param field the field where the write lock value will be stored
      */
-    public AbstractTsLockingPolicy(DatabaseField field) {
+    public JavaTimeLockingPolicy(DatabaseField field) {
         super(field);
-        this.useServerTime();
+        this.timeSource = TimeSource.Server;
     }
 
     /*
      * Following methods mapping removes unsafe casts in child classes.
+     * Abstract methods are pkg only visible to avoid them in the API.
      */
 
     /**
      * This method compares two writeLockValues.
      * The writeLockValues should be non-null and of {@link LocalDateTime},
-     * {@link Instant} or {@link Timestamp} type.
+     * or {@link Instant} type.
      *
      * @param value1 the 1st value to compare
      * @param value2 the 2nd value to compare
@@ -104,12 +67,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @throws NullPointerException if the passed value is null
      * @throws ClassCastException if the passed value is of a wrong type.
      */
-    abstract int compareTsLockValues(T value1, T value2);
+    abstract int compareJavaTimeLockValues(T value1, T value2);
 
     @Override
     @SuppressWarnings("unchecked")
     public int compareWriteLockValues(Object value1, Object value2) {
-        return compareTsLockValues((T) value1, (T) value2);
+        return compareJavaTimeLockValues((T) value1, (T) value2);
     }
 
     /**
@@ -117,12 +80,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      *
      * @return the default timestamp locking filed java type
      */
-    abstract Class<T> getDefaultTsLockFieldType();
+    abstract Class<T> getDefaultJavaTimeLockFieldType();
 
     @Override
     @SuppressWarnings("unchecked")
     protected <C> Class<C> getDefaultLockingFieldType() {
-        return (Class<C>) getDefaultTsLockFieldType();
+        return (Class<C>) getDefaultJavaTimeLockFieldType();
     }
 
     /**
@@ -131,12 +94,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      *
      * @return timestamp base value
      */
-    abstract T getBaseTsValue();
+    abstract T getBaseJavaTimeValue();
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getBaseValue() {
-        return (C) getBaseTsValue();
+        return (C) getBaseJavaTimeValue();
     }
 
     /**
@@ -145,12 +108,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @param session the database session
      * @return the initial locking value
      */
-    abstract T getInitialTsWriteValue(AbstractSession session);
+    abstract T getInitialJavaTimeWriteValue(AbstractSession session);
 
     @Override
     @SuppressWarnings("unchecked")
     protected <C> C getInitialWriteValue(AbstractSession session) {
-        return (C) getInitialTsWriteValue(session);
+        return (C) getInitialJavaTimeWriteValue(session);
     }
 
     /**
@@ -159,12 +122,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @param query modify query
      * @return the new timestamp value
      */
-    abstract T getNewTsLockValue(ModifyQuery query);
+    abstract T getNewJavaTimeLockValue(ModifyQuery query);
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getNewLockValue(ModifyQuery query) {
-        return (C) getNewTsLockValue(query);
+        return (C) getNewJavaTimeLockValue(query);
     }
 
     /**
@@ -175,12 +138,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @param session the database session
      * @return the value that should be stored in the identity map
      */
-    abstract T getTsValueToPutInCache(AbstractRecord row, AbstractSession session);
+    abstract T getJavaTimeValueToPutInCache(AbstractRecord row, AbstractSession session);
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getValueToPutInCache(AbstractRecord row, AbstractSession session) {
-        return (C) getTsValueToPutInCache(row, session);
+        return (C) getJavaTimeValueToPutInCache(row, session);
     }
 
     /**
@@ -191,12 +154,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @param session the database session
      * @return the optimistic lock value for the object
      */
-    abstract T getWriteTsLockValue(Object domainObject, Object primaryKey, AbstractSession session);
+    abstract T getWriteJavaTimeLockValue(Object domainObject, Object primaryKey, AbstractSession session);
 
     @Override
     @SuppressWarnings("unchecked")
     public <C> C getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
-        return (C) getWriteTsLockValue(domainObject, primaryKey, session);
+        return (C) getWriteJavaTimeLockValue(domainObject, primaryKey, session);
     }
 
     /**
@@ -209,17 +172,16 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @return value of {@code true} if the {@code first} is newer than the {@code second}
      *         or {@code false} otherwise
      */
-    abstract boolean isNewerTsVersion(T current, Object domainObject, Object primaryKey, AbstractSession session);
+    abstract boolean isNewerJavaTimeVersion(T current, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
-     * INTERNAL:
      * Compares the value with the value from the object (or cache).
      * Will return true if the currentValue is newer than the domainObject.
      */
     @Override
     @SuppressWarnings("unchecked")
     public boolean isNewerVersion(Object current, Object domainObject, Object primaryKey, AbstractSession session) {
-        return isNewerTsVersion((T) current, domainObject, primaryKey, session);
+        return isNewerJavaTimeVersion((T) current, domainObject, primaryKey, session);
     }
 
     /**
@@ -232,11 +194,11 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @return value of {@code true} if the {@code first} is newer than the {@code second}
      *         or {@code false} otherwise
      */
-    abstract boolean isNewerTsVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session);
+    abstract boolean isNewerJavaTimeVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session);
 
     @Override
     public boolean isNewerVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
-        return isNewerTsVersion(row, domainObject, primaryKey, session);
+        return isNewerJavaTimeVersion(row, domainObject, primaryKey, session);
     }
 
     /**
@@ -247,12 +209,12 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
      * @return value of {@code true} if the {@code first} is newer than the {@code second}
      *         or {@code false} otherwise
      */
-    abstract boolean isNewerTsVersion(T first, T second) ;
+    abstract boolean isNewerJavaTimeVersion(T first, T second) ;
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean isNewerVersion(Object first, Object second) {
-        return isNewerTsVersion((T) first, (T) second);
+        return isNewerJavaTimeVersion((T) first, (T) second);
     }
 
     /**
@@ -267,7 +229,7 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
     }
 
     /**
-     * Timestamp versioning should not be able to do this.
+     * Time-stamp versioning should not be able to do this.
      * Override the superclass behavior.
      *
      * @param value the source value
@@ -278,70 +240,33 @@ public abstract class AbstractTsLockingPolicy<T> extends VersionLockingPolicy {
     }
 
     /**
-     * Set time source policy.
+     * Set time-stamp source policy.
      *
-     * @param useServer set this policy to get the time from the server when {@code true}
-     *                  or from the local machine when {@code false}
+     * @param timeSource set this policy to retrieve the time-stamp from the server
+     *                   when set to {@link TimeSource#Server} or from the local machine
+     *                   when set to {@link TimeSource#Local}
      */
-    public void setUsesServerTime(boolean useServer) {
-        if (useServer) {
-            useServerTime();
-        } else {
-            useLocalTime();
-        }
+    public void setTimeSource(TimeSource timeSource) {
+        this.timeSource = timeSource;
     }
 
     /**
-     * Set time source policy to get the time from the local machine.
-     */
-    public void useLocalTime() {
-        retrieveTimeFrom = LOCAL_TIME;
-    }
-
-    /**
-     * Set time source policy to get the time from the server.
-     */
-    public void useServerTime() {
-        retrieveTimeFrom = SERVER_TIME;
-    }
-
-    /**
-     * Return whether time source policy uses local time.
+     * Get time-stamp source policy.
      *
-     * @return value of {@code true} when policy uses local time or {@code false} otherwise.
+     * @return the time-stamp source policy
      */
-    public boolean usesLocalTime() {
-        return retrieveTimeFrom == LOCAL_TIME;
+    public TimeSource getTimeSource() {
+        return timeSource;
     }
 
     /**
-     * Return whether time source policy uses server time.
-     *
-     * @return value of {@code true} when policy uses server time or {@code false} otherwise.
+     * Time-stamp source policy.
      */
-    public boolean usesServerTime() {
-        return retrieveTimeFrom == SERVER_TIME;
-    }
-
-    // TimestampLockingPolicy factory method
-    private static TimestampLockingPolicy createTimestampLockingPolicy(DatabaseField field) {
-        return new TimestampLockingPolicy(field);
-    }
-
-    // LocalDateTimeLockingPolicy factory method
-    private static LocalDateTimeLockingPolicy createLocalDateTimeLockingPolicy(DatabaseField field) {
-        return new LocalDateTimeLockingPolicy(field);
-    }
-
-    // InstantLockingPolicy factory method
-    private static InstantLockingPolicy createInstantLockingPolicy(DatabaseField field) {
-        return new InstantLockingPolicy(field);
-    }
-
-    // AbstractTsLockingPolicy factory interface
-    @FunctionalInterface
-    private interface LockingPolicySupplier {
-        AbstractTsLockingPolicy<?> create(DatabaseField field);
+    public enum TimeSource  {
+        /** Retrieve from the server. */
+        Server,
+        /** Retrieve from the local machine. */
+        Local
     }
 
 }

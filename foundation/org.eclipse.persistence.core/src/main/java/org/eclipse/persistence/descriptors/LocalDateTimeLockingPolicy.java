@@ -11,10 +11,10 @@
  */
 package org.eclipse.persistence.descriptors;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -23,7 +23,7 @@ import org.eclipse.persistence.queries.ModifyQuery;
 /**
  * Version policy used for optimistic locking with {@link LocalDateTime} field.
  */
-public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDateTime> {
+public class LocalDateTimeLockingPolicy extends JavaTimeLockingPolicy<LocalDateTime> {
 
     /**
      * Create a new instance of version policy used for optimistic locking
@@ -39,65 +39,54 @@ public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDat
      * with {@link LocalDateTime} field.
      * Defaults to using the time retrieved from the server.
      *
-     * @param fieldName the field where the write lock value will be stored
-     */
-    public LocalDateTimeLockingPolicy(String fieldName) {
-        super(fieldName);
-    }
-
-    /**
-     * Create a new instance of version policy used for optimistic locking
-     * with {@link LocalDateTime} field.
-     * Defaults to using the time retrieved from the server.
-     *
      * @param field the field where the write lock value will be stored
      */
-    LocalDateTimeLockingPolicy(DatabaseField field) {
+    public LocalDateTimeLockingPolicy(DatabaseField field) {
         super(field);
     }
 
     @Override
-    int compareTsLockValues(LocalDateTime value1, LocalDateTime value2) {
+    int compareJavaTimeLockValues(LocalDateTime value1, LocalDateTime value2) {
         return value1.compareTo(value2);
     }
 
     @Override
-    Class<LocalDateTime> getDefaultTsLockFieldType() {
+    Class<LocalDateTime> getDefaultJavaTimeLockFieldType() {
         return ClassConstants.LOCAL_DATETIME;
     }
 
     @Override
-    LocalDateTime getBaseTsValue() {
+    LocalDateTime getBaseJavaTimeValue() {
         // LocalDateTime is immutable so constant is safe
         return LocalDateTime.MIN;
     }
 
     @Override
-    LocalDateTime getInitialTsWriteValue(AbstractSession session) {
-        if (usesLocalTime()) {
-            return LocalDateTime.now();
+    LocalDateTime getInitialJavaTimeWriteValue(AbstractSession session) {
+        switch (getTimeSource()) {
+            case Local:
+                return LocalDateTime.now();
+            case Server:
+                AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
+                Platform platform = session.getDatasourcePlatform();
+                while (readSession.isUnitOfWork()) {
+                    readSession = readSession.getParent()
+                            .getSessionForClass(getDescriptor().getJavaClass());
+                }
+                return platform.convertObject(
+                        session.executeQuery(platform.getTimestampQuery()), ClassConstants.LOCAL_DATETIME);
+            default:
+                return null;
         }
-        if (usesServerTime()) {
-            AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
-            while (readSession.isUnitOfWork()) {
-                readSession = readSession.getParent()
-                        .getSessionForClass(getDescriptor().getJavaClass());
-            }
-            Timestamp ts = readSession.getDatasourceLogin()
-                    .getDatasourcePlatform()
-                    .getTimestampFromServer(session, readSession.getName());
-            return ts.toLocalDateTime();
-        }
-        return null;
     }
 
     @Override
-    LocalDateTime getNewTsLockValue(ModifyQuery query) {
-        return getInitialTsWriteValue(query.getSession());
+    LocalDateTime getNewJavaTimeLockValue(ModifyQuery query) {
+        return getInitialJavaTimeWriteValue(query.getSession());
     }
 
     @Override
-    LocalDateTime getTsValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    LocalDateTime getJavaTimeValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return session.getDatasourcePlatform()
                     .convertObject(row.get(getWriteLockField()), ClassConstants.LOCAL_DATETIME);
@@ -107,7 +96,7 @@ public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDat
     }
 
     @Override
-    LocalDateTime getWriteTsLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+    LocalDateTime getWriteJavaTimeLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         LocalDateTime writeLockFieldValue = null;
         if (isStoredInCache()) {
             writeLockFieldValue = (LocalDateTime) session.getIdentityMapAccessorInstance()
@@ -127,7 +116,7 @@ public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDat
     }
 
     @Override
-    boolean isNewerTsVersion(LocalDateTime current, Object domainObject, Object primaryKey, AbstractSession session) {
+    boolean isNewerJavaTimeVersion(LocalDateTime current, Object domainObject, Object primaryKey, AbstractSession session) {
         LocalDateTime writeLockFieldValue;
         if (isStoredInCache()) {
             writeLockFieldValue = (LocalDateTime) session.getIdentityMapAccessorInstance()
@@ -136,12 +125,12 @@ public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDat
             writeLockFieldValue = (LocalDateTime)lockValueFromObject(domainObject);
         }
 
-        return isNewerTsVersion(current, writeLockFieldValue);
+        return isNewerJavaTimeVersion(current, writeLockFieldValue);
 
     }
 
     @Override
-    boolean isNewerTsVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
+    boolean isNewerJavaTimeVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
         LocalDateTime writeLockFieldValue;
         LocalDateTime newWriteLockFieldValue = session.getDatasourcePlatform()
                 .convertObject(row.get(getWriteLockField()), ClassConstants.LOCAL_DATETIME);
@@ -151,11 +140,11 @@ public class LocalDateTimeLockingPolicy extends AbstractTsLockingPolicy<LocalDat
         } else {
             writeLockFieldValue = (LocalDateTime) lockValueFromObject(domainObject);
         }
-        return isNewerTsVersion(newWriteLockFieldValue, writeLockFieldValue);
+        return isNewerJavaTimeVersion(newWriteLockFieldValue, writeLockFieldValue);
     }
 
     @Override
-    boolean isNewerTsVersion(LocalDateTime first, LocalDateTime second) {
+    boolean isNewerJavaTimeVersion(LocalDateTime first, LocalDateTime second) {
         // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
         if (first == null) {
             return false;

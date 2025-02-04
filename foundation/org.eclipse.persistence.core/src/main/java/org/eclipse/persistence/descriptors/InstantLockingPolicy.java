@@ -11,10 +11,10 @@
  */
 package org.eclipse.persistence.descriptors;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -24,7 +24,7 @@ import org.eclipse.persistence.queries.ModifyQuery;
 /**
  * Version policy used for optimistic locking with {@link Instant} field.
  */
-public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
+public class InstantLockingPolicy extends JavaTimeLockingPolicy<Instant> {
 
     /**
      * Create a new instance of version policy used for optimistic locking
@@ -40,65 +40,54 @@ public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
      * with {@link Instant} field.
      * Defaults to using the time retrieved from the server.
      *
-     * @param fieldName the field where the write lock value will be stored
-     */
-    public InstantLockingPolicy(String fieldName) {
-        super(fieldName);
-    }
-
-    /**
-     * Create a new instance of version policy used for optimistic locking
-     * with {@link Instant} field.
-     * Defaults to using the time retrieved from the server.
-     *
      * @param field the field where the write lock value will be stored
      */
-    InstantLockingPolicy(DatabaseField field) {
+    public InstantLockingPolicy(DatabaseField field) {
         super(field);
     }
 
     @Override
-    int compareTsLockValues(Instant value1, Instant value2) {
+    int compareJavaTimeLockValues(Instant value1, Instant value2) {
         return value1.compareTo(value2);
     }
 
     @Override
-    Class<Instant> getDefaultTsLockFieldType() {
+    Class<Instant> getDefaultJavaTimeLockFieldType() {
         return ClassConstants.TIME_INSTANT;
     }
 
     @Override
-    Instant getBaseTsValue() {
+    Instant getBaseJavaTimeValue() {
         // LocalDateTime is immutable so constant is safe
         return Instant.MIN;
     }
 
     @Override
-    Instant getInitialTsWriteValue(AbstractSession session) {
-        if (usesLocalTime()) {
-            return Instant.now();
+    Instant getInitialJavaTimeWriteValue(AbstractSession session) {
+        switch (getTimeSource()) {
+            case Local:
+                return Instant.now();
+            case Server:
+                AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
+                Platform platform = session.getDatasourcePlatform();
+                while (readSession.isUnitOfWork()) {
+                    readSession = readSession.getParent()
+                            .getSessionForClass(getDescriptor().getJavaClass());
+                }
+                return platform.convertObject(
+                        session.executeQuery(platform.getTimestampQuery()), ClassConstants.TIME_INSTANT);
+            default:
+                return null;
         }
-        if (usesServerTime()) {
-            AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
-            while (readSession.isUnitOfWork()) {
-                readSession = readSession.getParent()
-                        .getSessionForClass(getDescriptor().getJavaClass());
-            }
-            Timestamp ts = readSession.getDatasourceLogin()
-                    .getDatasourcePlatform()
-                    .getTimestampFromServer(session, readSession.getName());
-            return ts.toInstant();
-        }
-        return null;
     }
 
     @Override
-    Instant getNewTsLockValue(ModifyQuery query) {
-        return getInitialTsWriteValue(query.getSession());
+    Instant getNewJavaTimeLockValue(ModifyQuery query) {
+        return getInitialJavaTimeWriteValue(query.getSession());
     }
 
     @Override
-    Instant getTsValueToPutInCache(AbstractRecord row, AbstractSession session) {
+    Instant getJavaTimeValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return session.getDatasourcePlatform()
                     .convertObject(row.get(getWriteLockField()), ClassConstants.TIME_INSTANT);
@@ -108,7 +97,7 @@ public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
     }
 
     @Override
-    Instant getWriteTsLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
+    Instant getWriteJavaTimeLockValue(Object domainObject, Object primaryKey, AbstractSession session) {
         Instant writeLockFieldValue = null;
         if (isStoredInCache()) {
             writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance()
@@ -128,7 +117,7 @@ public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
     }
 
     @Override
-    boolean isNewerTsVersion(Instant current, Object domainObject, Object primaryKey, AbstractSession session) {
+    boolean isNewerJavaTimeVersion(Instant current, Object domainObject, Object primaryKey, AbstractSession session) {
         Instant writeLockFieldValue;
         if (isStoredInCache()) {
             writeLockFieldValue = (Instant) session.getIdentityMapAccessorInstance()
@@ -137,12 +126,12 @@ public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
             writeLockFieldValue = (Instant)lockValueFromObject(domainObject);
         }
 
-        return isNewerTsVersion(current, writeLockFieldValue);
+        return isNewerJavaTimeVersion(current, writeLockFieldValue);
 
     }
 
     @Override
-    boolean isNewerTsVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
+    boolean isNewerJavaTimeVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
         Instant writeLockFieldValue;
         Instant newWriteLockFieldValue = session.getDatasourcePlatform()
                 .convertObject(row.get(getWriteLockField()), ClassConstants.TIME_INSTANT);
@@ -152,11 +141,11 @@ public class InstantLockingPolicy extends AbstractTsLockingPolicy<Instant> {
         } else {
             writeLockFieldValue = (Instant) lockValueFromObject(domainObject);
         }
-        return isNewerTsVersion(newWriteLockFieldValue, writeLockFieldValue);
+        return isNewerJavaTimeVersion(newWriteLockFieldValue, writeLockFieldValue);
     }
 
     @Override
-    boolean isNewerTsVersion(Instant first, Instant second) {
+    boolean isNewerJavaTimeVersion(Instant first, Instant second) {
         // 2.5.1.6 if the write lock value is null, then what ever we have is treated as newer.
         if (first == null) {
             return false;

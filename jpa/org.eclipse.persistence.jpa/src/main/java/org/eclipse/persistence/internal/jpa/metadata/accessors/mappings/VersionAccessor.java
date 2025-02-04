@@ -25,9 +25,12 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
-import org.eclipse.persistence.descriptors.AbstractTsLockingPolicy;
+import org.eclipse.persistence.descriptors.InstantLockingPolicy;
+import org.eclipse.persistence.descriptors.LocalDateTimeLockingPolicy;
+import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -124,7 +127,7 @@ public class VersionAccessor extends BasicAccessor {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {
                     VersionLockingPolicy policy = isValidVersionLockingType(lockType)
                             ? new VersionLockingPolicy(getDatabaseField())
-                            : AbstractTsLockingPolicy.create(lockType.getName(), getDatabaseField());
+                            : createDateTimeVersionLockingPolicy(lockType.getName(), getDatabaseField());
                     policy.storeInObject();
                     policy.setIsCascaded(getDescriptor().usesCascadedOptimisticLocking());
                     owningDescriptor.setOptimisticLockingPolicy(policy);
@@ -134,4 +137,21 @@ public class VersionAccessor extends BasicAccessor {
             }
         }
     }
+
+    // Create DateTime based VersionLockingPolicy corresponding to field type name
+    private static VersionLockingPolicy createDateTimeVersionLockingPolicy(String typeName, DatabaseField field) {
+        switch (typeName) {
+            case "java.sql.Timestamp":
+                return new TimestampLockingPolicy(field);
+            case "java.time.LocalDateTime":
+                return new LocalDateTimeLockingPolicy(field);
+            case "java.time.Instant":
+                return new InstantLockingPolicy(field);
+            // This is not accessible as long as isValidTimestampVersionLockingType(MetadataClass) check
+            // is not broken so this exception always means bug in the code.
+            default:
+                throw new UnsupportedOperationException("Cannot create VersionLockingPolicy for " + typeName);
+        }
+    }
+
 }
