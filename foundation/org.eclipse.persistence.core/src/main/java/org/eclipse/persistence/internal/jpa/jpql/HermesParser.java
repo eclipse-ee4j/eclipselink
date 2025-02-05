@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -276,19 +276,7 @@ public final class HermesParser implements JPAQueryBuilder {
                                            AbstractSession session) {
 
         try {
-            String version = Version.getVersion();
-            String majorMinorVersion = version.substring(0, version.indexOf(".", version.indexOf(".") + 1));
-            EclipseLinkVersion elVersion = EclipseLinkVersion.value(majorMinorVersion);
-            boolean isJakartaDataVersion = elVersion.isNewerThanOrEqual(EclipseLinkVersion.VERSION_5_0) || isJakartaDataValidationLevel();
-            // Parse the JPQL query with the most recent JPQL grammar
-            JPQLExpression jpqlExpression = new JPQLExpression(
-                jpqlQuery,
-                DefaultEclipseLinkJPQLGrammar.instance(),
-                JPQLStatementBNF.ID,
-                isTolerant(),
-                isJakartaDataVersion
-            );
-
+            JPQLExpression jpqlExpression = buildJPQLExpression(jpqlQuery);
             // Create a context that caches the information contained in the JPQL query
             // (especially from the FROM clause)
             JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar());
@@ -466,5 +454,21 @@ public final class HermesParser implements JPAQueryBuilder {
             UpdateQueryVisitor visitor = new UpdateQueryVisitor(queryContext, query);
             expression.accept(visitor);
         }
+    }
+
+    JPQLExpression buildJPQLExpression(CharSequence jpqlQuery) {
+        String version = Version.getVersion();
+        String majorMinorVersion = version.substring(0, version.indexOf(".", version.indexOf(".") + 1));
+        EclipseLinkVersion elVersion = EclipseLinkVersion.value(majorMinorVersion);
+        boolean isJakartaDataVersion = elVersion.isNewerThanOrEqual(EclipseLinkVersion.VERSION_5_0) || isJakartaDataValidationLevel();
+        // Parse the JPQL query with the most recent JPQL grammar
+        JPQLExpression jpqlExpression = new JPQLExpression(
+                jpqlQuery,
+                DefaultEclipseLinkJPQLGrammar.instance(),
+                JPQLStatementBNF.ID,
+                isTolerant(),
+                isJakartaDataVersion
+        );
+        return jpqlExpression;
     }
 }
