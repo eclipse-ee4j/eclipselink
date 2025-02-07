@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -164,6 +164,8 @@ public class AdvancedQueryTest extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTest("testVersionChangeWithWriteLock"));
         suite.addTest(new AdvancedQueryTest("testNamedQueryAnnotationOverwritePersistenceXML"));
         suite.addTest(new AdvancedQueryTest("testFloatSortWithPessimisticLock"));
+        suite.addTest(new AdvancedQueryTest("testFloatQualifiedIdProjectionWithPessimisticLock"));
+        suite.addTest(new AdvancedQueryTest("testFloatSimpleIdProjectionWithPessimisticLock"));
         suite.addTest(new AdvancedQueryTest("testTearDown"));
         return suite;
     }
