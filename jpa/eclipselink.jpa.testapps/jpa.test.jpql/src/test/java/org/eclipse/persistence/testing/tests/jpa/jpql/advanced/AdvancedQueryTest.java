@@ -2734,4 +2734,42 @@ public class AdvancedQueryTest extends JUnitTestCase {
         assertEquals(70077, entities.get(1).getId());
     }
 
+    // Based on reproduction scenario from issue #2339
+    public void testFloatQualifiedIdProjectionWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<Integer> results;
+        try {
+            results = em.createQuery("SELECT f.id FROM EntityFloat f ORDER BY f.width DESC", Integer.class)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setMaxResults(1)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(1, results.size());
+        assertEquals(70077, results.get(0).intValue());
+    }
+
+    // Based on reproduction scenario from issue #2339
+    public void testFloatSimpleIdProjectionWithPessimisticLock() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        List<Integer> results;
+        try {
+            results = em.createQuery("SELECT id FROM EntityFloat ORDER BY width DESC", Integer.class)
+                    .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                    .setMaxResults(1)
+                    .getResultList();
+            commitTransaction(em);
+        } catch (PersistenceException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        assertEquals(1, results.size());
+        assertEquals(70077, results.get(0).intValue());
+    }
+
 }
