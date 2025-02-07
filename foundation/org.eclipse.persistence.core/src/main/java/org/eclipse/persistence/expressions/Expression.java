@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -54,7 +54,6 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -4802,7 +4801,7 @@ public abstract class Expression implements Serializable, Cloneable {
 
         //bug6070214: unique field aliases need to be generated when required.
         if (statement.getUseUniqueFieldAliases()){
-            printer.printString(" AS " + statement.generatedAlias(field.getNameDelimited(printer.getPlatform())));
+            printer.printString(" AS " + statement.generatedAlias(field));
         }
     }
 
