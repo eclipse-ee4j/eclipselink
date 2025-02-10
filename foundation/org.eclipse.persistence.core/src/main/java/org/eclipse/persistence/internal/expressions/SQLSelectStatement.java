@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -152,6 +152,7 @@ public class SQLSelectStatement extends SQLStatement {
         this.isAggregateSelect = false;
         this.distinctState = ObjectLevelReadQuery.UNCOMPUTED_DISTINCT;
         this.currentAliasNumber = 0;
+        this.fieldAliases = null;
     }
 
     public void addField(DatabaseField field) {
@@ -2148,11 +2149,8 @@ public class SQLSelectStatement extends SQLStatement {
         } else {
             printer.printString(field.getNameDelimited(printer.getPlatform()));
         }
-        if (this.getUseUniqueFieldAliases()){
-            String alias = generatedAlias(field.getNameDelimited(printer.getPlatform()));
-            if (shouldCacheFieldAliases()) {
-                fieldAliases.put(field, alias);
-            }
+        if (this.getUseUniqueFieldAliases()) {
+            String alias = generatedAlias(field);
             printer.printString(" AS " + alias);
         }
     }
@@ -2161,11 +2159,24 @@ public class SQLSelectStatement extends SQLStatement {
         return shouldCacheFieldAliases;
     }
 
+    /**
+     * Enable field aliases caching.
+     * Generated alias for a field may be retrieved using {@link #getAliasFor(DatabaseField)}.
+     */
     public void enableFieldAliasesCaching() {
-        fieldAliases = new HashMap<>();
+        if (fieldAliases == null) {
+            fieldAliases = new HashMap<>();
+        }
         shouldCacheFieldAliases = true;
     }
 
+    /**
+     * Get cached alias for field.
+     *
+     * @param field the field to search for an alias.
+     * @return when caching is enabled, returns the cached alias for the field or {@code null}
+     *         when no alias exists, when caching is disabled, returns {@code ""}
+     */
     public String getAliasFor(DatabaseField field) {
         if (shouldCacheFieldAliases()) {
             return fieldAliases.get(field);
@@ -2175,12 +2186,20 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
-    * Returns a generated alias based on the column name.  If the new alias will be too long
-    * The alias is automatically truncated
-    */
-    public String generatedAlias(String fieldName) {
-        return "a" + getNextFieldCounterValue();
-     }
+     * Returns a generated alias based on the common prefix and generated number.
+     * Generated aliases may be cached for later usage when caching is enabled using
+     * {@link #enableFieldAliasesCaching()}.
+     *
+     * @param field database field
+     * @return the generated alias
+     */
+    public String generatedAlias(DatabaseField field) {
+        String alias = "a" + getNextFieldCounterValue();
+        if (shouldCacheFieldAliases()) {
+            fieldAliases.put(field, alias);
+        }
+        return alias;
+    }
 
     /**
      * INTERNAL:

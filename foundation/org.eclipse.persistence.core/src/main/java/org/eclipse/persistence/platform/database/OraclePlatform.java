@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1089,7 +1089,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                     || ((ObjectBuildingQuery) query).getLockMode() == ObjectBuildingQuery.LOCK_NOWAIT)) {
                 if (query.isReadAllQuery() || query.isReadObjectQuery()) {
                     // Workaround can exist for this specific case
-                    Vector fields = new Vector();
+                    List<DatabaseField> fields = new ArrayList<>();
+                    // Generated field aliases must be cached for later usage by printPrimaryKeys
                     statement.enableFieldAliasesCaching();
                     String queryString = printOmittingOrderByForUpdateUnion(statement, printer, fields);
                     duplicateCallParameters(call);
@@ -1111,12 +1112,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                      * FOR UPDATE; */
                     printer.printString(queryString);
                     printLockStartWithPrimaryKeyFields(statement, printer);
-                    String primaryKeyFields = getPrimaryKeyAliases(statement);
                     printer.printString(SELECT_ID_PREFIX);
-                    printer.printString(primaryKeyFields);
+                    printPrimaryKeys(statement, printer);
                     printer.printString(SELECT_ID_SUFFIX);
                     printer.printString(buildFirstRowsHint(max));
-                    printer.printString(primaryKeyFields);
+                    printPrimaryKeys(statement, printer);
                     printer.printString(FROM_ID);
                     printer.printString(queryString);
                     if (statement.hasOrderByExpressions()) {
@@ -1127,7 +1127,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                         }
                     } else {
                         printer.printString(ORDER_BY_ID);
-                        printer.printString(primaryKeyFields);
+                        printPrimaryKeys(statement, printer);
                     }
                     printer.printString(END_FROM_ID);
                     printer.printString(MAX_ROW);
@@ -1184,14 +1184,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @SuppressWarnings("unchecked")
-    private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, Vector fields) {
+    private String printOmittingOrderByForUpdateUnion(SQLSelectStatement statement, ExpressionSQLPrinter printer, List<DatabaseField> fields) {
         boolean originalShouldPrintForUpdate = this.shouldPrintForUpdateClause;
         Writer originalWriter = printer.getWriter();
         List<DatabaseField> selectFields = null;
-
         this.shouldPrintForUpdateClause = false;
         printer.setWriter(new StringWriter());
-
         try {
             selectFields = statement.printSQLSelect(printer);
             statement.printSQLWhereKeyWord(printer);
@@ -1232,16 +1230,22 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         printer.printString(LOCK_START_SUFFIX);
     }
 
-    private String getPrimaryKeyAliases(SQLSelectStatement statement) {
-        StringBuilder builder = new StringBuilder();
+    private void printPrimaryKeys(SQLSelectStatement statement, ExpressionSQLPrinter printer) {
         Iterator<DatabaseField> iterator = statement.getQuery().getDescriptor().getPrimaryKeyFields().iterator();
         while (iterator.hasNext()) {
-            builder.append(statement.getAliasFor(iterator.next()));
-            if(iterator.hasNext()) {
-                builder.append(',');
+            DatabaseField field = iterator.next();
+            // Aliases caching is enabled in the statement in printSQLSelectStatement
+            // before printOmittingOrderByForUpdateUnion method call.
+            String alias = statement.getAliasFor(field);
+            if (alias != null) {
+                printer.printString(alias);
+            } else {
+                printer.printField(field);
+            }
+            if (iterator.hasNext()) {
+                printer.printString(",");
             }
         }
-        return builder.toString();
     }
 
     /**
