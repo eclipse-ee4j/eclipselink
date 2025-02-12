@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,9 @@
 package org.eclipse.persistence.internal.helper;
 
 import org.eclipse.persistence.internal.helper.type.ReadLockAcquisitionMetadata;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +61,13 @@ public class ReadLockManager {
             final Thread currentThread = Thread.currentThread();
             final long currentThreadId = currentThread.getId();
             ReadLockAcquisitionMetadata readLockAcquisitionMetadata = ConcurrencyUtil.SINGLETON.createReadLockAcquisitionMetadata(concurrencyManager);
-
+            if (concurrencyManager.isCacheKey()) {
+                Object primaryKey = ((CacheKey)concurrencyManager).getKey();
+                Object object = ((CacheKey)concurrencyManager).getObject();
+                if (primaryKey == null) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_read_lock_manager", new Object[] {object.getClass().getName()}, true);
+                }
+            }
             this.readLocks.add(FIRST_INDEX_OF_COLLECTION, concurrencyManager);
             if (!mapThreadToReadLockAcquisitionMetadata.containsKey(currentThreadId)) {
                 List<ReadLockAcquisitionMetadata> newList = Collections.synchronizedList(new ArrayList<>());
