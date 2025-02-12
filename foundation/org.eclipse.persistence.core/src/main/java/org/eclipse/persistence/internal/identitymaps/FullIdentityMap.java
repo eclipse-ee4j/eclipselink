@@ -117,7 +117,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
     @Override
     protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
         if (searchKey.getKey() == null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_identity_map", new Object[] {searchKey.getObject().getClass().getName()}, true);
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_identity_map", new Object[] {searchKey.toString()}, true);
         }
         searchKey.setOwningMap(this);
         return this.cacheKeys.putIfAbsent(searchKey.getKey(), searchKey);

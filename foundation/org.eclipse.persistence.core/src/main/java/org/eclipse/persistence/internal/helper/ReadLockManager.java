@@ -63,9 +63,8 @@ public class ReadLockManager {
             ReadLockAcquisitionMetadata readLockAcquisitionMetadata = ConcurrencyUtil.SINGLETON.createReadLockAcquisitionMetadata(concurrencyManager);
             if (concurrencyManager.isCacheKey()) {
                 Object primaryKey = ((CacheKey)concurrencyManager).getKey();
-                Object object = ((CacheKey)concurrencyManager).getObject();
                 if (primaryKey == null) {
-                    AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_read_lock_manager", new Object[] {object.getClass().getName()}, true);
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_read_lock_manager", new Object[] {concurrencyManager.toString()}, true);
                 }
             }
             this.readLocks.add(FIRST_INDEX_OF_COLLECTION, concurrencyManager);

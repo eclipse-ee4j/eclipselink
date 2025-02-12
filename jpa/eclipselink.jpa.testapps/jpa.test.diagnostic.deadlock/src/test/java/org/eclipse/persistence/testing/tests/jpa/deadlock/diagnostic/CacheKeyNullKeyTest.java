@@ -209,6 +209,6 @@ public class CacheKeyNullKeyTest extends JUnitTestCase {
             }
         }
         //Check that org.eclipse.persistence.internal.helper.ReadLockManager doesn't keep any CacheKey with NULL key.
-        assertEquals(0, logWrapper.getMessageCount("CacheKey instance locked by cache read lock manager"));
+        assertEquals(0, logWrapper.getMessageCount("locked by cache read lock manager has null primary key"));
     }
 }
