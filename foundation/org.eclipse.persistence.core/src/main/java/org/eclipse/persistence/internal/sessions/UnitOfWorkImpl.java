@@ -3024,15 +3024,15 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     }
 
     private void validateObjectTree(Object startNode) {
-        log(SessionLog.INFO, SessionLog.TRANSACTION, "validate_object_space");
+        log(SessionLog.FINER, SessionLog.TRANSACTION, "validate_object_space");
         // This defines an inner class for process the iteration operation, don't be scared, it's just an inner class.
         DescriptorIterator iterator = new DescriptorIterator() {
             @Override
             public void iterate(Object object) {
                 if (object != null && !isObjectRegistered(object) && getVisitedStack() != null && !getVisitedStack().isEmpty()) {
-                    log(SessionLog.WARNING, SessionLog.CACHE, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());
-                    log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object_referenced_through_mapping", getCurrentMapping());
-                    log(SessionLog.WARNING, SessionLog.CACHE, "corrupt_object", object);
+                    log(SessionLog.FINEST, SessionLog.CACHE, "stack_of_visited_objects_that_refer_to_the_corrupt_object", getVisitedStack());
+                    log(SessionLog.FINER, SessionLog.CACHE, "corrupt_object_referenced_through_mapping", getCurrentMapping());
+                    log(SessionLog.FINER, SessionLog.CACHE, "corrupt_object", object);
                 }
             }
         };

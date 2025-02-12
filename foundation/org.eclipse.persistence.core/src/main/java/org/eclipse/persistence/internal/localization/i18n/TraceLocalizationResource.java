@@ -598,7 +598,19 @@ Total number of cacheKeys to describe: {0}\s
         { "using_conversion_tzone", "ConversionManager using default zone offset: {1}."},
         { "open_pkg", "Opening package {0} in {1} to {2} for reflection access."},
         { "set_accessible", "Cannot setAccessible {0} for {1}."},
-        { "set_accessible_in", "Cannot setAccessible {0} {1} in {2}."}
+        { "set_accessible_in", "Cannot setAccessible {0} {1} in {2}."},
+        // JPA 3.2
+        { "schema_default_truncate_tables_failed", "Failed to truncate tables in the default table schema: {0}"},
+        { "schema_default_create_tables_failed", "Failed to create tables in the default table schema: {0}"},
+        { "schema_default_drop_tables_failed", "Failed to drop tables in the default table schema: {0}"},
+        { "schema_default_replace_tables_failed", "Failed to replace tables in the default table schema: {0}"},
+        { "schema_default_extend_tables_failed", "Failed to extend tables in the default table schema: {0}"},
+        { "schema_drop_object_failed", "Failed to drop object in the default table schema: {0}"},
+        { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
+        { "validate_object_space", "Validate object space." },
+        { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
+        { "corrupt_object", "corrupt object: {0}" }
+
     };
 
     /**
