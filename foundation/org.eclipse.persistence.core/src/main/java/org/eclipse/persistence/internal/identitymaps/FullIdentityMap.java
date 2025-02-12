@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,8 @@ package org.eclipse.persistence.internal.identitymaps;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import java.util.ArrayList;
@@ -114,6 +116,9 @@ public class FullIdentityMap extends AbstractIdentityMap {
      */
     @Override
     protected CacheKey putCacheKeyIfAbsent(CacheKey searchKey) {
+        if (searchKey.getKey() == null) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "cache_key_null_identity_map", new Object[] {searchKey.getObject().getClass().getName()}, true);
+        }
         searchKey.setOwningMap(this);
         return this.cacheKeys.putIfAbsent(searchKey.getKey(), searchKey);
     }

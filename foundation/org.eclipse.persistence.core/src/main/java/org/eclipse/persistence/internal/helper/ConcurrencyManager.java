@@ -1122,6 +1122,10 @@ public class ConcurrencyManager implements Serializable {
         return this.instanceLockCondition;
     }
 
+    public boolean isCacheKey() {
+        return false;
+    }
+
     /**
      * Check if {@code org.eclipse.persistence.internal.helper.ConcurrencyManager} or child like {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is currently being owned for writing
      * and if that owning thread happens to be the current thread doing the check.

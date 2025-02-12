@@ -71,4 +71,25 @@
             <property name="eclipselink.concurrency.semaphore.log.timeout" value="8"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="cachekeynullkey-pu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.weaving.impl.EquipmentCacheKeyDAO</class>
+        <class>org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.weaving.impl.PortCacheKeyDAO</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="create_cacheKeyNullKeyGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="drop_cacheKeyNullKeyGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.logging.logger" value="DefaultLogger"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
 </persistence>
