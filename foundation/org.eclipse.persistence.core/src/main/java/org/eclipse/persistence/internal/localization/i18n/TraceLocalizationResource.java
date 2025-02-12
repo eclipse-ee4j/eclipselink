@@ -605,11 +605,7 @@ Total number of cacheKeys to describe: {0}\s
         { "schema_default_drop_tables_failed", "Failed to drop tables in the default table schema: {0}"},
         { "schema_default_replace_tables_failed", "Failed to replace tables in the default table schema: {0}"},
         { "schema_default_extend_tables_failed", "Failed to extend tables in the default table schema: {0}"},
-        { "schema_drop_object_failed", "Failed to drop object in the default table schema: {0}"},
-        { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
-        { "validate_object_space", "Validate object space." },
-        { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
-        { "corrupt_object", "corrupt object: {0}" }
+        { "schema_drop_object_failed", "Failed to drop object in the default table schema: {0}"}
 
     };
 
