@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -483,16 +483,6 @@ Current thread (id: {3} name: {4}) stack trace:
         // JPA 3.2
         { "unknown_property_type", "Unknown {0} type of {1} persistence property"},
         { "error_queryTimeoutParse", "Cannot parse the {0} jakarta.persistence.query.timeout property value: {1}"},
-        { "schema_default_truncate_tables_failed", "Failed to truncate tables in the default table schema: {0}"},
-        { "schema_default_create_tables_failed", "Failed to create tables in the default table schema: {0}"},
-        { "schema_default_drop_tables_failed", "Failed to drop tables in the default table schema: {0}"},
-        { "schema_default_replace_tables_failed", "Failed to replace tables in the default table schema: {0}"},
-        { "schema_default_extend_tables_failed", "Failed to extend tables in the default table schema: {0}"},
-        { "schema_drop_object_failed", "Failed to drop object in the default table schema: {0}"},
-        { "validate_object_space", "validate object space." },
-        { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
-        { "corrupt_object_referenced_through_mapping", "The following corrupt object is referenced through mapping: {0}" },
-        { "corrupt_object", "corrupt object: {0}" },
 
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
         { "encryptor_script_description", "This application has an old encrypted password that was used by a previous version of EclipseLink. Reencrypt it with the latest algorithm."},
