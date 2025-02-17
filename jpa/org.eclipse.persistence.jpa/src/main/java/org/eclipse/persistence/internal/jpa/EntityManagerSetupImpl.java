@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -829,7 +829,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
                         }
                     }
-                    // Initialize platform specific identity sequences.
+                    // Initialize platform specific identity sequences plus connect accessor to DB (in case of remote disconnected session).
+                    if (getDatabaseSession().isRemoteSession() && !getDatabaseSession().getAccessor().isConnected()) {
+                        getDatabaseSession().getAccessor().connect(getDatabaseSession().getLogin(), getDatabaseSession());
+                    }
                     session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
