@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.jpa.jpql;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -79,7 +80,9 @@ public class JPQLQueryHelper {
     public List<ClassDescriptor> getClassDescriptors(CharSequence jpqlQuery, AbstractSession session) {
 
         // Parse the JPQL query
-        JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, true);
+        HermesParser hermesParser = new HermesParser();
+        hermesParser.setValidationLevel((String)session.getProperty(PersistenceUnitProperties.JPQL_VALIDATION));
+        JPQLExpression jpqlExpression = hermesParser.buildJPQLExpression(jpqlQuery);
 
         // Create the context and cache the information
         JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);

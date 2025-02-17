@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
  *
  * This program and the accompanying materials are made available under the
@@ -107,6 +107,7 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasWhereWithBraces02"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testNoAliasWhereWithBraces03"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere"));
+        suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelectNoAliasFromWhere_NamedQuery"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testGeneratedSelect"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testUpdateQueryLengthInAssignmentAndExpression"));
         suite.addTest(new JUnitJPQLJakartaDataNoAliasTest("testSelectQueryLengthInAssignmentAndExpression"));
@@ -322,6 +323,21 @@ public class JUnitJPQLJakartaDataNoAliasTest extends JUnitTestCase {
         WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
         Assert.assertTrue("GeneratedSelectNoAliasFromWhere Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
     }
+
+
+    public void testGeneratedSelectNoAliasFromWhere_NamedQuery() {
+        EntityManager em = createEntityManager();
+        Query wrapperTypesQuery = em.createNamedQuery("WrapperTypes.noAliasFindById");
+        wrapperTypesQuery.setParameter("idParam", wrapperId);
+        WrapperTypes wrapperTypes = (WrapperTypes) wrapperTypesQuery.getResultList().get(0);
+        clearCache();
+        ReadObjectQuery tlQuery = new ReadObjectQuery(WrapperTypes.class);
+        tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(wrapperId));
+
+        WrapperTypes tlWrapperTypes = (WrapperTypes) getPersistenceUnitServerSession().executeQuery(tlQuery);
+        Assert.assertTrue("GeneratedSelectNoAliasFromWhere Test Failed", comparer.compareObjects(wrapperTypes, tlWrapperTypes));
+    }
+
 
     public void testUpdateQueryLengthInAssignmentAndExpression() {
         resetRooms(false);
