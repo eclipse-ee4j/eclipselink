@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist;
+import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.ScientistPK;
 import org.junit.Assert;
 
 import java.util.Arrays;
@@ -60,7 +61,7 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLComplexAggregateTest("testSetup"));
 
         suite.addTest(new JUnitJPQLComplexAggregateTest("complexCountOnJoinedCompositePK"));
-
+        suite.addTest(new JUnitJPQLComplexAggregateTest("testCompositePrimaryKey"));
         return suite;
     }
 
@@ -120,5 +121,54 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
             rollbackTransaction(em);
         }
     }
+
+    public void testCompositePrimaryKey() {
+    EntityManager em = createEntityManager();
+    try {
+        // Start the transaction
+        beginTransaction(em);
+
+        // Create and set up the Scientist and Cubicle entities
+        Scientist scientist = new Scientist();
+        scientist.setFirstName("John");
+        scientist.setLastName("Doe");
+        
+        Cubicle cubicle = new Cubicle();
+        cubicle.setCode("G");
+        cubicle.setScientist(scientist);
+        
+        scientist.setCubicle(cubicle);
+        
+        // Persist the entities
+        em.persist(cubicle);
+        em.persist(scientist);
+        em.flush();
+
+        // Execute the query to retrieve the primary keys
+        List<ScientistPK> keys = em.createQuery(
+            "SELECT ID(THIS) FROM Scientist WHERE firstName = :firstName ORDER BY idNumber", 
+            ScientistPK.class
+        )
+        .setParameter("firstName", "John")
+        .getResultList();
+        
+        // Ensure the result size is greater than 0
+        assertTrue("The result size should be greater than 0", !keys.isEmpty());
+
+    } catch (Exception e) {
+        // If there's an exception, rollback the transaction
+        rollbackTransaction(em);
+        throw e;
+    } finally {
+        // Ensure the transaction is rolled back if not committed
+        if (em.getTransaction().isActive()) {
+            rollbackTransaction(em);
+        }
+        // Close the entity manager
+        em.close();
+    }
+}
+
+    
 
 }
