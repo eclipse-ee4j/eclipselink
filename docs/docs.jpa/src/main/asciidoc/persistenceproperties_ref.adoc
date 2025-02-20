@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
-    Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -213,6 +213,7 @@ EclipseLink includes the following persistence property extensions for
 concurrency management:
 
 * link:#concurrency-manager-allow-concurrencyexception[`concurrency.manager.allow.concurrencyexception`]
+* link:#concurrency-manager-allow-getcachekeyformerge-mode[`concurrency.manager.allow.getcachekeyformerge.mode`]
 * link:#concurrency-manager-allow-interruptedexception[`concurrency.manager.allow.interruptedexception`]
 * link:#concurrency-manager-allow-readlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
 * link:#concurrency-manager-build-object-complete-waittime[`concurrency.manager.build.object.complete.waittime`]
@@ -286,6 +287,7 @@ The following lists the EclipseLink persistence property
 * link:#compositeunitmember[`composite-unit.member`]
 * link:#compositeunitproperties[`composite-unit.properties`]
 * link:#concurrency-manager-allow-concurrencyexception[`concurrency.manager.allow.concurrencyexception`]
+* link:#concurrency-manager-allow-getcachekeyformerge-mode[`concurrency.manager.allow.getcachekeyformerge.mode`]
 * link:#concurrency-manager-allow-interruptedexception[`concurrency.manager.allow.interruptedexception`]
 * link:#concurrency-manager-allow-readlockstacktrace[`concurrency.manager.allow.readlockstacktrace`]
 * link:#concurrency-manager-build-object-complete-waittime[`concurrency.manager.build.object.complete.waittime`]
@@ -3099,6 +3101,55 @@ persistence.xml_*
 ----
 <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true" />
             
+----
+
+'''''
+
+=== concurrency.manager.allow.getcachekeyformerge.mode
+
+This property control in `org.eclipse.persistence.internal.sessions.AbstractSession#getCacheKeyFromTargetSessionForMerge(java.lang.Object, org.eclipse.persistence.internal.descriptors.ObjectBuilder, org.eclipse.persistence.descriptors.ClassDescriptor, org.eclipse.persistence.internal.sessions.MergeManager)`
+strategy how `org.eclipse.persistence.internal.identitymaps.CacheKey` will be fetched from shared cache.
+
+
+*Values*
+
+link:#concurrency.manager.allow.getcachekeyformerge.mode[Table 5-30]
+describes this persistence property's values.
+
+[[concurrency.manager.allow.getcachekeyformerge.mode]]
+
+*_Table 5-30 Valid Values for
+concurrency.manager.allow.getcachekeyformerge.mode_*
+
+|=======================================================================
+|*Value* |*Description*
+|ORIGIN |(Default) There is infinite `java.lang.Object.wait()` call in case
+of some conditions during time when object/entity referred from
+`org.eclipse.persistence.internal.identitymaps.CacheKey` is locked
+and modified by another thread. In some cases it should leads into deadlock.
+
+|WAITLOOP |Merge manager will try in the loop with timeout wait `cacheKey.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());`
+fetch object/entity from `org.eclipse.persistence.internal.identitymaps.CacheKey`.
+If fetch will be successful object/entity loop finish and continue with remaining code.
+If not `java.lang.InterruptedException` is thrown and caught and used `org.eclipse.persistence.internal.identitymaps.CacheKey`
+instance status is set into invalidation state. This strategy avoid deadlock issue,
+but there should be impact to the performance.
+|=======================================================================
+
+*Examples*
+
+link:#concurrency.manager.allow.getcachekeyformerge.mode[Example
+5-24] shows how to use this property in the `persistence.xml` file.
+
+[[concurrency.manager.allow.getcachekeyformerge.mode]]
+
+*_Example 5-24 Using concurrency.manager.allow.getcachekeyformerge.mode in
+persistence.xml_*
+
+[source,oac_no_warn]
+----
+<property name="eclipselink.concurrency.manager.allow.getcachekeyformerge.mode" value="WAITLOOP" />
+
 ----
 
 '''''

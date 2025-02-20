@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,11 +29,12 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.junit.Assert;
 
+import org.eclipse.persistence.config.MergeManagerOperationMode;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
-import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionDetail;
@@ -125,7 +126,7 @@ public class CacheDeadLockDetectionTest extends JUnitTestCase {
         }
         //Check if at least one log message is generated
         assertTrue(logWrapper.getMessageCount("Stuck thread problem: unique tiny message number") > 0);
-        assertTrue(logWrapper.getMessageCount("Start full concurrency manager state \\(massive\\) dump No") > 0);
+        assertTrue(logWrapper.getMessageCount("Start full concurrency manager state (massive) dump No") > 0);
     }
 
     public void testVerifySemaphorePersistenceProperties() {
@@ -184,6 +185,8 @@ public class CacheDeadLockDetectionTest extends JUnitTestCase {
         Assert.assertEquals(800L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
         Assert.assertEquals(1000L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
         Assert.assertEquals(5L, ConcurrencyUtil.SINGLETON.getBuildObjectCompleteWaitTime());
+        //MergeManagerOperationMode.ORIGIN is default value not explicitly specified in persistence.xml
+        Assert.assertEquals(MergeManagerOperationMode.ORIGIN, ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode());
         Assert.assertTrue(ConcurrencyUtil.SINGLETON.isAllowTakingStackTraceDuringReadLockAcquisition());
         Assert.assertTrue(ConcurrencyUtil.SINGLETON.isAllowConcurrencyExceptionToBeFiredUp());
         Assert.assertTrue(ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
