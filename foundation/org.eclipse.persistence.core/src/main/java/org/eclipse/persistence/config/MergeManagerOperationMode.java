@@ -35,4 +35,8 @@ public final class MergeManagerOperationMode {
      * status is set into invalidation state. This strategy avoid deadlock issue, but there should be impact to the performance.
      */
     public static final String WAITLOOP = "WAITLOOP";
+
+    private MergeManagerOperationMode() {
+        // no instance please
+    }
 }
