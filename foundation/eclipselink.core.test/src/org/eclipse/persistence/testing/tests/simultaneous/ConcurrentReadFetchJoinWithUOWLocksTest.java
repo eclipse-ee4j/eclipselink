@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
         clonedPerson.setHobby(clonedProject);
         uow.writeChanges();
 
-        Thread thread1 = new Thread(new ProjectReader(server.acquireClientSession(), project.getId()));
+        Thread thread1 = new Thread(new ProjectReader(server.acquireClientSession(), project.getId()), "Test Thread 1");
         ConcurrentProject.RUNNING_TEST = ConcurrentProject.READ_WITH_UOW_LOCKS_TESTS;
         //start reading Project, and have the thread wait while building DTF mappings
         thread1.start();
@@ -82,7 +82,7 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
 
         //start uow commit, which will get locks on Person+Address, commit, then merge.
         //merge should get a deferred lock on Project.
-        Thread thread2 = new Thread(new UOWCommit(uow));
+        Thread thread2 = new Thread(new UOWCommit(uow), "Test Thread 2");
         thread2.start();
 
         //while waiting, thread1 should wake and try to get a lock on Address.  It will deadlock if it
@@ -108,7 +108,9 @@ public class ConcurrentReadFetchJoinWithUOWLocksTest extends AutoVerifyTestCase 
         }
     }
 
-    public void reset(){
+    public void reset() throws InterruptedException {
+        //To give threads from the test() chance to finish
+        Thread.sleep(1000);
         ConcurrentProject.RUNNING_TEST = ConcurrentProject.NONE;
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
