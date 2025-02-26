@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -136,13 +136,12 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " The thread has been stuck for: ({3} ms) \n "
                 + " Bellow we will describe the ActiveLocks, DeferredLocks and ReadLocks for this thread. " },
         { "concurrency_util_owned_cache_key_null", "ObjectNull. Most likely not yet in server session cache and in the process of being created."},
-        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object hash code: {2}) (cacheKeyClass: {3}) (cacheKey hash code: {4}) (current cache key owner/activeThread: {5}) (getNumberOfReaders: {6}) "
-                    + " (concurrencyManagerId: {7}) (concurrencyManagerCreationDate: {8})"
-                    + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {9}) "
-                    + " (totalNumberOfTimeCacheKeyReleasedForReading:  {10}) "
-                    + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {11})  "
-                    + "(depth: {12})"
-                    + " (cacheKeyInstanceCreatonNumber: {13} ) (primaryKeyAtTimeOfCreation: {14})  ---"},
+        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (object hash code: {3}) (cacheKeyClass: {4}) (cacheKey hash code: {5}) (current cache key owner/activeThread: {6}) (getNumberOfReaders: {7}) "
+                + " (concurrencyManagerId: {8}) (concurrencyManagerCreationDate: {9})"
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {10}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {11}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  "
+                + "(depth: {13}) ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
@@ -270,17 +269,6 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " stopping the candidate thread to make progress... We expect this code spot to never be invoked. "
                 + " Either this thread made progress or if it continues to be stuck in the releaseDeferredLock "
                 + " we most likely have an implementation bug somewhere. "},
-        { "concurrency_util_create_information_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_page_header"
-                    , "Concurrency manager - Page 08 Start - Threads in MergeManager Acquiring Cache Keys for Clones to be merged into eclipselink server session cache of originals"
-                            + "\n This section provides information about threads within the MergeManager that require cache keys for merging clones with changes."
-                            + "\n Specifically, it focuses on the threads working in the context of an ObjectChangeSet where the server session CacheKey is found to still have CacheKy.object null,"
-                            + "\n and the CacheKey is acquired by a competing thread (typically an ObjectBuilder thread)."
-                            + "\n see https://github.com/eclipse-ee4j/eclipselink/issues/2094   "
-                + "\nTotal number of threads waiting to see lock being released: {0}\n\n"},
-        { "concurrency_util_create_information_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_justification"
-                    , "[currentThreadNumber: {0}] [ThreadName: {1}]:  Justification for being stuck: {2}\n"},
-        { "concurrency_util_create_information_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_page_end"
-                        , "Concurrency manager - Page 08 end - Threads in MergeManager Acquiring Cache Keys for Clones to be merged into eclipselink server session cache of originals\n"},
         { "XML_call", "XML call" },
         { "XML_data_call", "XML data call" },
         { "XML_data_delete", "XML data delete" },
