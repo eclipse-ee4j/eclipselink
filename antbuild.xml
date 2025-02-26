@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@
         - test-core-srg : runs core SRG
         - test-jpa : runs JPA tests
         - test-jpa-jse : runs JPA JSE tests
+        - test-deadlock : runs Deadlock detection tests
         - test-moxy : runs MOXY tests
         - test-moxy-srg : runs MOXY SRG
         - test-jaxb : runs MOXY jaxb tests
@@ -557,6 +558,10 @@
         <delete dir="${eclipselink.jpa.test.jse}/${classes.dir}" />
         <delete dir="${eclipselink.jpa.test.jse}/${run.dir}" />
         <delete dir="${eclipselink.jpa.test.jse}/${report.dir}" />
+        <!-- Clean Deadlock Test. Ant project can't be called without class org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask on the classpath (custom Ant task) -->
+        <delete dir="${eclipselink.deadlock.test}/${classes.dir}" />
+        <delete dir="${eclipselink.deadlock.test}/${run.dir}" />
+        <delete dir="${eclipselink.deadlock.test}/${report.dir}" />
 
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"        target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"          target="clean"/>
@@ -1855,7 +1860,7 @@
             depends="clear-db, test-core-srg, test-jpa22-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg-only" description="run all the LRG test suites"
-            depends="test-core, test-ext, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
+            depends="test-core, test-ext, test-jpa22, test-jpa-jse, test-deadlock, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="clear-db, test-lrg-only, generate-report"
@@ -1998,6 +2003,10 @@
     <!-- run JSE tests -->
     <target name="test-jpa-jse" description="run the JPA JSE tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test.jse}" target="test"/>
+    </target>
+    <!-- run Deadlock detection tests -->
+    <target name="test-deadlock" description="run Deadlock detection tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.deadlock.test}" target="test"/>
     </target>
 
     <target name="init-coverage">

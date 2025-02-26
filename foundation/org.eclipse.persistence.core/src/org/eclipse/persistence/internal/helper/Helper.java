@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -44,6 +44,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -52,10 +53,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -800,6 +803,27 @@ public class Helper extends CoreHelper implements Serializable {
         return newVector;
     }
 
+    /** Return a copy of the map. Returns an unmodifiable map.
+     *  @param originalMap - original map
+     *  @return Unmodifiable copy of originalMap
+     */
+    public static Map copyMap(Map originalMap) {
+        Set<Map.Entry<Object, Object>> entries = originalMap.entrySet();
+        Map<Object, Object> shallowCopy = entries.stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return Collections.unmodifiableMap(shallowCopy);
+    }
+
+    /** Return a copy of the set. Returns an unmodifiable set.
+     *  @param originalSet - original set
+     *  @return Unmodifiable copy of originalSet
+     */
+    public static Set copySet(Set originalSet) {
+        Set<Object> shallowCopy = (Set<Object>) originalSet.stream()
+                .collect(Collectors.toSet());
+        return Collections.unmodifiableSet(shallowCopy);
+    }
+        
     /**
      * Copy an array of strings to a new array
      * @param original

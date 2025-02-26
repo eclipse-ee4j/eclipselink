@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public class CacheKeyToThreadRelationships {
 
     /**
      * These are threads that have registered themselves as waiting for the cache key. See
-     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#getThreadsToWaitOnAcquire()}
+     * {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#getThreadsToWaitOnAcquireSnapshot()}
      *
      * (acquire lock for writing or as deferred - the cache key must be found with number of readers 0).
      */

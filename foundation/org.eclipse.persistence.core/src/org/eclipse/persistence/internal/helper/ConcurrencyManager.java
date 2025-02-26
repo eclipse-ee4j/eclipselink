@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -430,6 +430,13 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
+     * Return snapshot of the deferred lock manager hashtable (thread - DeferredLockManager).
+     */
+    protected static Map<Thread, DeferredLockManager> getDeferredLockManagersSnapshot() {
+        return Helper.copyMap(DEFERRED_LOCK_MANAGERS);
+    }
+    
+    /**
      * Init the deferred lock managers (thread - DeferredLockManager).
      */
     protected static Map initializeDeferredLockManagers() {
@@ -853,7 +860,7 @@ public class ConcurrencyManager implements Serializable {
      * @return Never null if the read lock manager does not yet exist for the current thread. otherwise its read log
      *         manager is returned.
      */
-    protected static ReadLockManager getReadLockManager(Thread thread) {
+    public static ReadLockManager getReadLockManager(Thread thread) {
         Map<Thread, ReadLockManager> readLockManagers = getReadLockManagers();
         return readLockManagers.get(thread);
     }
@@ -863,6 +870,13 @@ public class ConcurrencyManager implements Serializable {
      */
     protected static Map<Thread, ReadLockManager> getReadLockManagers() {
         return READ_LOCK_MANAGERS;
+    }
+
+    /**
+     * Return snapshot of the deferred lock manager hashtable (thread - DeferredLockManager).
+     */
+    protected static Map<Thread, ReadLockManager> getReadLockManagersSnapshot() {
+        return Helper.copyMap(READ_LOCK_MANAGERS);
     }
 
     /**
@@ -969,33 +983,33 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE} */
-    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquire() {
-        return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE);
+    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE} */
-    public static Map<Thread, String> getThreadsToWaitOnAcquireMethodName() {
-        return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE);
+    public static Map<Thread, String> getThreadsToWaitOnAcquireMethodNameSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK} */
-    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireReadLock() {
-        return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK;
+    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireReadLockSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE} */
-    public static Map<Thread, String> getThreadsToWaitOnAcquireReadLockMethodName() {
-        return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE;
+    public static Map<Thread, String> getThreadsToWaitOnAcquireReadLockMethodNameSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE);
     }
 
     /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS} */
-    public static Set<Thread> getThreadsWaitingToReleaseDeferredLocks() {
-        return new HashSet<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS);
+    public static Set<Thread> getThreadsWaitingToReleaseDeferredLocksSnapshot() {
+        return Helper.copySet(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS);
     }
 
     /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE} */
-    public static Map<Thread, String> getThreadsWaitingToReleaseDeferredLocksJustification() {
-        return new HashMap<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE);
+    public static Map<Thread, String> getThreadsWaitingToReleaseDeferredLocksJustificationSnapshot() {
+        return Helper.copyMap(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE);
     }
 
     /**
@@ -1106,5 +1120,33 @@ public class ConcurrencyManager implements Serializable {
 
     public Condition getInstanceLockCondition() {
         return this.instanceLockCondition;
+    }
+
+    public boolean isCacheKey() {
+        return false;
+    }
+    
+    /**
+     * Check if {@code org.eclipse.persistence.internal.helper.ConcurrencyManager} or child like {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is currently being owned for writing
+     * and if that owning thread happens to be the current thread doing the check.
+     *
+     * @return {@code false} means either the thread is currently not owned by any other thread for writing purposes. Or otherwise if is owned by some thread
+     * but the thread is not the current thread. {@code false} is returned if and only if instance is being owned by some thread
+     * and that thread is not the current thread, it is some other competing thread.
+     */
+    public boolean isAcquiredForWritingAndOwnedByDifferentThread() {
+        instanceLock.lock();
+        try {
+            if (!this.isAcquired()) {
+                return false;
+            }
+            if (this.activeThread == null) {
+                return false;
+            }
+            Thread currentThread = Thread.currentThread();
+            return this.activeThread != currentThread;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 }
