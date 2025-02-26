@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -500,8 +500,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
                     "\nReencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
         { "encryptor_script_description", "This application internally decrypts an old encrypted password that was used by a previous EclipseLink version and encrypts it by the latest algorithm."},
-        { "encryptor_script_output", "Reencrypted password is: {0}"}
-
+        { "encryptor_script_output", "The reencrypted password is: {0}"},
+        { "cache_key_null_read_lock_manager", "CacheKey instance: {0} , locked by cache read lock manager has null primary key." },
+        { "cache_key_null_identity_map", "CacheKey instance: {0} , stored into identity map has null primary key." }
     };
 
     /**

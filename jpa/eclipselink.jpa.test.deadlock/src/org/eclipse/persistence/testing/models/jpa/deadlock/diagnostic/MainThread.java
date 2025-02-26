@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,11 +12,9 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.jpa.test.cachedeadlock;
+package org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic;
 
-import org.eclipse.persistence.jpa.test.cachedeadlock.cdi.event.EventProducer;
-import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionMaster;
-import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionDetail;
+import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.event.EventProducer;
 
 import javax.enterprise.inject.se.SeContainer;
 import javax.inject.Inject;
@@ -41,8 +39,8 @@ public class MainThread implements Runnable {
 
     public MainThread(SeContainer container, EntityManagerFactory emf, EntityManager em) {
         this.container = container;
-        this.emf = emf;
-        this.em = em;
+        MainThread.emf = emf;
+        MainThread.em = em;
         eventProducer = container.select(EventProducer.class).get();
         queryMaster = em.createNamedQuery("MasterEntity.findById", CacheDeadLockDetectionMaster.class);
         queryMaster.setParameter("id", ID);
@@ -50,6 +48,7 @@ public class MainThread implements Runnable {
         queryDetail.setParameter("id", ID);
     }
 
+    @Override
     public void run() {
         CacheDeadLockDetectionMaster resultsMaster = queryMaster.getSingleResult();
         CacheDeadLockDetectionDetail resultsDetail = queryDetail.getSingleResult();
