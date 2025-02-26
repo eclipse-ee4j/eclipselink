@@ -1081,6 +1081,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
                 DescriptorEvent event = new DescriptorEvent(DescriptorEventManager.PreUpdateWithChangesEvent, writeQuery);
+                event.setChangeSet(changeSet);
                 eventManager.executeEvent(event);
 
                 // PreUpdateWithChangesEvent listeners may have altered the object - should recalculate the change set.
