@@ -36,12 +36,9 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionDetail;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster;
 import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.DeadLockDiagnosticTableCreator;
-import org.junit.Assert;
 
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class CacheDeadLockManagersTest extends JUnitTestCase {
 
@@ -120,6 +117,9 @@ public class CacheDeadLockManagersTest extends JUnitTestCase {
             Map map = writeLockManager.acquireLocksForClone(result, descriptor, cacheKey, serverSession);
         } catch (Exception e) {
             assertEquals(2, logWrapper.getMessageCount(WriteLockManager.class.getName() + ".acquireLocksForClone"));
+            //WriteLockManager.acquireLocksForClone acquire read lock, not write lock -> not any "...acquire writing.." message
+            assertEquals(0, logWrapper.getMessageCount("waitingOnAcquireWritingCacheKey: true  waiting to acquire writing: --- CacheKey  (org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster):  (primaryKey: 1)"));
+            assertEquals(1, logWrapper.getMessageCount("Waiting to acquire (read lock): --- CacheKey  (org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster):  (primaryKey: 1)"));
         } finally {
             if (em != null) {
                 if (em.isOpen()) {
