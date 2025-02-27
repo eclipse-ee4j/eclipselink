@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -49,9 +49,9 @@ public class TestFlush extends JPA1Base {
         EntityManager em = env.getEntityManager();
         try {
             // case 1: direct relationship Employee -> Cubicle (new) - 1:1
-            Department dep = new Department(1, "dep");
-            Employee emp1 = new Employee(2, "first", "last", dep);
-            Cubicle cub1 = new Cubicle(3, 3, "color", emp1);
+            Department dep = new Department(501, "dep");
+            Employee emp1 = new Employee(502, "first", "last", dep);
+            Cubicle cub1 = new Cubicle(503, 503, "color", emp1);
             emp1.setCubicle(cub1);
             env.beginTransaction(em);
             em.persist(dep);
@@ -79,8 +79,8 @@ public class TestFlush extends JPA1Base {
             verify(!env.isTransactionActive(em), "Transaction still active");
             verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
             // case 2: direct relationship Employee -> Project (new) - n:m
-            dep = new Department(4, "dep");
-            emp1 = new Employee(5, "first", "last", dep);
+            dep = new Department(504, "dep");
+            emp1 = new Employee(505, "first", "last", dep);
             Project proj = new Project("project");
             Set<Project> emp1Projects = new HashSet<Project>();
             emp1Projects.add(proj);
@@ -114,9 +114,9 @@ public class TestFlush extends JPA1Base {
             verify(!env.isTransactionActive(em), "Transaction still active");
             verify(flushFailed, "flush succeeded although there is a relation to an unmanaged entity");
             // case 3: indirect relationship Employee -> Project -> Employee (new)
-            dep = new Department(7, "dep");
-            emp1 = new Employee(8, "first1", "last1", dep);
-            Employee emp2 = new Employee(9, "first2", "last2", dep);
+            dep = new Department(507, "dep");
+            emp1 = new Employee(508, "first1", "last1", dep);
+            Employee emp2 = new Employee(509, "first2", "last2", dep);
             proj = new Project("project");
             emp1Projects = new HashSet<Project>();
             emp1Projects.add(proj);
