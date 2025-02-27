@@ -626,12 +626,16 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
         addAttribute(identificationVariable.getText(), queryExpression);
     }
 
+    @Override
+    public void visit(IdExpression expression){
+        multipleSelects = true;
+    }
     private void visitAbstractSelectClause(AbstractSelectClause expression) {
 
         multipleSelects = false;
         expression.getSelectExpression().accept(this);
 
-        if (multipleSelects || (expression.getSelectExpression()  instanceof IdExpression)) {
+        if (multipleSelects) {
             query.returnWithoutReportQueryResult();
         }
         else {

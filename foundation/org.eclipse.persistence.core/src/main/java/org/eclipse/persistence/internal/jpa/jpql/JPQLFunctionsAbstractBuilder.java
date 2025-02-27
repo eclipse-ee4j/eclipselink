@@ -63,7 +63,15 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
         //Get id attribute name
         ClassDescriptor descriptor = this.queryContext.getDeclaration(variableName).getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        if (!isEmbeddable(descriptor.getMappings())) {
+        if (isEmbeddable(descriptor.getMappings())) {
+            String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
+            StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
+                    expression.getParent(), variableText + "." + idAttributeName);
+            expression.setStateFieldPathExpression(stateFieldPathExpression);
+            // Continue with created StateFieldPathExpression
+            // It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
+            expression.getStateFieldPathExpression().accept(this);
+        } else {
             for (DatabaseField primaryKeyField : primaryKeyFields) {
                 String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyField);
                 StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
@@ -73,15 +81,6 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
                 // It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
                 expression.getStateFieldPathExpression().accept(this);
             }
-        } else {
-            String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
-            StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(
-                    expression.getParent(), variableText + "." + idAttributeName);
-            expression.setStateFieldPathExpression(stateFieldPathExpression);
-            // Continue with created StateFieldPathExpression
-            // It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
-            expression.getStateFieldPathExpression().accept(this);
-
         }
     }
 

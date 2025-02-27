@@ -154,7 +154,8 @@ public class JUnitJPQLComplexAggregateTest extends JUnitTestCase {
         
         // Ensure the result size is greater than 0
         assertTrue("The result size should be greater than 0", !keys.isEmpty());
-
+        Assert.assertEquals("first name should be John", "John", keys.get(0).firstName);
+        Assert.assertEquals("last name should be John", "Doe", keys.get(0).lastName);
     } catch (Exception e) {
         // If there's an exception, rollback the transaction
         rollbackTransaction(em);
