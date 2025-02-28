@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.helper.Helper;
@@ -314,5 +316,23 @@ public class HelperTest {
         } finally {
             Helper.setShouldOptimizeDates(optimizedDatesState);
         }
+    }
+
+    @Test
+    public void copyMapTest() {
+        Map<Long, String> inputMap = new HashMap<>();
+        inputMap.put(1L, "one");
+        inputMap.put(2L, "two");
+        Map<Long, String> copyMap = Helper.copyMap(inputMap);
+        Assert.assertEquals(inputMap, copyMap);
+    }
+
+    @Test
+    public void copySetTest() {
+        Set<String> inputSet = new HashSet<>();
+        inputSet.add("one");
+        inputSet.add("two");
+        Set<String> copySet = Helper.copySet(inputSet);
+        Assert.assertEquals(inputSet, copySet);
     }
 }
