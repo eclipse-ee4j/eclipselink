@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee</class>
         <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Project</class>
         <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Address</class>
+        <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Task</class>
         <validation-mode>CALLBACK</validation-mode>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
