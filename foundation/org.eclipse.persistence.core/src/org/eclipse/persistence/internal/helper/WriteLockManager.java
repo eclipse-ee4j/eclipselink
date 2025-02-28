@@ -38,7 +38,6 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -169,7 +168,7 @@ public class WriteLockManager {
                 // to indicate that the current thread is now stuck trying to acquire some arbitrary
                 // cache key for writing
                 lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
-                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME);
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForReading(currentThread, ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME);
 
                 // Since we know this one of those methods that can appear in the dead locks
                 // we threads frozen here forever inside of the wait that used to have no timeout
@@ -206,7 +205,7 @@ public class WriteLockManager {
             throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
         } finally {
             if (lastCacheKeyWeNeededToWaitToAcquire != null) {
-                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForReading(currentThread);
             }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
