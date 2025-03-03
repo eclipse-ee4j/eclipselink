@@ -327,6 +327,7 @@ public class DerbyPlatform extends DB2Platform {
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
 
         return fieldTypeMapping;
     }
