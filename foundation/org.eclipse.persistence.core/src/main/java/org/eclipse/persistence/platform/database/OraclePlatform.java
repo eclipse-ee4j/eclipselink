@@ -250,6 +250,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         // but TIMESTAMP WITH TIME ZONE is not supported until 10g
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
 
         return fieldTypeMapping;
     }

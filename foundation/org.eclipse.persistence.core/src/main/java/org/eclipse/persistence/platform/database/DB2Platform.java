@@ -340,7 +340,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
-
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
+        
         return fieldTypeMapping;
     }
 
