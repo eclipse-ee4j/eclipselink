@@ -685,6 +685,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         if (getQuery().isObjectLevelReadQuery()){
                             ExpressionBuilder builder = ((ObjectLevelReadQuery)getQuery()).getExpressionBuilder();
                             if ((subclassesExpression.getBuilder() != builder) && (subclassesExpression.getBuilder().getQueryClass() == null)) {
+                                if ((!isSubSelect) && (builder != null)) {
+                                    builder = (ExpressionBuilder)builder.copiedVersionFrom(clonedExpressions);
+                                }
                                 subclassesExpression = subclassesExpression.rebuildOn(builder);
                             }
                         }
