@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -181,7 +181,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                employee = em.getReference(Employee.class, 741);
+                employee = em.getReference(Employee.class, 741); //does not exist
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -370,7 +370,7 @@ public class TestGetReference extends JPA1Base {
             boolean operationFailed = false;
             env.beginTransaction(em);
             try {
-                emp = em.getReference(Employee.class, Integer.valueOf(99));
+                emp = em.getReference(Employee.class, Integer.valueOf(9911));
             } catch (EntityNotFoundException e) {
                 // $JL-EXC$ expected behavior
                 operationFailed = true;
@@ -448,7 +448,7 @@ public class TestGetReference extends JPA1Base {
         try {
             env.beginTransaction(em);
             try {
-                Employee emp = em.getReference(Employee.class, Integer.valueOf(99)); // versioning, entity does not exist
+                Employee emp = em.getReference(Employee.class, Integer.valueOf(9922)); // versioning, entity does not exist
                 em.remove(emp);
                 em.flush();
                 flop("PersistenceException not thrown as expected");
@@ -459,7 +459,7 @@ public class TestGetReference extends JPA1Base {
 
             env.beginTransaction(em);
             try {
-                Department dep = em.getReference(Department.class, Integer.valueOf(99)); // versioning, entity does not exist
+                Department dep = em.getReference(Department.class, Integer.valueOf(9933)); // versioning, entity does not exist
                 em.remove(dep);
                 em.flush();
                 flop("PersistenceException not thrown as expected");
