@@ -223,4 +223,19 @@
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="pu-jpql" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.jpql.CarProductionCompany</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.jpql.Company</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.jpql.Continent</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.jpql.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.jpql.ProductionCompany</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>DISABLE_SELECTIVE</shared-cache-mode>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>
