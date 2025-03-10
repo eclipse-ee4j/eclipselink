@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
     Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved
 
     This program and the accompanying materials are made available under the
@@ -337,6 +337,18 @@
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="pu-jpql" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.CarProductionCompany</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Company</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Continent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.ProductionCompany</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
         </properties>
     </persistence-unit>
 </persistence>
