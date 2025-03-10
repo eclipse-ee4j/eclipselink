@@ -9,8 +9,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-package org.eclipse.persistence.testing.models.jpa21.advanced.jpql;
+package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -23,8 +24,28 @@ import jakarta.persistence.Table;
 public class Continent {
 
     @Id
-    private long continentKey;
+    private String id;
 
     @OneToMany
     List<Country> countries;
+
+    public Continent() {
+        countries = new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String continentId) {
+        this.id = continentId;
+    }
+
+    public List<Country> getCountries() {
+        return countries;
+    }
+
+    public void setCountries(List<Country> countriesList) {
+        this.countries = countriesList;
+    }
 }

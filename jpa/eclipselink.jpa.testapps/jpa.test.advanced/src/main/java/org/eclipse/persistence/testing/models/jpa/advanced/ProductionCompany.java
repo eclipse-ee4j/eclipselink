@@ -9,11 +9,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-package org.eclipse.persistence.testing.models.jpa21.advanced.jpql;
+package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import jakarta.persistence.Entity;
 
 @Entity
 public class ProductionCompany extends Company {
 
+    String productionCompanyName;
+
+    public ProductionCompany() {
+    }
+
+    public String getProductionCompanyName() {
+        return productionCompanyName;
+    }
+
+    public void setProductionCompanyName(String name) {
+        this.productionCompanyName = name;
+    }
 }

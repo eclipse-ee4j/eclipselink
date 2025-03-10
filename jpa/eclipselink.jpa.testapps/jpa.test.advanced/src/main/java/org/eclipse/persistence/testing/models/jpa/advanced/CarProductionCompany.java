@@ -9,21 +9,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-package org.eclipse.persistence.testing.models.jpa21.advanced.jpql;
+package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "JPA21_COMPANY")
-public class Company {
+public class CarProductionCompany extends ProductionCompany {
 
-    @Id
-    Long companyKey;
+    String carProductionCompanyName;
 
-    @ManyToOne
-    Country originCountry;
+    public CarProductionCompany() {
+    }
 
+    public String getCarProductionCompanyName() {
+        return carProductionCompanyName;
+    }
+
+    public void setCarProductionCompanyName(String name) {
+        this.carProductionCompanyName = name;
+    }
 }
