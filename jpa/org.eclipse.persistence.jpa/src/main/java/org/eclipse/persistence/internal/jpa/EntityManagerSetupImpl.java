@@ -813,7 +813,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
                         }
                     }
-                    // Initialize platform specific identity sequences.
+                    // Initialize platform specific identity sequences plus connect accessor to DB (in case of remote disconnected session).
+                    if (getDatabaseSession().isRemoteSession() && !getDatabaseSession().getAccessor().isConnected()) {
+                        getDatabaseSession().getAccessor().connect(getDatabaseSession().getLogin(), getDatabaseSession());
+                    }
                     session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
