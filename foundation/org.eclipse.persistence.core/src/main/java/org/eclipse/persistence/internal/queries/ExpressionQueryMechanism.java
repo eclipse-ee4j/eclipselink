@@ -674,7 +674,32 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     }
                 }
             } else {
-                getDescriptor().getInheritancePolicy().appendWithAllSubclassesExpression(selectStatement);
+                Expression subclassesExpression = null;
+                if (getDescriptor().getInheritancePolicy().shouldReadSubclasses()) {
+                    subclassesExpression = getDescriptor().getInheritancePolicy().getWithAllSubclassesExpression();
+                }
+                if (subclassesExpression != null) {
+                    if (selectStatement.getWhereClause() == null) {
+                        selectStatement.setWhereClause((Expression)subclassesExpression.clone());
+                    } else {
+                        if (getQuery().isObjectLevelReadQuery()){
+                            ExpressionBuilder builder = ((ObjectLevelReadQuery)getQuery()).getExpressionBuilder();
+                            if ((subclassesExpression.getBuilder() != builder) && (subclassesExpression.getBuilder().getQueryClass() == null)) {
+                                if ((!isSubSelect) && (builder != null)) {
+                                    builder = (ExpressionBuilder)builder.copiedVersionFrom(clonedExpressions);
+                                }
+                                subclassesExpression = subclassesExpression.rebuildOn(builder);
+                            }
+                        }
+                        selectStatement.setWhereClause(selectStatement.getWhereClause().and(subclassesExpression));
+                    }
+                }
+
+                ObjectLevelReadQuery query = (ObjectLevelReadQuery)getQuery();
+                if (query.hasDefaultBuilder() && !query.getExpressionBuilder().wasQueryClassSetInternally()){
+                    selectStatement.setBuilder((ExpressionBuilder)query.getExpressionBuilder().copiedVersionFrom(clonedExpressions));
+                }
+
                 if (reportQuery.shouldOuterJoinSubclasses()) {
                     selectStatement.getExpressionBuilder().setShouldUseOuterJoinForMultitableInheritance(true);
                 }
