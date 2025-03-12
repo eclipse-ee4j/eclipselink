@@ -41,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVis
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -625,6 +626,10 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
         addAttribute(identificationVariable.getText(), queryExpression);
     }
 
+    @Override
+    public void visit(IdExpression expression){
+        multipleSelects = true;
+    }
     private void visitAbstractSelectClause(AbstractSelectClause expression) {
 
         multipleSelects = false;
