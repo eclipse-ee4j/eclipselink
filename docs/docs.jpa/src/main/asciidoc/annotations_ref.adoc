@@ -2670,7 +2670,7 @@ link:#CEGHFAIB[Table 2-20] describes this annotation's elements.
 
 * `ASSUME_EXISTENCE`
 * `ASSUME_NON_EXISTENCE`
-* `CHECK_CHACHE`
+* `CHECK_CACHE`
 * `CHECK_DATABASE`
 
  |`CHECK_CACHE`
@@ -2690,7 +2690,7 @@ guarantees or does not care about the existence check.
 * `ASSUME_NON_EXISTENCE` – Assume that the object does not exist. You
 may use this option if the application guarantees or does not care about
 the existence check. This will always force an `INSERT` operation.
-* `CHECK_CHACHE` – If the object's primary key does not include `null`
+* `CHECK_CACHE` – If the object's primary key does not include `null`
 and it is in the cache, then it must exist.
 * `CHECK_DATABASE` – Perform a `SELECT` on the database.
 
