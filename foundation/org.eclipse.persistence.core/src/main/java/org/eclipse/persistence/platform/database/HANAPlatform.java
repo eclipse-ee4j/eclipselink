@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  * Copyright (c) 2012, 2024 SAP. All rights reserved.
  *
@@ -443,6 +443,7 @@ public final class HANAPlatform extends DatabasePlatform {
     @Override
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws SQLException {
         int[] updateResult = statement.executeBatch();
+        setExecuteBatchRowCounts(updateResult);
         if (isStatementPrepared) {
             int updateCount = 0;
             for (int count : updateResult) {
