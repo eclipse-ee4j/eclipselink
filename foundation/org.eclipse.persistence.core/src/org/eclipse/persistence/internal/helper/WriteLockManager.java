@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,7 +38,6 @@ import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -48,8 +47,6 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * INTERNAL:
@@ -133,6 +130,8 @@ public class WriteLockManager {
     private final Lock instancePrevailingQueueLock = new ReentrantLock();
     private final Condition toWaitOnLockCondition = toWaitOnLock.newCondition();
 
+    private static final String ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME = WriteLockManager.class.getName() + ".acquireLocksForClone(...)";
+
     public WriteLockManager() {
         this.prevailingQueue = new ExposedNodeLinkedList();
     }
@@ -168,9 +167,8 @@ public class WriteLockManager {
                 // of the concurrency manager that we use for creating the massive log dump
                 // to indicate that the current thread is now stuck trying to acquire some arbitrary
                 // cache key for writing
-                StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[1];
                 lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
-                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForReading(currentThread, ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME);
 
                 // Since we know this one of those methods that can appear in the dead locks
                 // we threads frozen here forever inside of the wait that used to have no timeout
@@ -207,7 +205,7 @@ public class WriteLockManager {
             throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
         } finally {
             if (lastCacheKeyWeNeededToWaitToAcquire != null) {
-                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForReading(currentThread);
             }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
@@ -655,13 +653,13 @@ public class WriteLockManager {
     // Helper data structures to have tracebility about object ids with change sets and cache keys we are sturggling to acquire
 
     /** Getter for {@link #THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS} */
-    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeys() {
-        return unmodifiableMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
+    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeysSnapshot() {
+        return Helper.copyMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
     }
 
     /** Getter for {@link #MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET} */
-    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSet() {
-        return unmodifiableMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
+    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSetSnapshot() {
+        return Helper.copyMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
     }
 
     /**
