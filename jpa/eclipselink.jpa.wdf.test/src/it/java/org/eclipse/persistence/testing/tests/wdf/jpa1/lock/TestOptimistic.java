@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,6 +93,12 @@ public class TestOptimistic extends JPA1Base {
         Object failingEntity = ole.getEntity();
         if (failingEntity != null) {
             verify(entity.equals(failingEntity), "wrong entity");
+        }
+    }
+
+    private static void assertEmptyParametersValue(OptimisticLockException ole) {
+        if (ole.getMessage().contains("parameter list")) {
+            verify(!(ole.getMessage().contains("[] parameter list")), "empty parameters value");
         }
     }
 
@@ -604,6 +610,7 @@ public class TestOptimistic extends JPA1Base {
                     }
                 } catch (OptimisticLockException ole) {
                     assertFailingEntity(i13, ole);
+                    assertEmptyParametersValue(ole);
                 } catch (PersistenceException pe) {
                     if (!tester.throwsRollbackException) {
                         assertExceptionWrapsOLE(i13, pe);
