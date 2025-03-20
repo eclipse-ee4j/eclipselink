@@ -23,6 +23,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 //     08/12/2015-2.6 Mythily Parthasarathy
 //       - 474752: Address NPE for Embeddable with 1-M association
+//     04/19/2020-3.0 Alexandre Jacob
+//       - 544995: Fixed batch fetching when shared cache is activated (multithreading issue)
 package org.eclipse.persistence.mappings;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -538,6 +540,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             // If the object is already in the cache, then just return it.
             return cachedObject;
         }
+
+        boolean shouldExecuteBatchQuery = true;
+
         // Ensure the query is only executed once.
         synchronized (batchQuery) {
             // Check if query was already executed.
@@ -638,6 +643,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 originalPolicy.setDataResults(this, remainingParentRows);
                 translationRow = translationRow.clone();
                 translationRow.put(QUERY_BATCH_PARAMETER, foreignKeyValues);
+
+                if (foreignKeyValues.isEmpty()) {
+                    shouldExecuteBatchQuery = false;
+                }
+
                 // Register each id as null, in case it has no relationship.
                 for (Object foreignKey : foreignKeys) {
                     batchedObjects.put(foreignKey, Helper.NULL_VALUE);
@@ -645,8 +655,12 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
                 throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
             }
-            executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
-            batchQuery.setSession(null);
+
+            // Bug 544995 : When the cache is populated by another thread we can end up having nothing to fetch
+            if (shouldExecuteBatchQuery) {
+                executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
+                batchQuery.setSession(null);
+            }
         }
         result = batchedObjects.get(sourceKey);
         if (result == Helper.NULL_VALUE) {
