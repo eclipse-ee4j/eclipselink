@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,14 +16,17 @@ package org.eclipse.persistence.testing.tests.jpa.jpql.advanced;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
 import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
@@ -86,6 +89,8 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLFunctionsTest("queryID04Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID05CompositePKTest"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID06CompositePKTest"));
+        suite.addTest(new JUnitJPQLFunctionsTest("queryID07CompositePKTestWithIdClass"));
+        suite.addTest(new JUnitJPQLFunctionsTest("queryID08CompositePKTestWithIdClass"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION1Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION2Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION3Test"));
@@ -202,6 +207,34 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         assertEquals(VEGETABLE_ID, result[0]);
         assertEquals(VEGETABLE_COST, result[1]);
         assertEquals(VEGETABLE_ID, result[2]);
+    }
+
+    public void queryID07CompositePKTestWithIdClass(){
+        final PhoneNumber PHONE_EXPECTED = employeePopulator.employeeExample1().getPhoneNumbers().stream().findFirst().get();
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT ID(p) FROM PhoneNumber p WHERE p.id = :idParam AND p.type = :typeParam");
+        query.setParameter("idParam", PHONE_EXPECTED.getOwner().getId());
+        query.setParameter("typeParam", PHONE_EXPECTED.getType());
+        Object[] result  = (Object[])query.getSingleResult();
+        assertNotNull(result);
+        //result array order is important too
+        assertEquals(PHONE_EXPECTED.getOwner().getId(), result[0]);
+        assertEquals(PHONE_EXPECTED.getType(), result[1]);
+    }
+
+    public void queryID08CompositePKTestWithIdClass(){
+        final PhoneNumber PHONE_EXPECTED = employeePopulator.employeeExample1().getPhoneNumbers().stream().findFirst().get();
+
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("SELECT ID(this) FROM PhoneNumber WHERE this.id = :idParam AND this.type = :typeParam");
+        query.setParameter("idParam", PHONE_EXPECTED.getOwner().getId());
+        query.setParameter("typeParam", PHONE_EXPECTED.getType());
+        Object[] result  = (Object[])query.getSingleResult();
+        assertNotNull(result);
+        //result array order is important too
+        assertEquals(PHONE_EXPECTED.getOwner().getId(), result[0]);
+        assertEquals(PHONE_EXPECTED.getType(), result[1]);
     }
 
     public void queryVERSION1Test(){

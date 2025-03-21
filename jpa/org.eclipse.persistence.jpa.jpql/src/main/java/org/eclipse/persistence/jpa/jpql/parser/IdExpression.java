@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,10 @@
 //
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * The result of an ID function expression is the Entity primary
  * key. Argument must be an identification variable.
@@ -29,7 +33,7 @@ public final class IdExpression extends EncapsulatedIdentificationVariableExpres
     /**
      * The field path created as a result of transformation
      */
-    private StateFieldPathExpression stateFieldPathExpression;
+    private final Map<String, StateFieldPathExpression> stateFieldPathExpressions = new LinkedHashMap<>();
 
     /**
      * Creates a new <code>IdExpression</code>.
@@ -52,18 +56,19 @@ public final class IdExpression extends EncapsulatedIdentificationVariableExpres
     }
 
     /**
-     * Returns field path created as a result of transformation.
+     * Returns field paths created as a result of transformation.
      *
-     * @return The path expression that is qualified by the identification variable
+     * @return The path expressions that is qualified by the identification variable.
+     * There should more items, than one as multiple entity fields should be marked with ${@code @Id} and ${@code @IdClass} is used.
      */
-    public StateFieldPathExpression getStateFieldPathExpression() {
-        return stateFieldPathExpression;
+    public Collection<StateFieldPathExpression> getStateFieldPathExpressions() {
+        return stateFieldPathExpressions.values();
     }
 
     /**
-     * Sets field path created as a result of transformation.
+     * Add field path created as a result of transformation.
      */
-    public void setStateFieldPathExpression(StateFieldPathExpression stateFieldPathExpression) {
-        this.stateFieldPathExpression = stateFieldPathExpression;
+    public void addStateFieldPathExpression(StateFieldPathExpression stateFieldPathExpression) {
+        this.stateFieldPathExpressions.put(stateFieldPathExpression.getText(), stateFieldPathExpression);
     }
 }
