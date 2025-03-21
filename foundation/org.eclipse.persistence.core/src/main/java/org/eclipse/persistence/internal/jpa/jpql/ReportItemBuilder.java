@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVis
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -623,6 +624,15 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
         IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
         Expression queryExpression = queryContext.buildExpression(expression, type);
         addAttribute(identificationVariable.getText(), queryExpression);
+    }
+
+    @Override
+    public void visit(IdExpression expression) {
+        super.visit(expression);
+        if (expression.getStateFieldPathExpressions().size() > 1) {
+            //if multiple @Id attributes exists
+            multipleSelects = true;
+        }
     }
 
     private void visitAbstractSelectClause(AbstractSelectClause expression) {

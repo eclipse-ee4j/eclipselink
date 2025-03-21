@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -63,13 +64,16 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
         //Get id attribute name
         ClassDescriptor descriptor = this.queryContext.getDeclaration(variableName).getDescriptor();
         List<DatabaseField> primaryKeyFields = descriptor.getPrimaryKeyFields();
-        String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyFields.get(0));
-        StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(), variableText + "." + idAttributeName);
-        expression.setStateFieldPathExpression(stateFieldPathExpression);
-
+        for (DatabaseField primaryKeyField : primaryKeyFields) {
+            String idAttributeName = getIdAttributeNameByField(descriptor.getMappings(), primaryKeyField);
+            StateFieldPathExpression stateFieldPathExpression = new StateFieldPathExpression(expression.getParent(), variableText + "." + idAttributeName);
+            expression.addStateFieldPathExpression(stateFieldPathExpression);
+        }
         //Continue with created StateFieldPathExpression
-        //It handle by ObjectBuilder booth @Id/primary key types (simple/composite)
-        expression.getStateFieldPathExpression().accept(this);
+        //It's handled by ObjectBuilder booth @Id/primary key types (simple/composite)
+        for (Expression fieldPathExpression: expression.getStateFieldPathExpressions()) {
+            fieldPathExpression.accept(this);
+        }
     }
 
     /**
@@ -96,7 +100,14 @@ public abstract class JPQLFunctionsAbstractBuilder extends EclipseLinkAnonymousE
 
     private String getIdAttributeNameByField(List<DatabaseMapping> databaseMappings, DatabaseField field) {
         for (DatabaseMapping mapping : databaseMappings) {
-            if (field.equals(mapping.getField()) || mapping.isPrimaryKeyMapping()) {
+            if (mapping.getFields().size() > 1 && (field.equals(mapping.getField()) || mapping.isPrimaryKeyMapping())) {
+                //handle @EmbeddedId (composite primary key usually by AggregateObjectMapping)
+                return mapping.getAttributeName();
+            } else if ((field.equals(mapping.getField()) && mapping.isPrimaryKeyMapping())) {
+                //handle single @Id (simple primary key)
+                return mapping.getAttributeName();
+            } else if (field.equals(mapping.getField())) {
+                //handle multiple @Id(s) with mapped @IdClass
                 return mapping.getAttributeName();
             }
         }
