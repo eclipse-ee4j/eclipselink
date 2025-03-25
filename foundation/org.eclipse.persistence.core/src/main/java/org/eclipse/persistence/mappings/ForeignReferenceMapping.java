@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -646,7 +646,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             } else if (batchQuery.isReadAllQuery() && ((ReadAllQuery)batchQuery).getBatchFetchPolicy().isIN()) {
                 throw QueryException.originalQueryMustUseBatchIN(this, originalQuery);
             }
-            executeBatchQuery(batchQuery, parentCacheKey, batchedObjects, session, translationRow);
+            // Execute each batch as a separate query so that nested batch relationships are not overwritten by the most
+            // recent batch fetched Issue #1998
+            ReadQuery batchQueryToExecute = (ReadQuery) batchQuery.clone();
+            executeBatchQuery(batchQueryToExecute, parentCacheKey, batchedObjects, session, translationRow);
+            batchQueryToExecute.setSession(null);
             batchQuery.setSession(null);
         }
         result = batchedObjects.get(sourceKey);
