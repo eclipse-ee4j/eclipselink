@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -296,6 +296,33 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public boolean shouldPrintOutputTokenAtStart() {
         // TODO: Check with the reviewer where this is used
         return true;
+    }
+
+    /**
+     * INTERNAL:
+     * Should the variable name of a stored procedure call be printed as part of the procedure call
+     * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
+     * In case of PostgreSQL NO as JDBC driver and DB doesn't support pass parameters by name.
+     * It expects, that parameters are passed by index or persistence property {@code <property name="eclipselink.jpa.naming_into_indexed" value="true"/>} is used.
+     */
+    @Override
+    public boolean shouldPrintStoredProcedureArgumentNameInCall() {
+        return false;
+    }
+
+    /**
+     * Calling a stored procedure query on PostgreSQL with no output parameters
+     * always returns true from an execute call regardless if a result set is
+     * returned or not. This flag will help avoid throwing a JPA mandated
+     * exception on an executeUpdate call (which calls jdbc execute and checks
+     * the return value to ensure no results sets are returned (true)).
+     * PostgreSQL also doesn't support parameters passed by name in case of
+     * stored procedure calls.
+     * @see PostgreSQLPlatform
+     */
+    @Override
+    public boolean isJDBCExecuteCompliant() {
+        return false;
     }
 
     /**
