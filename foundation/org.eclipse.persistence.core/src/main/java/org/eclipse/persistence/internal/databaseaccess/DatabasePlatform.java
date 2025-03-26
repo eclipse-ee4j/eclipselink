@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1440,6 +1440,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean isInformixOuterJoin() {
         return false;
+    }
+
+    /**
+     * Returns true if this platform complies with the expected behavior from
+     * a jdbc execute call. Most platforms do, some have issues:
+     *
+     * @see PostgreSQLPlatform
+     */
+    public boolean isJDBCExecuteCompliant() {
+        return true;
     }
 
     /**
