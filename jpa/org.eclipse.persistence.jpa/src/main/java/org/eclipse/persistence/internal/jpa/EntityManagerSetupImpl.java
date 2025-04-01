@@ -1917,16 +1917,26 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 warnOldProperties(predeployProperties, session);
                 session.getPlatform().setConversionManager(new JPAConversionManager());
 
+
+                PersistenceUnitTransactionType transactionType = null;
+                //bug 5867753: find and override the transaction type
+                String transTypeString = getConfigPropertyAsStringLogDebug(
+                        PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
+                if (transTypeString != null && transTypeString.length() > 0) {
+                    transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
+                } else if (persistenceUnitInfo != null) {
+                    transactionType = persistenceUnitInfo.getTransactionType();
+                }
+
+                if (transactionType == PersistenceUnitTransactionType.JTA) {
+                    ServerPlatform serverPlatform = session.getServerPlatform();
+                    if (serverPlatform instanceof ServerPlatformBase) {
+                        ((ServerPlatformBase) serverPlatform).enableJTA();
+                    }
+                }
+
                 if (this.staticWeaveInfo == null) {
                     if (!isComposite) {
-                        PersistenceUnitTransactionType transactionType=null;
-                        //bug 5867753: find and override the transaction type
-                        String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
-                        if (transTypeString != null && transTypeString.length() > 0) {
-                            transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
-                        } else if (persistenceUnitInfo!=null){
-                            transactionType=persistenceUnitInfo.getTransactionType();
-                        }
 
                         if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
                             if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
@@ -4540,7 +4550,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * due to the EntityManagerSetupImpl return value.  This method satisfies the MetedataRefreshListener implementation
      * and is called by incoming RCM refresh commands
      *
-     * @see refreshMetadata
+     * @see #refreshMetadata(Map)
      */
     @Override
     public void triggerMetadataRefresh(Map properties){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import jakarta.transaction.TransactionManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 
 import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -135,7 +136,7 @@ public class JTA11TransactionController extends JTATransactionController {
         try {
             return (TransactionSynchronizationRegistry)jndiLookup(JNDI_TRANSACTION_SYNCHRONIZATION_REGISTRY);
         } catch (TransactionException ex) {
-            session.log(SessionLog.WARNING, SessionLog.TRANSACTION, "jta_tsr_lookup_failure", ex.getLocalizedMessage());
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.TRANSACTION, "jta_tsr_lookup_failure", ex.getLocalizedMessage());
         }
         return null;
     }

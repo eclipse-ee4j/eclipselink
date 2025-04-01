@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.server;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 /**
  *
@@ -86,6 +88,23 @@ public final class NoServerPlatform extends ServerPlatformBase {
     @Override
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new DefaultSessionLog();
+    }
+
+    @Override
+    public void enableJTA() {
+        this.ensureNotLoggedIn();
+        setJTAEnabled(true);
+        setExternalTransactionControllerClass(JTA11TransactionController.class);
+    }
+
+    @Override
+    public void initializeExternalTransactionController() {
+        if (!isJTAEnabled() && !isCMP()) {
+            return;
+        }
+        JTA11TransactionController controller = new JTA11TransactionController();
+        controller.setSession((AbstractSession) getDatabaseSession());
+        getDatabaseSession().setExternalTransactionController(controller);
     }
 
     /**
