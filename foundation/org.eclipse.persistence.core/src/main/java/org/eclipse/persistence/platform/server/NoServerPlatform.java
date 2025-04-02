@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.server;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
@@ -93,8 +92,8 @@ public final class NoServerPlatform extends ServerPlatformBase {
     @Override
     public void enableJTA() {
         this.ensureNotLoggedIn();
-        setJTAEnabled(true);
         setExternalTransactionControllerClass(JTA11TransactionController.class);
+        setJTAEnabled(true);
     }
 
     @Override
@@ -102,9 +101,7 @@ public final class NoServerPlatform extends ServerPlatformBase {
         if (!isJTAEnabled() && !isCMP()) {
             return;
         }
-        JTA11TransactionController controller = new JTA11TransactionController();
-        controller.setSession((AbstractSession) getDatabaseSession());
-        getDatabaseSession().setExternalTransactionController(controller);
+        getDatabaseSession().setExternalTransactionController(new JTA11TransactionController());
     }
 
     /**
