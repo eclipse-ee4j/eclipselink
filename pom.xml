@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,8 +192,8 @@
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.7.1</eclipselink.asm.version>
-        <asm.version>9.7.1</asm.version>
+        <eclipselink.asm.version>9.8.0</eclipselink.asm.version>
+        <asm.version>9.8</asm.version>
         <activation-api.version>2.1.3</activation-api.version>
         <angus-activation.version>2.0.2</angus-activation.version>
         <annotation.version>3.0.0</annotation.version>
