@@ -182,7 +182,6 @@ import org.eclipse.persistence.annotations.CacheIsolationType;
 import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
-import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
@@ -1926,16 +1925,26 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 warnOldProperties(predeployProperties, session);
                 session.getPlatform().setConversionManager(new JPAConversionManager());
 
+                // PersistenceUnitTransactionType is deprecated in Jakarta Persistence 3.2, this needs to be updated
+                PersistenceUnitTransactionType transactionType = null;
+                //bug 5867753: find and override the transaction type
+                String transTypeString = getConfigPropertyAsStringLogDebug(
+                        PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
+                if (transTypeString != null && transTypeString.length() > 0) {
+                    transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
+                } else if (persistenceUnitInfo != null) {
+                    transactionType = persistenceUnitInfo.getTransactionType();
+                }
+
+                if (transactionType == PersistenceUnitTransactionType.JTA) {
+                    ServerPlatform serverPlatform = session.getServerPlatform();
+                    if (serverPlatform instanceof ServerPlatformBase) {
+                        ((ServerPlatformBase) serverPlatform).enableJTA();
+                    }
+                }
+
                 if (this.staticWeaveInfo == null) {
                     if (!isComposite) {
-                        PersistenceUnitTransactionType transactionType=null;
-                        //bug 5867753: find and override the transaction type
-                        String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, predeployProperties, session);
-                        if (transTypeString != null && !transTypeString.isEmpty()) {
-                            transactionType=PersistenceUnitTransactionType.valueOf(transTypeString);
-                        } else if (persistenceUnitInfo!=null){
-                            transactionType=persistenceUnitInfo.getTransactionType();
-                        }
 
                         if (!isValidationOnly(predeployProperties, false) && persistenceUnitInfo != null && transactionType == PersistenceUnitTransactionType.JTA) {
                             if (predeployProperties.get(PersistenceUnitProperties.JTA_DATASOURCE) == null && persistenceUnitInfo.getJtaDataSource() == null) {
