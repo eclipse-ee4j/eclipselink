@@ -1540,8 +1540,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
             if (value != null) return ((BigDecimal)value).toBigInteger();
-        } else if (fieldType == ClassConstants.BIGDECIMAL) {
-            value = resultSet.getBigDecimal(columnNumber);
         }
 
         // PERF: Only check for null for primitives.
