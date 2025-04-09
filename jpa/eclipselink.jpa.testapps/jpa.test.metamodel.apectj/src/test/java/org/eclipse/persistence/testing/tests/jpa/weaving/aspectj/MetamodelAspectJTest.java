@@ -104,7 +104,6 @@ public class MetamodelAspectJTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-            em.close();
         }
     }
 }
