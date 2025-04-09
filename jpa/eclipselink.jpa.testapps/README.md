@@ -38,7 +38,7 @@ if no customized descriptor is provided in `src/main/resources-ejb/META-INF/pers
 * `src/main/resources-ejb` optional directory for ejb jar specific resources for server-side testing, packaged into `test-app_ejb.jar`
 * `src/main/resources-ear` optional directory for ear specific resources for server-side testing, packaged into `test-app.ear`
 * `src/test/java` contains actual tests
-* EJB/EAR archives are produced by the [eclipselink-testbuild-plugin](https://github.com/lukasj/eclipselink-build-support)
+* EJB/EAR archives are produced by the [eclipselink-testbuild-plugin](https://github.com/eclipse-ee4j/eclipselink-build-support)
 * `pom.xml` reference:
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

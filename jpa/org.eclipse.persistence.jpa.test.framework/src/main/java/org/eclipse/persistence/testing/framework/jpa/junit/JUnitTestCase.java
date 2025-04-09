@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -538,31 +539,31 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public DatabaseSessionImpl getDatabaseSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getDatabaseSession();
+        return getEntityManagerFactory().createEntityManager().unwrap(JpaEntityManager.class).getDatabaseSession();
     }
 
     public static DatabaseSessionImpl getDatabaseSession(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getDatabaseSession();
+        return getEntityManagerFactory(persistenceUnitName).createEntityManager().unwrap(JpaEntityManager.class).getDatabaseSession();
     }
 
     public SessionBroker getSessionBroker() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory().createEntityManager()).getSessionBroker();
+        return getEntityManagerFactory().createEntityManager().unwrap(JpaEntityManager.class).getSessionBroker();
     }
 
     public static SessionBroker getSessionBroker(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getSessionBroker();
+        return getEntityManagerFactory(persistenceUnitName).createEntityManager().unwrap(JpaEntityManager.class).getSessionBroker();
     }
 
     public static ServerSession getServerSession() {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory("default").createEntityManager()).getServerSession();
+        return getEntityManagerFactory("default").createEntityManager().unwrap(JpaEntityManager.class).getServerSession();
     }
 
     public static ServerSession getServerSession(String persistenceUnitName) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName).createEntityManager()).getServerSession();
+        return getEntityManagerFactory(persistenceUnitName).createEntityManager().unwrap(JpaEntityManager.class).getServerSession();
     }
 
     public static ServerSession getServerSession(String persistenceUnitName, Map properties) {
-        return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();
+        return getEntityManagerFactory(persistenceUnitName, properties).createEntityManager().unwrap(JpaEntityManager.class).getServerSession();
     }
 
     public ServerSession getPersistenceUnitServerSession() {
@@ -712,7 +713,15 @@ public abstract class JUnitTestCase extends TestCase {
         if (url == null) {
             fail("System property 'server.url' must be set.");
         }
-        properties.put("java.naming.provider.url", url);
+        properties.put(Context.PROVIDER_URL, url);
+        String tmpUsr = System.getProperty("server.usr");
+        if (tmpUsr != null && !tmpUsr.isEmpty()) {
+            properties.put(Context.SECURITY_PRINCIPAL, tmpUsr);
+        }
+        String tmpPwd = System.getProperty("server.pwd");
+        if (tmpPwd != null && !tmpPwd.isEmpty()) {
+            properties.put(Context.SECURITY_CREDENTIALS, tmpPwd);
+        }
         Context context = new InitialContext(properties);
 
         String testrunnerCtx = System.getProperty("server.testrunner.context");

@@ -88,6 +88,8 @@ public class SessionBeanTest extends JUnitTestCase {
     "java:comp/env/ejb/EmployeeService", "ejb/EmployeeService",
     // WLS
     "EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
+    // WLS 15
+    "java:global.org.eclipse.persistence.jpa.testapps.sessionbean.ha.org.eclipse.persistence.jpa.testapps.sessionbean.ha_ejb.EmployeeServiceBean!org.eclipse.persistence.testing.models.jpa.sessionbean.ha/EmployeeService",
     // WAS
     "org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
     // jboss

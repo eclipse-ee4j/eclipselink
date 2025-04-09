@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,29 +80,30 @@ public class MetamodelAspectJTest extends JUnitTestCase {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             ItemAspectJ entity = new ItemAspectJ(ID, "aaaa");
             em.persist(entity);
-            em.getTransaction().commit();
-            em.getTransaction().begin();
+            commitTransaction(em);
+            beginTransaction(em);
             entity.setName(NAME);
             em.merge(entity);
-            em.getTransaction().commit();
+            commitTransaction(em);
             ItemAspectJ entity1 = em.find(ItemAspectJ.class, ID);
             assertNotNull(entity1);
             assertEquals(ID, entity1.getId());
             assertEquals(NAME, entity1.getName());
-            em.getTransaction().begin();
+            beginTransaction(em);
             em.remove(entity);
-            em.getTransaction().commit();
+            commitTransaction(em);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
+            closeEntityManager(em);
             em.close();
         }
     }

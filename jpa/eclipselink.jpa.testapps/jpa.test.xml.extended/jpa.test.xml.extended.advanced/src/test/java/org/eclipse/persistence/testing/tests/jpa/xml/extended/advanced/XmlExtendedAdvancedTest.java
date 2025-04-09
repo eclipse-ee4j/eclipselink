@@ -40,7 +40,6 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -83,6 +82,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * JUnit test case(s) for the TopLink EntityMappingsXMLProcessor.
@@ -769,6 +769,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         // clean up
         beginTransaction(em);
         try {
+            employee = em.find(Employee.class, employee.getId());
             em.remove(employee);
             commitTransaction(em);
         } finally {
@@ -801,6 +802,7 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
 
         beginTransaction(em);
+        add = em.find(Address.class, assignedSequenceNumber);
         em.remove(add);
         commitTransaction(em);
     }
@@ -811,9 +813,9 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
      */
     public void testProperty() {
         EntityManager em = createEntityManager();
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getDescriptorForAlias("XMLEmployee");
-        ClassDescriptor aggregateDescriptor = ((EntityManagerImpl) em).getServerSession().getDescriptor(EmploymentPeriod.class);
-        em.close();
+        ClassDescriptor descriptor = (em.unwrap(org.eclipse.persistence.sessions.Session.class)).getDescriptorForAlias("XMLEmployee");
+        ClassDescriptor aggregateDescriptor = (em.unwrap(org.eclipse.persistence.sessions.Session.class)).getDescriptor(EmploymentPeriod.class);
+        closeEntityManager(em);
 
         String errorMsg = "";
 
@@ -1084,8 +1086,8 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             // Do an update
             beginTransaction(em);
 
-            em.merge(refreshedShovel);
             refreshedShovel.setMy("cost", 7.99);
+            em.merge(refreshedShovel);
 
             commitTransaction(em);
 
@@ -1093,11 +1095,11 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
             em.clear();
 
             Shovel refreshedUpdatedShovel = em.find(Shovel.class, shovelId);
-            assertTrue("Shovel didn't match after update", getPersistenceUnitServerSession().compareObjects(refreshedShovel, refreshedUpdatedShovel));
+            assertTrue("Shovel didn't match after update", equalsShovelBasic(refreshedShovel, refreshedUpdatedShovel));
 
             // Now delete it
             beginTransaction(em);
-            em.merge(refreshedUpdatedShovel);
+            refreshedUpdatedShovel = em.merge(refreshedUpdatedShovel);
             em.remove(refreshedUpdatedShovel);
             commitTransaction(em);
 
@@ -1117,6 +1119,18 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         } finally {
             closeEntityManager(em);
         }
+    }
+
+    private boolean equalsShovelBasic(Shovel shovel1, Shovel shovel2) {
+        return Objects.equals(shovel1.getMy("id"), shovel2.getMy("id"))
+                && equalsShovelSections((ShovelSections)shovel1.getMy("sections"), (ShovelSections)shovel2.getMy("sections"))
+                && Objects.equals(shovel1.getMy("cost"), shovel2.getMy("cost"));
+    }
+
+    private boolean equalsShovelSections(ShovelSections shovelSections1, ShovelSections shovelSections2) {
+        return Objects.equals(shovelSections1.getMaterial("handle"), shovelSections2.getMaterial("handle"))
+                && Objects.equals(shovelSections1.getMaterial("shaft"), shovelSections2.getMaterial("shaft"))
+                && Objects.equals(shovelSections1.getMaterial("scoop"), shovelSections2.getMaterial("scoop"));
     }
 
     /**

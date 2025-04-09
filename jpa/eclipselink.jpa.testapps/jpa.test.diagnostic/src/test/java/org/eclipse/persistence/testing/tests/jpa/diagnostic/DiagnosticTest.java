@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,7 +65,7 @@ public class DiagnosticTest extends JUnitTestCase {
         final int BRANCHB_ID = 11;
 
         EntityManager em = createEntityManager("diagnostic-with-property-test-pu");
-        Session serverSession  = ((JpaEntityManager) em).getServerSession();
+        Session serverSession  = em.unwrap(JpaEntityManager.class).getServerSession();
         LogWrapper logWrapper = new LogWrapper("corrupt_object_referenced_through_mapping");
         serverSession.setSessionLog(logWrapper);
 
@@ -84,7 +84,7 @@ public class DiagnosticTest extends JUnitTestCase {
         commitTransaction(em);
 
         //Simulate business transaction where we do work with Entity removed
-        em.getTransaction().begin();
+        beginTransaction(em);
         if (branchADiagnostic.getBranchBs().contains(branchBDiagnostic)) {
             branchADiagnostic.getBranchBs().remove(branchBDiagnostic);
         }
@@ -97,7 +97,7 @@ public class DiagnosticTest extends JUnitTestCase {
         //Simulation of code logical error to mix into same object tree attached and detached entities
         //Add already removed (detached) entity back to the object tree
         //Required prerequisite are: caching enabled
-        em.getTransaction().begin();
+        beginTransaction(em);
         branchADiagnostic.getBranchBs().add(branchBDiagnostic);
         branchBDiagnostic.setBranchA(branchADiagnostic);
         //Detached entity (branchBDiagnostic) is not persisted again - logical error
@@ -118,7 +118,7 @@ public class DiagnosticTest extends JUnitTestCase {
         final int BRANCHB_ID = 22;
 
         EntityManager em = createEntityManager("diagnostic-test-pu");
-        Session serverSession  = ((JpaEntityManager) em).getServerSession();
+        Session serverSession  = em.unwrap(JpaEntityManager.class).getServerSession();
         LogWrapper logWrapper = new LogWrapper("corrupt_object_referenced_through_mapping");
         serverSession.setSessionLog(logWrapper);
 
@@ -137,7 +137,7 @@ public class DiagnosticTest extends JUnitTestCase {
         commitTransaction(em);
 
         //Simulate business transaction where we do work with Entity removed
-        em.getTransaction().begin();
+        beginTransaction(em);
         if (branchADiagnostic.getBranchBs().contains(branchBDiagnostic)) {
             branchADiagnostic.getBranchBs().remove(branchBDiagnostic);
         }
@@ -150,7 +150,7 @@ public class DiagnosticTest extends JUnitTestCase {
         //Simulation of code logical error to mix into same object tree attached and detached entities
         //Add already removed (detached) entity back to the object tree
         //Required prerequisite are: caching enabled
-        em.getTransaction().begin();
+        beginTransaction(em);
         branchADiagnostic.getBranchBs().add(branchBDiagnostic);
         branchBDiagnostic.setBranchA(branchADiagnostic);
         //Detached entity (branchBDiagnostic) is not persisted again - logical error

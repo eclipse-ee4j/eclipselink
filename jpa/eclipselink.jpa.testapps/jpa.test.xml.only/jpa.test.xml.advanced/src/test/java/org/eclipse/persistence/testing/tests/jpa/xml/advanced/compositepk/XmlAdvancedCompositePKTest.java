@@ -223,7 +223,6 @@ public class XmlAdvancedCompositePKTest extends JUnitTestCase {
 
             em.persist(depAdmin);
             commitTransaction(em);
-            org.eclipse.persistence.internal.jpa.EntityManagerImpl emImpl = (org.eclipse.persistence.internal.jpa.EntityManagerImpl) em;
             DepartmentAdminRolePK depAdminPk= new DepartmentAdminRolePK(depName, depRole, location, adminEmp.getEmployee().getId());
 
             DepartmentAdminRole cacheObject = em.find(DepartmentAdminRole.class, depAdminPk);
