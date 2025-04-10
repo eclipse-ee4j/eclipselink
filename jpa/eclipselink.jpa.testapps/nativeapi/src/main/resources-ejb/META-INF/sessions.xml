@@ -16,7 +16,7 @@
 <sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
     <session xsi:type="server-session">
         <name>NativeAPITest</name>
-        <server-platform xsi:type="@server-platform-class@"/>
+        <server-platform xsi:type="@server.platform.class@"/>
         <event-listener-classes/>
         <logging xsi:type="eclipselink-log">
             <log-level>@eclipselink.logging.level@</log-level>
