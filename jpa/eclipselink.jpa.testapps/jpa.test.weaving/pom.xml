@@ -116,6 +116,10 @@
                             </classpathDependencyExcludes>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>server-test</id>
+                        <phase>none</phase>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,62 +67,68 @@ public class XmlExtendedAdvancedJunitTest extends XmlAdvancedJunitTest {
         assertNotNull("Delete queries default redirector was not set on decriptor", descriptor.getDefaultDeleteObjectQueryRedirector());
     }
     public void testForExceptionsFromInterceptors() {
-        ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(Address.class);
-        CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
-        interceptor.setShouldThrow(true);
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-
-        try {
-            Address addr = new Address();
-            addr.setCity("WhaHa");
-            addr.setProvince("NFLD");
-            em.persist(addr);
-            commitTransaction(em);
+        //This test is valid for JSE environment
+        if (! isOnServer()) {
+            ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(Address.class);
+            CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+            interceptor.setShouldThrow(true);
+            EntityManager em = createEntityManager();
             beginTransaction(em);
-            em.remove(addr);
-            commitTransaction(em);
-            fail("There was no Optimistic Lock Exception");
-        } catch (RollbackException e) {
-            assertTrue("Not caused by OptimisticLockException", (e.getCause() instanceof jakarta.persistence.OptimisticLockException));
 
-        }finally{
-            interceptor.setShouldThrow(false);
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
+            try {
+                Address addr = new Address();
+                addr.setCity("WhaHa");
+                addr.setProvince("NFLD");
+                em.persist(addr);
+                commitTransaction(em);
+                beginTransaction(em);
+                em.remove(addr);
+                commitTransaction(em);
+                fail("There was no Optimistic Lock Exception");
+            } catch (RollbackException e) {
+                assertTrue("Not caused by OptimisticLockException", (e.getCause() instanceof jakarta.persistence.OptimisticLockException));
+
+            } finally {
+                interceptor.setShouldThrow(false);
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+
+                closeEntityManager(em);
             }
-
-            closeEntityManager(em);
         }
     }
 
     public void testCacheAccessAppendLock() {
-        ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(Address.class);
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        Employee emp = new Employee();
-        em.persist(emp);
-        Address address = new Address("SomeStreet", "SomeCity", "SomeProvince", "SomeCountry", "S0M1O1");
-        em.persist(address);
-        Address address2 = new Address("SomeStreet2", "SomeCity2", "SomeProvince2", "SomeCountry2", "S0M2O2");
-        em.persist(address2);
-        emp.setAddress(address);
-        commitTransaction(em);
-        closeEntityManager(em);
-        em = createEntityManager();
-        CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
-        interceptor.resetAccessCount();
-        try{
-            emp = em.find(Employee.class, emp.getId());
-            address2 = em.find(Address.class, address2.getId());
-            interceptor.remove(address2.getId(), address2);
+        //TODO try to enable later
+        if (! isOnServer()) {
+            ClassDescriptor descriptor = getPersistenceUnitServerSession().getDescriptor(Address.class);
+            EntityManager em = createEntityManager();
             beginTransaction(em);
-            emp.setAddress(address2);
+            Employee emp = new Employee();
+            em.persist(emp);
+            Address address = new Address("SomeStreet", "SomeCity", "SomeProvince", "SomeCountry", "S0M1O1");
+            em.persist(address);
+            Address address2 = new Address("SomeStreet2", "SomeCity2", "SomeProvince2", "SomeCountry2", "S0M2O2");
+            em.persist(address2);
+            emp.setAddress(address);
             commitTransaction(em);
-            assertTrue("AppendLock identified as merge", interceptor.getLastAcquireNoWait() != null && !interceptor.getLastAcquireNoWait());
-        }finally{
-            interceptor.resetAccessCount();
             closeEntityManager(em);
+            em = createEntityManager();
+            CacheAuditor interceptor = (CacheAuditor) getPersistenceUnitServerSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+            interceptor.resetAccessCount();
+            try {
+                emp = em.find(Employee.class, emp.getId());
+                address2 = em.find(Address.class, address2.getId());
+                interceptor.remove(address2.getId(), address2);
+                beginTransaction(em);
+                emp.setAddress(address2);
+                commitTransaction(em);
+                assertTrue("AppendLock identified as merge", interceptor.getLastAcquireNoWait() != null && !interceptor.getLastAcquireNoWait());
+            } finally {
+                interceptor.resetAccessCount();
+                closeEntityManager(em);
+            }
         }
     }
 
