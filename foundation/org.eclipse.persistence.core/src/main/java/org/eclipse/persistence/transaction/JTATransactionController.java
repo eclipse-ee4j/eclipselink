@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ import jakarta.transaction.Status;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -54,6 +56,8 @@ import org.eclipse.persistence.exceptions.TransactionException;
  * @see AbstractTransactionController
  */
 public class JTATransactionController extends AbstractTransactionController {
+
+    static final String JNDI_TRANSACTION_MANAGER_NAME = "java:comp/TransactionManager";
 
     // Allows transaction manager to be set statically.
     protected static TransactionManager defaultTransactionManager;
@@ -266,6 +270,11 @@ public class JTATransactionController extends AbstractTransactionController {
     protected TransactionManager acquireTransactionManager() throws Exception {
         if (defaultTransactionManager != null) {
             return defaultTransactionManager;
+        }
+        try {
+            return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME);
+        } catch (TransactionException ex) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.TRANSACTION, "jta_tm_lookup_failure", ex.getLocalizedMessage());
         }
         return null;
     }

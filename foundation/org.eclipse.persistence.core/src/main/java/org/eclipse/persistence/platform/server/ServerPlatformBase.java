@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -348,6 +348,17 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     }
 
     /**
+     * Set whether {@link DatabaseSession}'s external transaction controller class will be populated with transaction controller
+     * class at runtime.
+     *
+     * @param isJTAEnabled Value of {@code true} when {@link DatabaseSession}'s external transaction controller will be populated
+     *                     or {@code false} otherwise
+     */
+    protected void setJTAEnabled(boolean isJTAEnabled) {
+        this.isJTAEnabled = isJTAEnabled;
+    }
+
+    /**
      * INTERNAL:
      * Check whether JTA 1.1 API is available.
      *
@@ -440,6 +451,14 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public void disableJTA() {
         this.ensureNotLoggedIn();
         this.isJTAEnabled = false;
+    }
+
+    /**
+     * Trigger {@link DatabaseSession}'s external transaction controller class to be populated with transaction controller
+     * class at runtime.
+     * Does nothing by default. Child class may override this method to enable the trigger.
+     */
+    public void enableJTA() {
     }
 
     /**
