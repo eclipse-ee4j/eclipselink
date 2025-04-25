@@ -268,7 +268,13 @@ public class ParameterExpression extends BaseExpression {
                 } else {
                     mapping = descriptor.getObjectBuilder().getMappingForAttributeName(this.field.getName());
                     if (mapping != null) {
-                        value = mapping.getRealAttributeValueFromObject(value, session);
+                        //Nested attribute
+                        if (value.getClass() != descriptor.getJavaClass() && this.getLocalBase().isQueryKeyExpression() && ((QueryKeyExpression)this.getLocalBase()).getBaseExpression().isQueryKeyExpression()) {
+                            value = ((QueryKeyExpression)((QueryKeyExpression)this.getLocalBase()).getBaseExpression()).getMapping().getAttributeValueFromObject(value);
+                        }
+                        if (value != null) {
+                            value = mapping.getRealAttributeValueFromObject(value, session);
+                        }
                     } else {
                         DatabaseField queryKeyField = descriptor.getObjectBuilder().getFieldForQueryKeyName(this.field.getName());
                         if (queryKeyField != null) {
