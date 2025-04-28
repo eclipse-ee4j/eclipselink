@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2024 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -480,8 +480,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "corrupt_object", "corrupt object: {0}" },
 
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
-        { "encryptor_script_description", "This application internally decrypts an old encrypted password that was used by a previous EclipseLink version and encrypts it by the latest algorithm."},
-        { "encryptor_script_output", "Re-encrypted password is: {0}"}
+        { "encryptor_script_description", "This application has an old encrypted password that was used by a previous version of EclipseLink. Reencrypt it with the latest algorithm."},
+        { "encryptor_script_output", "The reencrypted password is: {0}"}
     };
 
     /**
