@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -139,7 +139,6 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7105", "Error encountered converting encrypting class: [{0}]" },
                                            { "7106", "Error encountered during string encryption." },
                                            { "7107", "Error encountered during string decryption." },
-                                           { "7360", "Database password was encrypted by deprecated algorithm.\nReencrypt it by passwordUpdate.sh from the eclipselink.zip bundle."},
                                            { "7108", "This operation is not supported for non-relational platforms." },
                                            { "7109", "The login in the project used to create the session is null, it must be a valid login." },
                                            { "7110", "At present HistoricalSession only works with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
@@ -371,9 +370,10 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-                                           { "7357", "The \"[{0}]\" URL for the \"[{1}]\" resource does not belong to a valid persistence root, as defined by the Jakarta Persistence specification"},
+                                           { "7357", "The \"[{0}]\" URL for the \"[{1}]\" resource does not belong to a valid persistence root, as defined by the Jakarta Persistence specification." },
                                            { "7358", "Incorrect ASM service name provided."},
                                            { "7359", "No any ASM service available."},
+                                           { "7360", "Database password was encrypted by deprecated algorithm. Reencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle"},
  };
 
     /**
