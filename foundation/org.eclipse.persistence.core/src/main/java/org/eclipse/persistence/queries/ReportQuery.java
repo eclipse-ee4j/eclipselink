@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,6 +83,9 @@ public class ReportQuery extends ReadAllQuery {
     /** For example, ... EXISTS( SELECT 1 FROM ... */
     public static final int ShouldSelectValue1 = 6;
 
+    /** For example, ... SELECT ID(e) FROM Entity e... */
+    public static final int ShouldReturnPKClassInstance = 7;
+
     /** Specifies whether to retrieve primary keys, first primary key, or no primary key.*/
     public static final int FULL_PRIMARY_KEY = 2;
     public static final int FIRST_PRIMARY_KEY = 1;
@@ -119,6 +122,11 @@ public class ReportQuery extends ReadAllQuery {
      * Used when distinct has been set on the query.  For use in TCK
      */
     protected Set<Object> returnedKeys;
+
+    private boolean hasIDFunctionSelectItemOnly = false;
+
+    //Optional flag which says which type (Java class instance) should be produced as a result from query execution
+    private Class<?> resultClass;
 
     /**
      * INTERNAL:
@@ -656,7 +664,26 @@ public class ReportQuery extends ReadAllQuery {
             }
         }
         //end GF_ISSUE_395
-        if (shouldReturnSingleAttribute()) {
+
+        //handle case of TypedQuery like
+        //TypedQuery<IdClassPK> query = em.createQuery("SELECT ID(THIS) FROM IdClassEntity WHERE (name = :nameParam) ORDER BY population DESC", IdClassPK.class);
+        //where query return only SELECT ID(e) FROM .... and expected return type (some @IdClass) is specified
+        if (shouldReturnPKClassInstance()) {
+            int[] elementIndex;
+            Object[] elements;
+            if (getDescriptor().getCMPPolicy().getPKClass().isRecord()) {
+                return getDescriptor().getObjectBuilder().buildNewRecordInstance(getDescriptor().getCMPPolicy().getPKClass(), getDescriptor().getObjectBuilder().getPrimaryKeyMappings(), row, session);
+            } else {
+                //Prepare data for POJO (accessors are used)
+                elementIndex = new int[reportQueryResult.getResults().size()];
+                elements = new Object[reportQueryResult.getResults().size()];
+                for (int i = 0; i < reportQueryResult.getResults().size(); i++) {
+                    elementIndex[i] = i;
+                    elements[i] = reportQueryResult.getResults().get(i);
+                }
+            }
+            return getDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, elements);
+        } else if (shouldReturnSingleAttribute()) {
             return reportQueryResult.getResults().get(0);
         } else if (shouldReturnArray()) {
             return reportQueryResult.toArray();
@@ -1429,6 +1456,14 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * PUBLIC:
+     * Simplify the result by returning an instance of IdClass. It's valid for queries like SELECT ID(e) FROM Entity e... and {@link jakarta.persistence.TypedQuery}
+     */
+    public void setReturnPKClassInstance() {
+        this.returnChoice = ShouldReturnPKClassInstance;
+    }
+
+    /**
+     * PUBLIC:
      * Set if the query results should contain the primary keys or each associated object.
      * This make retrieving the real object easier.
      * By default they are not retrieved.
@@ -1574,4 +1609,27 @@ public class ReportQuery extends ReadAllQuery {
         return this.returnChoice == ShouldSelectValue1;
     }
 
+    /**
+     * PUBLIC:
+     * Returns true if results should be returned as instance of IdClass. It's valid for queries like SELECT ID(e) FROM Entity e...
+     */
+    public boolean shouldReturnPKClassInstance() {
+        return this.returnChoice == ShouldReturnPKClassInstance;
+    }
+
+    public void setHasIDFunctionSelectItemOnly(boolean hasIDFunctionSelectItemOnly) {
+        this.hasIDFunctionSelectItemOnly = hasIDFunctionSelectItemOnly;
+    }
+
+    public boolean hasIDFunctionSelectItemOnly() {
+        return hasIDFunctionSelectItemOnly;
+    }
+
+    public Class<?> getResultClass() {
+        return resultClass;
+    }
+
+    public void setResultClass(Class<?> resultClass) {
+        this.resultClass = resultClass;
+    }
 }

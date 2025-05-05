@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -72,6 +72,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildVEGETABLETable());
+        addTableDefinition(buildVEGETABLE_RECORDTable());
         addTableDefinition(buildWOMANTable());
         addTableDefinition(buildWORKWEEKTable());
         addTableDefinition(buildWORLDRANKTable());
@@ -1950,6 +1951,45 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     public TableDefinition buildVEGETABLETable() {
         TableDefinition table = new TableDefinition();
         table.setName("CMP3_VEGETABLE");
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("VEGETABLE_NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(30);
+        fieldNAME.setIsPrimaryKey(true);
+        table.addField(fieldNAME);
+
+        FieldDefinition fieldCOLOR = new FieldDefinition();
+        fieldCOLOR.setName("VEGETABLE_COLOR");
+        fieldCOLOR.setTypeName("VARCHAR");
+        fieldCOLOR.setSize(30);
+        fieldCOLOR.setIsPrimaryKey(true);
+        table.addField(fieldCOLOR);
+
+        FieldDefinition fieldCOST = new FieldDefinition();
+        fieldCOST.setName("COST");
+        fieldCOST.setTypeName("DOUBLE PRECIS");
+        fieldCOST.setSize(18);
+        table.addField(fieldCOST);
+
+        FieldDefinition fieldTAGS = new FieldDefinition();
+        fieldTAGS.setName("TAGS");
+        fieldTAGS.setTypeName("BLOB");
+        table.addField(fieldTAGS);
+
+        FieldDefinition fieldTYPE = new FieldDefinition();
+        fieldTYPE.setName("TYPE");
+        fieldTYPE.setTypeName("CHAR");
+        fieldTYPE.setSize(1);
+        fieldTYPE.setShouldAllowNull(true);
+        table.addField(fieldTYPE);
+
+        return table;
+    }
+
+    public TableDefinition buildVEGETABLE_RECORDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_VEGETABLE_RECORD");
 
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("VEGETABLE_NAME");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -92,19 +93,43 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     }
 
     /**
+     * Build an EJBQueryImpl based on the given jpql string and result class.
+     */
+    public EJBQueryImpl(String jpql, EntityManagerImpl entityManager, Class<?> resultClass) {
+        this(jpql, entityManager, false, resultClass);
+    }
+
+    /**
      * Create an EJBQueryImpl with either a query name or an jpql string.
      *
+     * @param queryDescription a Java Persistence query string
+     * @param entityManager EntityManager instance
      * @param isNamedQuery
      *            determines whether to treat the queryDescription as jpql or a
      *            query name.
      */
     public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery) {
+        this(queryDescription, entityManager, isNamedQuery, null);
+    }
+
+    /**
+     * Create an EJBQueryImpl with either a query name or an jpql string.
+     *
+     * @param queryDescription a Java Persistence query string
+     * @param entityManager EntityManager instance
+     * @param isNamedQuery
+     *            determines whether to treat the queryDescription as jpql or a
+     *            query name.
+     * @param resultClass the type of the query result
+     */
+    public EJBQueryImpl(String queryDescription, EntityManagerImpl entityManager, boolean isNamedQuery, Class<?> resultClass) {
         super(entityManager);
         if (isNamedQuery) {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, entityManager.getActiveSessionIfExists());
+                AbstractSession session = entityManager.getActiveSessionIfExists();
+                databaseQuery = buildEJBQLDatabaseQuery(null, queryDescription, entityManager.getActiveSessionIfExists(), null, null, session.getDatasourcePlatform().getConversionManager().getLoader(), resultClass);
             }
         }
     }
@@ -132,6 +157,23 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return a DatabaseQuery representing the given jpql.
      */
     public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpqlQuery, AbstractSession session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader) {
+        return buildEJBQLDatabaseQuery(queryName, jpqlQuery, session, lockMode, hints, classLoader, null);
+    }
+
+    /**
+     * Build a DatabaseQuery from an JPQL string.
+     *
+     * @param jpqlQuery
+     *            the JPQL string.
+     * @param session
+     *            the session to get the descriptors for this query for.
+     * @param hints
+     *            a list of hints to be applied to the query.
+     * @param resultClass
+     *            the type of the query result
+     * @return a DatabaseQuery representing the given jpql.
+     */
+    public static DatabaseQuery buildEJBQLDatabaseQuery(String queryName, String jpqlQuery, AbstractSession session, Enum lockMode, Map<String, Object> hints, ClassLoader classLoader, Class<?> resultClass) {
         // PERF: Check if the JPQL has already been parsed.
         // Only allow queries with default properties to be parse cached.
         boolean isCacheable = (queryName == null) && (hints == null);
@@ -149,6 +191,14 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 ReadAllQuery readAllQuery = (ReadAllQuery) databaseQuery;
                 if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == ReadAllQuery.DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
+                }
+                if (databaseQuery.isReportQuery()) {
+                    ReportQuery reportQuery = (ReportQuery) databaseQuery;
+                    reportQuery.setResultClass(resultClass);
+                    Class<?> pkClass = reportQuery.getDescriptor().getCMPPolicy().getPKClass();
+                    if (pkClass != null && pkClass == reportQuery.getResultClass() && reportQuery.hasIDFunctionSelectItemOnly()) {
+                        reportQuery.setReturnPKClassInstance();
+                    }
                 }
             } else if (databaseQuery.isModifyQuery()) {
                 // By default, do not batch modify queries, as row count must be returned.
