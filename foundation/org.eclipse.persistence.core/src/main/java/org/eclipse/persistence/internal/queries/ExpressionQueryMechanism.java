@@ -57,7 +57,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -2061,25 +2060,34 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 int fieldsSize = fields.size();
                 values = new ArrayList<>(fieldsSize);
                 baseExpressions = new ArrayList<>(fieldsSize);
-                for(DatabaseMapping databaseMapping: mapping.getReferenceDescriptor().getMappings()) {
+                List<Expression> baseExpressionsTmp = new ArrayList<>(fieldsSize);
+                for(DatabaseMapping databaseMapping: getEmbeddableMappings(mapping.getReferenceDescriptor())) {
                     String aName = databaseMapping.getAttributeName();
-                    Expression attributeBaseExpression = baseExpression.get(aName);
-                    baseExpressions.add(attributeBaseExpression);
                     ParameterExpression exp = (ParameterExpression) ((ParameterExpression)valueObject).clone().getField(new DatabaseField(aName));
                     builder.setSession(getSession());
                     if (baseExpression.isQueryKeyExpression()) {
-                        //It will set mapping if it was not initialized before
+                        //It will set mapping and descriptor if it was not initialized before
+                        ((QueryKeyExpression)baseExpression).getDescriptor();
                         ((QueryKeyExpression)baseExpression).getMapping();
                     }
+                    Expression attributeBaseExpression = baseExpression.get(aName);
                     if (attributeBaseExpression.isQueryKeyExpression()) {
-                        //It will set mapping if it was not initialized before
-                        ((QueryKeyExpression)attributeBaseExpression).getMapping();
+                        //It will set mapping and descriptor if it was not initialized before
+                        if(((QueryKeyExpression)attributeBaseExpression).getMapping() == null) {
+                            //Fallback to current baseExpressions for nested embedded classes
+                            attributeBaseExpression = getBaseExpressionFromListByMapping(baseExpressionsTmp, databaseMapping, aName);
+                            ((QueryKeyExpression)attributeBaseExpression).getMapping();
+                        }
+                        ((QueryKeyExpression)attributeBaseExpression).getDescriptor();
                     }
-
                     exp.setLocalBase(attributeBaseExpression);
                     exp.getBaseExpression().setLocalBase(((ParameterExpression)valueObject).getLocalBase());
-
-                    values.add(exp);
+                    baseExpressionsTmp.add(attributeBaseExpression);
+                    //Do not add aggregate mapping for nested embedded classes just attributes
+                    if (!databaseMapping.isAggregateMapping()) {
+                        baseExpressions.add(attributeBaseExpression);
+                        values.add(exp);
+                    }
                 }
             } else {
                 fields = new ArrayList<>(1);
@@ -2431,6 +2439,32 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         ((UpdateAllQuery)getQuery()).setIsPreparedUsingTempStorage(false);
         super.prepareUpdateAll();
+    }
+
+    private List<DatabaseMapping> getEmbeddableMappings(ClassDescriptor descriptor) {
+        List<DatabaseMapping> mappings = new ArrayList<>();
+        collectEmbeddableMappings(mappings, descriptor);
+        return mappings;
+    }
+
+    private void collectEmbeddableMappings(List<DatabaseMapping> mappings, ClassDescriptor descriptor) {
+        for(DatabaseMapping mapping : descriptor.getMappings()) {
+           if (mapping.isAggregateMapping()) {
+               mappings.add(mapping);
+               collectEmbeddableMappings(mappings, mapping.getReferenceDescriptor());
+           } else {
+               mappings.add(mapping);
+           }
+        }
+    }
+
+    private Expression getBaseExpressionFromListByMapping(List<Expression> expressions, DatabaseMapping mapping, String attributeName) {
+        for (Expression expression : expressions) {
+            if (expression.isQueryKeyExpression() && ((QueryKeyExpression)expression).getDescriptor() != null && ((QueryKeyExpression)expression).getDescriptor().getMappingForAttributeName(attributeName) == mapping) {
+                return expression.get(attributeName);
+            }
+        }
+        return null;
     }
 
     protected SQLSelectStatement createSQLSelectStatementForUpdateAllForOracleAnonymousBlock(Map<DatabaseTable, Map<DatabaseField, Expression>> tables_databaseFieldsToValues)

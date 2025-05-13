@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.advanced.FormerEmployment;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 import java.time.LocalDate;
@@ -103,6 +104,7 @@ public class JUnitJPQLModifyTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTest("updateWithSubquery"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbedded"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedObjectWithValue"));
+        suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedObjectNestedWithValue"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedObjectWithNull"));
         suite.addTest(new JUnitJPQLModifyTest("updateEmbeddedFieldTest"));
         suite.addTest(new JUnitJPQLModifyTest("updateUnqualifiedAttributeInSet"));
@@ -253,6 +255,44 @@ public class JUnitJPQLModifyTest extends JUnitTestCase {
             selectQuery.setParameter(1, employmentPeriod.getStartDate());
             long nr = (long) selectQuery.getSingleResult();
             assertEquals("updateEmbedded: unexpected number of changed values in the database",
+                    nrOfEmps, nr);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        }
+    }
+
+    public void updateEmbeddedObjectNestedWithValue()
+    {
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test updateEmbedded skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        EntityManager em = createEntityManager();
+
+        long nrOfEmps = executeJPQLReturningInt(
+                em, "SELECT COUNT(e) FROM Employee e");
+
+        // test query
+        EmploymentPeriod employmentPeriod = new EmploymentPeriod(java.sql.Date.valueOf(LocalDate.of(2020, 1, 1)), java.sql.Date.valueOf(LocalDate.of(2025, 12, 31)));
+        FormerEmployment formerEmployment = new FormerEmployment("Former company 2", employmentPeriod);
+        String update = "UPDATE Employee e SET e.formerEmployment = ?1";
+        beginTransaction(em);
+        try {
+            Query updateQuery = em.createQuery(update);
+            updateQuery.setParameter(1, formerEmployment);
+            int updated = updateQuery.executeUpdate();
+            assertEquals("updateNestedEmbedded: wrong number of updated instances",
+                    nrOfEmps, updated);
+            commitTransaction(em);
+
+            // check database changes
+            Query selectQuery = em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.formerEmployment.formerCompany = ?1", Long.class);
+            selectQuery.setParameter(1, formerEmployment.getFormerCompany());
+            long nr = (long) selectQuery.getSingleResult();
+            assertEquals("updateNestedEmbedded: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
