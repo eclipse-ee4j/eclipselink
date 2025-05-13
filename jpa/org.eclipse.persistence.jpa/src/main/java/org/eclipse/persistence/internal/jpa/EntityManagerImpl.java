@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1866,7 +1866,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass){
-        return (TypedQuery<T>) this.createQuery(qlString);
+        try {
+            verifyOpen();
+            EJBQueryImpl ejbqImpl;
+            try {
+                ejbqImpl = new EJBQueryImpl(qlString, this, resultClass);
+            } catch (JPQLException exception) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("wrap_ejbql_exception") + ": " + exception.getLocalizedMessage(), exception);
+            }
+            return (TypedQuery<T>)ejbqImpl;
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     /**

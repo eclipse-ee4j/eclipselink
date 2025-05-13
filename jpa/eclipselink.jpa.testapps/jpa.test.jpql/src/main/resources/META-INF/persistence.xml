@@ -42,6 +42,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.SmallProject</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.SimpleRoom</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.Vegetable</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.VegetableRecord</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.Woman</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.WorldRank</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyA</class>

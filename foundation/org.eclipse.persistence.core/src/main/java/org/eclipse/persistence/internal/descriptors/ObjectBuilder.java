@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -786,7 +786,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             TypeValue typeValue = typeValueMap.get(mapping.getAttributeName());
             typeValue.value = value;
         }
-        RecordInstantiationPolicy recordInstantiationPolicy = ((RecordInstantiationPolicy)this.descriptor.getInstantiationPolicy());
+        RecordInstantiationPolicy recordInstantiationPolicy = null;
+        if (this.descriptor.getJavaClass().isRecord()) {
+            //Usually for java.lang.Records used with @Embeddable (@EmbeddedId, @Embedded attribute) with their own descriptor
+            recordInstantiationPolicy = ((RecordInstantiationPolicy) this.descriptor.getInstantiationPolicy());
+        } else {
+            //Handle case if descriptor is for entity with IdClass (record). IdClasses doesn't have descriptor.
+            recordInstantiationPolicy = new RecordInstantiationPolicy<>(clazz);
+        }
         instanceLock.lock();
         try {
             List values = new ArrayList<>();

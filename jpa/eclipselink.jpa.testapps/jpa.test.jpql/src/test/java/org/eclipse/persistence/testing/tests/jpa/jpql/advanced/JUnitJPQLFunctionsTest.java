@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.jpql.advanced;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -27,8 +28,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumberPK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Vegetable;
 import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
+import org.eclipse.persistence.testing.models.jpa.advanced.VegetableRecord;
+import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePKRecord;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 /**
@@ -52,7 +56,10 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
     //create a new EmployeePopulator
     EmployeePopulator employeePopulator = new EmployeePopulator(supportsStoredProcedures());
 
-    private final VegetablePK VEGETABLE_ID = new VegetablePK("abcde", "xyz");
+    private final String VEGETABLE_NAME = "Carrot";
+    private final String VEGETABLE_COLOR = "Orange";
+    private final VegetablePK VEGETABLE_ID = new VegetablePK(VEGETABLE_NAME, VEGETABLE_COLOR);
+    private final VegetablePKRecord VEGETABLE_RECORD_ID = new VegetablePKRecord(VEGETABLE_NAME, VEGETABLE_COLOR);
     private final double VEGETABLE_COST = 99999.99;
 
     public JUnitJPQLFunctionsTest() {
@@ -91,6 +98,8 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLFunctionsTest("queryID06CompositePKTest"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID07CompositePKTestWithIdClass"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryID08CompositePKTestWithIdClass"));
+        suite.addTest(new JUnitJPQLFunctionsTest("queryID09CompositePKTestWithIdClass"));
+        suite.addTest(new JUnitJPQLFunctionsTest("queryID10CompositePKTestWithIdClassRecord"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION1Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION2Test"));
         suite.addTest(new JUnitJPQLFunctionsTest("queryVERSION3Test"));
@@ -129,6 +138,11 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
             vegetable.setId(VEGETABLE_ID);
             vegetable.setCost(VEGETABLE_COST);
             em.persist(vegetable);
+            VegetableRecord vegetableRecord = new VegetableRecord();
+            vegetableRecord.setName(VEGETABLE_RECORD_ID.name());
+            vegetableRecord.setColor(VEGETABLE_RECORD_ID.color());
+            vegetableRecord.setCost(VEGETABLE_COST);
+            em.persist(vegetableRecord);
             commitTransaction(em);
 
         } catch (Exception e) {
@@ -235,6 +249,32 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         //result array order is important too
         assertEquals(PHONE_EXPECTED.getOwner().getId(), result[0]);
         assertEquals(PHONE_EXPECTED.getType(), result[1]);
+    }
+
+    public void queryID09CompositePKTestWithIdClass(){
+        final PhoneNumber PHONE_EXPECTED = employeePopulator.employeeExample1().getPhoneNumbers().stream().findFirst().get();
+        EntityManager em = createEntityManager();
+        TypedQuery<PhoneNumberPK> query = em.createQuery(
+                "SELECT ID(this) FROM PhoneNumber WHERE this.id = :idParam AND this.type = :typeParam AND this.areaCode = :areaCode",
+                PhoneNumberPK.class);
+        query.setParameter("idParam", PHONE_EXPECTED.getOwner().getId());
+        query.setParameter("typeParam", PHONE_EXPECTED.getType());
+        query.setParameter("areaCode", PHONE_EXPECTED.getAreaCode());
+        PhoneNumberPK result = query.getSingleResult();
+        assertNotNull(result);
+        assertEquals(PHONE_EXPECTED.getOwner().getId(), result.getId());
+        assertEquals(PHONE_EXPECTED.getType(), result.getType());
+    }
+
+    public void queryID10CompositePKTestWithIdClassRecord(){
+        EntityManager em = createEntityManager();
+        TypedQuery<VegetablePKRecord> query = em.createQuery(
+                "SELECT ID(this) FROM VegetableRecord WHERE this.name = :nameParam AND this.color = :colorParam", VegetablePKRecord.class);
+        query.setParameter("nameParam", VEGETABLE_NAME);
+        query.setParameter("colorParam", VEGETABLE_COLOR);
+        VegetablePKRecord result = query.getSingleResult();
+        assertNotNull(result);
+        assertEquals(VEGETABLE_RECORD_ID, result);
     }
 
     public void queryVERSION1Test(){

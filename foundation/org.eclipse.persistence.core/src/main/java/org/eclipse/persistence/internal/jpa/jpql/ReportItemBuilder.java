@@ -42,6 +42,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -645,6 +646,10 @@ final class ReportItemBuilder extends JPQLFunctionsAbstractBuilder {
         }
         else {
             query.returnSingleAttribute();
+        }
+        //Set flag if JPQL query has only ID(...) function as SELECT clause. Like query like SELECT ID(e) FROM Entity e...
+        if (IdExpressionBNF.ID.equals(expression.getSelectExpression().getQueryBNF().getId())) {
+            query.setHasIDFunctionSelectItemOnly(true);
         }
     }
 
