@@ -74,6 +74,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             suite.addTest(new BeanValidationJunitTest("testPersistGermanPhoneWithUSGroup"));
             suite.addTest(new BeanValidationJunitTest("testPersistGermanPhoneWithGermanGroup"));
             suite.addTest(new BeanValidationJunitTest("testRemoveGermanPhoneWithGermanGroup"));
+            suite.addTest(new BeanValidationJunitTest("testUpdateGermanPhoneWithGermanGroup"));
             suite.addTest(new BeanValidationJunitTest("testRemoveInvalidGermanPhoneWithGermanGroup"));
             suite.addTest(new BeanValidationJunitTest("testUpdateInvalidGermanPhoneWithGermanGroup"));
         }
