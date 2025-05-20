@@ -323,17 +323,17 @@ public class EntityManagerProperties {
     /**
      * Overrides the Bean Validation Group(s) that will execute during a prePersist event. This should be a class or class[].
      */
-    public static final String VALIDATION_GROUP_PRE_PERSIST = "eclipselink.validation.group.prePersist";
+    public static final String VALIDATION_GROUP_PRE_UPDATET = "eclipselink.beanvalidation.group.pre-persist";
     
     /**
      * Overrides the Bean Validation Group(s) that will execute during a preUpdate event. This should be a class or class[].
      */
-    public static final String VALIDATION_GROUP_PRE_UPDATE = "eclipselink.validation.group.preUpdate";
+    public static final String VALIDATION_GROUP_PRE_UPDATE = "eclipselink.beanvalidation.group.pre-update";
     
     /**
      * Overrides the Bean Validation Group(s) that will execute during a preRemove event. This should be a class or class[].
      */
-    public static final String VALIDATION_GROUP_PRE_REMOVE = "eclipselink.validation.group.preRemove";
+    public static final String VALIDATION_GROUP_PRE_REMOVE = "eclipselink.beanvalidation.group.pre-remove";
 
     private static final Set<String> supportedProperties = new HashSet<String>() {
 
