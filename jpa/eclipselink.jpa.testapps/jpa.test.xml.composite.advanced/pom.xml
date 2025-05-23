@@ -150,4 +150,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>weblogic</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <!--Disabled in WebLogic seems, that EntityManager and EntityManagerFactory JNDI publishing by ejb-jar.xml doesn't work-->
+                            <!--Same case as org.eclipse.persistence.jpa.testapps.composite.advanced-->
+                            <!--TODO inspect and enable later-->
+                            <execution>
+                                <id>server-test</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

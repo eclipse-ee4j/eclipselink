@@ -31,7 +31,8 @@
     </dependencies>
 
     <properties>
-        <ignore.server.failures>true</ignore.server.failures>
+        <!--Disabled as multiple transactions in one test method are needed, but it's wrapped in CMP Session EJB-->
+        <server.test.skip>true</server.test.skip>
         <argLine/>
     </properties>
 

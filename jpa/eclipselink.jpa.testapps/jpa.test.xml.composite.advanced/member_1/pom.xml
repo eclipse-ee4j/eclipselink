@@ -72,4 +72,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>weblogic</id>
+            <properties>
+                <persistence-unit.data-source-name>jdbc/EclipseLinkDS</persistence-unit.data-source-name>
+            </properties>
+        </profile>
+    </profiles>
 </project>

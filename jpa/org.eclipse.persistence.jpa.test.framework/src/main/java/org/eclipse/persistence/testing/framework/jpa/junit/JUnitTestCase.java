@@ -733,7 +733,10 @@ public abstract class JUnitTestCase extends TestCase {
                 final NameClassPair pair = ctx.next();
                 final String clsName = pair.getClassName();
                 final String name = pair.getName();
-                if (name.contains("framework") && name.contains("TestRunner") || (clsName.contains("framework") && clsName.contains("TestRunner"))) {
+                if (name.contains("framework") && name.contains("TestRunner") ||
+                   (clsName.contains("framework") && clsName.contains("TestRunner")) ||
+                   (name.contains("TestRunner") && isTestRunnerInstance(context, testrunnerCtx, name))
+                ) {
                     testRunners.add(name);
                 }
             }
@@ -759,6 +762,15 @@ public abstract class JUnitTestCase extends TestCase {
             }
         } else {
             fail("System property 'server.testrunner.context' must be set.");
+        }
+    }
+
+    private boolean isTestRunnerInstance(Context context, String testRunnerCtxName, String nodeName) {
+        try {
+            return context.lookup(testRunnerCtxName + "/" + nodeName) instanceof TestRunner;
+        }
+        catch (Exception e) {
+            return false;
         }
     }
 

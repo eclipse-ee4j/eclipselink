@@ -16,7 +16,6 @@
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -112,29 +111,47 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(UpdateAllQueryAdvancedJunitTest.class);
+        TestSuite suite = new TestSuite();
+        suite.setName("UpdateAllQueryAdvancedJunitTest");
 
-        return new TestSetup(suite) {
-            @Override
-            protected void setUp(){
-                new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-            }
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testSetup"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLAForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLAForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testDoubleSalaryForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testDoubleSalaryForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForAll"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForSalary"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignManagerName"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignNullToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignObjectToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAssignExpressionToAddress"));
+        suite.addTest(new UpdateAllQueryAdvancedJunitTest("testAggregate"));
 
-            @Override
-            protected void tearDown() {
-                new UpdateAllQueryAdvancedJunitTest().clearCache();
-            }
-        };
+        return suite;
     }
 
-    public static void testFirstNamePrefixBLAForAll() {
+    /**
+     * The setup is done as a test, both to record its failure, and to allow execution in the server.
+     */
+    public void testSetup() {
+        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        clearCache();
+    }
+
+    @Override
+    public void tearDown() {
+        new UpdateAllQueryAdvancedJunitTest().clearCache();
+    }
+
+    public void testFirstNamePrefixBLAForAll() {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testFirstNamePrefixBLAForSalary() {
+    public void testFirstNamePrefixBLAForSalary() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -142,14 +159,14 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testDoubleSalaryForAll() {
+    public void testDoubleSalaryForAll() {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("salary", ExpressionMath.multiply(builder.get("salary"), Integer.valueOf(2)));
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testDoubleSalaryForSalary() {
+    public void testDoubleSalaryForSalary() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -157,7 +174,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testFirstNamePrefixBLADoubleSalaryForAll() {
+    public void testFirstNamePrefixBLADoubleSalaryForAll() {
         ExpressionBuilder builder = new ExpressionBuilder();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("firstName", Expression.fromLiteral("'BLA'", null).concat(builder.get("firstName")));
@@ -165,7 +182,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testFirstNamePrefixBLADoubleSalaryForSalary() {
+    public void testFirstNamePrefixBLADoubleSalaryForSalary() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000);
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -174,7 +191,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName() {
+    public void testFirstNamePrefixBLADoubleSalaryForSalaryForFirstName() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("salary").lessThan(20000).and(builder.get("firstName").like("J%"));
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -183,7 +200,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testAssignManagerName() {
+    public void testAssignManagerName() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("manager").notNull();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -191,13 +208,13 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testAssignNullToAddress() {
+    public void testAssignNullToAddress() {
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class);
         updateQuery.addUpdate("address", null);
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testAssignObjectToAddress() {
+    public void testAssignObjectToAddress() {
         Address address = new Address();
         address.setCountry("Canada");
         address.setProvince("Ontario");
@@ -211,7 +228,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testAssignExpressionToAddress() {
+    public void testAssignExpressionToAddress() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("manager").notNull();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -219,7 +236,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         updateAllQueryInternal(updateQuery);
     }
 
-    public static void testAggregate() {
+    public void testAggregate() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression selectionExpression = builder.get("manager").notNull();
         UpdateAllQuery updateQuery = new UpdateAllQuery(Employee.class, selectionExpression);
@@ -246,7 +263,9 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
+        getServerSession().beginTransaction();
         String errorMsg = UpdateAllQueryTestHelper.execute(getDbSession(), uq);
+        getServerSession().commitTransaction();
         if(errorMsg != null) {
             fail(errorMsg);
         }

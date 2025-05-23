@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -512,7 +512,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         for (PLSQLargument inArg : inArguments) {
             DatabaseType type = inArg.databaseType;
-            if (platform.isOracle23() && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
+            if ((platform.isOracle21() || platform.isOracle23()) && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
                 type = JDBCTypes.BOOLEAN_TYPE;
                 inArg.databaseType = JDBCTypes.BOOLEAN_TYPE;
             }
@@ -569,7 +569,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 super.useNamedCursorOutputAsResultSet(outArgName);
             } else {
                 DatabaseType type = outArg.databaseType;
-                if (platform.isOracle23() && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
+                if ((platform.isOracle21() || platform.isOracle23()) && type == OraclePLSQLTypes.PLSQLBoolean && Helper.compareVersions(platform.getDriverVersion(), "23.0.0") >= 0) {
                     type = JDBCTypes.BOOLEAN_TYPE;
                     outArg.databaseType = JDBCTypes.BOOLEAN_TYPE;
                 }

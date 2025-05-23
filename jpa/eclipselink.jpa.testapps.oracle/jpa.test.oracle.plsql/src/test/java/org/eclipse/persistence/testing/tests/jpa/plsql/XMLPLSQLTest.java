@@ -22,7 +22,9 @@ public class XMLPLSQLTest extends PLSQLTest {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("XMLPLSQLTest");
-        suite.addTest(new XMLPLSQLTest("testSetup"));
+        //Setup call leads into testRecordOut failure (ORA-21700: object does not exist or is marked for delete) in JEE environment
+        //Not needed there as testSetup is called in PLSQLTest.
+        // suite.addTest(new XMLPLSQLTest("testSetup"));
         suite.addTest(new XMLPLSQLTest("testSimpleProcedure"));
         suite.addTest(new XMLPLSQLTest("testSimpleFunction"));
         suite.addTest(new XMLPLSQLTest("testRecordOut"));
