@@ -87,6 +87,18 @@
                             </includes>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>server-test</id>
+                        <configuration>
+                            <includes>
+<!--TODO fix later Disabled in JEE environment as test depends on core test FW classes.
+                                <include>**/JPAAdvancedTestModel</include>
+-->
+                                <include>**/advanced/*Test</include>
+                                <include>**/advanced/EntityManagerJUnitTestSuite</include>
+                            </includes>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

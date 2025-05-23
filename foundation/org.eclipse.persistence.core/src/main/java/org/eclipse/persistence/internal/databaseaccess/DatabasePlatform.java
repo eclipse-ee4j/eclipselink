@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,6 +61,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import javax.xml.transform.dom.DOMResult;
+import org.w3c.dom.Document;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -2668,6 +2670,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(index, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(index, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
@@ -2773,6 +2779,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(name, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(name, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){

@@ -28,6 +28,7 @@
     <name>Test - weaving</name>
 
     <properties>
+        <server.test.skip>true</server.test.skip>
         <argLine/>
     </properties>
 
@@ -101,10 +102,6 @@
                                 <eclipselink.asm.service>eclipselink</eclipselink.asm.service>
                             </systemPropertyVariables>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>server-test</id>
-                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

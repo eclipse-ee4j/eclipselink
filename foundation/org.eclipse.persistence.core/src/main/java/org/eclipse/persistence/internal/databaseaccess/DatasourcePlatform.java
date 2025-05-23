@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -659,9 +659,15 @@ public class DatasourcePlatform implements Platform {
     }
 
     @Override
+    public boolean isOracle21() {
+        return false;
+    }
+
+    @Override
     public boolean isOracle23() {
         return false;
     }
+
     public boolean isPervasive(){
         return false;
     }
