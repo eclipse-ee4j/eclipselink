@@ -31,7 +31,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * </p>
  * @see jakarta.persistence.EntityManagerFactory
  */
-public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoCloseable {
+public interface JpaEntityManagerFactory extends EntityManagerFactory {
 
     /**
      * Returns the DatabaseSession that the Factory will be using and
