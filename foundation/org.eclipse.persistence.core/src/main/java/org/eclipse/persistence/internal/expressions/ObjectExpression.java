@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -447,9 +447,27 @@ public abstract class ObjectExpression extends DataExpression {
         return new ClassTypeExpression(this);
     }
 
+    /**
+     * INTERNAL:
+     * Get persistence class descriptor of this expression.
+     * Aggregate mapping will not be resolved.
+     *
+     * @return the persistence class descriptor
+     */
     @Override
     public ClassDescriptor getDescriptor() {
-        if (isAttribute()) {
+        return getDescriptor(false);
+    }
+
+    // Package local only, should not be exposed as API.
+    /**
+     * Get persistence class descriptor of this expression.
+     *
+     * @param resolveAggregate trigger resolution of aggregate mapping
+     * @return the persistence class descriptor
+     */
+    ClassDescriptor getDescriptor(boolean resolveAggregate) {
+        if (isAttribute(resolveAggregate)) {
             return null;
         }
         if (descriptor == null) {
@@ -460,7 +478,7 @@ public abstract class ObjectExpression extends DataExpression {
                 descriptor = convertToCastDescriptor(getSession().getDescriptor(queryKey.getReferenceClass()), getSession());
                 return descriptor;
             }
-            if (getMapping() == null) {
+            if (getMapping(resolveAggregate) == null) {
                 throw QueryException.invalidQueryKeyInExpression(this);
             }
 

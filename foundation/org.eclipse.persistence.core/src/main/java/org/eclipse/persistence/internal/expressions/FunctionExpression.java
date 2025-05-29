@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -796,7 +796,10 @@ public class FunctionExpression extends BaseExpression {
                 // now need to find out if it is a direct to field or something else.
                 ClassDescriptor descriptor = null;
                 if (query == null) {
-                    descriptor = ((QueryKeyExpression) baseExp).getDescriptor();
+                    // Trigger aggregate descriptors to be resolved for ReportQuery.
+                    // Unfortunately this ReadQuery is not visible from QueryKeyExpression,
+                    // that would make the solution more simple.
+                    descriptor = ((QueryKeyExpression) baseExp).getDescriptor(isAggregateReportQuery(normalizer));
                 } else {
                     descriptor = query.getDescriptor();
                 }
@@ -919,6 +922,16 @@ public class FunctionExpression extends BaseExpression {
                 }
             }
         }
+    }
+
+    // Check whether ReadQuery in the ExpressionNormalizer is ReportQuery
+    // and contains an aggregate descriptor.
+    private static boolean isAggregateReportQuery(ExpressionNormalizer normalizer) {
+        ReadQuery normalizerQuery = normalizer.getStatement() != null
+                ? normalizer.getStatement().getQuery()
+                : null;
+        return normalizerQuery != null && normalizerQuery.isReportQuery()
+                && normalizerQuery.getDescriptor().isAggregateDescriptor();
     }
 
     /**
