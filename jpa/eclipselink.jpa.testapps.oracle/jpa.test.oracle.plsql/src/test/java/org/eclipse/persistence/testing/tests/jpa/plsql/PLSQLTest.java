@@ -330,7 +330,7 @@ public class PLSQLTest extends JUnitTestCase {
             query.setParameter("P_POSITIVEN", 1);
             query.setParameter("P_SIGNTYPE", 1);
             query.setParameter("P_NUMBER", 1);
-            if (getPlatform().isOracle23() &&  Helper.compareVersions(getPlatform().getDriverVersion(), "23.0.0") >= 0) {
+            if ((getPlatform().isOracle21() || getPlatform().isOracle23()) &&  Helper.compareVersions(getPlatform().getDriverVersion(), "23.0.0") >= 0) {
                 boolean result = (Boolean) query.getSingleResult();
                 if (!result) {
                     fail("Incorrect result.");

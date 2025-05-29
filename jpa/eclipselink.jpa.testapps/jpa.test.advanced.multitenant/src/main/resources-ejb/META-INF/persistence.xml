@@ -29,7 +29,6 @@
             <property name="eclipselink.target-database" value="@database-platform@"/>
             <property name="eclipselink.weaving" value="@server-weaving@"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
             <property name="eclipselink.multitenant.strategy" value="external"/>
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>

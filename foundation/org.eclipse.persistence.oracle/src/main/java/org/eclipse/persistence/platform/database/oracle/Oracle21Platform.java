@@ -142,4 +142,14 @@ public class Oracle21Platform extends Oracle19Platform {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Check whether current platform is Oracle 21c or later.
+     * @return Always returns {@code true} for instances of Oracle 21c platform.
+     * @since 4.0.8
+     */
+    @Override
+    public boolean isOracle21() {
+        return true;
+    }
 }

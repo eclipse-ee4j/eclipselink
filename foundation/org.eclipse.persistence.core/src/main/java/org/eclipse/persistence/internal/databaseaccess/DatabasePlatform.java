@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
+import javax.xml.transform.dom.DOMResult;
+import org.w3c.dom.Document;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -2450,6 +2452,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(index, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(index, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
@@ -2557,6 +2563,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(name, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(name, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){

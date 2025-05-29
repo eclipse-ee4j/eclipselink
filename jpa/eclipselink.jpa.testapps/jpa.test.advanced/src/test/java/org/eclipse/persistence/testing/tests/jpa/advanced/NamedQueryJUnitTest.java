@@ -111,10 +111,18 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
      */
     private void removeEmployee(EntityManager em, Employee employee) {
         Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
+        if (isOnServer()) {
+            //Ensure that entity is managed before remove
+            employee = em.find(Employee.class, employee.getId());
+        }
         em.remove(employee);
         em.remove(employee.getDepartment());
         em.remove(employee.getAddress());
         for (Equipment equipment : equipmentColl) {
+            if (isOnServer()) {
+                //Ensure that entity is managed before remove
+                equipment = em.find(Equipment.class, equipment.getId());
+            }
             EquipmentCode ec = equipment.getEquipmentCode();
             em.remove(equipment);
             if (ec != null) {
@@ -212,7 +220,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -258,7 +266,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -303,7 +311,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -349,7 +357,7 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             ex.printStackTrace();
             throw ex;
         } finally {
-            em.close();
+            closeEntityManager(em);
         }
     }
 
