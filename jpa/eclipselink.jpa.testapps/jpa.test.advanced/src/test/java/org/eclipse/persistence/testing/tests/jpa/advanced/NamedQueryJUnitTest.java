@@ -111,14 +111,18 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
      */
     private void removeEmployee(EntityManager em, Employee employee) {
         Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
-        //Ensure that entity is managed before remove
-        employee = em.find(Employee.class, employee.getId());
+        if (isOnServer()) {
+            //Ensure that entity is managed before remove
+            employee = em.find(Employee.class, employee.getId());
+        }
         em.remove(employee);
         em.remove(employee.getDepartment());
         em.remove(employee.getAddress());
         for (Equipment equipment : equipmentColl) {
-            //Ensure that entity is managed before remove
-            equipment = em.find(Equipment.class, equipment.getId());
+            if (isOnServer()) {
+                //Ensure that entity is managed before remove
+                equipment = em.find(Equipment.class, equipment.getId());
+            }
             EquipmentCode ec = equipment.getEquipmentCode();
             em.remove(equipment);
             if (ec != null) {

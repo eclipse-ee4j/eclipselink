@@ -769,7 +769,9 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         // clean up
         beginTransaction(em);
         try {
-            employee = em.find(Employee.class, employee.getId());
+            if (isOnServer()) {
+                employee = em.find(Employee.class, employee.getId());
+            }
             em.remove(employee);
             commitTransaction(em);
         } finally {
@@ -802,7 +804,9 @@ public class XmlExtendedAdvancedTest extends XmlAdvancedTest {
         assertTrue("Did not correctly persist a mapping using a class-instance converter", (add.getType() instanceof Bungalow));
 
         beginTransaction(em);
-        add = em.find(Address.class, assignedSequenceNumber);
+        if (isOnServer()) {
+            add = em.find(Address.class, assignedSequenceNumber);
+        }
         em.remove(add);
         commitTransaction(em);
     }

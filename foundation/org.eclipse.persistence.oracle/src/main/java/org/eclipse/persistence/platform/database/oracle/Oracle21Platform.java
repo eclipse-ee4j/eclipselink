@@ -24,7 +24,7 @@ public class Oracle21Platform extends Oracle19Platform {
      * @since 3.0.5
      */
     @Override
-    public boolean isOracle23() {
+    public boolean isOracle21() {
         return true;
     }
 }

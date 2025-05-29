@@ -704,7 +704,7 @@
                 <server.jndi.factory>${server.initialCtxFactory}</server.jndi.factory>
                 <server.remote.url>${server.rmi.protocol}://${server.host}:${server.rmi.port}</server.remote.url>
                 <server.test.runner.context>java:global.${project.build.finalName}.${project.build.finalName}_ejb</server.test.runner.context>
-                <!--TODO RFELCMAN Change later-->
+                <!--TODO Change later-->
                 <weblogic.domainHome>/usr/local/oracle/wls_domains/test_domain151100</weblogic.domainHome>
             </properties>
             <dependencyManagement>
