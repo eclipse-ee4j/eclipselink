@@ -28,6 +28,7 @@
     <name>Test - weaving</name>
 
     <properties>
+        <server.test.skip>true</server.test.skip>
         <argLine/>
     </properties>
 
@@ -78,12 +79,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
-                </configuration>
                 <executions>
                     <execution>
                         <id>default-test</id>
+                        <configuration>
+                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>asm-eclipselink-test</id>
@@ -101,10 +102,6 @@
                                 <eclipselink.asm.service>eclipselink</eclipselink.asm.service>
                             </systemPropertyVariables>
                         </configuration>
-                    </execution>
-                    <execution>
-                        <id>server-test</id>
-                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

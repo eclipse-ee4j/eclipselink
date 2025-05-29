@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -123,9 +123,11 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     boolean isOracle9();
 
-    boolean isOracle23();
-
     boolean isOracle12();
+
+    boolean isOracle21();
+
+    boolean isOracle23();
 
     boolean isPointBase();
 

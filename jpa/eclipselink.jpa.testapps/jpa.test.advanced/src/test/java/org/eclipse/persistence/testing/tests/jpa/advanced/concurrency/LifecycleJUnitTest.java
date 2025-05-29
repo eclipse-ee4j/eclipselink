@@ -204,7 +204,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         EntityManager em = emf.createEntityManager();
         Department dept = null;
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dept = new Department();
             // A merge will not populate the @Id field
             // A persist will populate the @Id field
@@ -221,7 +221,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
             int lifecycleAfter = uow.getLifecycle();
             assertEquals("Birth state 0 is not set after a clear on state Birth  ", 0, lifecycleAfter);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // clear em
             em.clear();
@@ -244,7 +244,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         EntityManager em = emf.createEntityManager();
         Department dept = null;
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dept = new Department();
             // A merge will not populate the @Id field and will result in a PK null exception in any find later
             // A persist will populate the @Id field
@@ -261,7 +261,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
             int lifecycleAfter = uow.getLifecycle();
             assertEquals("Birth state 0 is not set after a clear on state Birth  ", 0, lifecycleAfter);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             // don't clear em - leave following line commented
             //em.clear();
@@ -285,7 +285,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
         EntityManager em = emf.createEntityManager();
         Department dept = null;
         try {
-            em.getTransaction().begin();
+            beginTransaction(em);
             dept = new Department();
             em.persist(dept);
 
@@ -300,7 +300,7 @@ public class LifecycleJUnitTest extends JUnitTestCase {
             int lifecycleAfter = uow.getLifecycle();
             assertEquals("Birth state 0 is not set after a clear on state Birth  ", 0, lifecycleAfter);
 
-            em.getTransaction().commit();
+            commitTransaction(em);
 
             em.clear();
             int lifecycleAfterCommit = uow.getLifecycle();

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,22 @@
     <enterprise-beans>
         <session>
             <ejb-name>SingleUnitTestRunner</ejb-name>
+            <env-entry>
+                <env-entry-name>ejbLookup</env-entry-name>
+                <env-entry-type>java.lang.Boolean</env-entry-type>
+                <env-entry-value>true</env-entry-value>
+            </env-entry>
+            <persistence-context-ref>
+                <persistence-context-ref-name>persistence/xml-composite-advanced/entity-manager</persistence-context-ref-name>
+                <persistence-unit-name>xml-composite-advanced</persistence-unit-name>
+            </persistence-context-ref>
+            <persistence-unit-ref>
+                <persistence-unit-ref-name>persistence/xml-composite-advanced/factory</persistence-unit-ref-name>
+                <persistence-unit-name>xml-composite-advanced</persistence-unit-name>
+            </persistence-unit-ref>
+        </session>
+        <session>
+            <ejb-name>GenericTestRunner</ejb-name>
             <env-entry>
                 <env-entry-name>ejbLookup</env-entry-name>
                 <env-entry-type>java.lang.Boolean</env-entry-type>

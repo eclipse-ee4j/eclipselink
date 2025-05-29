@@ -36,6 +36,21 @@ import java.util.Map;
 
 public class PersistenceUnitProcessorTest extends JUnitTestCase {
 
+        /**
+     * Constructs an instance of <code>PersistenceUnitProcessorTest</code> class.
+     */
+    public PersistenceUnitProcessorTest() {
+        super();
+    }
+
+    /**
+     * Constructs an instance of <code>PersistenceUnitProcessorTest</code> class with given test case name.
+     * @param name Test case name.
+     */
+    public PersistenceUnitProcessorTest(String name) {
+        super(name);
+    }
+
     public static Test suite() {
         return new TestSuite(PersistenceUnitProcessorTest.class);
     }

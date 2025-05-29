@@ -497,6 +497,8 @@
                                     <server.run>TRUE</server.run>
                                     <is.JTA>true</is.JTA>
                                     <server.url>${server.remote.url}</server.url>
+                                    <server.usr>${server.usr}</server.usr>
+                                    <server.pwd>${server.pwd}</server.pwd>
                                     <server.testrunner.context>${server.test.runner.context}</server.testrunner.context>
                                 </systemPropertyVariables>
                                 <testFailureIgnore>${ignore.server.failures}</testFailureIgnore>
@@ -677,6 +679,104 @@
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>undeploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>server-test</id>
+                                <phase>integration-test</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>weblogic</id>
+            <properties>
+                <se.test.skip>true</se.test.skip>
+                <server.jndi.factory>${server.initialCtxFactory}</server.jndi.factory>
+                <server.remote.url>${server.rmi.protocol}://${server.host}:${server.rmi.port}</server.remote.url>
+                <server.test.runner.context>java:global.${project.build.finalName}.${project.build.finalName}_ejb</server.test.runner.context>
+                <!--TODO Change later-->
+                <weblogic.domainHome>/usr/local/oracle/wls_domains/test_domain151100</weblogic.domainHome>
+            </properties>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.oracle.weblogic</groupId>
+                        <artifactId>wlthint3client</artifactId>
+                        <version>${weblogic.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle.weblogic</groupId>
+                    <artifactId>wlthint3client</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.oracle.weblogic</groupId>
+                            <artifactId>weblogic-maven-plugin</artifactId>
+                            <version>15.1.1-0-0</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>com.oracle.weblogic</groupId>
+                        <artifactId>weblogic-maven-plugin</artifactId>
+                        <configuration>
+                            <domainHome>${weblogic.domainHome}</domainHome>
+                            <user>${server.usr}</user>
+                            <password>${server.pwd}</password>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>weblogic-start-server</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start-server</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>weblogic-deploy-application</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                                <configuration>
+                                    <source>${project.build.directory}/${project.build.finalName}.ear</source>
+                                    <failOnError>false</failOnError>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>weblogic-undeploy-application</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>undeploy</goal>
+                                </goals>
+                                <configuration>
+                                    <name>${project.build.finalName}</name>
+                                    <failOnError>false</failOnError>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>weblogic-stop-server</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop-server</goal>
                                 </goals>
                             </execution>
                         </executions>
