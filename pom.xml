@@ -120,6 +120,7 @@
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
+        <sonatypeOssDistMgmtStagingUrl/>
         <bundle.version>${release.version}.${build.qualifier}</bundle.version>
         <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
         <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
