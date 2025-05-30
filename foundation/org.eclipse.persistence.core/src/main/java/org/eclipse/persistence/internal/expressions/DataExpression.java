@@ -269,7 +269,9 @@ public abstract class DataExpression extends BaseExpression {
     private DatabaseMapping getAggregateMapping(String name) {
         List<Expression> derivedExpressions = ((ObjectExpression)baseExpression).derivedExpressions;
         if (derivedExpressions.size() > 1) {
-            if (derivedExpressions.get(derivedExpressions.size() - 2) instanceof ObjectExpression objectExpression) {
+            Expression derivedExpression = derivedExpressions.get(derivedExpressions.size() - 2);
+            if (derivedExpression.isObjectExpression()) {
+                ObjectExpression objectExpression = (ObjectExpression) derivedExpression;
                 DatabaseMapping parentMapping = null;
                 if (objectExpression.baseExpression != null) {
                     ClassDescriptor parentDescriptor = ((DataExpression) this.baseExpression).getDescriptor();
