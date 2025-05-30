@@ -162,6 +162,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.relationships.OrderLabel</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.SalesPerson</class>
         <class>org.eclipse.persistence.testing.models.jpa.relationships.ServiceCall</class>
+        <class>org.eclipse.persistence.testing.models.jpa.relationships.StreetAddress</class>
+        <class>org.eclipse.persistence.testing.models.jpa.relationships.ShippingAddress</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>

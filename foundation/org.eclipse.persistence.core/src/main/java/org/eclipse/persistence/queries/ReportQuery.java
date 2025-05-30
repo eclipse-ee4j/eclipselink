@@ -1339,11 +1339,6 @@ public class ReportQuery extends ReadAllQuery {
 
         checkDescriptor(getSession());
 
-        if (descriptor.isAggregateDescriptor()) {
-            // Not allowed
-            throw QueryException.aggregateObjectCannotBeDeletedOrWritten(descriptor, this);
-        }
-
         try {
             for (ReportItem item : getItems()) {
                 item.initialize(this);

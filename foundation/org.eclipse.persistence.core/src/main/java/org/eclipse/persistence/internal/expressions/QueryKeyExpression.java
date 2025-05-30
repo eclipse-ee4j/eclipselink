@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -464,12 +464,17 @@ public class QueryKeyExpression extends ObjectExpression {
 
     @Override
     public DatabaseMapping getMapping() {
+        return getMapping(false);
+    }
+
+    @Override
+    DatabaseMapping getMapping(boolean resolveAggregate) {
         if (!hasMapping) {
             return null;
         }
 
         if (mapping == null) {
-            mapping = super.getMapping();
+            mapping = super.getMapping(resolveAggregate);
             if (mapping == null) {
                 hasMapping = false;
             }
@@ -615,10 +620,27 @@ public class QueryKeyExpression extends ObjectExpression {
 
     /**
      * INTERNAL:
-     * Return if the expression is for a direct mapped attribute.
+     * Check whether the expression is for a direct mapped attribute.
+     * Aggregate mapping will not be resolved.
+     *
+     * @return value of {@code true} when the expression is for a direct mapped attribute
+     *         or {@code false} otherwise
      */
     @Override
     public boolean isAttribute() {
+        return isAttribute(false);
+    }
+
+    // Package local only, should not be exposed as API.
+    /**
+     * Check whether the expression is for a direct mapped attribute.
+     *
+     * @param resolveAggregate trigger resolution of aggregate mapping
+     * @return value of {@code true} when the expression is for a direct mapped attribute
+     *         or {@code false} otherwise
+     */
+    @Override
+    boolean isAttribute(boolean resolveAggregate) {
         if (isAttributeExpression == null) {
             if (getSession() == null) {
                 // We can't tell, so say no.
@@ -628,7 +650,7 @@ public class QueryKeyExpression extends ObjectExpression {
             if (queryKey != null) {
                 isAttributeExpression = queryKey.isDirectQueryKey();
             } else {
-                DatabaseMapping mapping = getMapping();
+                DatabaseMapping mapping = getMapping(true);
                 if (mapping != null) {
                     if (mapping.isVariableOneToOneMapping()) {
                         throw QueryException.cannotQueryAcrossAVariableOneToOneMapping(mapping, mapping.getDescriptor());

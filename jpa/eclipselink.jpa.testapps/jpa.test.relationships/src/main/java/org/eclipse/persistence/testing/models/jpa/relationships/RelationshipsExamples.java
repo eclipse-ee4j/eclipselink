@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,6 +70,8 @@ public class RelationshipsExamples {
         customerExample4.setOrders(ordersList);
         orderExample2.setSalesPerson(salesPerson2);
 
+        ShippingAddress shippingAddressExample1 = shippingAddressExample1();
+
         allObjects.add(customerExample1);
         allObjects.add(customerExample2);
         allObjects.add(orderExample1);
@@ -90,6 +93,8 @@ public class RelationshipsExamples {
         allObjects.add(call2);
         allObjects.add(rep);
         allObjects.add(rep2);
+
+        allObjects.add(shippingAddressExample1);
 
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         unitOfWork.registerAllObjects(allObjects);
@@ -191,4 +196,16 @@ public class RelationshipsExamples {
         salesPerson.setName("Sales Person 2");
         return salesPerson;
     }
+
+    public static ShippingAddress shippingAddressExample1() {
+        return new ShippingAddress(1001L,
+                                   "Rochester",
+                                   "Minnesota",
+                                   55901,
+                                   List.of("Peter", "Parker"),
+                                   new StreetAddress(2800,
+                                                     "37th St NW",
+                                                     List.of("Receiving Dock", "Building 040-1")));
+    }
+
 }
