@@ -266,7 +266,7 @@
         <!-- CQ #21143 -->
         <slf4j.version>2.0.12</slf4j.version>
         <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
-        <springframework.version>6.1.14</springframework.version>
+        <springframework.version>6.1.20</springframework.version>
         <!-- CQ #23233 -->
         <weld-se.version>6.0.0.Beta4</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
