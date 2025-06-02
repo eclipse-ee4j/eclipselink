@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
         Accessor accessor = databaseSession.getAccessor();
         accessor.incrementCallCount(databaseSession);
         try {
-            OracleConnection connection = (OracleConnection)databaseSession.getServerPlatform().unwrapConnection(accessor.getConnection());
+            OracleConnection connection = databaseSession.getServerPlatform().unwrapConnection(accessor.getConnection()).unwrap(OracleConnection.class);
             databaseSession.log(SessionLog.FINEST, SessionLog.CONNECTION, "dcn_registering");
             Properties properties = new Properties();
             properties.setProperty(OracleConnection.DCN_NOTIFY_ROWIDS, "true");
@@ -149,6 +149,8 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
             } catch (SQLException exception) {
                 throw DatabaseException.sqlException(exception, databaseSession.getAccessor(), databaseSession, false);
             }
+        } catch (SQLException e) {
+            throw DatabaseException.sqlException(e, databaseSession.getAccessor(), databaseSession, false);
         } finally {
             accessor.decrementCallCount();
         }
