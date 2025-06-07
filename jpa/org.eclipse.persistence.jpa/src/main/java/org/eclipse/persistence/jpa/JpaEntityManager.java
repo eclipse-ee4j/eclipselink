@@ -36,7 +36,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @author Gordon Yorke
  */
 
-public interface JpaEntityManager extends jakarta.persistence.EntityManager, AutoCloseable {
+public interface JpaEntityManager extends jakarta.persistence.EntityManager {
 
     /**
      * This method returns the current session to the requester.  The current session
