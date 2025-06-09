@@ -248,13 +248,15 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
         Accessor accessor = databaseSession.getAccessor();
         accessor.incrementCallCount(databaseSession);
         try {
-            OracleConnection connection = (OracleConnection)databaseSession.getServerPlatform().unwrapConnection(accessor.getConnection());
+            OracleConnection connection = databaseSession.getServerPlatform().unwrapConnection(accessor.getConnection()).unwrap(OracleConnection.class);
             databaseSession.log(SessionLog.FINEST, SessionLog.CONNECTION, "dcn_unregister");
             try {
                 connection.unregisterDatabaseChangeNotification(this.register);
             } catch (SQLException exception) {
                 throw DatabaseException.sqlException(exception, databaseSession.getAccessor(), databaseSession, false);
             }
+        } catch (SQLException e) {
+            throw DatabaseException.sqlException(e, databaseSession.getAccessor(), databaseSession, false);
         } finally {
             accessor.decrementCallCount();
         }
