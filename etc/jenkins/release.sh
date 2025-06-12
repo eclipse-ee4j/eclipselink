@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -102,6 +102,7 @@ echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
 (cd ${ECLIPSELINK_DIR} && \
   mvn --no-transfer-progress -U -C -B -V \
+      -pl '!:org.eclipse.persistence.distribution.tests' \
       -Poss-release,staging -DskipTests \
       -Dbuild.type=RELEASE -Ddoclint=none \
       -DstagingDescription="${ECLIPSELINK_STAGING_DESC}" \
