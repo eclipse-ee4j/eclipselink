@@ -31,7 +31,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
         <comp.xlint>-Xlint:all</comp.xlint>
         <comp.xdoclint>-Xdoclint:all,-missing</comp.xdoclint>
         <comp.test.xlint>-Xlint:all</comp.test.xlint>
@@ -243,7 +242,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -251,7 +249,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
--->
         </plugins>
     </build>
 
