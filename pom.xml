@@ -249,7 +249,7 @@
         <mysql.version>9.2.0</mysql.version>
         <mariadb.version>3.5.3</mariadb.version>
         <mssql.version>12.10.0.jre11</mssql.version>
-        <pgsql.version>42.7.6</pgsql.version>
+        <pgsql.version>42.7.7</pgsql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.5.18</logback.version>
         <oracle.jdbc.version>23.8.0.25.04</oracle.jdbc.version>
