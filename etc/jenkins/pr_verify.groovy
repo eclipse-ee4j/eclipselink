@@ -1,4 +1,4 @@
-//  Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,7 +90,7 @@ spec:
         }
     }
     environment {
-        ANT_HOME="${env.HOME}/apache-ant-1.10.14"
+        ANT_HOME='/opt/java/apache-ant-1.10.13'
         bind_address='0.0.0.0'
     }
     tools {
@@ -112,10 +112,8 @@ spec:
                         wget -nc https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.3.Final/jboss-logging-3.4.3.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.4.3.Final.jar
                         wget -nc https://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b12/javax.el-3.0.1-b12.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b12.jar
                         wget -nc https://repo1.maven.org/maven2/com/fasterxml/classmate/1.6.0/classmate-1.6.0.jar -O $HOME/extension.lib.external/classmate-1.6.0.jar
-                        wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.14-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.14-bin.tar.gz
                         wget -nc https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz -O $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
                         wget -nc https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.2.0/mysql-connector-j-8.2.0.jar -O $HOME/extension.lib.external/mysql-connector-java.jar
-                        tar -x -z -C $HOME -f $HOME/extension.lib.external/apache-ant-1.10.14-bin.tar.gz
                         tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
                     """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
