@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +19,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -399,6 +396,13 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
+     * Return snapshot of the deferred lock manager hashtable (thread - DeferredLockManager).
+     */
+    protected static Map<Thread, DeferredLockManager> getDeferredLockManagersSnapshot() {
+        return Helper.copyMap(DEFERRED_LOCK_MANAGERS);
+    }
+
+    /**
      * Init the deferred lock managers (thread - DeferredLockManager).
      */
     protected static Map initializeDeferredLockManagers() {
@@ -470,10 +474,9 @@ public class ConcurrencyManager implements Serializable {
             return true;
         }
 
-        Vector deferredLocks = lockManager.getDeferredLocks();
-        for (Enumeration deferredLocksEnum = deferredLocks.elements();
-             deferredLocksEnum.hasMoreElements();) {
-            ConcurrencyManager deferedLock = (ConcurrencyManager)deferredLocksEnum.nextElement();
+        Vector<ConcurrencyManager> deferredLocks = lockManager.getDeferredLocks();
+        for (Iterator<ConcurrencyManager> iterator = deferredLocks.iterator(); iterator.hasNext();) {
+            ConcurrencyManager deferedLock = iterator.next();
             Thread activeThread = null;
             if (deferedLock.isAcquired()) {
                 activeThread = deferedLock.getActiveThread();
@@ -817,12 +820,19 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /**
+     * Return snapshot of the deferred lock manager hashtable (thread - DeferredLockManager).
+     */
+    protected static Map<Thread, ReadLockManager> getReadLockManagersSnapshot() {
+        return Helper.copyMap(READ_LOCK_MANAGERS);
+    }
+
+    /**
      * Print the nested depth.
      */
     @Override
     public String toString() {
-        Object[] args = { Integer.valueOf(getDepth()) };
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("nest_level", args);
+        Object[] args = {getDepth()};
+        return getClass().getSimpleName() + ToStringLocalization.buildMessage("nest_level", args);
     }
 
     public Exception getStack() {
@@ -918,33 +928,33 @@ public class ConcurrencyManager implements Serializable {
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE} */
-    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquire() {
-        return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE);
+    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE} */
-    public static Map<Thread, String> getThreadsToWaitOnAcquireMethodName() {
-        return new HashMap<>(THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE);
+    public static Map<Thread, String> getThreadsToWaitOnAcquireMethodNameSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_NAME_OF_METHOD_CREATING_TRACE);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK} */
-    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireReadLock() {
-        return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK;
+    public static Map<Thread, ConcurrencyManager> getThreadsToWaitOnAcquireReadLockSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK);
     }
 
     /** Getter for {@link #THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE} */
-    public static Map<Thread, String> getThreadsToWaitOnAcquireReadLockMethodName() {
-        return THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE;
+    public static Map<Thread, String> getThreadsToWaitOnAcquireReadLockMethodNameSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_ON_ACQUIRE_READ_LOCK_NAME_OF_METHOD_CREATING_TRACE);
     }
 
     /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS} */
-    public static Set<Thread> getThreadsWaitingToReleaseDeferredLocks() {
-        return new HashSet<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS);
+    public static Set<Thread> getThreadsWaitingToReleaseDeferredLocksSnapshot() {
+        return Helper.copySet(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS);
     }
 
     /** Getter for {@link #THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE} */
-    public static Map<Thread, String> getThreadsWaitingToReleaseDeferredLocksJustification() {
-        return new HashMap<>(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE);
+    public static Map<Thread, String> getThreadsWaitingToReleaseDeferredLocksJustificationSnapshot() {
+        return Helper.copyMap(THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS_BUILD_OBJECT_COMPLETE_GOES_NOWHERE);
     }
 
     /**

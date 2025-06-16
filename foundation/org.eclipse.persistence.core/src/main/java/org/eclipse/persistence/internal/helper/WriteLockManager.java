@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,12 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
@@ -39,8 +44,6 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * INTERNAL:
@@ -632,13 +635,13 @@ public class WriteLockManager {
     // Helper data structures to have tracebility about object ids with change sets and cache keys we are sturggling to acquire
 
     /** Getter for {@link #THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS} */
-    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeys() {
-        return unmodifiableMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
+    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeysSnapshot() {
+        return Helper.copyMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
     }
 
     /** Getter for {@link #MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET} */
-    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSet() {
-        return unmodifiableMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
+    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSetSnapshot() {
+        return Helper.copyMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
     }
 
     /**
