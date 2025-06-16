@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -48,8 +48,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * INTERNAL:
@@ -652,13 +650,13 @@ public class WriteLockManager {
     // Helper data structures to have tracebility about object ids with change sets and cache keys we are sturggling to acquire
 
     /** Getter for {@link #THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS} */
-    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeys() {
-        return unmodifiableMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
+    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeysSnapshot() {
+        return Map.copyOf(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
     }
 
     /** Getter for {@link #MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET} */
-    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSet() {
-        return unmodifiableMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
+    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSetSnapshot() {
+        return Map.copyOf(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
     }
 
     /**
