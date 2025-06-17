@@ -19,8 +19,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -864,7 +862,7 @@ public class ConcurrencyManager implements Serializable {
      * @return Never null if the read lock manager does not yet exist for the current thread. otherwise its read log
      *         manager is returned.
      */
-    protected static ReadLockManager getReadLockManager(Thread thread) {
+    public static ReadLockManager getReadLockManager(Thread thread) {
         Map<Thread, ReadLockManager> readLockManagers = getReadLockManagers();
         return readLockManagers.get(thread);
     }
@@ -1121,5 +1119,29 @@ public class ConcurrencyManager implements Serializable {
 
     public Condition getInstanceLockCondition() {
         return this.instanceLockCondition;
+    }
+
+    /**
+     * Check if {@code org.eclipse.persistence.internal.helper.ConcurrencyManager} or child like {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is currently being owned for writing
+     * and if that owning thread happens to be the current thread doing the check.
+     *
+     * @return {@code false} means either the thread is currently not owned by any other thread for writing purposes. Or otherwise if is owned by some thread
+     * but the thread is not the current thread. {@code false} is returned if and only if instance is being owned by some thread
+     * and that thread is not the current thread, it is some other competing thread.
+     */
+    public boolean isAcquiredForWritingAndOwnedByDifferentThread() {
+        instanceLock.lock();
+        try {
+            if (!this.isAcquired()) {
+                return false;
+            }
+            if (this.activeThread == null) {
+                return false;
+            }
+            Thread currentThread = Thread.currentThread();
+            return this.activeThread != currentThread;
+        } finally {
+            instanceLock.unlock();
+        }
     }
 }

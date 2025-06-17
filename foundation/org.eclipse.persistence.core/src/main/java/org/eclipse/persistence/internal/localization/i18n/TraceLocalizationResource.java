@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -269,7 +269,24 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " stopping the candidate thread to make progress... We expect this code spot to never be invoked. "
                 + " Either this thread made progress or if it continues to be stuck in the releaseDeferredLock "
                 + " we most likely have an implementation bug somewhere. "},
-
+        { "concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_justification",
+                " Merge manager logic is currently stuck in the process of trying to return the cache key: {0}  \n"
+                + " this cache key is currently acquired by a competing thread: {1} . \n"
+                + " This cache key has the problem that its original object is still set to NULL. \n"
+                + "  The operation of this current thread is that by waiting for some time the current owner of the cache key will finish object building and release the cache key. \n"
+                + " Note: There is real risk that we are in a deadlock. The daedlock exists if the current thread: {2} \n"
+                + " is owning other cache key resources as a writer. Any lock acquired by the current thread might be needed by competing threads. \n"
+                + " Much in the same manner that our current thread is stuck hoping to see this specific cache key being released. \n"},
+        { "concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_page_header"
+                , "Concurrency manager - Page 08 start - Threads in MergeManager Acquiring Cache Keys for Clones to be merged into eclipselink server session cache of originals"
+                + "\n This section provides information about threads within the MergeManager that require cache keys for merging clones with changes."
+                + "\n Specifically, it focuses on the threads working in the context of an ObjectChangeSet where the server session CacheKey is found to still have CacheKy.object null,"
+                + "\n and the CacheKey is acquired by a competing thread (typically an ObjectBuilder thread)."
+                + "\nTotal number of threads waiting to see lock being released: {0}\n\n"},
+        { "concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_body"
+                , "[currentThreadNumber: {0}] [ThreadName: {1}]:  Justification for being stuck: {2}\n"},
+        { "concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_page_end"
+                , "Concurrency manager - Page 08 end - Threads in MergeManager Acquiring Cache Keys for Clones to be merged into eclipselink server session cache of originals\n"},
         { "XML_call", "XML call" },
         { "XML_data_call", "XML data call" },
         { "XML_data_delete", "XML data delete" },

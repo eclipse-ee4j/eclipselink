@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -262,7 +262,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "json_pgsql_pgobject_conversion", "Database PGobject conversion failed."},
                                            { "json_pgsql_unknown_type", "Unknown JSON type returned from database."},
                                            { "json_ora21c_jsonvalue_to_oraclevalue", "Could not convert JsonValue to OracleJsonValue."},
-                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."}
+                                           { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."},
+                                           { "missing_jpql_parser_class", "Could not load the JPQL parser class."}
                                         };
     /**
      * Return the lookup table.
