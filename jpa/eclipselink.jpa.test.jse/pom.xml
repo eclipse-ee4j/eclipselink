@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,7 +13,7 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
@@ -144,29 +144,15 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>test-jpa-jse-without-deadlock</id>
+                        <id>test-jpa-jse</id>
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
                             <skipTests>${test-skip-jpa-jse}</skipTests>
                             <reportNameSuffix>test-jpa-jse</reportNameSuffix>
-                            <excludes>
-                                <exclude>CacheDeadLockDetectionTest*</exclude>
-                            </excludes>
                             <includes>
                                 <include>*.Test*</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-jpa-jse-deadlock</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>CacheDeadLockDetectionTest*</include>
                             </includes>
                         </configuration>
                     </execution>
