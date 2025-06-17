@@ -1016,11 +1016,11 @@ public class PersistenceUnitProperties {
     public static final String PARTITIONING_CALLBACK = "eclipselink.partitioning.callback";
 
     /**
-     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding 
+     * Property "<code>eclipselink.jdbc.bind-parameters</code>" configures whether parameter binding
      * should be used in the creation of JDBC prepared statements.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1031,7 +1031,7 @@ public class PersistenceUnitProperties {
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
 
     /**
-     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether 
+     * Property "<code>eclipselink.jdbc.allow-partial-bind-parameters</code>" configures whether
      * partial parameter binding should be allowed in the creation of JDBC prepared statements.
      * <p>
      * EclipseLink determines binding behavior based on the database platform's support for binding.
@@ -1039,8 +1039,8 @@ public class PersistenceUnitProperties {
      * all binding for the whole query. Setting this property to 'true' will allow EclipseLink to bind
      * per expression, instead of per query.
      * <p>
-     * Usage of parameter binding is generally a performance optimization; 
-     * allowing for SQL and prepared statement caching, as well as usage of batch writing. 
+     * Usage of parameter binding is generally a performance optimization;
+     * allowing for SQL and prepared statement caching, as well as usage of batch writing.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
@@ -1582,7 +1582,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.logging.level</code>" property allows the default logging levels to be specified.
-     * <p>
+     *
      * <table>
      * <caption>Logging Levels:</caption>
      * <tr><td>{@link SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
@@ -1893,7 +1893,7 @@ public class PersistenceUnitProperties {
      * <b> Example 2 : </b> To change the value of
      * DatabasePlatform.supportsReturnGeneratedKeys via configuration, provide the
      * following :<br><br>
-     * 
+     *
      * {@code
      *  <property name="eclipselink.target-database-properties" value="supportsReturnGeneratedKeys=true"/>}
      * @see TargetDatabase
@@ -4044,6 +4044,23 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
+
+    /**
+     * <p>
+     * This property control in {@link org.eclipse.persistence.internal.sessions.AbstractSession#getCacheKeyFromTargetSessionForMerge(java.lang.Object, org.eclipse.persistence.internal.descriptors.ObjectBuilder, org.eclipse.persistence.descriptors.ClassDescriptor, org.eclipse.persistence.internal.sessions.MergeManager)}
+     * strategy how {@code org.eclipse.persistence.internal.identitymaps.CacheKey} will be fetched from shared cache.
+     * <p>
+     * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
+     * <ul>
+     * <li>{@code ORIGIN} (DEFAULT) - There is infinite {@linkplain java.lang.Object#wait()} call in case of some conditions during time when object/entity referred from
+     * {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is locked and modified by another thread. In some cases it should leads into deadlock.
+     * <li>{@code WAITLOOP} - Merge manager will try in the loop with timeout wait {@code cacheKey.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());}
+     * fetch object/entity from {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey}. If fetch will be successful object/entity loop finish and continue
+     * with remaining code. If not @{code java.lang.InterruptedException} is thrown and caught and used {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey} instance
+     * status is set into invalidation state. This strategy avoid deadlock issue, but there should be impact to the performance.
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE  = "eclipselink.concurrency.manager.allow.getcachekeyformerge.mode";
 
     /**
      * <p>

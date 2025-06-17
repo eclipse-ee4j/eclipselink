@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,15 +85,15 @@ public class SystemProperties {
      * LocalDateTime, OffsetDateTime, and OffsetTime types.
      */
     public static final String CONVERSION_USE_TIMEZONE = "org.eclipse.persistence.conversion.useTimeZone";
-    
+
     /**
-     * This system property can be set to restore ConversionManager behavior with converting 
+     * This system property can be set to restore ConversionManager behavior with converting
      * LocalDateTime, OffsetDateTime, and OffsetTime types back to using the JVM's default time zone instead
      * of UTC.  This restores behavior prior to fixing Bug 538296.  This property is ignored if the
      * System Property CONVERSION_USE_TIMEZONE has been set.
      */
     public static final String CONVERSION_USE_DEFAULT_TIMEZONE = "org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime";
-    
+
     /**
      * This property can be set to <code>false</code> to enable UPDATE call to set
      * foreign key value in the target row in unidirectional 1-Many mapping
@@ -156,6 +157,23 @@ public class SystemProperties {
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
+
+    /**
+     * <p>
+     * This property control in {@link org.eclipse.persistence.internal.sessions.AbstractSession#getCacheKeyFromTargetSessionForMerge(java.lang.Object, org.eclipse.persistence.internal.descriptors.ObjectBuilder, org.eclipse.persistence.descriptors.ClassDescriptor, org.eclipse.persistence.internal.sessions.MergeManager)}
+     * strategy how {@code org.eclipse.persistence.internal.identitymaps.CacheKey} will be fetched from shared cache.
+     * <p>
+     * <b>Allowed Values</b> (case-sensitive String)<b>:</b>
+     * <ul>
+     * <li>{@code ORIGIN} (DEFAULT) - There is infinite {@linkplain java.lang.Object#wait()} call in case of some conditions during time when object/entity referred from
+     * {@code org.eclipse.persistence.internal.identitymaps.CacheKey} is locked and modified by another thread. In some cases it should leads into deadlock.
+     * <li>{@code WAITLOOP} - Merge manager will try in the loop with timeout wait {@code cacheKey.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());}
+     * fetch object/entity from {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey}. If fetch will be successful object/entity loop finish and continue
+     * with remaining code. If not @{code java.lang.InterruptedException} is thrown and caught and used {@linkplain org.eclipse.persistence.internal.identitymaps.CacheKey} instance
+     * status is set into invalidation state. This strategy avoid deadlock issue, but there should be impact to the performance.
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE  = "eclipselink.concurrency.manager.allow.getcachekeyformerge.mode";
 
     /**
      * <p>
