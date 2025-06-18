@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,10 +12,10 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.jpa.test.cachedeadlock.cdi.event;
+package org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.event;
 
-import org.eclipse.persistence.jpa.test.cachedeadlock.MainThread;
-import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionMaster;
+import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.MainThread;
+import org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 

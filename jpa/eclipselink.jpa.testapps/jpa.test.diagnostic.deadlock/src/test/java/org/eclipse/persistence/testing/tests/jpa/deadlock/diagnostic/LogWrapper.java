@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,27 +12,27 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.jpa.test.diagnostic;
+package org.eclipse.persistence.testing.tests.jpa.deadlock.diagnostic;
 
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 
+import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 //Simple log handler which counts selected messages.
 public class LogWrapper extends DefaultSessionLog {
 
-    private final String CHECKED_MESSAGE;
-    private int messageCounter = 0;
+    private StringWriter sw = new StringWriter();
 
-    public LogWrapper(String checkedMessage) {
-        CHECKED_MESSAGE = checkedMessage;
+    public LogWrapper() {
+        super.setWriter(sw);
     }
 
 
     @Override
     public synchronized void log(SessionLogEntry entry) {
-        if (CHECKED_MESSAGE.equals(entry.getMessage())) {
-            messageCounter++;
-        }
         super.log(entry);
     }
 
@@ -41,11 +41,13 @@ public class LogWrapper extends DefaultSessionLog {
         return true;
     }
 
-    public String getCheckedMessage() {
-        return CHECKED_MESSAGE;
-    }
-
-    public int getMessageCount() {
-        return messageCounter;
+    public long getMessageCount(String checkedMessage) {
+        String logOutput = sw.toString();
+        Matcher matcher = Pattern.compile(Pattern.quote(checkedMessage)).matcher(logOutput);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 }
