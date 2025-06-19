@@ -483,8 +483,11 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         Set invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
         if (invalidations != null) {
-            for (Object queryKey : invalidations) {
-                this.queryResults.remove(queryKey);
+            synchronized (this.queryResults) {
+                for (Object queryKey : invalidations) {
+                    this.queryResults.remove(queryKey);
+                }
+                invalidations.clear();
             }
         }
         Class superClass = classThatChanged.getSuperclass();
