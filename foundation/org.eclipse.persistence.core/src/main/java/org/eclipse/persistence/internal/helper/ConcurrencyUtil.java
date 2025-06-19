@@ -1150,6 +1150,7 @@ public class ConcurrencyUtil {
         allRelevantThreads.addAll(concurrencyManagerState.getUnifiedMapOfThreadsStuckTryingToAcquireWriteLock().keySet());
         allRelevantThreads.addAll(concurrencyManagerState.getDeferredLockManagerMapClone().keySet());
         allRelevantThreads.addAll(concurrencyManagerState.getReadLockManagerMapClone().keySet());
+        allRelevantThreads.addAll(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone().keySet());
 
         // (b) print information about all threads
         StringWriter writer = new StringWriter();
