@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -125,6 +128,8 @@ public class WriteLockManager {
     /*  the first element in this list will be the prevailing thread */
     protected ExposedNodeLinkedList prevailingQueue;
 
+    private final Lock instancePrevailingQueueLock = new ReentrantLock();
+
     private static final String ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME = WriteLockManager.class.getName() + ".acquireLocksForClone(...)";
 
     public WriteLockManager() {
@@ -171,14 +176,16 @@ public class WriteLockManager {
                 // using the exact same approach we have been adding to the concurrency manager
                 ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
 
-                synchronized (toWaitOn) {
-                    try {
-                        if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOn.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());// wait for lock on object to be released
-                        }
-                    } catch (InterruptedException ex) {
-                        // Ignore exception thread should continue.
+                toWaitOn.getInstanceLock().lock();
+                try {
+                    if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
+                        toWaitOn.getInstanceLockCondition().await(MAX_WAIT, TimeUnit.MILLISECONDS);// wait for lock on object to be released
                     }
+                } catch (InterruptedException ex) {
+                    // Ignore exception thread should continue.
+                }
+                finally {
+                    toWaitOn.getInstanceLock().unlock();
                 }
                 Object waitObject = toWaitOn.getObject();
                 // Object may be null for loss of identity.
@@ -423,50 +430,54 @@ public class WriteLockManager {
                                 // set the QueueNode to be the node from the
                                 // linked list for quick removal upon
                                 // acquiring all locks
-                                synchronized (this.prevailingQueue) {
+                                instancePrevailingQueueLock.lock();
+                                try {
                                     mergeManager.setQueueNode(this.prevailingQueue.addLast(mergeManager));
+                                } finally {
+                                    instancePrevailingQueueLock.unlock();
                                 }
                             }
 
                             // set the cache key on the merge manager for
                             // the object that could not be acquired
                             mergeManager.setWriteLockQueued(objectChangeSet.getId());
-                            try {
-                                if (activeCacheKey != null){
-                                    //wait on the lock of the object that we couldn't get.
-                                    synchronized (activeCacheKey) {
-                                        // verify that the cache key is still locked before we wait on it, as
-                                        //it may have been released since we tried to acquire it.
-                                        if (activeCacheKey.isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
-                                                Thread thread = activeCacheKey.getActiveThread();
-                                                if (thread.isAlive()){
-                                                    long time = System.currentTimeMillis();
-                                                    activeCacheKey.wait(MAX_WAIT);
-                                                    if (System.currentTimeMillis() - time >= MAX_WAIT){
-                                                        Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
-                                                        StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
-                                                        StackTraceElement[] trace = thread.getStackTrace();
-                                                        for (StackTraceElement element : trace){
-                                                            buffer.append("\t\tat");
-                                                            buffer.append(element.toString());
-                                                            buffer.append("\n");
-                                                        }
-                                                        session.log(SessionLog.SEVERE, SessionLog.CACHE, buffer.toString());
-                                                        session.getIdentityMapAccessor().printIdentityMapLocks();
-                                                    }
-                                                }else{
-                                                    session.log(SessionLog.SEVERE, SessionLog.CACHE, "releasing_invalid_lock", new Object[] { thread.getName(),descriptor.getJavaClass(), objectChangeSet.getId()});
-                                                    //thread that held lock is no longer alive.  Something bad has happened like
-                                                    while (activeCacheKey.isAcquired()){
-                                                        // could have a depth greater than one.
-                                                        activeCacheKey.release();
-                                                    }
+                            if (activeCacheKey != null) {
+                                //wait on the lock of the object that we couldn't get.
+                                activeCacheKey.getInstanceLock().lock();
+                                try {
+                                    // verify that the cache key is still locked before we wait on it, as
+                                    //it may have been released since we tried to acquire it.
+                                    if (activeCacheKey.isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
+                                        Thread thread = activeCacheKey.getActiveThread();
+                                        if (thread.isAlive()) {
+                                            long time = System.currentTimeMillis();
+                                            activeCacheKey.getInstanceLockCondition().await(MAX_WAIT, TimeUnit.MILLISECONDS);
+                                            if (System.currentTimeMillis() - time >= MAX_WAIT) {
+                                                Object[] params = new Object[]{MAX_WAIT / 1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
+                                                StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
+                                                StackTraceElement[] trace = thread.getStackTrace();
+                                                for (StackTraceElement element : trace) {
+                                                    buffer.append("\t\tat");
+                                                    buffer.append(element.toString());
+                                                    buffer.append("\n");
                                                 }
+                                                session.log(SessionLog.SEVERE, SessionLog.CACHE, buffer.toString());
+                                                session.getIdentityMapAccessor().printIdentityMapLocks();
+                                            }
+                                        } else {
+                                            session.log(SessionLog.SEVERE, SessionLog.CACHE, "releasing_invalid_lock", new Object[]{thread.getName(), descriptor.getJavaClass(), objectChangeSet.getId()});
+                                            //thread that held lock is no longer alive.  Something bad has happened like
+                                            while (activeCacheKey.isAcquired()) {
+                                                // could have a depth greater than one.
+                                                activeCacheKey.release();
                                             }
                                         }
                                     }
-                            } catch (InterruptedException exception) {
-                                throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                                } catch (InterruptedException exception) {
+                                    throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                                } finally {
+                                    activeCacheKey.getInstanceLock().unlock();
+                                }
                             }
                             // we want to record this information so that we have traceability over this sort of problems
                             addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey, timeWhenLocksToAcquireLoopStarted);
@@ -501,8 +512,11 @@ public class WriteLockManager {
         }finally {
             if (mergeManager.getWriteLockQueued() != null) {
                 //the merge manager entered the wait queue and must be cleaned up
-                synchronized(this.prevailingQueue) {
+                instancePrevailingQueueLock.lock();
+                try {
                     this.prevailingQueue.remove(mergeManager.getQueueNode());
+                } finally {
+                    instancePrevailingQueueLock.unlock();
                 }
                 mergeManager.setWriteLockQueued(null);
             }

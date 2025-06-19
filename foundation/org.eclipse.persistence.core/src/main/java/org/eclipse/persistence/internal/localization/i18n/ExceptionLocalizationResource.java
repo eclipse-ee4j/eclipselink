@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -255,7 +255,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"},
                                            { "ora_pessimistic_locking_with_rownum", "Pessimistic locking with query row limits is not supported."},
                                            { "bean_validation_constraint_violated", "One or more Bean Validation constraints were violated while executing Automatic Bean Validation on callback event: {0} for class: {1}. Please refer to the embedded constraint violations for details."},
-                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."}
+                                           { "unsupported_classfile_version", "The {0} class was compiled with an unsupported JDK. Report this error to the EclipseLink open source project."},
+                                           { "missing_jpql_parser_class", "Could not load the JPQL parser class."}
 
                                         };
     /**

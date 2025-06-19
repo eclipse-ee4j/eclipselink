@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,24 @@
             <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
             <property name="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
             <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="cachedeadlockdetection-loopwait-pu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionMaster</class>
+        <class>org.eclipse.persistence.testing.models.jpa.deadlock.diagnostic.CacheDeadLockDetectionDetail</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.concurrency.manager.waittime" value="1"/>
+            <property name="eclipselink.concurrency.manager.maxsleeptime" value="2"/>
+            <property name="eclipselink.concurrency.manager.maxfrequencytodumptinymessage" value="800"/>
+            <property name="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="1000"/>
+            <property name="eclipselink.concurrency.manager.build.object.complete.waittime" value="5"/>
+            <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
+            <property name="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
+            <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>
+            <property name="eclipselink.concurrency.manager.allow.getcachekeyformerge.mode" value="WAITLOOP"/>
         </properties>
     </persistence-unit>
 

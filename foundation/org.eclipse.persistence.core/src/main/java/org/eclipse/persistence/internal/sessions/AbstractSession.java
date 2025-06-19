@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,8 +50,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.persistence.config.MergeManagerOperationMode;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -77,8 +79,11 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
+import org.eclipse.persistence.internal.helper.DeferredLockManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.QueryCounter;
+import org.eclipse.persistence.internal.helper.ReadLockManager;
 import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.history.HistoricalSession;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -87,6 +92,7 @@ import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.indirection.ProtectedValueHolder;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -161,8 +167,21 @@ import org.eclipse.persistence.sessions.serializers.Serializer;
  *    <li> Identity maps and caching.
  *    </ul>
  * @see DatabaseSessionImpl
+ * @see org.eclipse.persistence.sessions.Session
  */
 public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, Serializable, Cloneable {
+
+    /**
+     * See <a href="https://github.com/eclipse-ee4j/eclipselink/issues/2094">issue 2094</a>.
+     * These are threads involved in the "getCacheKeyFromTargetSessionForMerge" and that detect that the cache key
+     * somehow still has the Object of the cache key set to null.
+     * If the cache key is acquired by different thread, the thread will be waiting and hoping for that cache key
+     * to eventually stop being acquired.
+     *  But this process is highly risk as the thread doing the wait might be the owner of resources of the thread
+     *  that is currently the owner of the cache key it desires.
+     */
+    private static final Map<Thread, String> THREADS_TO_WAIT_MERGE_MANAGER_WAITING_DEFERRED_CACHE_KEYS = new ConcurrentHashMap<>();
+
     /** ExceptionHandler handles database exceptions. */
     transient protected ExceptionHandler exceptionHandler;
 
@@ -380,7 +399,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method may also be used to connect the session, this allows for the user name and password
      * to be given at login but for the other database information to be provided when the session is created.
      */
-    public AbstractSession(Login login) {
+    protected AbstractSession(Login login) {
         this(new org.eclipse.persistence.sessions.Project(login));
     }
 
@@ -468,7 +487,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
             }
         } catch (Exception e) {
-            throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("missing_jpql_parser_class"), e);
         }
         if (validation != null) {
             builder.setValidationLevel(validation);
@@ -1510,7 +1529,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * INTERNAL:
      * Release (if required) connection after call.
-     * @param query
+     * @param query database query
      */
     public void releaseConnectionAfterCall(DatabaseQuery query) {
     }
@@ -2649,7 +2668,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This should be the implementation of toString(), and also the
      * value should be calculated in the constructor for it is used all the
-     * time.  However everything is lazily initialized now and the value is
+     * time.  However, everything is lazily initialized now and the value is
      * transient for the system hashcode could vary?
      */
     public String getLogSessionString() {
@@ -2806,18 +2825,74 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                    getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
                }
                cacheKey.acquireDeferredLock();
-               original = cacheKey.getObject();
-               if (original == null) {
-                   synchronized (cacheKey) {
-                       if (cacheKey.isAcquired()) {
+
+               switch (ConcurrencyUtil.SINGLETON.getConcurrencyManagerAllowGetCacheKeyForMergeMode()) {
+                   case MergeManagerOperationMode.ORIGIN: {
+                       original = cacheKey.getObject();
+                       if (original == null) {
+                           cacheKey.getInstanceLock().lock();
                            try {
-                               cacheKey.wait();
-                           } catch (InterruptedException e) {
-                               //ignore and return
+                               if (cacheKey.isAcquired()) {
+                                   try {
+                                       cacheKey.getInstanceLockCondition().await();
+                                   } catch (InterruptedException e) {
+                                       //ignore and return
+                                   }
+                               }
+                               original = cacheKey.getObject();
+                           } finally {
+                               cacheKey.getInstanceLock().unlock();
                            }
                        }
-                       original = cacheKey.getObject();
+                       break;
                    }
+                   case MergeManagerOperationMode.WAITLOOP: {
+                       final Thread currentThread = Thread.currentThread();
+                       final String currentThreadName = currentThread.getName();
+                       final long whileStartTimeMillis = System.currentTimeMillis();
+                       final DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
+                       final ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
+
+                       original = cacheKey.getObject();
+                       boolean originalIsStillNull = original == null;
+                       boolean isToBeStuckIntoDeadlock = false;
+                       if (!originalIsStillNull) {
+                           return cacheKey;
+                       }
+                       cacheKey.getInstanceLock().lock();
+                       try {
+                           boolean someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
+                           if (!someOtherThreadCurrentlyOwningTheCacheKey) {
+                               return cacheKey;
+                           }
+                           final String cacheKeyToStringOwnedByADifferentThread = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey);
+                           String justification = TraceLocalization.buildMessage("concurrency_util_threads_having_difficulty_getting_cache_keys_with_object_different_than_null_during_merge_clones_to_cache_after_transaction_commit_justification",
+                                   new Object[] {cacheKeyToStringOwnedByADifferentThread, cacheKey.getActiveThread(), currentThreadName});
+                           try {
+                               setThreadsToWaitMergeManagerWaitingDeferredCacheKeys(justification);
+                               while (someOtherThreadCurrentlyOwningTheCacheKey && originalIsStillNull && !isToBeStuckIntoDeadlock) {
+                                   cacheKey.getInstanceLockCondition().await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);
+                                   isToBeStuckIntoDeadlock = ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(cacheKey, whileStartTimeMillis,
+                                           lockManager, readLockManager, true);
+                                   someOtherThreadCurrentlyOwningTheCacheKey = cacheKey.isAcquiredForWritingAndOwnedByDifferentThread();
+                                   original = cacheKey.getObject();
+                                   originalIsStillNull = original == null;
+
+                               }
+                           } catch (InterruptedException e) {
+                               cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                               return cacheKey;
+                           } finally {
+                               if (isToBeStuckIntoDeadlock) {
+                                   cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
+                               }
+                           }
+                       } finally {
+                           clearThreadsToWaitMergeManagerWaitingDeferredCacheKeys();
+                           cacheKey.getInstanceLock().unlock();
+                       }
+                   }
+                   break;
                }
                cacheKey.releaseDeferredLock();
            }
@@ -3093,7 +3168,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return null;
     }
 
-    /**
+    /*
      * Returns an AttributeGroup by name
      */
 
@@ -3659,7 +3734,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Read all the instances of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readAllObjects(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see Call
      */
@@ -3727,7 +3802,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * Read the first instance of the class from the database returned through execution the Call string.
      * The Call can be an SQLCall or JPQLCall.
-     *
+     * <p>
      * example: session.readObject(Employee.class, new SQLCall("SELECT * FROM EMPLOYEE"));
      * @see SQLCall
      * @see JPQLCall
@@ -4245,7 +4320,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     @Override
     public String toString() {
         StringWriter writer = new StringWriter();
-        writer.write(getSessionTypeString() + "(" + Helper.cr() + "\t" + getAccessor() + Helper.cr() + "\t" + getDatasourcePlatform() + ")");
+        writer.write(getSessionTypeString() + "(" + System.lineSeparator() + "\t" + getAccessor() + System.lineSeparator() + "\t" + getDatasourcePlatform() + ")");
         return writer.toString();
     }
 
@@ -5014,14 +5089,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void copyDescriptorNamedQueries(boolean allowSameQueryNameDiffArgsCopyToSession) {
         for (ClassDescriptor descriptor : getProject().getOrderedDescriptors()) {
-            Map queries  = descriptor.getQueryManager().getQueries();
-            if ((queries != null) && (queries.size() > 0)) {
-                for (Iterator keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
-                    Map.Entry entry = (Map.Entry) keyValueItr.next();
-                    Vector thisQueries = (Vector)entry.getValue();
-                    if ((thisQueries != null) && (thisQueries.size() > 0)){
-                        for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
-                            DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
+            Map<String, List<DatabaseQuery>> queries  = descriptor.getQueryManager().getQueries();
+            if ((queries != null) && (!queries.isEmpty())) {
+                for (Iterator<Map.Entry<String, List<DatabaseQuery>>> keyValueItr = queries.entrySet().iterator(); keyValueItr.hasNext();){
+                    Map.Entry<String, List<DatabaseQuery>> entry = keyValueItr.next();
+                    List<DatabaseQuery> thisQueries = entry.getValue();
+                    if ((thisQueries != null) && (!thisQueries.isEmpty())){
+                        for( Iterator<DatabaseQuery> thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
+                            DatabaseQuery queryToBeAdded = thisQueriesItr.next();
                             if (allowSameQueryNameDiffArgsCopyToSession){
                                 addQuery(queryToBeAdded, false);
                             } else {
@@ -5175,7 +5250,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     * or have a common inheritance hierarchy mapped root class.
     * The AttributeGroup should correspond to the object type.
     *
-    * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
        if (objectOrCollection == null || group == null) {
@@ -5350,4 +5424,16 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public boolean shouldTolerateInvalidJPQL() {
        return this.tolerateInvalidJPQL;
    }
+
+    public static Map<Thread, String> getThreadsToWaitMergeManagerWaitingDeferredCacheKeysSnapshot() {
+        return Helper.copyMap(THREADS_TO_WAIT_MERGE_MANAGER_WAITING_DEFERRED_CACHE_KEYS);
+    }
+
+    public static void clearThreadsToWaitMergeManagerWaitingDeferredCacheKeys() {
+        THREADS_TO_WAIT_MERGE_MANAGER_WAITING_DEFERRED_CACHE_KEYS.remove(Thread.currentThread());
+    }
+
+    public static void setThreadsToWaitMergeManagerWaitingDeferredCacheKeys(String justification) {
+        THREADS_TO_WAIT_MERGE_MANAGER_WAITING_DEFERRED_CACHE_KEYS.put(Thread.currentThread(), justification);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -533,7 +533,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                         session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
                         break;
                     }
-                    synchronized (cacheKey) {
+                    cacheKey.getInstanceLock().lock();
+                    try {
                         if (cacheKey.isAcquired()) {
                             try {
                                 cacheKey.wait(10);
@@ -542,6 +543,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                             }
                         }
                         domainObject = cacheKey.getObject();
+                    } finally {
+                        cacheKey.getInstanceLock().unlock();
                     }
                 }
                 cacheKey.releaseDeferredLock();

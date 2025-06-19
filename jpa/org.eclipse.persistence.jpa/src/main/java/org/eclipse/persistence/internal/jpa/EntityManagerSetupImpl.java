@@ -505,7 +505,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             sessionName = (String)puInfo.getProperties().get(PersistenceUnitProperties.SESSION_NAME);
         }
         // Specifying empty String in properties allows to remove SESSION_NAME specified in puInfo properties.
-        if(sessionName != null && sessionName.length() > 0) {
+        if(sessionName != null && !sessionName.isEmpty()) {
             return sessionName;
         }
 
@@ -564,7 +564,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 }
                 // don't set an empty String
-                if (strValue.length() > 0) {
+                if (!strValue.isEmpty()) {
                     suffix.append("_").append(Helper.getShortClassName(name)).append("=").append(strValue);
                 }
             }
@@ -604,15 +604,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     /**
      * Deploy a persistence session and return an EntityManagerFactory.
-     *
+     * <p>
      * Deployment takes a session that was partially created in the predeploy call and makes it whole.
-     *
+     * <p>
      * This means doing any configuration that requires the real class definitions for the entities.  In
      * the predeploy phase we were in a stage where we were not let allowed to load the real classes.
-     *
+     * <p>
      * Deploy could be called several times - but only the first call does the actual deploying -
      * additional calls allow to update session properties (in case the session is not connected).
-     *
+     * <p>
      * Note that there is no need to synchronize deploy method - it doesn't alter factoryCount
      * and while deploy is executed no other method can alter the current state
      * (predeploy call would just increment factoryCount; undeploy call would not drop factoryCount to 0).
@@ -746,7 +746,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         this.session.setProperties(deployProperties);
                         updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
-                            /**
+                            /*
                              * for 324213 we could add a session.loginAndDetectDatasource() call
                              * before calling initializeDescriptors when validation-only is True
                              * to avoid a native sequence exception on a generic DatabasePlatform
@@ -1276,7 +1276,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // Set logging file.
         String loggingFileString = (String)persistenceProperties.get(PersistenceUnitProperties.LOGGING_FILE);
         if (loggingFileString != null) {
-            if (!loggingFileString.trim().equals("")) {
+            if (!loggingFileString.trim().isEmpty()) {
                 try {
                     if (sessionLog!=null){
                         if (sessionLog instanceof AbstractSessionLog) {
@@ -1723,16 +1723,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Perform any steps necessary prior to actual deployment.  This includes any steps in the session
      * creation that do not require the real loaded domain classes.
-     *
+     * <p>
      * The first call to this method caches persistenceUnitInfo which is reused in the following calls.
-     *
+     * <p>
      * Note that in JSE case factoryCount is NOT incremented on the very first call
      * (by JavaSECMPInitializer.callPredeploy, typically in preMain).
      * That provides 1 to 1 correspondence between factoryCount and the number of open factories.
-     *
+     * <p>
      * In case factoryCount &gt; 0 the method just increments factoryCount.
      * factory == 0 triggers creation of a new session.
-     *
+     * <p>
      * This method and undeploy - the only methods altering factoryCount - should be synchronized.
      *
      * @return A transformer (which may be null) that should be plugged into the proper
@@ -2140,7 +2140,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     String message = LoggingLocalization.buildMessage("predeploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), "N/A", state, factoryCount});
                     try {
                         logWriter.write(message);
-                        logWriter.write(Helper.cr());
+                        logWriter.write(System.lineSeparator());
                     } catch (IOException ioex) {
                         // Ignore IOException
                     }
@@ -2366,7 +2366,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void updateSerializer(Map m, ClassLoader loader) {
         String serializer = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SERIALIZER, m, this.session);
         if (serializer != null) {
-            if (serializer.length() > 0) {
+            if (!serializer.isEmpty()) {
                 try {
                     Class transportClass = findClassForProperty(serializer, PersistenceUnitProperties.SERIALIZER, loader);
                     this.session.setSerializer((Serializer)transportClass.getConstructor().newInstance());
@@ -2534,7 +2534,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitTransactionType transactionType = this.persistenceUnitInfo.getTransactionType();
         //bug 5867753: find and override the transaction type using properties
         String transTypeString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TRANSACTION_TYPE, m, this.session);
-        if (transTypeString != null && transTypeString.length() > 0) {
+        if (transTypeString != null && !transTypeString.isEmpty()) {
             transactionType = PersistenceUnitTransactionType.valueOf(transTypeString);
         }
         //find the jta datasource
@@ -2621,7 +2621,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             return defaultDataSource;
         }
         if ( datasource instanceof String){
-            if(((String)datasource).length() > 0) {
+            if(!((String) datasource).isEmpty()) {
                 // Create a dummy DataSource that will throw an exception on access
                 return new DataSourceImpl((String)datasource, null, null, null);
             } else {
@@ -2935,6 +2935,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateConcurrencyManagerAllowInterruptedExceptionFired(m);
             updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(m);
             updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(m);
+            updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(m);
             updateConcurrencyManagerUseObjectBuildingSemaphore(m);
             updateConcurrencyManagerUseWriteLockManagerSemaphore(m);
             updateConcurrencyManagerNoOfThreadsAllowedToObjectBuildInParallel(m);
@@ -3451,8 +3452,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (parser != null) {
             if (parser.equalsIgnoreCase(ParserType.Hermes)) {
                 parser = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
-            } else if (parser.equalsIgnoreCase(ParserType.ANTLR)) {
-                parser = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
             }
             this.session.setProperty(PersistenceUnitProperties.JPQL_PARSER, parser);
         }
@@ -3650,7 +3649,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected void updateTableCreationSettings(Map m) {
         String tableCreationSuffix = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TABLE_CREATION_SUFFIX, m, session);
-        if (tableCreationSuffix != null && tableCreationSuffix.length()>0) {
+        if (tableCreationSuffix != null && !tableCreationSuffix.isEmpty()) {
             session.getPlatform().setTableCreationSuffix(tableCreationSuffix);
         }
     }
@@ -3660,7 +3659,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected void updateIndexForeignKeys(Map m) {
         String indexForeignKeys = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DDL_GENERATION_INDEX_FOREIGN_KEYS, m, this.session);
-        if (indexForeignKeys != null && (indexForeignKeys.length() > 0)) {
+        if (indexForeignKeys != null && (!indexForeignKeys.isEmpty())) {
             if (indexForeignKeys.equalsIgnoreCase("true") ){
                 this.session.getProject().getLogin().setShouldCreateIndicesOnForeignKeys(true);
             } else if (indexForeignKeys.equalsIgnoreCase("false")){
@@ -3858,6 +3857,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(allowTakingStackTraceDuringReadLockAcquisition, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, exception));
+        }
+    }
+
+    /**
+     * Related to <a href="https://github.com/eclipse-ee4j/eclipselink/issues/2094">issue 2094</a>
+     * Setup of mode how {@code org.eclipse.persistence.internal.sessions.AbstractSession.getCacheKeyFromTargetSessionForMerge(Object, ObjectBuilder, ClassDescriptor, MergeManager)}
+     * get {@code org.eclipse.persistence.internal.identitymaps.CacheKey} and related object.
+     */
+    private void updateAbstractSessionModeOfOperationOfMergeManagerGetCacheKey(Map persistenceProperties) {
+        String abstractSessionModeOfOperationOfMergeManagerGetCacheKey = EntityManagerFactoryProvider
+                .getConfigPropertyAsStringLogDebug(
+                        PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_GET_CACHE_KEY_FOR_MERGE_MODE,
+                        persistenceProperties, session);
+        if (abstractSessionModeOfOperationOfMergeManagerGetCacheKey != null) {
+            ConcurrencyUtil.SINGLETON.setConcurrencyManagerAllowGetCacheKeyForMergeMode(abstractSessionModeOfOperationOfMergeManagerGetCacheKey.trim());
         }
     }
 
@@ -4502,7 +4516,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /**
      * Create a new version of this EntityManagerSetupImpl and cache it.  Prepare "this" EntityManagerSetupImpl
      * for garbage collection.
-     *
+     * <p>
      * This call will mean any users of this EntityManagerSetupImpl will get the new version the next time
      * they look it up (for instance and EntityManager creation time)
      * @param properties
