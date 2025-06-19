@@ -148,7 +148,7 @@ public class ConcurrencyManager implements Serializable {
                 // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
                 try {
                     this.numberOfWritersWaiting.incrementAndGet();
-                    wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+                    instanceLockCondition.await(ConcurrencyUtil.SINGLETON.getAcquireWaitTime(), TimeUnit.MILLISECONDS);
                     // Run a method that will fire up an exception if we having been sleeping for too long
                     ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
                 } catch (InterruptedException exception) {
