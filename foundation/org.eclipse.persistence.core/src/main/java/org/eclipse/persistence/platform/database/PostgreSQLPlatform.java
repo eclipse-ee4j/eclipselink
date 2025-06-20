@@ -61,12 +61,13 @@ import java.util.UUID;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li>Native SQL for Date, Time, {@literal &} Timestamp.
- * <li>Native sequencing.
- * <li>Mapping of class types to database types for the schema framework.
- * <li>Pessimistic locking.
- * <li>Platform specific operators.
- * <li>LIMIT/OFFSET query syntax for select statements.
+ * <li>Native SQL for Date, Time, {@literal &} Timestamp.</li>
+ * <li>SQL time types with with fractional seconds precision support.</li>
+ * <li>Native sequencing.</li>
+ * <li>Mapping of class types to database types for the schema framework.</li>
+ * <li>Pessimistic locking.</li>
+ * <li>Platform specific operators.</li>
+ * <li>LIMIT/OFFSET query syntax for select statements.</li>
  * </ul>
  *
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
@@ -483,15 +484,15 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP"));
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP"));
 
         fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("UUID", false));
 
@@ -543,6 +544,17 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      */
     @Override
     public boolean supportsLocalTempTables() {
+        return true;
+    }
+
+    // According to PostgreSQL manuals, support of fractional seconds precision in time SQL types
+    // was added in version 7.2. This version is from 4th February 2002. Let's support it from
+    // the base level of PostgreSQL platforms.
+    // All time, timestamp, and interval accept an optional precision value p which specifies the number
+    // of fractional digits retained in the seconds field. By default, there is no explicit bound on precision.
+    // The allowed range of p is from 0 to 6 for the timestamp and interval types.
+    @Override
+    public boolean supportsFractionalTime() {
         return true;
     }
 
