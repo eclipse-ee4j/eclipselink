@@ -829,6 +829,9 @@ public class DefaultTableGenerator {
                     } else if (dbField.getPrecision() > 0) {
                         fieldDef.setSize(dbField.getPrecision());
                         fieldDef.setSubSize(dbField.getScale());
+                    // @Column(secondPrecision = <precision>), default value is -1 (not set)
+                    } else if (dbField.getSecondPrecision() >= 0) {
+                        fieldDef.setSize(dbField.getSecondPrecision());
                     }
                 }
 
