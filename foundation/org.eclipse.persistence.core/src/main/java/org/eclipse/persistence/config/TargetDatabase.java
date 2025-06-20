@@ -54,6 +54,7 @@ public final class TargetDatabase {
     public static final String  MariaDB = "MariaDB";
     public static final String  PointBase = "PointBase";
     public static final String  PostgreSQL = "PostgreSQL";
+    public static final String  PostgreSQL10 = "PostgreSQL10";
     public static final String  SQLAnywhere = "SQLAnywhere";
     public static final String  SQLServer = "SQLServer";
     public static final String  Sybase = "Sybase";
