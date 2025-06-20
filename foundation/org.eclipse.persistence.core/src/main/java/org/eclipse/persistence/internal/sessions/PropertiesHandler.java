@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -564,10 +564,15 @@ public class PropertiesHandler {
             valueArray = new Object[][] {
                 {TargetDatabase.Auto, pcg + "DatabasePlatform"},
                 {TargetDatabase.Oracle, pcg + "OraclePlatform"},
-                {TargetDatabase.Oracle8, pcg + "oracle.Oracle8Platform"},
-                {TargetDatabase.Oracle9, pcg + "oracle.Oracle9Platform"},
-                {TargetDatabase.Oracle10, pcg + "oracle.Oracle10Platform"},
-                {TargetDatabase.Oracle11, pcg + "oracle.Oracle11Platform"},
+                {TargetDatabase.Oracle8, pcg + "Oracle8Platform"},
+                {TargetDatabase.Oracle9, pcg + "Oracle9Platform"},
+                {TargetDatabase.Oracle10, pcg + "Oracle10Platform"},
+                {TargetDatabase.Oracle11, pcg + "Oracle11Platform"},
+                {TargetDatabase.Oracle12, pcg + "Oracle12Platform"},
+                {TargetDatabase.Oracle18, pcg + "Oracle18Platform"},
+                {TargetDatabase.Oracle19, pcg + "Oracle19Platform"},
+                {TargetDatabase.Oracle21, pcg + "Oracle21Platform"},
+                {TargetDatabase.Oracle23, pcg + "Oracle23Platform"},
                 {TargetDatabase.Attunity, pcg + "AttunityPlatform"},
                 {TargetDatabase.Cloudscape, pcg + "CloudscapePlatform"},
                 {TargetDatabase.Database, pcg + "DatabasePlatform"},
