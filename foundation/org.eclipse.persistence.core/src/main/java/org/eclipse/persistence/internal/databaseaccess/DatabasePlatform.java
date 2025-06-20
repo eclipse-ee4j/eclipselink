@@ -3858,6 +3858,18 @@ public class DatabasePlatform extends DatasourcePlatform {
         throw new UnsupportedOperationException("Connection user name is not supported.");
     }
 
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports setting fractional seconds
+     * precision in a SQL time or timestamp data type.
+     *
+     * @return value of {@code true} when current database platform supports
+     *         fractional seconds precision or {@code false} otherwise
+     */
+    public boolean supportsFractionalTime() {
+        return false;
+    }
+
     // Value of shouldCheckResultTableExistsQuery must be false.
     /**
      * INTERNAL:
