@@ -6,7 +6,7 @@ The [EclipseLink](http://www.eclipse.org/eclipselink) project's goal is to provi
 For tips on getting started with EclipseLink, please see the following resources:
 
 *   [EclipseLink Home Page](https://www.eclipse.org/eclipselink)
-*   [EclipseLink 2.7.16 Release Notes](https://www.eclipse.org/eclipselink/releases/2.7.php)
+*   [EclipseLink 2.7.17 Release Notes](https://github.com/eclipse-ee4j/eclipselink/releases/tag/2.7.17)
 *   [EclipseLink Documentation Center](https://www.eclipse.org/eclipselink/documentation/)
 *   [Examples and How To Documents](https://wiki.eclipse.org/EclipseLink/Examples)
 
