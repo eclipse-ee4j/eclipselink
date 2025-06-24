@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -975,6 +975,11 @@ public class DerbyPlatform extends DB2Platform {
     @Override
     public boolean supportsSequenceObjects() {
         return this.isSequenceSupported;
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return false;
     }
 
     @Override
