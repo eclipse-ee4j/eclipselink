@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -170,12 +170,36 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
      */
     @Override
     public void attribute(String namespaceURI, String localName, String qName, String value) {
-            builder.append(' ');
-            builder.append(qName);
-            builder.append('=');
-            builder.append('\"');
-            writeValue(value, true, this.builder);
-            builder.append('\"');
+        String prefix = null;
+        boolean prefixFromInput = false;
+        if (namespaceURI != null && !namespaceURI.isEmpty()
+                && !javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)
+                && !javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespaceURI)) {
+            if (qName != null && qName.indexOf(Constants.COLON) > 0) {
+                //resolve prefix from input
+                prefix = qName.substring(0, qName.indexOf(Constants.COLON));
+                prefixFromInput = true;
+            } else {
+                //resolve prefix from Namespaces resolver
+                prefix = this.getNamespaceResolver().resolveNamespaceURI(namespaceURI);
+            }
+            if (prefix == null) {
+                //generate new prefix
+                prefix = this.getNamespaceResolver().generatePrefix();
+                this.getNamespaceResolver().put(prefix, namespaceURI);
+                this.namespaceDeclaration(prefix, namespaceURI);
+            }
+        }
+        builder.append(' ');
+        if (prefix != null && !prefixFromInput) {
+            builder.append(prefix);
+            builder.append(':');
+        }
+        builder.append(qName);
+        builder.append('=');
+        builder.append('\"');
+        writeValue(value, true, this.builder);
+        builder.append('\"');
     }
 
     /**
