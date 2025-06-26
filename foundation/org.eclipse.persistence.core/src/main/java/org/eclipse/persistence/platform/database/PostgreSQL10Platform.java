@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import java.util.Map;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li>Native JSON support added in version 10.
+ * <li>Native JSON support added in version 10.</li>
  * </ul>
  * This class requires Postgres JDBC driver on the classpath.
  */

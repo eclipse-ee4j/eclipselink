@@ -1832,6 +1832,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         return false;
     }
 
+    @Override
+    public boolean supportsFractionalTime() {
+        return true;
+    }
+
     /**
      * INTERNAL: DB2 added SEQUENCE support as of (I believe) v8.
      */
