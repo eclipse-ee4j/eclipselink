@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,14 @@
 //       - Issue 1442: Implement New Jakarta Persistence 3.1 Features
 package org.eclipse.persistence.jpa.test.query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
@@ -410,6 +413,94 @@ public class TestDateTimeFunctions {
         }
     }
 
+    // Test JPQL EXTRACT(DATE FROM datetime) - default return type
+    @Test
+    public void testCriteriaExtractDateFromDateTimeDefaultReturnType() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createQuery("SELECT EXTRACT(DATE FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id");
+            q.setParameter("id", 1);
+            LocalDate y = (LocalDate) q.getSingleResult();
+            em.getTransaction().commit();
+            assertEquals(y, TS[0].toLocalDate());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL EXTRACT(DATE FROM datetime)
+    @Test
+    public void testCriteriaExtractDateFromDateTime() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<LocalDate> q = em.createQuery("SELECT EXTRACT(DATE FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", LocalDate.class);
+            q.setParameter("id", 1);
+            LocalDate y = q.getSingleResult();
+            em.getTransaction().commit();
+            assertEquals(y, TS[0].toLocalDate());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL EXTRACT(TIME FROM datetime) - default return type
+    @Test
+    public void testCriteriaExtractTimeFromDateTimeDefaultReturnType() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            Query q = em.createQuery("SELECT EXTRACT(TIME FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id");
+            q.setParameter("id", 1);
+            LocalTime y = (LocalTime) q.getSingleResult();
+            em.getTransaction().commit();
+            assertEquals(y, TS[0].toLocalTime());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+    // Test JPQL EXTRACT(TIME FROM datetime)
+    @Test
+    public void testCriteriaExtractTimeFromDateTime() {
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<LocalTime> q = em.createQuery("SELECT EXTRACT(TIME FROM e.datetimeValue) FROM DateTimeQueryEntity e WHERE e.id = :id", LocalTime.class);
+            q.setParameter("id", 1);
+            LocalTime y = q.getSingleResult();
+            em.getTransaction().commit();
+            assertEquals(y, TS[0].toLocalTime());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
     // Test LocalDateTime.now() in WHERE clause
     // SELECT e FROM DateTimeQueryEntity e WHERE e.datetime = :dateTime
     @Test
@@ -421,7 +512,7 @@ public class TestDateTimeFunctions {
             query.setParameter("datetimeValue", TS[1]);
             List<DateTimeQueryEntity> result = query.getResultList();
             em.getTransaction().commit();
-            assertEquals(result.size(), 1);
+            assertEquals(1, result.size());
         } catch (Throwable t) {
             t.printStackTrace();
             throw t;
@@ -517,8 +608,10 @@ public class TestDateTimeFunctions {
         try {
             em.getTransaction().begin();
             for (String operand : extractOps) {
-                TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
-                Number value = query.getSingleResult();
+                Query query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.dateValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1");
+                //Fetch into generic java.lang.Object
+                Object value = query.getSingleResult();
+                //But the expected type must be java.lang.Integer or java.lang.Long
                 assertTrue(value instanceof Integer || value instanceof Long);
             }
             em.getTransaction().commit();
@@ -541,8 +634,10 @@ public class TestDateTimeFunctions {
         try {
             em.getTransaction().begin();
             for (String operand : extractOps) {
-                TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
-                Number value = query.getSingleResult();
+                Query query = em.createQuery("SELECT EXTRACT(" + operand + " FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1");
+                //Fetch into generic java.lang.Object
+                Object value = query.getSingleResult();
+                //But the expected type must be java.lang.Integer
                 assertTrue(value instanceof Integer);
             }
             em.getTransaction().commit();
@@ -563,8 +658,10 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1", Number.class);
-            Number value = query.getSingleResult();
+            Query query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 1");
+            //Fetch into generic java.lang.Object
+            Object value = query.getSingleResult();
+            //But the expected type must be java.lang.Double
             assertTrue(value instanceof Double);
             em.getTransaction().commit();
         } catch (Throwable t) {
@@ -586,11 +683,13 @@ public class TestDateTimeFunctions {
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            TypedQuery<Number> query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4", Number.class);
-            Number value = query.getSingleResult();
+            Query query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4");
+            //Fetch into generic java.lang.Object
+            Object value = query.getSingleResult();
+            //But the expected type must be java.lang.Double
             assertTrue(value instanceof Double);
             double secWithNs = (double)TS[3].getNano() / 1000000000 + TS[3].getSecond();
-            double diff = Math.abs(secWithNs - value.doubleValue());
+            double diff = Math.abs(secWithNs - (Double) value);
             assertTrue(diff < 0.000001);
             em.getTransaction().commit();
         } catch (Throwable t) {

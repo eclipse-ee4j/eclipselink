@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -546,6 +546,10 @@ public class DerbyPlatform extends DB2Platform {
         };
         // SECOND emulation: CAST(SECOND(:first) AS FLOAT)
         private static final String[] SECOND_STRINGS = new String[] {"CAST(SECOND(", ") AS FLOAT)"};
+        // DATE emulation: DATE(:first)
+        private static final String[] DATE_STRINGS = new String[] {"DATE(", ")"};
+        // TIME emulation: TIME(:first)
+        private static final String[] TIME_STRINGS = new String[] {"TIME(", ")"};
 
         // Derby native database Strings to be printed for EXTRACT expression
         // Printing of prefix database String is set to be skipped for Derby
@@ -609,6 +613,33 @@ public class DerbyPlatform extends DB2Platform {
             printer.printString(WEEK_STRINGS[2]);
         }
 
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form Derby platform

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2024 IBM Corporation. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
@@ -1036,6 +1036,12 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
                     break;
                 case "SECOND":
                     type[0] = Double.class;
+                    break;
+                case "DATE":
+                    type[0] = LocalDate.class;
+                    break;
+                case "TIME":
+                    type[0] = LocalTime.class;
                     break;
                 default:
                     type[0] = Object.class;

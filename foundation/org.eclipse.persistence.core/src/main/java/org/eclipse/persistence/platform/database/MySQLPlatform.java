@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -625,6 +625,11 @@ public class MySQLPlatform extends DatabasePlatform {
 
         // SECOND emulation: (EXTRACT(MICROSECOND FROM date)/1e6+EXTRACT(SECOND FROM date))
         private static final String[] SECOND_STRINGS = new String[] {"(EXTRACT(MICROSECOND FROM ", ")/1e6+EXTRACT(SECOND FROM ", "))"};
+        // DATE emulation: DATE(:first)
+        private static final String[] DATE_STRINGS = new String[] {"DATE(", ")"};
+        // TIME emulation: TIME(:first)
+        private static final String[] TIME_STRINGS = new String[] {"TIME(", ")"};
+
 
         private MySQLExtractOperator() {
             super();
@@ -648,6 +653,33 @@ public class MySQLPlatform extends DatabasePlatform {
             printer.printString(SECOND_STRINGS[2]);
         }
 
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form MySQL platform
