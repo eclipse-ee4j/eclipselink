@@ -138,21 +138,23 @@ public class ArrayRecord extends DatabaseRecord {
     public Object get(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
-            int index = key.index;
-            if ((index >= 0) && (index < this.size)) {
-                DatabaseField field = this.fieldsArray[index];
-                if ((field == key) || field.equals(key)) {
-                    return this.valuesArray[index];
-                }
-            }
-            for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
-                DatabaseField field = this.fieldsArray[fieldIndex];
-                if ((field == key) || field.equals(key)) {
-                    // PERF: If the fields index was not set, then set it.
-                    if (index == -1) {
-                        key.setIndex(fieldIndex);
+            if(key!=null){
+                int index = key.index;
+                if ((index >= 0) && (index < this.size)) {
+                    DatabaseField field = this.fieldsArray[index];
+                    if ((field == key) || field.equals(key)) {
+                        return this.valuesArray[index];
                     }
-                    return this.valuesArray[fieldIndex];
+                }
+                for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                    DatabaseField field = this.fieldsArray[fieldIndex];
+                    if ((field == key) || field.equals(key)) {
+                        // PERF: If the fields index was not set, then set it.
+                        if (index == -1) {
+                            key.setIndex(fieldIndex);
+                        }
+                        return this.valuesArray[fieldIndex];
+                    }
                 }
             }
             return null;
