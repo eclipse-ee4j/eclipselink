@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -202,6 +202,30 @@ public class ExtractOperator extends ExpressionOperator {
         printPartSql(first, second, printer);
     }
 
+    /**
+     * Printer for DATE ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific SQL printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+        printPartSql(first, second, printer);
+    }
+
+    /**
+     * Printer for TIME ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific SQL printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+        printPartSql(first, second, printer);
+    }
+
     @Override
     public void printDuo(Expression first, Expression second, ExpressionSQLPrinter printer) {
         if (second.isLiteralExpression()) {
@@ -229,6 +253,12 @@ public class ExtractOperator extends ExpressionOperator {
                     return;
                 case "SECOND":
                     printSecondSQL(first, second, printer);
+                    return;
+                case "DATE":
+                    printDateSQL(first, second, printer);
+                    return;
+                case "TIME":
+                    printTimeSQL(first, second, printer);
                     return;
                 default:
                     throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
@@ -267,6 +297,12 @@ public class ExtractOperator extends ExpressionOperator {
                         return;
                     case "SECOND":
                         printSecondSQL(items.get(0), second, printer);
+                        return;
+                    case "DATE":
+                        printDateSQL(items.get(0), second, printer);
+                        return;
+                    case "TIME":
+                        printTimeSQL(items.get(0), second, printer);
                         return;
                     default:
                         throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
@@ -414,6 +450,29 @@ public class ExtractOperator extends ExpressionOperator {
         printPartJava(first, second, printer);
     }
 
+    /**
+     * Printer for DATE ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific Java printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+        printPartJava(first, second, printer);
+    }
+
+    /**
+     * Printer for TIME ({@code <date-time-part>} argument.
+     * This method shall be overriden to implement platform specific Java printer.
+     *
+     * @param first first expression ({@code <date-time>} argument)
+     * @param second second expression ({@code <date-time-part>} argument)
+     * @param printer target printer
+     */
+    protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+        printPartJava(first, second, printer);
+    }
 
     @Override
     public void printJavaDuo(Expression first, Expression second, ExpressionJavaPrinter printer) {
@@ -442,6 +501,12 @@ public class ExtractOperator extends ExpressionOperator {
                     return;
                 case "SECOND":
                     printSecondJava(first, second, printer);
+                    return;
+                case "DATE":
+                    printDateJava(first, second, printer);
+                    return;
+                case "TIME":
+                    printTimeJava(first, second, printer);
                     return;
                 default:
                     throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "
@@ -480,6 +545,12 @@ public class ExtractOperator extends ExpressionOperator {
                         return;
                     case "SECOND":
                         printSecondJava(items.get(0), second, printer);
+                        return;
+                    case "DATE":
+                        printDateJava(items.get(0), second, printer);
+                        return;
+                    case "TIME":
+                        printTimeJava(items.get(0), second, printer);
                         return;
                     default:
                         throw new IllegalArgumentException("Unknown EXTRACT function datetime_field: "

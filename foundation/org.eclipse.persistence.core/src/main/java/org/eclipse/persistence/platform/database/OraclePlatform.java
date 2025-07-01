@@ -775,6 +775,10 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         private static final String[] QUARTER_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'Q'))"};
         // ISO WEEK emulation: TO_NUMBER(TO_CHAR(", ", 'IW'))
         private static final String[] WEEK_STRINGS = new String[] {"TO_NUMBER(TO_CHAR(", ", 'IW'))"};
+        // DATE emulation: TRUNC(:first)
+        private static final String[] DATE_STRINGS = new String[] {"TRUNC(", ")"};
+        // TIME emulation: TO_TIMESTAMP(:first) (Oracle DB doesn't have any conversion function into TIME so whole TIMESTAMP is returned and result is converted to time in EclipseLink/Java)
+        private static final String[] TIME_STRINGS = new String[] {"TO_TIMESTAMP(", ")"};
 
         private OracleExtractOperator() {
             super();
@@ -808,6 +812,33 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             printer.printString(WEEK_STRINGS[1]);
         }
 
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form Oracle platform

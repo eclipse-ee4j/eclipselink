@@ -684,19 +684,27 @@ public class ReportQuery extends ReadAllQuery {
             }
             return getDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, elements);
         } else if (shouldReturnSingleAttribute()) {
-            return reportQueryResult.getResults().get(0);
+            return convertSingleQueryResult(reportQueryResult.getResults().get(0));
         } else if (shouldReturnArray()) {
             return reportQueryResult.toArray();
         } else if (shouldReturnWithoutReportQueryResult()) {
             if (reportQueryResult.size() == 1) {
-                return reportQueryResult.getResults().get(0);
+                return convertSingleQueryResult(reportQueryResult.getResults().get(0));
             } else {
                 return reportQueryResult.toArray();
             }
         } else if (shouldReturnSingleValue()) {
-            return reportQueryResult.getResults().get(0);
+            return convertSingleQueryResult(reportQueryResult.getResults().get(0));
         } else {
             return reportQueryResult;
+        }
+    }
+
+    private Object convertSingleQueryResult(Object queryResult) {
+        if (this.getResultClass() != null) {
+            return session.getPlatform().convertObject(queryResult, this.getResultClass());
+        } else {
+            return queryResult;
         }
     }
 
