@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -534,6 +534,10 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         private static final String[] SECOND_STRINGS = new String[] {"(CAST(DATEPART(NANOSECOND, ", ") AS FLOAT)/1000000000 + DATEPART(SECOND, ", "))"};
         // WEEK replacement: ISO_WEEK
         private static final String[] WEEK_STRINGS = new String[] {"DATEPART(ISO_WEEK,", ")"};
+        // DATE emulation: CONVERT(DATE, :first)
+        private static final String[] DATE_STRINGS = new String[] {"CONVERT(DATE,", ")"};
+        // TIME emulation: CONVERT(TIME, :first)
+        private static final String[] TIME_STRINGS = new String[] {"CONVERT(TIME,", ")"};
 
         // SQL Server native database Strings to be printed for EXTRACT expression
         private static List<String> mssqlDbStrings() {
@@ -580,6 +584,33 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
             printer.printString(WEEK_STRINGS[1]);
         }
 
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(TIME_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[1]);
+        }
     }
 
     // Create EXTRACT operator form SQL Server platform

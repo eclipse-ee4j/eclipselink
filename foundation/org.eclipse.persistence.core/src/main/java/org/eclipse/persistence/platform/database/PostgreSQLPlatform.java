@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -146,6 +147,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(pgsqlRoundOperator());
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "LOCALTIME"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "LOCALTIMESTAMP"));
+        addOperator(postgreExtractOperator());
     }
 
     // Emulate ROUND(:x,:n) as FLOOR((:x)*10^(:n)+0.5)/10^(:n)
@@ -262,6 +264,50 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
+    }
+
+    // PostgreSQL EXTRACT operator needs emulation of DATE and TIME date/time parts.
+    private static final class PostgreSQLExtractOperator extends ExtractOperator {
+
+        // DATE emulation: DATE(:first)
+        private static final String[] DATE_STRINGS = new String[] {"DATE(", ")"};
+        // TIME emulation: :first::TIME
+        private static final String[] TIME_STRINGS = new String[] {"::TIME"};
+
+        private PostgreSQLExtractOperator() {
+            super();
+        }
+
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printTimeSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            first.printSQL(printer);
+            printer.printString(TIME_STRINGS[0]);
+        }
+
+        @Override
+        protected void printTimeJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            first.printJava(printer);
+            printer.printString(TIME_STRINGS[0]);
+        }
+    }
+
+    // Create EXTRACT operator form Derby platform
+    private static ExpressionOperator postgreExtractOperator() {
+        return new PostgreSQLPlatform.PostgreSQLExtractOperator();
     }
 
     /**
