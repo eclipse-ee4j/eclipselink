@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -177,6 +177,9 @@ public class ConstructorReportItem extends ReportItem  {
                             constructorArgTypes[index] = (Class) mapping.getContainerPolicy().getKeyType();
                         }
                     } else {
+                        if (mapping.isDirectCollectionMapping()) {
+                            throw QueryException.exceptionWhileUsingConstructorWrongTypeExpression(mapping.getContainerPolicy().getContainerClass(), query);
+                        }
                         constructorArgTypes[index] = mapping.getAttributeClassification();
                     }
                 } else if (argumentItem.getResultType() != null) {

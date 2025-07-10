@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -169,6 +169,7 @@ public class QueryException extends ValidationException {
     public final static int UPDATE_ALL_QUERY_ADD_UPDATE_DEFINES_WRONG_FIELD = 6135;
     public final static int POLYMORPHIC_REPORT_ITEM_NOT_SUPPORTED = 6136;
     public final static int EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION = 6137;
+    public final static int EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE = 6184;
     public final static int TEMP_TABLES_NOT_SUPPORTED = 6138;
     public final static int MAPPING_FOR_FIELDRESULT_NOT_FOUND = 6139;
     public final static int JOIN_EXPRESSIONS_NOT_APPLICABLE_ON_NON_OBJECT_REPORT_ITEM = 6140;
@@ -537,6 +538,18 @@ public class QueryException extends ValidationException {
         QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION, args));
         queryException.setErrorCode(EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION);
         queryException.setInternalException(thrownException);
+        queryException.setQuery(query);
+        return queryException;
+    }
+
+    /**
+     * An exception was throwing while using a ReportQuery with a constructor expression and wrong type is passed to the constructor.
+     */
+    public static QueryException exceptionWhileUsingConstructorWrongTypeExpression(Class<?> argumentType, DatabaseQuery query) {
+        Object[] args = { argumentType.getName() };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE, args));
+        queryException.setErrorCode(EXCEPTION_WHILE_USING_CONSTRUCTOR_EXPRESSION_WRONG_TYPE);
         queryException.setQuery(query);
         return queryException;
     }
