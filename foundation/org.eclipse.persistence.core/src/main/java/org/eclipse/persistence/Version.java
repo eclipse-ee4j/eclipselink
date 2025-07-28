@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,6 @@
 //              getVersionString(), printVersionString(), and main()
 //     2 July 2018   Radek Felcman - changed source of build info into version.properties generated during build
 package org.eclipse.persistence;
-
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
 
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -117,23 +114,19 @@ public final class Version {
     }
 
     public static void main(String[] args) {
-        try {
-            System.out.println();
-            System.out.print(getProduct());
-            System.out.println(" (EclipseLink)");
-            System.out.print("   Build Version:   ");
-            System.out.println(getVersionString());
-            System.out.print("   Build Qualifier: ");
-            System.out.println(getQualifier());
-            System.out.print("   Build Date:      ");
-            System.out.println(getBuildDate());
-            System.out.print("   Build Time:      ");
-            System.out.println(getBuildTime());
-            System.out.print("   Build Revision:  ");
-            System.out.println(getBuildRevision());
-        }catch (Throwable e) {
-            AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, e);
-        }
+        System.out.println();
+        System.out.print(getProduct());
+        System.out.println(" (EclipseLink)");
+        System.out.print("   Build Version:   ");
+        System.out.println(getVersionString());
+        System.out.print("   Build Qualifier: ");
+        System.out.println(getQualifier());
+        System.out.print("   Build Date:      ");
+        System.out.println(getBuildDate());
+        System.out.print("   Build Time:      ");
+        System.out.println(getBuildTime());
+        System.out.print("   Build Revision:  ");
+        System.out.println(getBuildRevision());
     }
 
     private static Properties loadProperties(String propertiesFileName) throws Exception {

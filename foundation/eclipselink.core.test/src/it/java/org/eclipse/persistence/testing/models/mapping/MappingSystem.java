@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,18 @@ package org.eclipse.persistence.testing.models.mapping;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class MappingSystem extends TestSystem {
     protected static boolean useFastTableCreatorAfterInitialCreate = Boolean
@@ -213,12 +219,12 @@ public class MappingSystem extends TestSystem {
         unitOfWork.registerObject(employee1);
         manager.registerObject(employee1, "example1");
         manager.registerObject(employee1.computer, "example1");
-        manager.registerObject(employee1.shipments.firstElement(), "example1");
+        manager.registerObject(employee1.shipments.get(0), "example1");
 
         unitOfWork.registerObject(employee2);
         manager.registerObject(employee2, "example2");
         manager.registerObject(employee2.computer, "example2");
-        manager.registerObject(employee2.shipments.firstElement(), "example2");
+        manager.registerObject(employee2.shipments.get(0), "example2");
 
         unitOfWork.registerObject(employee3);
         manager.registerObject(employee3, "example3");
@@ -227,12 +233,12 @@ public class MappingSystem extends TestSystem {
         unitOfWork.registerObject(employee4);
         manager.registerObject(employee4, "example4");
         manager.registerObject(employee4.computer, "example4");
-        manager.registerObject(employee4.shipments.firstElement(), "example4");
+        manager.registerObject(employee4.shipments.get(0), "example4");
 
         unitOfWork.registerObject(employee5);
         manager.registerObject(employee5, "example5");
         manager.registerObject(employee5.computer, "example5");
-        manager.registerObject(employee5.shipments.firstElement(), "example5");
+        manager.registerObject(employee5.shipments.get(0), "example5");
 
         unitOfWork.registerObject(employee6);
         manager.registerObject(employee6, "example6");

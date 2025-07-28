@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
-import java.util.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConstructorProject extends org.eclipse.persistence.sessions.Project {
 
@@ -58,8 +59,8 @@ public class ConstructorProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.tests.validation.NoParamConstructor.class);
-        Vector vector = new Vector();
-        vector.addElement("NO_PARAM_CONST_TBL");
+        List<String> vector = new ArrayList<>();
+        vector.add("NO_PARAM_CONST_TBL");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("NO_PARAM_CONST_TBL.NO_CONST_ID");
 
@@ -97,8 +98,8 @@ public class ConstructorProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.tests.validation.PrivateConstructor.class);
-        Vector vector = new Vector();
-        vector.addElement("PRIVATE_CONST_TBL");
+        List<String> vector = new ArrayList<>();
+        vector.add("PRIVATE_CONST_TBL");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("PRIVATE_CONST_TBL.PRIVATE_CONST_ID");
 

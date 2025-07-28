@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.insurance;
 
-import java.util.*;
-import java.io.*;
 import org.eclipse.persistence.internal.helper.Helper;
+
+import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represents an insurance policy holder.
@@ -49,11 +50,11 @@ public class PolicyHolder implements Serializable {
     }
 
     public void addChildName(String name) {
-        getChildrenNames().addElement(name);
+        getChildrenNames().add(name);
     }
 
     public void addPhone(Phone phone) {
-        getPhones().addElement(phone);
+        getPhones().add(phone);
     }
 
     /**
@@ -61,7 +62,7 @@ public class PolicyHolder implements Serializable {
      * Note that it is important to maintain bi-directional relationships both ways when adding.
      */
     public Policy addPolicy(Policy policy) {
-        getPolicies().addElement(policy);
+        getPolicies().add(policy);
         policy.setPolicyHolder(this);
         return policy;
     }
@@ -236,7 +237,7 @@ public class PolicyHolder implements Serializable {
     }
 
     public void removePhone(Phone device) {
-        getPhones().removeElement(device);
+        getPhones().remove(device);
     }
 
     /**
@@ -244,7 +245,7 @@ public class PolicyHolder implements Serializable {
      * Note that it is important to maintain bi-directional relationships both ways when removing.
      */
     public Policy removePolicy(Policy policy) {
-        getPolicies().removeElement(policy);
+        getPolicies().remove(policy);
         policy.setPolicyHolder(null);
         return policy;
     }

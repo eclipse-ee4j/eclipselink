@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,39 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.Cursor;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.MethodBaseQueryRedirector;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryRedirector;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.clientserver.*;
+import org.eclipse.persistence.testing.tests.clientserver.ServerSessionTestAdapter;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 public class QueryFrameworkTestSuite extends TestSuite {
     public QueryFrameworkTestSuite() {
@@ -513,7 +535,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("phone");
 
         Vector arguments = new Vector();
-        arguments.addElement(employee.getPhoneNumbers().firstElement());
+        arguments.add(employee.getPhoneNumbers().get(0));
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedAnyOfObjectComparisonTest");
@@ -531,7 +553,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("name");
 
         Vector arguments = new Vector();
-        arguments.addElement(employee.getFirstName().toLowerCase());
+        arguments.add(employee.getFirstName().toLowerCase());
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedContainsSubStringTest");
@@ -548,7 +570,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.setShouldPrepare(false);
 
         Vector arguments = new Vector();
-        arguments.addElement(null);
+        arguments.add(null);
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, null, arguments);
         test.setName("PredefinedEqualNullTest");
@@ -569,9 +591,9 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         Vector arguments = new Vector();
         Vector names = new Vector();
-        names.addElement(employee.getFirstName());
-        names.addElement("Hommer-Simpson");
-        arguments.addElement(names);
+        names.add(employee.getFirstName());
+        names.add("Hommer-Simpson");
+        arguments.add(names);
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedInTest");
@@ -589,7 +611,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         MethodBaseQueryRedirector redirector = new MethodBaseQueryRedirector(QueryFrameworkTestSuite.class, "findEmployeeByAnEmployee");
         query.setRedirector(redirector);
         Vector arguments = new Vector();
-        arguments.addElement(employee);
+        arguments.add(employee);
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedMethodRedirectorTest");
@@ -607,7 +629,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("employee");
 
         Vector arguments = new Vector();
-        arguments.addElement(employee);
+        arguments.add(employee);
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedNestedParameterTest");
@@ -625,7 +647,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("address");
 
         Vector arguments = new Vector();
-        arguments.addElement(employee.getAddress());
+        arguments.add(employee.getAddress());
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedObjectComparisonTest");
@@ -644,8 +666,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         query.addArgument("gender");
 
         Vector arguments = new Vector();
-        arguments.addElement(employee.getFirstName());
-        arguments.addElement(employee.getGender());
+        arguments.add(employee.getFirstName());
+        arguments.add(employee.getGender());
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedObjectTypeTest");
@@ -668,7 +690,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
             });
 
         Vector arguments = new Vector();
-        arguments.addElement(employee);
+        arguments.add(employee);
 
         PredefinedQueryTest test = new PredefinedQueryTest(query, employee, arguments);
         test.setName("PredefinedRedirectorTest");
@@ -724,6 +746,6 @@ public class QueryFrameworkTestSuite extends TestSuite {
     }
 
     public static Object findEmployeeByAnEmployee(org.eclipse.persistence.sessions.Session session, Vector arguments) {
-        return arguments.firstElement();
+        return arguments.get(0);
     }
 }

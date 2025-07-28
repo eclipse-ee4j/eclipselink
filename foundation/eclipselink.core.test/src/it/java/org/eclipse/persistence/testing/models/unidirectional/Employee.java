@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,13 @@
 //     ailitchev - Uni-directional OneToMany
 package org.eclipse.persistence.testing.models.unidirectional;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a scaled-down version of Employee that uses UnidirectionalOneToManyMappings for managedEmployees and phoneNumbers.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,24 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.interfaces;
 
-import java.util.*;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
+import java.util.Vector;
 
 public class InterfaceWithTablesSystem extends TestSystem {
     @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
 
-        descriptors.addElement(showDescriptor());
-        descriptors.addElement(programDescriptor());
-        descriptors.addElement(networkDescriptor());
-        descriptors.addElement(scheduleDescriptor());
-        descriptors.addElement(commercialDescriptor());
+        descriptors.add(showDescriptor());
+        descriptors.add(programDescriptor());
+        descriptors.add(networkDescriptor());
+        descriptors.add(scheduleDescriptor());
+        descriptors.add(commercialDescriptor());
         session.addDescriptors(descriptors);
     }
 
@@ -94,8 +99,8 @@ public class InterfaceWithTablesSystem extends TestSystem {
         zena.setDescription("Zena the worrier princess");
         zena.setDuration(Float.valueOf(20));
 
-        schedule.segments.addElement(eatYourWeaties);
-        schedule.segments.addElement(zena);
+        schedule.segments.add(eatYourWeaties);
+        schedule.segments.add(zena);
 
         UnitOfWork uow = session.acquireUnitOfWork();
         uow.registerObject(schedule);

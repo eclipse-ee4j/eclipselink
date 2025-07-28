@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ScrollableCursor;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import java.util.Vector;
 
 /**
  *  CR#4139
@@ -118,11 +122,11 @@ public class ScrollableCursorBackwardReadingTest extends TestCase {
                 // in reverse through the same list.
                 int totalItems = 0;
                 while (cursor.hasNext()) {
-                    readWithNext.addElement(cursor.next());
+                    readWithNext.add(cursor.next());
                     totalItems++;
                 }
                 while (cursor.hasPrevious()) {
-                    readWithPrevious.addElement(cursor.previous());
+                    readWithPrevious.add(cursor.previous());
                     totalItems--;
                 }
 
@@ -131,7 +135,7 @@ public class ScrollableCursorBackwardReadingTest extends TestCase {
                 int size = readWithPrevious.size();
                 for (int i = 0; i < readWithNext.size(); i++) {
                     cursorSuccess =
-                            (cursorSuccess && (readWithNext.elementAt(i) == readWithPrevious.elementAt((size - 1) -
+                            (cursorSuccess && (readWithNext.get(i) == readWithPrevious.get((size - 1) -
                                                                                                        i)));
                 }
 

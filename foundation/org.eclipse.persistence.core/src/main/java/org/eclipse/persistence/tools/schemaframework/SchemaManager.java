@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 import java.io.Writer;
 import java.net.URL;
@@ -79,8 +80,8 @@ public class SchemaManager {
         this.session = session;
     }
 
-    public SchemaManager(org.eclipse.persistence.sessions.DatabaseSession session) {
-        this.session = ((DatabaseSessionImpl)session);
+    public SchemaManager(DatabaseSession session) {
+        this((DatabaseSessionImpl)session);
     }
 
     protected Writer getDropSchemaWriter() {

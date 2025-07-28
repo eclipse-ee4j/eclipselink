@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
-import org.eclipse.persistence.testing.models.insurance.*;
+import org.eclipse.persistence.testing.models.insurance.InsuranceSystem;
 import org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkClientSessionTestModel;
-import org.eclipse.persistence.sessions.server.Server;
 
 
 /**

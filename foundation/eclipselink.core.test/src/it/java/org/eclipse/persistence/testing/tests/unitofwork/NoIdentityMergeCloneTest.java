@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,6 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -26,6 +23,9 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.framework.TransactionalTestCase;
 import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 
 public class NoIdentityMergeCloneTest extends TransactionalTestCase {
@@ -81,7 +81,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
     @Override
     public void test() {
         this.objectToBeWritten =
-                (PolicyHolder)(getSession().readAllObjects(org.eclipse.persistence.testing.models.insurance.PolicyHolder.class)).firstElement();
+                (PolicyHolder)(getSession().readAllObjects(PolicyHolder.class)).get(0);
         this.objectToBeWritten =
                 (PolicyHolder)getSession().acquireUnitOfWork().registerObject(this.objectToBeWritten);
         this.objectToBeWritten.setAddress(null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.inmemory;
 
-import java.util.Vector;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
 import java.util.Enumeration;
-
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.sessions.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import java.util.Vector;
 
 /**
  * Test for feature 2612601: conforming without registering in the Unit Of Work.
@@ -110,13 +113,13 @@ public class UnitOfWorkConformWithoutRegisteringTest extends TestCase {
 
         // Case 1: Change one employee's address so he/she no longer lives in Ontario,
         // and register the employee too.
-        Employee insider = (Employee)ontarioEmployees.elementAt(0);
+        Employee insider = (Employee)ontarioEmployees.get(0);
         this.emigrant = (Employee)uow.registerExistingObject(insider);
         this.emigrant.getAddress().setProvince("ICN");
 
         // Case 2: Change one employee's address so he/she no longer lives in Ontario,
         // but only register the address, not the employee.
-        this.emigrant2 = (Employee)ontarioEmployees.elementAt(1);
+        this.emigrant2 = (Employee)ontarioEmployees.get(1);
         Address incheonAddress = (Address)uow.registerExistingObject(emigrant2.getAddress());
         incheonAddress.setProvince("ICN");
 
@@ -129,7 +132,7 @@ public class UnitOfWorkConformWithoutRegisteringTest extends TestCase {
         // Bob should be returned by the conforming query, as its address is now
         // in Ontario, it won't be unless Bob is registered first.
         // Bug 2675667 has been entered for this.
-        Employee outsider = (Employee)nonOntarioEmployees.elementAt(0);
+        Employee outsider = (Employee)nonOntarioEmployees.get(0);
         this.immigrant = (Employee)uow.registerExistingObject(outsider);
         this.immigrant.getAddress().setProvince("ONT");
 

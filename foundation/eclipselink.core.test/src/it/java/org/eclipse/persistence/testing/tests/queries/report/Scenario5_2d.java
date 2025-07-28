@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.util.*;
-
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class Scenario5_2d extends ReportQueryTestCase {
     CursoredStream stream;
@@ -59,7 +62,7 @@ public class Scenario5_2d extends ReportQueryTestCase {
             stream = (CursoredStream)getSession().executeQuery(reportQuery);
         } catch (org.eclipse.persistence.exceptions.EclipseLinkException qe) {
             results = new Vector();
-            results.addElement(qe);
+            results.add(qe);
         }
     }
 
@@ -67,10 +70,10 @@ public class Scenario5_2d extends ReportQueryTestCase {
     protected void verify() {
         try {
             if (results == null || results.size() != 1 ||
-                !(results.firstElement() instanceof ConversionException ce)) {
+                !(results.get(0) instanceof ConversionException ce)) {
                 throw new TestErrorException("Should have caught conversion exception: " +
                                              ConversionException.COULD_NOT_BE_CONVERTED_EXTENDED,
-                                             (Exception)results.firstElement());
+                                             (Exception)results.get(0));
             }
             if (ce.getErrorCode() != ConversionException.COULD_NOT_BE_CONVERTED_EXTENDED) {
                 throw new TestErrorException("Should have caught conversion exception: " +

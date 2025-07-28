@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.math.BigDecimal;
-
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
@@ -25,6 +21,9 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator;
+
+import java.math.BigDecimal;
+import java.util.Vector;
 
 
 public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVerifyTestCase {
@@ -59,7 +58,7 @@ public class NestedUnitOfWorkDeleteConformedNestedNewObjectTest extends AutoVeri
         if (results.size() > 1) {
             throw new TestErrorException("The read all query on primary key returned more than one object see bug # 3183379");
         }
-        Employee nestedEmployee = (Employee)results.firstElement();
+        Employee nestedEmployee = (Employee)results.get(0);
 
         nestedUow1.deleteObject(nestedEmployee);
         nestedUow1.commit();

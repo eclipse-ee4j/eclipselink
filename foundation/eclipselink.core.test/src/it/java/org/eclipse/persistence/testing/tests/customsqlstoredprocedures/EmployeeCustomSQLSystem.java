@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,21 +15,39 @@
 //     Markus KARG - SQL Anywhere now using WATCOM-SQL instead of Transact-SQL.
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import org.eclipse.persistence.exceptions.ValidationException;
-import java.io.IOException;
-import java.io.Writer;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
-import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.NestedTableDefinition;
+import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
+import org.eclipse.persistence.tools.schemaframework.TypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.VarrayDefinition;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * <b>Purpose</b>: To define system behavior.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.util.Vector;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
 import org.eclipse.persistence.testing.models.events.AboutToInsertMultiTableObject;
-import org.eclipse.persistence.testing.models.events.EventHookSystem;
 import org.eclipse.persistence.testing.models.events.AboutToInsertSingleTableObject;
+import org.eclipse.persistence.testing.models.events.EventHookSystem;
 import org.eclipse.persistence.testing.tests.events.MultipleTableAboutToInsertTest;
 import org.eclipse.persistence.testing.tests.events.SingleTableAboutToInsertTest;
 import org.eclipse.persistence.testing.tests.unitofwork.UOWSystem;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Vector;
 
 public class SimultaneousTestsModel extends TestModel {
     protected Session originalSession;

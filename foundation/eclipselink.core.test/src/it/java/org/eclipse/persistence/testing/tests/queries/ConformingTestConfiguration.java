@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.expressions.*;
-import java.util.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 /**
  * <b>Purpose:</b>Helps setup and reset a wide variety of conforming tests.
@@ -42,8 +45,8 @@ public class ConformingTestConfiguration {
         ReadAllQuery query = new ReadAllQuery(Employee.class, criteria);
         Vector initiallyUnconforming = (Vector)session.executeQuery(query);
 
-        Employee modifiedIn1 = (Employee)unitOfWork.registerExistingObject(initiallyUnconforming.elementAt(0));
-        Employee modifiedIn2 = (Employee)unitOfWork.registerExistingObject(initiallyUnconforming.elementAt(initiallyUnconforming.size() - 1));
+        Employee modifiedIn1 = (Employee)unitOfWork.registerExistingObject(initiallyUnconforming.get(0));
+        Employee modifiedIn2 = (Employee)unitOfWork.registerExistingObject(initiallyUnconforming.get(initiallyUnconforming.size() - 1));
         Employee newEmployee = (Employee)unitOfWork.newInstance(Employee.class);
 
         emp = new ExpressionBuilder();
@@ -51,9 +54,9 @@ public class ConformingTestConfiguration {
         query = new ReadAllQuery(Employee.class, criteria);
         Vector initiallyConforming = (Vector)session.executeQuery(query);
 
-        Employee deleted = (Employee)initiallyConforming.elementAt(0);
-        Employee modifiedOut1 = (Employee)unitOfWork.registerExistingObject(initiallyConforming.elementAt(1));
-        Employee modifiedOut2 = (Employee)unitOfWork.registerExistingObject(initiallyConforming.elementAt(initiallyConforming.size() - 1));
+        Employee deleted = (Employee)initiallyConforming.get(0);
+        Employee modifiedOut1 = (Employee)unitOfWork.registerExistingObject(initiallyConforming.get(1));
+        Employee modifiedOut2 = (Employee)unitOfWork.registerExistingObject(initiallyConforming.get(initiallyConforming.size() - 1));
 
         modifiedIn1.setSalary(80000);
         modifiedIn2.setSalary(70000);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+
+import java.util.Vector;
 
 /**
  * Test the cursored stream feature by performing a cursor read on the database
@@ -106,7 +109,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
             stream2.close();
             while (!stream.atEnd()) {
                 databaseObject = stream.read();
-                getCursoredQueryObjects().addElement(databaseObject);
+                getCursoredQueryObjects().add(databaseObject);
                 stream.releasePrevious();
             }
         } finally {
@@ -137,12 +140,12 @@ CursoredStreamTest extends AutoVerifyTestCase {
 
         int first = 0;
         int last = getNormalQueryObjects().size() - 1;
-        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(first),
-                                                            getNormalQueryObjects().elementAt(first))) {
+        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().get(first),
+                                                            getNormalQueryObjects().get(first))) {
             throw new TestErrorException("The First Objects do not match");
         }
-        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().elementAt(last),
-                                                            getNormalQueryObjects().elementAt(last))) {
+        if (!((AbstractSession)getSession()).compareObjects(getCursoredQueryObjects().get(last),
+                                                            getNormalQueryObjects().get(last))) {
             throw new TestErrorException("The Last Objects do not match");
         }
 

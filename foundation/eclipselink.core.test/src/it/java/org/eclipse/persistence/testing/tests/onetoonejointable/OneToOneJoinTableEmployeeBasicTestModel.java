@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,6 @@
 //       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
 package org.eclipse.persistence.testing.tests.onetoonejointable;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -28,11 +25,36 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.onetoonejointable.*;
+import org.eclipse.persistence.testing.framework.DeleteObjectTest;
+import org.eclipse.persistence.testing.framework.InsertObjectTest;
+import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
+import org.eclipse.persistence.testing.framework.ReadAllCallTest;
+import org.eclipse.persistence.testing.framework.ReadAllCallWithOrderingTest;
+import org.eclipse.persistence.testing.framework.ReadAllTest;
+import org.eclipse.persistence.testing.framework.ReadObjectCallTest;
+import org.eclipse.persistence.testing.framework.ReadObjectTest;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicInsertObjectTest;
+import org.eclipse.persistence.testing.framework.UnitOfWorkBasicUpdateObjectTest;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
+import org.eclipse.persistence.testing.models.onetoonejointable.Address;
+import org.eclipse.persistence.testing.models.onetoonejointable.Child;
+import org.eclipse.persistence.testing.models.onetoonejointable.Employee;
+import org.eclipse.persistence.testing.models.onetoonejointable.EmployeePopulator;
+import org.eclipse.persistence.testing.models.onetoonejointable.EmployeeSystem;
+import org.eclipse.persistence.testing.models.onetoonejointable.LargeProject;
+import org.eclipse.persistence.testing.models.onetoonejointable.Project;
+import org.eclipse.persistence.testing.models.onetoonejointable.SmallProject;
 import org.eclipse.persistence.testing.tests.expressions.ReadObjectExpressionTest;
 import org.eclipse.persistence.testing.tests.writing.ComplexUpdateTest;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This model tests reading/writing/deleting through using the employee demo.
@@ -764,13 +786,13 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         @Override
         protected void testBatchAttributes() {
             Vector result = (Vector) this.objectsFromDatabase;
-            List<Child> children = ((Employee) result.elementAt(0)).getChildren();
-            ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
-            ((Employee) result.elementAt(0)).getProjects().size();
+            List<Child> children = ((Employee) result.get(0)).getChildren();
+            ((Employee) result.get(0)).getResponsibilitiesList().size();
+            ((Employee) result.get(0)).getProjects().size();
             if ((children == null) || (children.isEmpty())) {
                     throw new TestErrorException("The original query was corrupted when made part of a batch query.");
             }
-            if (((Employee) result.elementAt(0)).getAddress() == null) {
+            if (((Employee) result.get(0)).getAddress() == null) {
                     throw new TestErrorException("The original query was corrupted when made part of a batch query.");
             }
         }

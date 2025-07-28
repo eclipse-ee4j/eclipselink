@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class SimpleLengthTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     @Override
@@ -24,7 +24,7 @@ public class SimpleLengthTest extends org.eclipse.persistence.testing.tests.jpql
             throw new TestWarningException("This test is not supported on SQL Server. Because 'LENGTH' is not a recognized function name on SQL Server.");
         }
 
-        Employee emp = (Employee)getSomeEmployees().firstElement();
+        Employee emp = (Employee)getSomeEmployees().get(0);
 
         String ejbqlString;
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     tware - test for bug 324459
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -24,6 +22,8 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentPerson;
 import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentPhoneNumber;
+
+import java.math.BigDecimal;
 
 /**
  *  Test for bug 324459

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * Simple sales rep object. Just a test fixture.
@@ -47,14 +47,14 @@ public class AbstractSalesRep implements Serializable {
      *
      */
     public void addOrder(AbstractOrder order) {
-        orders.addElement(order);
+        orders.add(order);
     }
 
     /**
      *
      */
     public void addOrder2(AbstractOrder order) {
-        orders2.addElement(order);
+        orders2.add(order);
     }
 
     /**
@@ -108,14 +108,14 @@ public class AbstractSalesRep implements Serializable {
      *
      */
     public void removeOrder(AbstractOrder order) {
-        orders.removeElement(order);
+        orders.remove(order);
     }
 
     /**
      *
      */
     public void removeOrder2(AbstractOrder order) {
-        orders2.removeElement(order);
+        orders2.remove(order);
     }
 
     /**

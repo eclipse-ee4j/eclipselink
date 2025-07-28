@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.tests.validation;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.sessions.Project;
 
 
@@ -74,16 +74,16 @@ public class ConstructorTest extends ExceptionTest {
             java.util.Vector exceptionList = ic.getCaughtExceptions();
 
             for (int i = 0; i < exceptionList.size(); i++) {
-                if (exceptionList.elementAt(i) instanceof DescriptorException) {
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.ILLEGAL_ACCESS_WHILE_CONSTRUCTOR_INSTANTIATION) {
+                if (exceptionList.get(i) instanceof DescriptorException) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.ILLEGAL_ACCESS_WHILE_CONSTRUCTOR_INSTANTIATION) {
                         illegalAccessConstructorInit = true;
                     }
 
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_CONSTRUCTOR_INSTANTIATION) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_CONSTRUCTOR_INSTANTIATION) {
                         noSuchMethodConstructorInit = true;
                     }
 
-                    if (((DescriptorException)(exceptionList.elementAt(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY) {
+                    if (((DescriptorException)(exceptionList.get(i))).getErrorCode() == DescriptorException.NO_SUCH_METHOD_WHILE_INITIALIZING_INSTANTIATION_POLICY) {
                         noSuchMethodInstantiationInit = true;
                     }
                 }

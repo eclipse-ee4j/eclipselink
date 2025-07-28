@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,6 @@
 //     05/05/2009 Andrei Ilitchev
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.tests.orderedlist;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.annotations.OrderCorrectionType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -44,11 +38,23 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestModel;
-import org.eclipse.persistence.testing.models.orderedlist.*;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.models.orderedlist.Child;
+import org.eclipse.persistence.testing.models.orderedlist.Employee;
+import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
+import org.eclipse.persistence.testing.models.orderedlist.LargeProject;
+import org.eclipse.persistence.testing.models.orderedlist.NullsLastOrderedListContainerPolicy;
+import org.eclipse.persistence.testing.models.orderedlist.PhoneNumber;
+import org.eclipse.persistence.testing.models.orderedlist.Project;
+import org.eclipse.persistence.testing.models.orderedlist.SmallProject;
 
-import org.eclipse.persistence.testing.framework.TestProblemException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 public class OrderListTestModel extends TestModel {
     /*

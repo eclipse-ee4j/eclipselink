@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.ownership;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.Serializable;
+import java.util.Vector;
 
 public class ObjectD implements Serializable {
     public Number id;
@@ -32,9 +34,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example1(example));
-        objects.addElement(ObjectE.example2(example));
-        objects.addElement(ObjectE.example3(example));
+        objects.add(ObjectE.example1(example));
+        objects.add(ObjectE.example2(example));
+        objects.add(ObjectE.example3(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D1");
@@ -45,9 +47,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example4(example));
-        objects.addElement(ObjectE.example5(example));
-        objects.addElement(ObjectE.example6(example));
+        objects.add(ObjectE.example4(example));
+        objects.add(ObjectE.example5(example));
+        objects.add(ObjectE.example6(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D2");
@@ -58,9 +60,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example7(example));
-        objects.addElement(ObjectE.example8(example));
-        objects.addElement(ObjectE.example9(example));
+        objects.add(ObjectE.example7(example));
+        objects.add(ObjectE.example8(example));
+        objects.add(ObjectE.example9(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D3");
@@ -71,9 +73,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example10(example));
-        objects.addElement(ObjectE.example11(example));
-        objects.addElement(ObjectE.example12(example));
+        objects.add(ObjectE.example10(example));
+        objects.add(ObjectE.example11(example));
+        objects.add(ObjectE.example12(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D4");
@@ -84,9 +86,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example13(example));
-        objects.addElement(ObjectE.example14(example));
-        objects.addElement(ObjectE.example15(example));
+        objects.add(ObjectE.example13(example));
+        objects.add(ObjectE.example14(example));
+        objects.add(ObjectE.example15(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D5");
@@ -97,9 +99,9 @@ public class ObjectD implements Serializable {
         ObjectD example = new ObjectD();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectE.example16(example));
-        objects.addElement(ObjectE.example17(example));
-        objects.addElement(ObjectE.example18(example));
+        objects.add(ObjectE.example16(example));
+        objects.add(ObjectE.example17(example));
+        objects.add(ObjectE.example18(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("D6");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.UnitOfWork;
-import org.eclipse.persistence.testing.tests.distributedservers.DistributedServer;
-import org.eclipse.persistence.testing.tests.distributedservers.DistributedServersModel;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
@@ -27,6 +25,8 @@ import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
+import org.eclipse.persistence.testing.tests.distributedservers.DistributedServer;
+import org.eclipse.persistence.testing.tests.distributedservers.DistributedServersModel;
 
 /**
  * Test the interaction of object with different cache synchronization types.  Ensure
@@ -79,13 +79,13 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
         Employee charles = (Employee)getSession().readObject(Employee.class, expression);
         Employee workingCharles = (Employee)uow.registerObject(charles);
         workingCharles.setSalary(workingCharles.getSalary() + 1);
-        project = (Project)workingCharles.getProjects().firstElement();
+        project = (Project)workingCharles.getProjects().get(0);
         // Attempt to change the project name.  Limitations on the length of project name
         // mean that we have a minute risk of duplication here.
         project.setName(project.getName().substring(0, 2) + "-changed");
         address = workingCharles.getAddress();
         address.setCity(address.getCity() + "-changed");
-        PhoneNumber phoneNumber = (PhoneNumber)workingCharles.getPhoneNumbers().firstElement();
+        PhoneNumber phoneNumber = (PhoneNumber)workingCharles.getPhoneNumbers().get(0);
         phoneNumber.setNumber("7654321");
         verbal = new Employee();
         verbal.setFirstName("Verbal");
@@ -107,7 +107,7 @@ public class MultipleCacheSyncTypeTest extends ConfigurableCacheSyncDistributedT
         if (distributedChuck.getAddress().getCity().equals(chuck.getAddress().getCity())) {
             throw new TestErrorException("Address was propogated to distributed cache even though it was not set to.");
         }
-        if (distributedChuck.getPhoneNumbers().firstElement().equals(chuck.getPhoneNumbers().firstElement())) {
+        if (distributedChuck.getPhoneNumbers().get(0).equals(chuck.getPhoneNumbers().get(0))) {
             throw new TestErrorException("PhoneNumber was not propogated to distributed cache.");
         }
         if (getObjectFromDistributedCache(verbal) == null) {

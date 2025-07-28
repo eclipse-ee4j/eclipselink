@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,17 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.models.orderedlist;
 
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
  * <b>Purpose</b>: Abstract superclass for Large &amp; Small projects in Employee Demo

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.optimization;
 
-import java.util.*;
-
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 public class BatchReadingTest extends TestCase {
     BatchFetchType batchType;
@@ -51,11 +53,11 @@ public class BatchReadingTest extends TestCase {
     @Override
     public void verify() {
         PopulationManager manager = PopulationManager.getDefaultManager();
-        Vector<Object> v = manager.getAllObjectsForClass(Restaurant.class);
+        List<Object> v = manager.getAllObjectsForClass(Restaurant.class);
         for (Enumeration enumtr = result.elements(); enumtr.hasMoreElements(); ) {
             Restaurant resDatabase = (Restaurant)enumtr.nextElement();
-            for (Enumeration<Object> enum1 = v.elements(); enum1.hasMoreElements(); ) {
-                Restaurant resPop = (Restaurant)enum1.nextElement();
+            for (Object enum1: v) {
+                Restaurant resPop = (Restaurant)enum1;
                 if (resDatabase.getName().equals(resPop.getName())) {
                     if (!((AbstractSession)getSession()).compareObjects(resDatabase, resPop)) {
                         throw new TestErrorException("Batchreading - one To Many Relationship : Object from database (" +

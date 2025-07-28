@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.Vector;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import java.util.Vector;
 
 /**
  * <b>Purpose</b>: Test for bug 2782991: Find by Primary Key with
@@ -138,9 +141,9 @@ public class ConformResultsWithPrimaryKeyExpressionTest extends ConformResultsIn
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         Vector employees = (Vector)getSession().executeQuery(query);
         for (int i = 0; i < (employees.size() - 1); i++) {
-            unitOfWork.registerExistingObject(employees.elementAt(i));
+            unitOfWork.registerExistingObject(employees.get(i));
         }
-        Employee unregisteredEmployee = (Employee)employees.elementAt(employees.size() - 1);
+        Employee unregisteredEmployee = (Employee)employees.get(employees.size() - 1);
 
         // Further tests the not exists case when the query goes to the session.
         getSession().getIdentityMapAccessor().removeFromIdentityMap(unregisteredEmployee);

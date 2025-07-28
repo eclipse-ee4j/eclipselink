@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 //       - 244206: discoverUnregisteredNewObjects doesn't populate knownNewObjects but unregisteredExstingObjects
 package org.eclipse.persistence.testing.tests.collections;
 
-import java.math.BigDecimal;
-
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.models.collections.Location;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
+
+import java.math.BigDecimal;
 
 /**
  * BUG - 244206. Tests unregistered new objects are found in a ManyToMany relation

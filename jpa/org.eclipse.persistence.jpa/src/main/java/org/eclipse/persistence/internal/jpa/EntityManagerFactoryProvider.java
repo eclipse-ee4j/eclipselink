@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -181,17 +181,7 @@ public class EntityManagerFactoryProvider {
     }
 
     protected static Object getConfigPropertyLogDebug(String propertyKey, Map overrides, AbstractSession session, boolean useSystemAsDefault){
-        Object value = null;
-        if (overrides != null){
-            value = overrides.get(propertyKey);
-        }
-        if ((value == null) && useSystemAsDefault){
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyKey));
-            } else {
-                value = System.getProperty(propertyKey);
-            }
-        }
+        Object value = getConfigProperty(propertyKey, overrides, useSystemAsDefault);
         if ((value != null) && (session !=  null)) {
             if (session.shouldLog(SessionLog.FINEST, SessionLog.PROPERTIES)) {
                 String overrideValue = PersistenceUnitProperties.getOverriddenLogStringForProperty(propertyKey);

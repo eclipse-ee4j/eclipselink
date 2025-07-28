@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.multipletable;
 
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestCollection;
+import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.models.multipletable.Cow;
 import org.eclipse.persistence.testing.models.multipletable.Horse;
 import org.eclipse.persistence.testing.models.multipletable.Human;
+import org.eclipse.persistence.testing.models.multipletable.MultipleTableSystem;
 import org.eclipse.persistence.testing.models.multipletable.SuperCow;
 import org.eclipse.persistence.testing.models.multipletable.SuperHorse;
 import org.eclipse.persistence.testing.models.multipletable.SuperSwan;
 import org.eclipse.persistence.testing.models.multipletable.Swan;
-import org.eclipse.persistence.testing.models.multipletable.MultipleTableSystem;
 
 /**
  * Testing model for multiple table tests

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
-import java.util.*;
-
-import java.io.*;
-
-import java.math.BigDecimal;
-
-import java.sql.Time;
-
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.sessions.DataRecord;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
@@ -146,7 +146,7 @@ public class IsolatedEmployee implements Serializable {
      */
     public void addManagedEmployee(IsolatedEmployee employee) {
         setChanged();
-        getManagedEmployees().addElement(employee);
+        getManagedEmployees().add(employee);
         employee.setManager(this);
     }
 
@@ -155,18 +155,18 @@ public class IsolatedEmployee implements Serializable {
      */
     public void addPhoneNumber(IsolatedPhoneNumber phoneNumber) {
         setChanged();
-        getPhoneNumbers().addElement(phoneNumber);
+        getPhoneNumbers().add(phoneNumber);
         phoneNumber.setOwner(this);
     }
 
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         setChanged();
-        getProjects().addElement(project);
+        getProjects().add(project);
     }
 
     public void addResponsibility(String responsibility) {
         setChanged();
-        getResponsibilitiesList().addElement(responsibility);
+        getResponsibilitiesList().add(responsibility);
     }
 
     /**
@@ -493,7 +493,7 @@ public class IsolatedEmployee implements Serializable {
      */
     public void removeManagedEmployee(IsolatedEmployee employee) {
         setChanged();
-        getManagedEmployees().removeElement(employee);
+        getManagedEmployees().remove(employee);
         employee.setManager(null);
     }
 
@@ -505,17 +505,17 @@ public class IsolatedEmployee implements Serializable {
      */
     public void removePhoneNumber(IsolatedPhoneNumber phoneNumber) {
         setChanged();
-        getPhoneNumbers().removeElement(phoneNumber);
+        getPhoneNumbers().remove(phoneNumber);
     }
 
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         setChanged();
-        getProjects().removeElement(project);
+        getProjects().remove(project);
     }
 
     public void removeResponsibility(String responsibility) {
         setChanged();
-        getResponsibilitiesList().removeElement(responsibility);
+        getResponsibilitiesList().remove(responsibility);
     }
 
     /**

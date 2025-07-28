@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     04/24/2012 ailitchev - Bug 362318 - Custom ValueHolder POJO cannot be Serialized
 package org.eclipse.persistence.testing.tests.feature;
 
-import java.io.IOException;
-
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
 import org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy;
-
 import org.eclipse.persistence.testing.framework.TestCase;
+
+import java.io.IOException;
 
 public class ContainerIndirectionPolicySerializationTest extends TestCase {
 
@@ -38,6 +37,6 @@ public class ContainerIndirectionPolicySerializationTest extends TestCase {
         ContainerIndirectionPolicy deserializedPolicy = (ContainerIndirectionPolicy)SerializationHelper.deserialize(bytes);
         deserializedPolicy.initialize();
         Object container = deserializedPolicy.valueFromRow(Boolean.TRUE);
-        assertEquals(container.getClass(), IndirectList.class);
+        assertEquals(IndirectList.class, container.getClass());
     }
 }

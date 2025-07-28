@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,16 +12,19 @@
 
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.transparentindirection.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.indirection.IndirectMap;
+import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
+import org.eclipse.persistence.testing.models.transparentindirection.MappedOrder;
+import org.eclipse.persistence.testing.models.transparentindirection.Order;
+import org.eclipse.persistence.testing.models.transparentindirection.SetOrder;
 
 /**
  * Test indirection functionality when setting an indirect container's

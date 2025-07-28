@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.ownership;
 
-import java.io.*;
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.mappings.querykeys.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.mappings.querykeys.OneToOneQueryKey;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.Serializable;
+import java.util.Vector;
 
 public class ObjectB implements Serializable {
     public Number id;
@@ -45,8 +46,8 @@ public class ObjectB implements Serializable {
         ObjectB example = new ObjectB();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectC.example1(example));
-        objects.addElement(ObjectC.example2(example));
+        objects.add(ObjectC.example1(example));
+        objects.add(ObjectC.example2(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("B1");
@@ -57,8 +58,8 @@ public class ObjectB implements Serializable {
         ObjectB example = new ObjectB();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectC.example2(example));
-        objects.addElement(ObjectC.example3(example));
+        objects.add(ObjectC.example2(example));
+        objects.add(ObjectC.example3(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("B2");
@@ -69,8 +70,8 @@ public class ObjectB implements Serializable {
         ObjectB example = new ObjectB();
         Vector objects = new Vector();
 
-        objects.addElement(ObjectC.example3(example));
-        objects.addElement(ObjectC.example1(example));
+        objects.add(ObjectC.example3(example));
+        objects.add(ObjectC.example1(example));
 
         example.getOneToMany().setValue(objects);
         example.setName("B3");

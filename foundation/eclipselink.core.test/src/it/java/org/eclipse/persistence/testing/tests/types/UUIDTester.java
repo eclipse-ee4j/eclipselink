@@ -98,7 +98,7 @@ public class UUIDTester extends TypeTester {
     public static Vector testInstances() {
         Vector tests = new Vector(1);
 
-        tests.addElement(new UUIDTester(UUID.fromString(UUID_TEST_VALUE)));
+        tests.add(new UUIDTester(UUID.fromString(UUID_TEST_VALUE)));
         return tests;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 
 /**
  * Abstract superclass for testing various cascading features
@@ -67,14 +70,14 @@ public abstract class CascadingTest extends TestCase {
 
             //PhoneNumber should have been refreshed from the database. Ensure that it was not refreshed from cache
             if (m_nCascadeType == CASCADE_PRIVATE) {
-                if (!((PhoneNumber)m_reloadedEmployee.getPhoneNumbers().elementAt(0)).getType().equals(m_szPhoneNumber)) {
+                if (!((PhoneNumber)m_reloadedEmployee.getPhoneNumbers().get(0)).getType().equals(m_szPhoneNumber)) {
                     throw new TestErrorException(m_szTestName + ": private cascaded parts were not refreshed from db");
                 }
             }
 
             //ManagedEmployee name should have been refreshed from the database. Ensure that it was not refreshed from cache
             if (m_nCascadeType == CASCADE_ALL) {
-                if (!((Employee)m_reloadedEmployee.getManagedEmployees().elementAt(0)).getFirstName().equals(m_szManagedEmployee)) {
+                if (!((Employee)m_reloadedEmployee.getManagedEmployees().get(0)).getFirstName().equals(m_szManagedEmployee)) {
                     throw new TestErrorException(m_szTestName + ": public cascaded parts were not refreshed from db");
                 }
             }
@@ -101,14 +104,14 @@ public abstract class CascadingTest extends TestCase {
 
             //Check that private cascaded objects in the cache have been refreshed with db data
             if (m_nCascadeType == CASCADE_PRIVATE) {// || (m_nCascadeType == CASCADE_ALL))
-                if (!((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).getType().equals(m_szPhoneNumber)) {
+                if (!((PhoneNumber)employeeFromDatabase.getPhoneNumbers().get(0)).getType().equals(m_szPhoneNumber)) {
                     throw new TestErrorException(m_szTestName + ": private cache data not refreshed from db");
                 }
             }
 
             //Check that all cascaded objects in the cache have been refreshed with db data
             if (m_nCascadeType == CASCADE_ALL) {
-                if (!((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).getFirstName().equals(m_szManagedEmployee)) {
+                if (!((Employee)employeeFromDatabase.getManagedEmployees().get(0)).getFirstName().equals(m_szManagedEmployee)) {
                     throw new TestErrorException(m_szTestName + ":public cache data not refreshed from db");
                 }
             }
@@ -146,17 +149,17 @@ public abstract class CascadingTest extends TestCase {
     @Override
     public void test() {
         m_szFirstName = employeeFromDatabase.getFirstName();
-        m_szPhoneNumber = ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).getType();
-        m_szManagedEmployee = ((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).getFirstName();
+        m_szPhoneNumber = ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().get(0)).getType();
+        m_szManagedEmployee = ((Employee)employeeFromDatabase.getManagedEmployees().get(0)).getFirstName();
 
         //Change the employees name
         employeeFromDatabase.setFirstName("Foobar");
 
         //Change the first phone number
-        ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().elementAt(0)).setType("FooNumber");
+        ((PhoneNumber)employeeFromDatabase.getPhoneNumbers().get(0)).setType("FooNumber");
 
         //Change the manager
-        ((Employee)employeeFromDatabase.getManagedEmployees().elementAt(0)).setFirstName("MrFoobar");
+        ((Employee)employeeFromDatabase.getManagedEmployees().get(0)).setFirstName("MrFoobar");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.forceupdate;
 
-import java.util.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -1845,11 +1846,11 @@ public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO employeeV
     return employeeVLIO;
 }
 
-protected Vector<Object> getAllObjects()
+protected List<Object> getAllObjects()
 {
     return populationManager.getAllObjects();
 }
-public Vector<Object> getAllObjectsForClass(Class<?> domainClass)
+public List<Object> getAllObjectsForClass(Class<?> domainClass)
 {
     return populationManager.getAllObjectsForClass(domainClass);
 }

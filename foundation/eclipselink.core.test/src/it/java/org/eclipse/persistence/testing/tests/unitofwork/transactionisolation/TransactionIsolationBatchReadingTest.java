@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork.transactionisolation;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -28,6 +26,8 @@ import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 
 /**
@@ -84,7 +84,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
 
         query.setSelectionCriteria(maleExp);
         Vector males = (Vector)getSession().executeQuery(query);
-        Employee originalMale = (Employee)males.elementAt(0);
+        Employee originalMale = (Employee)males.get(0);
         Employee male = (Employee)unitOfWork.registerObject(originalMale);
 
         // read the males before early transaction started and the females after.
@@ -92,7 +92,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
 
         query.setSelectionCriteria(femaleExp);
         Vector females = (Vector)unitOfWork.executeQuery(query);
-        Employee female = (Employee)females.elementAt(0);
+        Employee female = (Employee)females.get(0);
 
         Address maleAddress = male.getAddress();
         Address femaleAddress = female.getAddress();
@@ -117,7 +117,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
                      "Triggering a valueholder on session is returning a clone from " +
                      "the UnitOfWork batched objects.");
 
-        Employee otherFemale = (Employee)females.elementAt(1);
+        Employee otherFemale = (Employee)females.get(1);
 
         // Tests that batch querying actually works when in transaction.
         QueryCatcher queryCatcher = new QueryCatcher();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -26,6 +24,8 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.util.Vector;
 
 
 /**
@@ -214,7 +214,7 @@ public class UnitOfWorkConformExceptionTest extends org.eclipse.persistence.test
             Vector v = getContacts();
             String s = "";
             if (!v.isEmpty()) {
-                Contact contact = (Contact)v.firstElement();
+                Contact contact = (Contact)v.get(0);
                 s = contact.getMailAddress().mailAddress;
             }
             throw new TestErrorException("A conforming query exception should have been thrown even when indirection not involved: " +
@@ -246,7 +246,7 @@ public class UnitOfWorkConformExceptionTest extends org.eclipse.persistence.test
 
     private PhoneNumber getAPhoneNumberOfBob() throws QueryException {
         Vector phoneNumbers = (Vector)uow.executeQuery(phoneNumbersQuery);
-        return (PhoneNumber)phoneNumbers.firstElement();
+        return (PhoneNumber)phoneNumbers.get(0);
     }
 
     private PhoneNumber getASinglePhoneNumberOfBob() throws QueryException {

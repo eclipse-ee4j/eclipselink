@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate.nested;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -62,8 +63,8 @@ public class NestedAggregateProject extends org.eclipse.persistence.sessions.Pro
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.aggregate.nested.Guardian.class);
-        Vector vector = new Vector();
-        vector.addElement("STUDENT");
+        List<String> vector = new ArrayList<>();
+        vector.add("STUDENT");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES
@@ -115,8 +116,8 @@ public class NestedAggregateProject extends org.eclipse.persistence.sessions.Pro
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.aggregate.nested.MailingAddress.class);
-        Vector vector = new Vector();
-        vector.addElement("STUDENT");
+        List<String> vector = new ArrayList<>();
+        vector.add("STUDENT");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES
@@ -185,8 +186,8 @@ public class NestedAggregateProject extends org.eclipse.persistence.sessions.Pro
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.aggregate.nested.Student.class);
-        Vector vector = new Vector();
-        vector.addElement("STUDENT");
+        List<String> vector = new ArrayList<>();
+        vector.add("STUDENT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("STUDENT.ID");
 

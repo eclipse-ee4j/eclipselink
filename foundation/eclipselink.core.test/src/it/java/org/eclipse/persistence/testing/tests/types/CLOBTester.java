@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.types;
 
-import java.util.*;
-import java.io.StringWriter;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.StringWriter;
+import java.util.Vector;
 
 /**
  * Tests the use of Long ({@literal >} 255) strings
@@ -127,10 +129,10 @@ public class CLOBTester extends TypeTester {
     public static Vector testInstances() {
         Vector tests = new Vector();
 
-        tests.addElement(new CLOBTester(1000));
-        tests.addElement(new CLOBTester(5000));
-        tests.addElement(new CLOBTester(10000));
-        tests.addElement(new CLOBTester(25000));
+        tests.add(new CLOBTester(1000));
+        tests.add(new CLOBTester(5000));
+        tests.add(new CLOBTester(10000));
+        tests.add(new CLOBTester(25000));
         return tests;
     }
 

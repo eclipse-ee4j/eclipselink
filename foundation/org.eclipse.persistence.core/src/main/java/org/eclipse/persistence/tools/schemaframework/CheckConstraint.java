@@ -18,9 +18,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * <b>Purpose</b>: Define a check constraint.

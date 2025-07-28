@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,34 @@
 package org.eclipse.persistence.testing.tests.performance;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.performance.Address;
 import org.eclipse.persistence.testing.models.performance.EmploymentPeriod;
-import org.eclipse.persistence.testing.models.performance.toplink.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.performance.reading.*;
-import org.eclipse.persistence.testing.tests.performance.writing.*;
+import org.eclipse.persistence.testing.models.performance.toplink.Employee;
+import org.eclipse.persistence.testing.models.performance.toplink.EmployeeSystem;
+import org.eclipse.persistence.testing.models.performance.toplink.PhoneNumber;
+import org.eclipse.persistence.testing.tests.performance.reading.DeferredvsWriteLockTest;
+import org.eclipse.persistence.testing.tests.performance.reading.EmulatedReadObjectPreparedvsDynamicTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllComplexvsConformTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllFirstResultVsRownumFilteringTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllMaxRowsFirstResultVsRownumFilteringTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllMaxRowsVsRownumFilteringTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllStreamvsCursorSizeTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllStreamvsCursorTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsBatch1mTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsBatch21mTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsConformNewUnitOfWorkTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsConformTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsCursorTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsInMemoryTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadAllvsJoinBatchTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectCachevsDatabaseTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectPreparedvsDynamicTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectStaticvsDynamicTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectvsJoinTest;
+import org.eclipse.persistence.testing.tests.performance.reading.ReadObjectvsParameterizedSQLTest;
+import org.eclipse.persistence.testing.tests.performance.writing.InsertBatchUnitOfWorkComparisonTest;
 
 /**
  * Performance tests that compare the performance of two or more ways of doing something.

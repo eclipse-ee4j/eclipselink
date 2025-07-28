@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,19 +15,30 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.models.orderedlist;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.annotations.OrderCorrectionType;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.descriptors.VersionLockingPolicy;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.mappings.AggregateCollectionMapping;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.ChangeTracking;
 import org.eclipse.persistence.testing.models.orderedlist.EmployeeSystem.JoinFetchOrBatchRead;
-import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.annotations.OrderCorrectionType;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.mappings.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 
 /**
@@ -75,13 +75,13 @@ public class ExceptionsRaisedUnitOfWorkTest extends AutoVerifyTestCase {
     @Override
     public void test() { // Read some object from the database.
         boolean exceptionCaught = false;
-        Employee employee = (Employee)getSession().readAllObjects(Employee.class).firstElement();
+        Employee employee = (Employee)getSession().readAllObjects(Employee.class).get(0);
 
         UnitOfWork firstUOW = getSession().acquireUnitOfWork();
 
         // Read some object from the database.
         Vector employees = firstUOW.readAllObjects(Employee.class);
-        Employee uowEmployee = (Employee)employees.elementAt(2);
+        Employee uowEmployee = (Employee)employees.get(2);
         uowEmployee.setAddress(employee.getAddress());
 
         // commit the unit of work

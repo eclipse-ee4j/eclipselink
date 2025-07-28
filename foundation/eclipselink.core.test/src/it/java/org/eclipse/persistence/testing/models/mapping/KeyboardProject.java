@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -62,8 +63,8 @@ public class KeyboardProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Joystick.class);
-        Vector vector = new Vector();
-        vector.addElement("JOYSTICK");
+        List<String> vector = new ArrayList<>();
+        vector.add("JOYSTICK");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("JOYSTICK.KEY_BOARD_ID");
 
@@ -104,8 +105,8 @@ public class KeyboardProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Keyboard.class);
-        Vector vector = new Vector();
-        vector.addElement("KEYBOARD");
+        List<String> vector = new ArrayList<>();
+        vector.add("KEYBOARD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("KEYBOARD.ID");
 
@@ -156,8 +157,8 @@ public class KeyboardProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Key.class);
-        Vector vector = new Vector();
-        vector.addElement("KEYENTRY");
+        List<String> vector = new ArrayList<>();
+        vector.add("KEYENTRY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("KEYENTRY.KEY_BOARD_ID");
         descriptor.addPrimaryKeyFieldName("KEYENTRY.KEYENTRY");

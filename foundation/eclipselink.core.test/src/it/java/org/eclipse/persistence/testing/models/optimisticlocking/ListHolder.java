@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,13 +12,12 @@
 
 package org.eclipse.persistence.testing.models.optimisticlocking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ListHolder {
 
@@ -61,8 +60,8 @@ public class ListHolder {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(ListHolder.class);
-        Vector vector = new Vector();
-        vector.addElement("OL_HOLDER");
+        List<String> vector = new ArrayList<>();
+        vector.add("OL_HOLDER");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("OL_HOLDER.ID");
 

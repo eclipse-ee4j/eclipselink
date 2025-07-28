@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.util.*;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.ReportQueryResult;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 import java.math.BigDecimal;
-
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class Scenario1_9f extends ReportQueryTestCase {
     public Scenario1_9f() {
@@ -68,10 +68,10 @@ public class Scenario1_9f extends ReportQueryTestCase {
         ReportQueryResult male;
         ReportQueryResult female;
 
-        male = (ReportQueryResult)expectedResults.firstElement();
+        male = (ReportQueryResult)expectedResults.get(0);
         female = (ReportQueryResult)expectedResults.lastElement();
 
-        if (!expectedResults.firstElement().equals(male) || !expectedResults.lastElement().equals(female)) {
+        if (!expectedResults.get(0).equals(male) || !expectedResults.lastElement().equals(female)) {
             throw new TestErrorException("ReportQuery test failed: The results don't match");
         }
     }

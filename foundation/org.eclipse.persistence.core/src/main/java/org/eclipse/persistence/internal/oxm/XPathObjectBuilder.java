@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -462,16 +462,12 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         continue;
                     } else if (xmlMapping instanceof ChoiceObjectMapping xmlChoiceMapping) {
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                        Field firstField = (Field)fields.next();
-                        XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
-                        firstNodeValue.setNullCapableNodeValue(firstNodeValue);
-                        addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
-                        while(fields.hasNext()) {
-                            Field next = (Field)fields.next();
+                        do {
+                            Field next = (Field) fields.next();
                             XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
-                            nodeValue.setNullCapableNodeValue(firstNodeValue);
+                            nodeValue.setNullCapableNodeValue(nodeValue);
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
-                        }
+                        } while (fields.hasNext());
                         continue;
                     } else if(xmlMapping instanceof ChoiceCollectionMapping xmlChoiceMapping) {
 

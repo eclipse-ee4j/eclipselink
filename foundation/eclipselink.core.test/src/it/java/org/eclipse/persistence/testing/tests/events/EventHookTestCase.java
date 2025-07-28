@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,11 @@
 //       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
 package org.eclipse.persistence.testing.tests.events;
 
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.models.events.Address;
 import org.eclipse.persistence.testing.models.events.AddressDescriptorEventListener;
 import org.eclipse.persistence.testing.models.events.EmailAccount;
 import org.eclipse.persistence.testing.models.events.Phone;
-import org.eclipse.persistence.testing.framework.*;
 
 public class EventHookTestCase extends AutoVerifyTestCase {
     public EmailAccount emailAccount;

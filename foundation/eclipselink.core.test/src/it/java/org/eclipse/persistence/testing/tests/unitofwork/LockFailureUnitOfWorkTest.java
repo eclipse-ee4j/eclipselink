@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class LockFailureUnitOfWorkTest extends AutoVerifyTestCase {
         UnitOfWork firstUOW = getSession().acquireUnitOfWork();
 
         // Read some object from the database.
-        Employee employee = (Employee)firstUOW.readAllObjects(Employee.class).firstElement();
+        Employee employee = (Employee)firstUOW.readAllObjects(Employee.class).get(0);
         String lastName = employee.getLastName();
 
         // Change the object

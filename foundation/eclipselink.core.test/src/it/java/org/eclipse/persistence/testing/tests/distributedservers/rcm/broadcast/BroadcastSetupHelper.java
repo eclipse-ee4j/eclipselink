@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.broadcast;
 
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Vector;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.testing.framework.TestCase;
@@ -30,6 +21,14 @@ import org.eclipse.persistence.testing.framework.TestCollection;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.framework.TestWrapper;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Vector;
 
 public abstract class BroadcastSetupHelper {
     public static final String TEST_CONTEXT_FACTORY = "org.eclipse.persistence.testing.framework.naming.InitialContextFactoryImpl";
@@ -262,12 +261,12 @@ public abstract class BroadcastSetupHelper {
             Vector tests = ((TestCollection)test).getTests();
             Vector wrappedTests = new Vector(tests.size());
             for (int i = 0; i < tests.size(); i++) {
-                Object wrappedTest = wrapAllTestCases(tests.elementAt(i), timeToWait);
+                Object wrappedTest = wrapAllTestCases(tests.get(i), timeToWait);
                 if (wrappedTest != null) {
                     wrappedTests.add(wrappedTest);
                 } else {
                     // must be collection - keep it
-                    wrappedTests.add(tests.elementAt(i));
+                    wrappedTests.add(tests.get(i));
                 }
             }
             // remove the original tests

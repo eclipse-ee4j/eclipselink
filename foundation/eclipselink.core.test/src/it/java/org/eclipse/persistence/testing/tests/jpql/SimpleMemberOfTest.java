@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+
 import java.util.Vector;
-import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SimpleMemberOfTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     @Override
@@ -24,9 +25,9 @@ public class SimpleMemberOfTest extends org.eclipse.persistence.testing.tests.jp
         Vector selectedProjects = new Vector();
         Project currentProject;
         for (int i = 0; i < allProjects.size(); i++) {
-            currentProject = (Project)allProjects.elementAt(i);
+            currentProject = (Project)allProjects.get(i);
             if (shouldIncludeProject(currentProject)) {
-                selectedProjects.addElement(currentProject);
+                selectedProjects.add(currentProject);
             }
         }
 

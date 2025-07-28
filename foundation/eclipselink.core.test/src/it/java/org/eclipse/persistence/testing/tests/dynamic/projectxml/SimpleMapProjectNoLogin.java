@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,23 +20,20 @@
 package org.eclipse.persistence.testing.tests.dynamic.projectxml;
 
 //javase imports
-import java.io.IOException;
 
-//JUnit4 imports
-import org.junit.BeforeClass;
-import static org.junit.Assert.fail;
-
-//EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.schemaframework.DynamicSchemaManager;
+import org.junit.BeforeClass;
 
-//domain-specific (testing) imports
+import java.io.IOException;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createLogin;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.logLevel;
+import static org.junit.Assert.fail;
 
 /*
  * Test cases verifying the use of simple-map-project-no-login.xml

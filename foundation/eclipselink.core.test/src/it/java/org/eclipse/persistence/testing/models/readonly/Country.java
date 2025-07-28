@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.readonly;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Vector;
 
 public class Country implements java.io.Serializable {
     public Number id;
@@ -37,13 +38,13 @@ public class Country implements java.io.Serializable {
      */
     public static Vector countries() {
         Vector countries = new Vector();
-        countries.addElement(canada());
-        countries.addElement(usa());
-        countries.addElement(russia());
-        countries.addElement(vietnam());
-        countries.addElement(india());
-        countries.addElement(czech());
-        countries.addElement(uk());
+        countries.add(canada());
+        countries.add(usa());
+        countries.add(russia());
+        countries.add(vietnam());
+        countries.add(india());
+        countries.add(czech());
+        countries.add(uk());
 
         return countries;
     }

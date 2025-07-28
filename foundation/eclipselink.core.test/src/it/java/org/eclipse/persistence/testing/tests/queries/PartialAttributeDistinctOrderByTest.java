@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     tware - test for https://bugs.eclipse.org/bugs/show_bug.cgi?id=260986
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Iterator;
+import java.util.List;
 
 // test for bug 260986
 @SuppressWarnings("deprecation")

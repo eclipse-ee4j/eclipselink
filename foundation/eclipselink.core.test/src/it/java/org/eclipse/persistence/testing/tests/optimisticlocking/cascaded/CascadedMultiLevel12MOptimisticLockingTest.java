@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +33,8 @@ public class CascadedMultiLevel12MOptimisticLockingTest extends CascadedOptimist
         m_id = bar.getId();
         m_originalVersion = bar.getVersion();
 
-        Bartender bartender = (Bartender) bar.getBartenders().firstElement();
-        Award award = (Award) bartender.getQualification().getAwards().firstElement();
+        Bartender bartender = (Bartender) bar.getBartenders().get(0);
+        Award award = (Award) bartender.getQualification().getAwards().get(0);
         award.setDescription("A completely bogus award");
 
         uow.commit();

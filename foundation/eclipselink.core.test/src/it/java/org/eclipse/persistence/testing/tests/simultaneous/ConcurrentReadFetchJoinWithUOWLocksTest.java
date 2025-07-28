@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,17 @@
 //     Chris Delahunt  = 2.2 - 331921: deadlock with uow commit and query using joins
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.math.BigDecimal;
-
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentAddress;
 import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentLargeProject;
 import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentPerson;
-import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentAddress;
 import org.eclipse.persistence.testing.tests.unitofwork.ConcurrentProject;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.server.Server;
 
-import org.eclipse.persistence.sessions.UnitOfWork;
+import java.math.BigDecimal;
 
 /**
  * Test for Bug 262157

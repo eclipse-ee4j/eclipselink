@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.identitymaps.FullIdentityMap;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultipleTableTestProject extends org.eclipse.persistence.sessions.Project {
 
@@ -32,9 +33,9 @@ public class MultipleTableTestProject extends org.eclipse.persistence.sessions.P
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.mapping.Employee2.class);
-        Vector vector = new Vector();
-        vector.addElement("MUL2_EMP");
-        vector.addElement("MUL2_EMP_INFO");
+        List<String> vector = new ArrayList<>();
+        vector.add("MUL2_EMP");
+        vector.add("MUL2_EMP_INFO");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("MUL2_EMP.EMP_ID");
         descriptor.addPrimaryKeyFieldName("MUL2_EMP.EMP_NUM");

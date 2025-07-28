@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,10 +83,9 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
         try {
             contentHandler.startDocument();
-            parseEvent(xmlEventReader.nextEvent());
-            while(depth > 0) {
+            do {
                 parseEvent(xmlEventReader.nextEvent());
-            }
+            } while (depth > 0);
             contentHandler.endDocument();
         } catch(XMLStreamException ex) {
             throw new RuntimeException(ex);

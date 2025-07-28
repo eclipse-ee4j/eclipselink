@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Vector;
-
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 @SuppressWarnings("unchecked")
 public class ProjectXMLStoredFunctionCallTest extends TestCase {
@@ -72,7 +74,7 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
 
     @Override
     public void verify() {
-      DatabaseRecord row = (DatabaseRecord)((Vector)result).firstElement();
+      DatabaseRecord row = (DatabaseRecord)((Vector)result).get(0);
       Long p_inout = (Long)row.get("P_INOUT");
       if (!p_inout.equals(100L)) {
         throw new TestErrorException(
@@ -83,7 +85,7 @@ public class ProjectXMLStoredFunctionCallTest extends TestCase {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [P_OUT = 99]");
       }
-        Long returnValue = (Long)row.getValues().firstElement();
+        Long returnValue = (Long)row.getValues().get(0);
       if (!returnValue.equals(99L)) {
         throw new TestErrorException(
           "The stored function did not execute correctly. Expected: [return value = 99]");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.identitymaps;
 
-import java.util.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.internal.identitymaps.CacheIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.FullIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.HardCacheWeakIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.identitymaps.NoIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.SoftCacheWeakIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.SoftIdentityMap;
+import org.eclipse.persistence.internal.identitymaps.WeakIdentityMap;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 /**
  * Test the identity maps and cache hits.
@@ -39,15 +47,15 @@ public class IdentityMapTestSuite extends TestSuite {
         employee1.setLastName("Gretzky");
         employee2.setFirstName("Eric");
         employee2.setLastName("Lindros");
-        employees.addElement(employee1);
-        employees.addElement(employee2);
+        employees.add(employee1);
+        employees.add(employee2);
         primaryKey1 = new Vector();
-        primaryKey1.addElement(99);
+        primaryKey1.add(99);
         primaryKey2 = new Vector();
-        primaryKey2.addElement(88);
+        primaryKey2.add(88);
 
-        primaryKeys.addElement(primaryKey1);
-        primaryKeys.addElement(primaryKey2);
+        primaryKeys.add(primaryKey1);
+        primaryKeys.add(primaryKey2);
 
         suite.addTest(new MultipleRegisterTest(identityMap, primaryKeys, employees));
         suite.addTest(new MultipleDeleteFromIdentityMapTest(identityMap, primaryKeys, employees, primaryKeys));
