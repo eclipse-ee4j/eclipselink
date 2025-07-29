@@ -19,7 +19,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink PostgreSQL Extension</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.pgsql</artifactId>
     <packaging>jar</packaging>
 
@@ -86,7 +85,7 @@
                         </goals>
                         <configuration>
                             <instructions>
-                                <Fragment-Host>org.eclipse.persistence.pgsql</Fragment-Host>
+                                <Fragment-Host>org.eclipse.persistence.core</Fragment-Host>
                                 <Export-Package>*</Export-Package>
                             </instructions>
                         </configuration>

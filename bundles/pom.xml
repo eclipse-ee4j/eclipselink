@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Bundles Parent</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.bundles</artifactId>
     <packaging>pom</packaging>
 
@@ -49,18 +48,6 @@
                 <module>moxy-standalone</module>
                 <module>eclipselink</module>
                 <module>tests</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>no-deploy</id>
-            <activation>
-                <property>
-                    <name>!deploy</name>
-                </property>
-            </activation>
-            <modules>
-                <module>others</module>
-                <module>p2site</module>
             </modules>
         </profile>
     </profiles>

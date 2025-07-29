@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+https://tycho.eclipseprojects.io/doc/4.0.13/StructuredBuild.html
+https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Fguide%2Fproduct_def_feature.htm&cp%3D2_0_21_1
+https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fmisc%2Ffeature_manifest.html
+
+TODO: sign jars using jarsigner
+https://eclipse.dev/cbi/cbi/Signing/
+https://eclipse-cbi.github.io/org.eclipse.cbi/eclipse-jarsigner-plugin/plugin-info.html
+https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-dependencies
+-->
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.features</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <eclipselink.version>${project.version}</eclipselink.version>
+        <eclipselink.asm.version>9.8.0</eclipselink.asm.version>
+        <oracle.ddlparser.version>3.0.2-SNAPSHOT</oracle.ddlparser.version>
+
+        <asm.version>9.8</asm.version>
+        <cdi.version>4.1.0</cdi.version>
+        <pgsql.version>42.7.4</pgsql.version>
+        <resource.version>2.1.0</resource.version>
+        <wsdl4j.version>1.6.3</wsdl4j.version>
+
+        <tycho.version>4.0.13</tycho.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${eclipselink.asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${eclipselink.asm.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+            <version>${oracle.ddlparser.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+            <version>${oracle.ddlparser.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.corba</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.corba</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.nosql</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.nosql</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.json</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.json</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.pgsql</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.pgsql</artifactId>
+            <version>${eclipselink.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-legal-resource</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>common-license</classifier>
+                                    <type>zip</type>
+                                    <includes>features/*</includes>
+                                    <outputDirectory>${project.build.directory}/license</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <executionEnvironment>JavaSE-17</executionEnvironment>
+                    <pomDependencies>consider</pomDependencies>
+                    <target>
+                        <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+                            <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2025-09"/>
+                            <unit id="org.eclipse.orbit.maven.javax.wsdl.feature.group" version="4.37.0"/>
+                            <unit id="org.eclipse.orbit.maven.javax.wsdl.source.feature.group" version="4.37.0"/>
+                        </location>
+                        <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+                            <repository location="https://download.eclipse.org/releases/latest"/>
+                            <unit id="org.eclipse.e4.rcp.feature.group" version="4.36.0.v20250528-1759"/>
+                            <unit id="org.eclipse.e4.rcp.source.feature.group" version="4.36.0.v20250528-1759"/>
+                        </location>
+                        <location includeDependencyDepth="infinite" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
+                            <dependencies>
+                                <dependency>
+                                    <groupId>jakarta.resource</groupId>
+                                    <artifactId>jakarta.resource-api</artifactId>
+                                    <version>${resource.version}</version>
+                                    <type>jar</type>
+                                </dependency>
+                                <dependency>
+                                    <groupId>jakarta.enterprise</groupId>
+                                    <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                                    <version>${cdi.version}</version>
+                                    <type>jar</type>
+                                </dependency>
+                                <dependency>
+                                    <groupId>org.postgresql</groupId>
+                                    <artifactId>postgresql</artifactId>
+                                    <version>${pgsql.version}</version>
+                                </dependency>
+                            </dependencies>
+                        </location>
+                    </target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-source-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <id>feature-source</id>
+                        <goals>
+                            <goal>feature-source</goal>
+                        </goals>
+                        <configuration>
+<!--                            <missingSourcesAction>FAIL</missingSourcesAction>-->
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Enable the replacement of the SNAPSHOT version in the final product configuration-->
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-packaging-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <additionalFileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}/license/features</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                        </fileSet>
+                    </additionalFileSets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <id>package-feature</id>
+                        <configuration>
+                            <finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-p2-metadata</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>p2-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-p2-repository-plugin</artifactId>
+                <version>${tycho.version}</version>
+                <configuration>
+                    <includeAllDependencies>true</includeAllDependencies>
+                    <includeDependencies>true</includeDependencies>
+                    <includeTransitiveDependencies>true</includeTransitiveDependencies>
+                </configuration>
+            </plugin>
+       </plugins>
+    </build>
+    <modules>
+        <module>features</module>
+        <module>site</module>
+    </modules>
+</project>
