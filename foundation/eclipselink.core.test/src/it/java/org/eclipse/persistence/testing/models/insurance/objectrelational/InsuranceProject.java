@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.insurance.objectrelational;
 
-import java.util.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.structures.ArrayMapping;
+import org.eclipse.persistence.mappings.structures.NestedTableMapping;
+import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
+import org.eclipse.persistence.mappings.structures.ReferenceMapping;
+import org.eclipse.persistence.mappings.structures.StructureMapping;
+import org.eclipse.persistence.testing.models.insurance.Address;
+import org.eclipse.persistence.testing.models.insurance.BicyclePolicy;
+import org.eclipse.persistence.testing.models.insurance.Claim;
+import org.eclipse.persistence.testing.models.insurance.HealthClaim;
+import org.eclipse.persistence.testing.models.insurance.HealthPolicy;
+import org.eclipse.persistence.testing.models.insurance.HouseClaim;
+import org.eclipse.persistence.testing.models.insurance.HousePolicy;
+import org.eclipse.persistence.testing.models.insurance.Phone;
+import org.eclipse.persistence.testing.models.insurance.Policy;
+import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
+import org.eclipse.persistence.testing.models.insurance.VehicleClaim;
+import org.eclipse.persistence.testing.models.insurance.VehiclePolicy;
+import org.eclipse.persistence.tools.schemaframework.NestedTableDefinition;
+import org.eclipse.persistence.tools.schemaframework.ObjectVarrayDefinition;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+import org.eclipse.persistence.tools.schemaframework.TypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.TypeTableDefinition;
+import org.eclipse.persistence.tools.schemaframework.VarrayDefinition;
 
-import org.eclipse.persistence.testing.models.insurance.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.mappings.structures.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This project is provided to demonstate the usage of TopLink's object-relational features.
@@ -229,8 +252,8 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Phone.class);
-        Vector vector = new Vector();
-        vector.addElement("PolicyHolders");
+        List<String> vector = new ArrayList<>();
+        vector.add("PolicyHolders");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES
@@ -537,20 +560,20 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
     public static Vector getAllDescriptors() {
         Vector descriptors = new Vector();
 
-        descriptors.addElement(buildClaimDescriptor());
-        descriptors.addElement(buildHealthClaimDescriptor());
-        descriptors.addElement(buildHouseClaimDescriptor());
-        descriptors.addElement(buildVehicleClaimDescriptor());
+        descriptors.add(buildClaimDescriptor());
+        descriptors.add(buildHealthClaimDescriptor());
+        descriptors.add(buildHouseClaimDescriptor());
+        descriptors.add(buildVehicleClaimDescriptor());
 
-        descriptors.addElement(buildPolicyDescriptor());
-        descriptors.addElement(buildHealthPolicyDescriptor());
-        descriptors.addElement(buildHousePolicyDescriptor());
-        descriptors.addElement(buildVehiclePolicyDescriptor());
-        descriptors.addElement(buildBicyclePolicyDescriptor());
+        descriptors.add(buildPolicyDescriptor());
+        descriptors.add(buildHealthPolicyDescriptor());
+        descriptors.add(buildHousePolicyDescriptor());
+        descriptors.add(buildVehiclePolicyDescriptor());
+        descriptors.add(buildBicyclePolicyDescriptor());
 
-        descriptors.addElement(buildPolicyHolderDescriptor());
-        descriptors.addElement(buildAddressDescriptor());
-        descriptors.addElement(buildPhoneDescriptor());
+        descriptors.add(buildPolicyHolderDescriptor());
+        descriptors.add(buildAddressDescriptor());
+        descriptors.add(buildPhoneDescriptor());
 
         return descriptors;
     }
@@ -561,9 +584,9 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
     public Vector getTables() {
         Vector tables = new Vector();
 
-        tables.addElement(buildClaimTableDefinition());
-        tables.addElement(buildPolicyTableDefinition());
-        tables.addElement(buildPolicyHolderTableDefinition());
+        tables.add(buildClaimTableDefinition());
+        tables.add(buildPolicyTableDefinition());
+        tables.add(buildPolicyHolderTableDefinition());
 
         return tables;
     }
@@ -573,15 +596,15 @@ public class InsuranceProject extends org.eclipse.persistence.sessions.Project {
      */
     public Vector getTypes() {
         Vector types = new Vector();
-        types.addElement(buildPhoneTypeDefinition());
-        types.addElement(buildPhoneListTypeDefinition());
-        types.addElement(buildNameListTypeDefinition());
-        types.addElement(buildClaimTypeDefinition());
-        types.addElement(buildClaimsTypeDefinition());
-        types.addElement(buildPolicyTypeDefinition());
-        types.addElement(buildPoliciesTypeDefinition());
-        types.addElement(buildAddressTypeDefinition());
-        types.addElement(buildPolicyHolderTypeDefinition());
+        types.add(buildPhoneTypeDefinition());
+        types.add(buildPhoneListTypeDefinition());
+        types.add(buildNameListTypeDefinition());
+        types.add(buildClaimTypeDefinition());
+        types.add(buildClaimsTypeDefinition());
+        types.add(buildPolicyTypeDefinition());
+        types.add(buildPoliciesTypeDefinition());
+        types.add(buildAddressTypeDefinition());
+        types.add(buildPolicyHolderTypeDefinition());
 
         return types;
     }

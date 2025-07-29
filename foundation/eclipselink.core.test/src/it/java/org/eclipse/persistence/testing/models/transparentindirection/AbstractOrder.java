@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.tests.transparentindirection.TestHashtable;
+
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Stack;
+import java.util.Vector;
 
 /**
  * Simple order object. Just a test fixture.
@@ -80,7 +86,7 @@ public abstract class AbstractOrder implements Serializable {
     public Vector getAttributeVector(Enumeration stream) {
         Vector result = new Vector();
         while (stream.hasMoreElements()) {
-            result.addElement(stream.nextElement());
+            result.add(stream.nextElement());
         }
         return result;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,23 +14,47 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.expressions;
 
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MaxDBPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.SQLAnywherePlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
+import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
+import org.eclipse.persistence.platform.database.TimesTenPlatform;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
-import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;
-import org.eclipse.persistence.testing.models.ownership.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import java.util.*;
-
-import org.eclipse.persistence.testing.models.inheritance.SalesRep;
-import org.eclipse.persistence.testing.models.inheritance.Engineer;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.testing.models.inheritance.Computer;
-import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+import org.eclipse.persistence.testing.models.inheritance.Engineer;
 import org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.testing.models.inheritance.SalesRep;
+import org.eclipse.persistence.testing.models.inheritance.Vehicle;
+import org.eclipse.persistence.testing.models.multipletable.LargeBusinessProject;
+import org.eclipse.persistence.testing.models.ownership.ObjectB;
+import org.eclipse.persistence.testing.models.ownership.ObjectC;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.Vector;
 
 public class ExpressionTestSuite extends TestSuite {
     protected PopulationManager manager;
@@ -711,9 +735,9 @@ public class ExpressionTestSuite extends TestSuite {
         Employee employee = (Employee)getManager().getObject(Employee.class, "0003");
 
         Vector names = new Vector();
-        names.addElement("Jennifer");
-        names.addElement("Chanley");
-        names.addElement("Beavis");
+        names.add("Jennifer");
+        names.add("Chanley");
+        names.add("Beavis");
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);

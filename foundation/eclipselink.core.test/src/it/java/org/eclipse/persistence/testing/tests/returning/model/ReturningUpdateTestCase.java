@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,8 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.changesets.ChangeRecord;
 import org.eclipse.persistence.sessions.changesets.ObjectChangeSet;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class ReturningUpdateTestCase extends TestCase {
 

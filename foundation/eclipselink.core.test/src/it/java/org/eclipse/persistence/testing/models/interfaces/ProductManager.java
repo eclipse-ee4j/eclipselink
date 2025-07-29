@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.interfaces;
 
-import java.util.Vector;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
 import java.math.BigInteger;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import java.util.Vector;
 
 public class ProductManager implements ManagerialJob, VIP, java.io.Serializable {
     public Number jobCode;
@@ -38,7 +40,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         example.setGoldCardNumber(new BigInteger("482122381872"));
 
         Vector employees = new Vector(1);
-        employees.addElement(ProductDeveloper.example1());
+        employees.add(ProductDeveloper.example1());
 
         example.setManagedEmployees(employees);
 
@@ -53,7 +55,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         example.setGoldCardNumber(new BigInteger("998128762878"));
 
         Vector employees = new Vector(1);
-        employees.addElement(ProductDeveloper.example2());
+        employees.add(ProductDeveloper.example2());
 
         example.setManagedEmployees(employees);
 
@@ -68,7 +70,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         example.setGoldCardNumber(new BigInteger("144173389267"));
 
         Vector employees = new Vector(1);
-        employees.addElement(ProductDeveloper.example3());
+        employees.add(ProductDeveloper.example3());
 
         example.setManagedEmployees(employees);
 

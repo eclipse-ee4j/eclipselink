@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.interfaces;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -69,8 +70,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Actor.class);
-        Vector vector = new Vector();
-        vector.addElement("ACTOR");
+        List<String> vector = new ArrayList<>();
+        vector.add("ACTOR");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ACTOR.ID");
         descriptor.addPrimaryKeyFieldName("ACTOR.PROGRAM_ID");
@@ -135,8 +136,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(AdministrativeJob.class);
-        Vector vector = new Vector();
-        vector.addElement("ADM_JOB");
+        List<String> vector = new ArrayList<>();
+        vector.add("ADM_JOB");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ADM_JOB.CODE");
 
@@ -187,8 +188,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Asset.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_EMP");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_EMP");
         descriptor.setTableNames(vector);
 
         // SECTION: PROPERTIES
@@ -240,8 +241,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Company.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_CMP");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_CMP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_CMP.ID");
 
@@ -310,8 +311,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Computer.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_COMP");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_COMP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_COMP.SERNUM");
 
@@ -386,8 +387,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(CourseDeveloper.class);
         descriptor.getInheritancePolicy().setParentClass(DevelopmentJob.class);
-        Vector vector = new Vector();
-        vector.addElement("CRS_DEV");
+        List<String> vector = new ArrayList<>();
+        vector.add("CRS_DEV");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("CRS_DEV.CODE");
 
@@ -419,8 +420,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(DevelopmentJob.class);
-        Vector vector = new Vector();
-        vector.addElement("DEV_JOB");
+        List<String> vector = new ArrayList<>();
+        vector.add("DEV_JOB");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("DEV_JOB.CODE");
 
@@ -470,8 +471,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Documentary.class);
-        Vector vector = new Vector();
-        vector.addElement("DOCUMENTARY");
+        List<String> vector = new ArrayList<>();
+        vector.add("DOCUMENTARY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("DOCUMENTARY.ID");
 
@@ -539,8 +540,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Email.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_EML");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_EML");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_EML.E_ID");
 
@@ -596,8 +597,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Employee.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_EMP");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_EMP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_EMP.ID");
 
@@ -695,8 +696,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Film.class);
-        Vector vector = new Vector();
-        vector.addElement("FILM");
+        List<String> vector = new ArrayList<>();
+        vector.add("FILM");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("FILM.ID");
 
@@ -789,8 +790,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(PersonnelManager.class);
-        Vector vector = new Vector();
-        vector.addElement("PER_MGR");
+        List<String> vector = new ArrayList<>();
+        vector.add("PER_MGR");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("PER_MGR.CODE");
 
@@ -841,8 +842,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Phone.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_PHN");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_PHN");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_PHN.P_ID");
 
@@ -899,8 +900,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(ProductDeveloper.class);
         descriptor.getInheritancePolicy().setParentClass(DevelopmentJob.class);
-        Vector vector = new Vector();
-        vector.addElement("PRD_DEV");
+        List<String> vector = new ArrayList<>();
+        vector.add("PRD_DEV");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("PRD_DEV.CODE");
 
@@ -932,8 +933,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(ProductManager.class);
-        Vector vector = new Vector();
-        vector.addElement("PRD_MGR");
+        List<String> vector = new ArrayList<>();
+        vector.add("PRD_MGR");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("PRD_MGR.CODE");
 
@@ -1007,8 +1008,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Receptionist.class);
         descriptor.getInheritancePolicy().setParentClass(AdministrativeJob.class);
-        Vector vector = new Vector();
-        vector.addElement("RECEP");
+        List<String> vector = new ArrayList<>();
+        vector.add("RECEP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("RECEP.CODE");
 
@@ -1057,8 +1058,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Secretary.class);
         descriptor.getInheritancePolicy().setParentClass(AdministrativeJob.class);
-        Vector vector = new Vector();
-        vector.addElement("SECRTRY");
+        List<String> vector = new ArrayList<>();
+        vector.add("SECRTRY");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SECRTRY.CODE");
 
@@ -1119,8 +1120,8 @@ public class InterfaceWithoutTablesProject extends org.eclipse.persistence.sessi
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Vehicle.class);
-        Vector vector = new Vector();
-        vector.addElement("INT_VEH");
+        List<String> vector = new ArrayList<>();
+        vector.add("INT_VEH");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("INT_VEH.SERNUM");
 

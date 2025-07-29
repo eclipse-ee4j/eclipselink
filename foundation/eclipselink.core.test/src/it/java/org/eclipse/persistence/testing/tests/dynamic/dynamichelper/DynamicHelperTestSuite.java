@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.dynamichelper;
 
 //javase imports
-import java.util.List;
 
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-//EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
@@ -41,10 +32,16 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-//domain-specific (testing) inmports
+import java.util.List;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createEmptySession;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Set of tests verifying that the DynamicHelper functions as expected.

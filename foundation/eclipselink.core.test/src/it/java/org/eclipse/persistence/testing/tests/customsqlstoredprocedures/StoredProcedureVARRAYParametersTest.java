@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import java.sql.Struct;
-import java.sql.Types;
-import java.util.Vector;
-
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.SQLCall;
@@ -26,6 +22,10 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.insurance.Address;
 import org.eclipse.persistence.testing.models.insurance.Phone;
+
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Vector;
 
 /**
  * This tests using Vectors in stored procedures (through storedprocedurecalls or custom sql) for
@@ -62,23 +62,23 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
         phoneNumbers.add(Phone.example3());
 
 
-        args.addElement(policyHolderIdToUse);//ssn
-        args.addElement(null);//occupation
-        args.addElement(null);//sex
-        args.addElement("Peter");//firstName
-        args.addElement(null);//birthDate
-        args.addElement("Griffin");//lastName
+        args.add(policyHolderIdToUse);//ssn
+        args.add(null);//occupation
+        args.add(null);//sex
+        args.add("Peter");//firstName
+        args.add(null);//birthDate
+        args.add("Griffin");//lastName
 
-        args.addElement(originalAddress);//address
-        args.addElement(childrenNames);//childrenNames
-        args.addElement(phoneNumbers);//phones
+        args.add(originalAddress);//address
+        args.add(childrenNames);//childrenNames
+        args.add(phoneNumbers);//phones
 
         //testing that an exception is not thrown, using IN parameters exclusively
         result = getSession().executeQuery(getInsertQuery(), args);
 
         //using OUT parameters exclusively, verifying policyHolder was created
         Vector args2 = new Vector();
-        args2.addElement(policyHolderIdToUse);//ssn
+        args2.add(policyHolderIdToUse);//ssn
         results2 = (Vector)getSession().executeQuery(getReadQuery(), args2);
 
         //using IN OUT parameters exclusively, deleting a policyholder

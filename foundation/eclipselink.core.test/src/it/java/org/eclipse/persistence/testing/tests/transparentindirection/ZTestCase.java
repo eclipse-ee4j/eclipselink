@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-import java.lang.reflect.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Vector;
 
 /**
  * provide support for zunit stuff...
@@ -49,8 +52,8 @@ public class ZTestCase extends AutoVerifyTestCase {
             fail(notEqualsMessage(message, expected, actual));
         }
         for (int i = 0; i < expected.size(); i++) {
-            Object e1 = expected.elementAt(i);
-            Object e2 = actual.elementAt(i);
+            Object e1 = expected.get(i);
+            Object e2 = actual.get(i);
             if (e1 == null) {// avoid null pointer exception
                 if (e2 != null) {
                     fail(notEqualsMessage(message, expected, actual));
@@ -89,13 +92,13 @@ public class ZTestCase extends AutoVerifyTestCase {
         }
         Vector temp = (Vector)actual.clone();
         for (int i = 0; i < expected.size(); i++) {
-            Object e1 = expected.elementAt(i);
+            Object e1 = expected.get(i);
             if (e1 == null) {// avoid null pointer exception
                 if (!removeNullElement(temp)) {
                     fail(notEqualsMessage(message, expected, actual));
                 }
             } else {
-                if (!temp.removeElement(e1)) {
+                if (!temp.remove(e1)) {
                     fail(notEqualsMessage(message, expected, actual));
                 }
             }
@@ -176,8 +179,8 @@ public class ZTestCase extends AutoVerifyTestCase {
      */
     private static boolean removeNullElement(Vector v) {
         for (int i = 0; i < v.size(); i++) {
-            if (v.elementAt(i) == null) {
-                v.removeElementAt(i);
+            if (v.get(i) == null) {
+                v.remove(i);
                 return true;
             }
         }

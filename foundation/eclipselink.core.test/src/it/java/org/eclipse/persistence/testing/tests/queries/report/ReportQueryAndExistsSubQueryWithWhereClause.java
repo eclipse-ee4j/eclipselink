@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.report;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.util.Enumeration;
+import java.util.Vector;
 
  //Bug4942640  This is the only way to support EJBQL in a consistent manner as in ReportQueryAndExistsSubQuery.
  //It generates extra joins.  The generated sql is:  SELECT t0.EMP_ID, t1.EMP_ID, t0.L_NAME, t0.F_NAME, t1.SALARY, t0.GENDER,

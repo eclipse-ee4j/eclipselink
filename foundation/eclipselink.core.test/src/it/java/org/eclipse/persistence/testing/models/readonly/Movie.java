@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.readonly;
 
-import java.util.Vector;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Vector;
 
 public class Movie {
     public Number id;
@@ -32,7 +35,7 @@ public class Movie {
     }
 
     public void addActor(Actor actor) {
-        this.actors.addElement(actor);
+        this.actors.add(actor);
     }
 
     // Movie descriptor

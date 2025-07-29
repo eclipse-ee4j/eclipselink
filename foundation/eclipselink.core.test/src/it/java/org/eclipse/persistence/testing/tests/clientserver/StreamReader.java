@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.queries.CursoredStream;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class StreamReader extends Reader {
     public StreamReader(Server1 server, Session session) {

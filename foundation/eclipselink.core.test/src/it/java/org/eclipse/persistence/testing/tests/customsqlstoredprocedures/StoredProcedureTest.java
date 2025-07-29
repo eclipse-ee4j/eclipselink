@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+
+import java.util.Vector;
 
 public class StoredProcedureTest extends TestCase {
     DatabaseRecord row;
@@ -59,10 +63,10 @@ public class StoredProcedureTest extends TestCase {
         query.addArgument("P_F_NAME");
 
         Vector args = new Vector(2);
-        args.addElement(id);
-        args.addElement(name);
+        args.add(id);
+        args.add(name);
 
-        row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).firstElement();
+        row = (DatabaseRecord)((Vector)getSession().executeQuery(query, args)).get(0);
 
     }
 

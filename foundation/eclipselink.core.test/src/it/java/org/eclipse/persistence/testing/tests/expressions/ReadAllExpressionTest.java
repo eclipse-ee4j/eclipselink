@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.expressions;
 
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 /**
  * Test reading with expressions.
@@ -170,14 +172,14 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
         if (supportedPlatforms == null) {
             supportedPlatforms = new Vector();
         }
-        supportedPlatforms.addElement(platform);
+        supportedPlatforms.add(platform);
     }
 
     public void addUnsupportedPlatform(Class<?> platform) {
         if (unsupportedPlatforms == null) {
             unsupportedPlatforms = new Vector();
         }
-        unsupportedPlatforms.addElement(platform);
+        unsupportedPlatforms.add(platform);
     }
 
     public void dontTestBatchAttributesOnEmployee() {
@@ -218,13 +220,13 @@ public class ReadAllExpressionTest extends org.eclipse.persistence.testing.frame
 
     protected void testBatchAttributes() {
         Vector result = (Vector) this.objectsFromDatabase;
-        Vector phoneNumbers = ((Employee) result.elementAt(0)).getPhoneNumbers();
-        ((Employee) result.elementAt(0)).getResponsibilitiesList().size();
-        ((Employee) result.elementAt(0)).getProjects().size();
+        Vector phoneNumbers = ((Employee) result.get(0)).getPhoneNumbers();
+        ((Employee) result.get(0)).getResponsibilitiesList().size();
+        ((Employee) result.get(0)).getProjects().size();
         if ((phoneNumbers == null) || (phoneNumbers.isEmpty())) {
                 throw new TestErrorException("The original query was corrupted when made part of a batch query.");
         }
-        if (((Employee) result.elementAt(0)).getAddress() == null) {
+        if (((Employee) result.get(0)).getAddress() == null) {
                 throw new TestErrorException("The original query was corrupted when made part of a batch query.");
         }
     }

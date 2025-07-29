@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries.oracle;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.testing.models.mapping.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.models.mapping.Employee;
+
+import java.util.Vector;
 
 public class OrderSiblingsTest extends HierarchicalQueryTest
 {
@@ -35,7 +37,7 @@ public class OrderSiblingsTest extends HierarchicalQueryTest
       Employee daveVadis = (Employee)getSession().readObject(Employee.class, expb.get("lastName").equal("Vadis"));
       Employee edwardWhite = (Employee)getSession().readObject(Employee.class, expb.get("lastName").equal("White"));
       Employee tracyChapman = (Employee)getSession().readObject(Employee.class, expb.get("lastName").equal("Chapman"));
-      expected.addElement(daveVadis);
+      expected.add(daveVadis);
       addEmployee(expected, edwardWhite);
       addEmployee(expected, tracyChapman);
     }
@@ -48,7 +50,7 @@ public class OrderSiblingsTest extends HierarchicalQueryTest
     Expression startWith = expb.get("firstName").equal("Dave").and(expb.get("lastName").equal("Vadis"));
     Expression connectBy = expb.get("managedEmployees");
     Vector order = new Vector();
-    order.addElement(expb.get("firstName"));
+    order.add(expb.get("firstName"));
     query.setHierarchicalQueryClause(startWith, connectBy, order);
     return query;
   }

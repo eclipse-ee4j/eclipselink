@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.readonly;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Vector;
 
 /**
  * A Hollywood Agent makes movie deals for many actors, while an actor has only
@@ -57,9 +58,9 @@ public class HollywoodAgent {
      */
     public static Vector hollywoodAgents() {
         Vector agents = new Vector();
-        agents.addElement(donKing());
-        agents.addElement(waltDisney());
-        agents.addElement(markyMark());
+        agents.add(donKing());
+        agents.add(waltDisney());
+        agents.add(markyMark());
 
         return agents;
     }

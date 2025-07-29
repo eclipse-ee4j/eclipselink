@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.mapping;
 
-import java.io.*;
-import java.util.*;
-import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Vector;
 
 public class Employee implements Serializable {
     public String firstName;
@@ -51,11 +59,11 @@ public class Employee implements Serializable {
     }
 
     public void addManagedEmployee(Employee employee) {
-        this.managedEmployees.addElement(employee);
+        this.managedEmployees.add(employee);
     }
 
     public void addPhoneNumber(Phone phoneNumber) {
-        this.getPhoneNumbers().addElement(phoneNumber);
+        this.getPhoneNumbers().add(phoneNumber);
     }
 
     public static void addToDescriptor(ClassDescriptor des) {
@@ -112,16 +120,16 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example1());
         example.computer = Computer.example1(example);
 
-        empPolicies.addElement("Health");
-        empPolicies.addElement("Tenant");
+        empPolicies.add("Health");
+        empPolicies.add("Tenant");
         example.setPolicies(empPolicies);
 
         Shipment s1 = Shipment.example1();
         Shipment s2 = Shipment.example2();
-        example.shipments.addElement(s1);
-        example.shipments.addElement(s2);
-        s1.employees.addElement(example);
-        s2.employees.addElement(example);
+        example.shipments.add(s1);
+        example.shipments.add(s2);
+        s1.employees.add(example);
+        s2.employees.add(example);
 
         example.addPhoneNumber(Phone.example1());
         example.addPhoneNumber(Phone.example2());
@@ -151,16 +159,16 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example1());
         example.computer = Computer.example1(example);
 
-        empPolicies.addElement("Health");
-        empPolicies.addElement("Tenant");
+        empPolicies.add("Health");
+        empPolicies.add("Tenant");
         example.setPolicies(empPolicies);
 
         Shipment s1 = Shipment.example1();
         Shipment s2 = Shipment.example2();
-        example.shipments.addElement(s1);
-        example.shipments.addElement(s2);
-        s1.employees.addElement(example);
-        s2.employees.addElement(example);
+        example.shipments.add(s1);
+        example.shipments.add(s2);
+        s1.employees.add(example);
+        s2.employees.add(example);
 
         example.addPhoneNumber(Phone.example1());
         example.addPhoneNumber(Phone.example2());
@@ -190,16 +198,16 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example2());
         example.computer = Computer.example2(example);
 
-        empPolicies.addElement("Vehicle");
-        empPolicies.addElement("Tenant");
+        empPolicies.add("Vehicle");
+        empPolicies.add("Tenant");
         example.setPolicies(empPolicies);
 
         Shipment s1 = Shipment.example3();
         Shipment s2 = Shipment.example4();
-        example.shipments.addElement(s1);
-        example.shipments.addElement(s2);
-        s1.employees.addElement(example);
-        s1.employees.addElement(example);
+        example.shipments.add(s1);
+        example.shipments.add(s2);
+        s1.employees.add(example);
+        s1.employees.add(example);
 
         example.addPhoneNumber(Phone.example3());
 
@@ -228,8 +236,8 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example3());
         example.computer = Computer.example3(example);
 
-        empPolicies.addElement("Vehicle");
-        empPolicies.addElement("House");
+        empPolicies.add("Vehicle");
+        empPolicies.add("House");
         example.setPolicies(empPolicies);
 
         example.addPhoneNumber(Phone.example4());
@@ -259,16 +267,16 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example1());
         example.computer = Computer.example4(example);
 
-        empPolicies.addElement("House");
-        empPolicies.addElement("Land");
+        empPolicies.add("House");
+        empPolicies.add("Land");
         example.setPolicies(empPolicies);
 
         Shipment s1 = Shipment.example3();
         Shipment s2 = Shipment.example4();
-        example.shipments.addElement(s1);
-        example.shipments.addElement(s2);
-        s1.employees.addElement(example);
-        s2.employees.addElement(example);
+        example.shipments.add(s1);
+        example.shipments.add(s2);
+        s1.employees.add(example);
+        s2.employees.add(example);
 
         example.addPhoneNumber(Phone.example7());
         example.addPhoneNumber(Phone.example8());
@@ -297,16 +305,16 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example2());
         example.computer = Computer.example5(example);
 
-        empPolicies.addElement("Vehicle");
-        empPolicies.addElement("Tenant");
+        empPolicies.add("Vehicle");
+        empPolicies.add("Tenant");
         example.setPolicies(empPolicies);
 
         Shipment s1 = Shipment.example5();
         Shipment s2 = Shipment.example6();
-        example.shipments.addElement(s1);
-        example.shipments.addElement(s2);
-        s1.employees.addElement(example);
-        s2.employees.addElement(example);
+        example.shipments.add(s1);
+        example.shipments.add(s2);
+        s1.employees.add(example);
+        s2.employees.add(example);
 
         example.addPhoneNumber(Phone.example9());
 
@@ -334,8 +342,8 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example3());
         example.computer = Computer.example6(example);
 
-        empPolicies.addElement("Vehicle");
-        empPolicies.addElement("House");
+        empPolicies.add("Vehicle");
+        empPolicies.add("House");
         example.setPolicies(empPolicies);
 
         example.addPhoneNumber(Phone.example10());
@@ -364,8 +372,8 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example3());
         example.computer = Computer.example7(example);
 
-        empPolicies.addElement("Arms");
-        empPolicies.addElement("Legs");
+        empPolicies.add("Arms");
+        empPolicies.add("Legs");
         example.setPolicies(empPolicies);
 
         example.addPhoneNumber(Phone.example13());
@@ -394,8 +402,8 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example4());
         example.computer = Computer.example8(example);
 
-        empPolicies.addElement("House");
-        empPolicies.addElement("Vehicle");
+        empPolicies.add("House");
+        empPolicies.add("Vehicle");
         example.setPolicies(empPolicies);
 
         example.addPhoneNumber(Phone.example15());
@@ -424,8 +432,8 @@ public class Employee implements Serializable {
         example.setJobDescription(JobDescription.example5());
         example.computer = Computer.example9(example);
 
-        empPolicies.addElement("Pet");
-        empPolicies.addElement("Vehicle");
+        empPolicies.add("Pet");
+        empPolicies.add("Vehicle");
         example.setPolicies(empPolicies);
 
         example.addPhoneNumber(Phone.example17());
@@ -546,7 +554,7 @@ public class Employee implements Serializable {
     }
 
     public void removeManagedEmployee(Employee employee) {
-        managedEmployees.removeElement(employee);
+        managedEmployees.remove(employee);
     }
 
     public void setComputer(Computer computer) {

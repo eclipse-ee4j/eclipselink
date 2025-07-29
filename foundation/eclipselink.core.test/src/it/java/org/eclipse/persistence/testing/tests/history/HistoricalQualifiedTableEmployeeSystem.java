@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.history;
 
-import java.util.List;
-import java.util.Vector;
-import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.testing.models.employee.relational.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.history.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+import org.eclipse.persistence.testing.models.employee.relational.EmployeeTableCreator;
+import org.eclipse.persistence.tools.history.HistoryFacade;
+
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <b>Purpose:</b>A specialized Employee System for testing generic historical schema support with qualified table names.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
+import org.eclipse.persistence.testing.models.transparentindirection.Order;
 import org.eclipse.persistence.testing.models.transparentindirection.OrderLine;
 import org.eclipse.persistence.testing.models.transparentindirection.SalesRep;
-import org.eclipse.persistence.testing.models.transparentindirection.Order;
+
+import java.util.Enumeration;
 
 /**
  * Test the IndirectList with assorted DatabaseSessions and UnitsOfWork.

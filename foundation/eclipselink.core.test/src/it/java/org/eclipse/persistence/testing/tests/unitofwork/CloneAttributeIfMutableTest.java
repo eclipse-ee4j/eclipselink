@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,12 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.unitofwork;
 
-import java.util.Vector;
-
-import org.junit.Assert;
-
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.junit.Assert;
+
+import java.util.Vector;
 
 /**
  * EL Bug 252047 - Mutable attributes are not cloned when isMutable is enabled on a Direct Mapping

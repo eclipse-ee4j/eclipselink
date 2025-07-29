@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.logging.JavaLog;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 /**
  * Test a complete sessions.xml which contains all elements.

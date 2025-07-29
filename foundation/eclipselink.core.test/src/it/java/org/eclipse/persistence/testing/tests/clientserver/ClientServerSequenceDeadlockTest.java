@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.clientserver;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.util.Vector;
 
 /**
  * Tests that a deadlock in sequencing does not occur.
@@ -53,7 +54,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     @Override
     public void reset() {
         for (int i = 0; i < getClients().size(); i++) {
-            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)getClients().elementAt(i);
+            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)getClients().get(i);
             if (clientStateArray[i] == THREAD_RUNNING) {
                 client.stop();
             }
@@ -80,7 +81,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
         for (int i = 0; i < NUM_CLIENTS; i++) {
             boolean createEmployees = (i % 2) == 0;
             fifoArray[i] = new FIFO(numObjects);
-            getClients().addElement(new EmployeeSeqDeadlockClient(this.server, getSession(), "Client " + i, numObjects, createEmployees, fifoArray[i]));
+            getClients().add(new EmployeeSeqDeadlockClient(this.server, getSession(), "Client " + i, numObjects, createEmployees, fifoArray[i]));
             clientStateArray[i] = THREAD_UNDEFINED;
             clientLastActionTimeArray[i] = 0;
         }
@@ -94,7 +95,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     @Override
     public void test() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
-            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);
+            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.get(i);
             client.start();
             clientStateArray[i] = THREAD_RUNNING;
         }
@@ -103,7 +104,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
             for (int i = 0; i < NUM_CLIENTS; i++) {
                 if (clientStateArray[i] == THREAD_RUNNING) {
                     if ((NUM_CLIENTS - doneClients) == 1) {
-                        ((EmployeeClient)getClients().elementAt(i)).pleaseStop();
+                        ((EmployeeClient)getClients().get(i)).pleaseStop();
                     }
                     long currentTime = System.currentTimeMillis();
                     if (!fifoArray[i].isEmpty()) {
@@ -123,7 +124,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
                             clientStateArray[i] = THREAD_LOCKED;
                             deadlock = true;
                             doneClients++;
-                            ((Thread)getClients().elementAt(i)).stop();
+                            ((Thread)getClients().get(i)).stop();
                             //                        System.out.println("Client# = " + i + " DEADLOCK");
                         }
                     }
@@ -138,7 +139,7 @@ public class ClientServerSequenceDeadlockTest extends ClientServerConcurrentWrit
     @Override
     public void verify() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
-            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);
+            EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.get(i);
             if (client.anErrorOccurred()) {
                 throw new TestErrorException("An exception " + client.getTestException() + " occurred in client " + client);
             }

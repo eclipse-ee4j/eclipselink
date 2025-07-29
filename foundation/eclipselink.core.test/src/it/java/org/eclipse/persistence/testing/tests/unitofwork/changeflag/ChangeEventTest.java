@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.unitofwork.changeflag;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
@@ -23,6 +21,8 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 
 /**
@@ -65,7 +65,7 @@ public class ChangeEventTest extends AutoVerifyTestCase {
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Vector employees = uow.readAllObjects(Employee.class);
-        clone = (Employee)employees.firstElement();
+        clone = (Employee)employees.get(0);
         clone.setFirstName(clone.getFirstName() + "1");
         employeeToBeInserted.setFirstName("John");
         employeeToBeInserted.setLastName("Smith");

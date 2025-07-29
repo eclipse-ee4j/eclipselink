@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,6 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -26,14 +21,17 @@ import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
-
-import org.eclipse.persistence.testing.models.optimisticlocking.AbstractVideogameObject;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.optimisticlocking.AbstractVideogameObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Test updating a value from a null DB value to a non-null value and back again.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.sessionsxml;
 
 //javase imports
-import java.util.Map;
-import org.w3c.dom.Document;
 
-//JUnit4 imports
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -50,10 +41,16 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
-//domain-specific (testing) imports
+import java.util.Map;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createLogin;
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.logLevel;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ComicsConfigTestSuite {
 

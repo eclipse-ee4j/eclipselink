@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.aggregate.AddressDescription;
 import org.eclipse.persistence.testing.models.aggregate.Employee;
 import org.eclipse.persistence.testing.models.aggregate.Language;
 import org.eclipse.persistence.testing.models.aggregate.ProjectDescription;
+
+import java.util.Vector;
 
 /**
  * <p>
@@ -90,7 +92,7 @@ public class CheckForNullUnitOfWorkTest extends WriteObjectTest {
         //1 level aggregate's 1:M mapping
         projectDescription.getResponsibilities().setValue(null);
         languages = (Vector)projectDescription.getLanguages().getValue();
-        language = (Language)languages.firstElement();
+        language = (Language)languages.get(0);
         language.setLanguage(null);
 
         // 1 level aggregate's M:M mapping, adding a new element

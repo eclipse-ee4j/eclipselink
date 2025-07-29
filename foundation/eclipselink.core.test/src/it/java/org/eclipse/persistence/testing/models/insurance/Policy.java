@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.insurance;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represents an insurance policy.
@@ -41,7 +41,7 @@ public abstract class Policy implements Serializable {
      * Note that it is important to maintain bi-directional relationships both ways when adding.
      */
     public Claim addClaim(Claim claim) {
-        getClaims().addElement(claim);
+        getClaims().add(claim);
         claim.setPolicy(this);
         return claim;
     }
@@ -71,7 +71,7 @@ public abstract class Policy implements Serializable {
      * Note that it is important to maintain bi-directional relationships both ways when removing.
      */
     public Claim removeClaim(Claim claim) {
-        getClaims().removeElement(claim);
+        getClaims().remove(claim);
         claim.setPolicy(null);
         return claim;
     }

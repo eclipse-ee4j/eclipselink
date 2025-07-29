@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
-import java.util.*;
-import java.lang.reflect.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestSuite;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * provide support for zunit stuff...
@@ -70,7 +75,7 @@ public class ZTestSuite extends TestSuite {
         for (Method method : methods) {
             String name = method.getName();
             if (name.startsWith("test")) {
-                names.addElement(name);
+                names.add(name);
             }
         }
         Hashtable uniqueNames = new Hashtable();

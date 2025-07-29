@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
-
-import java.sql.Date;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -42,6 +37,11 @@ import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeProject;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Map;
 
 /**
  *  This test system uses the Employee test system to test the integration

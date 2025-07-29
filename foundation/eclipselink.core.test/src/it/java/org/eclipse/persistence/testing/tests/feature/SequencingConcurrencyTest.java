@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.feature;
 
-import java.util.Comparator;
-import java.util.Arrays;
-
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.Server;
-
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * This testcase test the thread-safeness of TopLink's sequencing. The type of sequencing specified in the login
@@ -135,7 +136,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
                 @Override
                 public void run() {
                     // Test
-                    Number[] sequence = (Number[])sequences.elementAt(threadNumber);
+                    Number[] sequence = (Number[])sequences.get(threadNumber);
                     try {
                         if (handleException) {
                             for (int i = 0; i < nIterations; i++) {
@@ -204,7 +205,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         // Setup the arrays of BigDecimals to be filled.
         sequences = new java.util.Vector(nThreads);
         for (int i = 0; i < nThreads; i++) {
-            sequences.addElement(new Number[nIterations]);
+            sequences.add(new Number[nIterations]);
         }
     }
 
@@ -252,7 +253,7 @@ public class SequencingConcurrencyTest extends TestCase implements Comparator {
         // Put all the sequences into one big array.
         Number[] big = new Number[nThreads * nIterations];
         for (int i = 0; i < nThreads; i++) {
-            System.arraycopy(sequences.elementAt(i), 0, big, i * nIterations, nIterations);
+            System.arraycopy(sequences.get(i), 0, big, i * nIterations, nIterations);
         }
         try {
             // sort the array.

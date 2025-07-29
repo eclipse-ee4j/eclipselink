@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -574,10 +574,9 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
             ObjectExpression prevExpression = base;
             while (!base.getBaseExpression().isExpressionBuilder()&& !done) {
-                base = (ObjectExpression)base.getBaseExpression();
-                while (!base.isExpressionBuilder() && (base.getMapping() != null && base.getMapping().isAggregateObjectMapping())) {
-                    base = (ObjectExpression)base.getBaseExpression();
-                }
+                do {
+                    base = (ObjectExpression) base.getBaseExpression();
+                } while (!base.isExpressionBuilder() && (base.getMapping() != null && base.getMapping().isAggregateObjectMapping()));
                 if (base.isExpressionBuilder()){
                     done = true;
                     //use the one closest to the expression builder that wasn't an aggregate

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TopLink generated Project class.
@@ -63,8 +65,8 @@ public class GeneratedIndirectContainerProject extends org.eclipse.persistence.s
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.transparentindirection.Order.class);
-        Vector vector = new Vector();
-        vector.addElement("ORD");
+        List<String> vector = new ArrayList<>();
+        vector.add("ORD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ORD.ID");
 
@@ -145,8 +147,8 @@ public class GeneratedIndirectContainerProject extends org.eclipse.persistence.s
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.transparentindirection.OrderLine.class);
-        Vector vector = new Vector();
-        vector.addElement("ORDLINE");
+        List<String> vector = new ArrayList<>();
+        vector.add("ORDLINE");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ORDLINE.ID");
 
@@ -206,8 +208,8 @@ public class GeneratedIndirectContainerProject extends org.eclipse.persistence.s
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class);
-        Vector vector = new Vector();
-        vector.addElement("SALEREP");
+        List<String> vector = new ArrayList<>();
+        vector.add("SALEREP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SALEREP.ID");
 

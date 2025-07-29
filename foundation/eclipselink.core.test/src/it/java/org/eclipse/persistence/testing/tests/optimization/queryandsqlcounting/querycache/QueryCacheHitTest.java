@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.querycache;
 
-import java.util.*;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.tests.optimization.queryandsqlcounting.QuerySQLTracker;
+
+import java.util.Vector;
 
 /**
  * Bug 6138532 - QUERY RESULTS CACHE SHOULD NOT STORE NULL FOR MULTIPLE RESULTS
@@ -98,7 +102,7 @@ public class QueryCacheHitTest extends TestCase {
                 assertTrue(results.isEmpty());
             }
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 
@@ -122,7 +126,7 @@ public class QueryCacheHitTest extends TestCase {
                 assertFalse(results.isEmpty());
             }
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 
@@ -142,7 +146,7 @@ public class QueryCacheHitTest extends TestCase {
             Object result = getSession().executeQuery(query, params);
             assertNull(result);
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 
@@ -162,7 +166,7 @@ public class QueryCacheHitTest extends TestCase {
             // assert that we do not get null back from the cache
             assertNotNull(result);
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 
@@ -183,7 +187,7 @@ public class QueryCacheHitTest extends TestCase {
                 assertTrue(results.isEmpty());
             }
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 
@@ -202,7 +206,7 @@ public class QueryCacheHitTest extends TestCase {
                 assertFalse(results.isEmpty());
             }
             // assert that the database was only hit once (important)
-            assertEquals(tracker.getSqlStatements().size(), 1);
+            assertEquals(1, tracker.getSqlStatements().size());
         }
     }
 

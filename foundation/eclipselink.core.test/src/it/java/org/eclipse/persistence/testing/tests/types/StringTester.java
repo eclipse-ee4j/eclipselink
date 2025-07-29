@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.types;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Date;
+import java.util.Vector;
 
 /**
  * Tests strings.
@@ -136,13 +139,13 @@ public class StringTester extends TypeTester {
     public static Vector testInstances() {
         Vector tests = new Vector();
 
-        tests.addElement(new StringTester());
-        tests.addElement(new StringTester("Empty", ""));
-        tests.addElement(new StringTester("Date", new java.util.Date().toString()));
-        tests.addElement(new StringTester("Too Long", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
-        tests.addElement(new StringTester("Leading Blanks", "     5 blanks"));
-        tests.addElement(new StringTester("Trailing Blanks", "5 blanks     "));
-        tests.addElement(new StringTester("Quotes", "\"'`"));
+        tests.add(new StringTester());
+        tests.add(new StringTester("Empty", ""));
+        tests.add(new StringTester("Date", new Date().toString()));
+        tests.add(new StringTester("Too Long", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+        tests.add(new StringTester("Leading Blanks", "     5 blanks"));
+        tests.add(new StringTester("Trailing Blanks", "5 blanks     "));
+        tests.add(new StringTester("Quotes", "\"'`"));
         return tests;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,32 @@
 package org.eclipse.persistence.testing.tests.optimisticlocking;
 
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
+import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
-import org.eclipse.persistence.descriptors.SelectedFieldsLockingPolicy;
-import org.eclipse.persistence.descriptors.ChangedFieldsLockingPolicy;
-
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.optimisticlocking.*;
-import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.optimisticlocking.Guitar;
+import org.eclipse.persistence.testing.models.optimisticlocking.LockInAggregateObject;
+import org.eclipse.persistence.testing.models.optimisticlocking.LockInCache;
+import org.eclipse.persistence.testing.models.optimisticlocking.LockInObject;
+import org.eclipse.persistence.testing.models.optimisticlocking.OptimisticLockingSystem;
+import org.eclipse.persistence.testing.models.optimisticlocking.RockBand;
+import org.eclipse.persistence.testing.models.optimisticlocking.RockMusician;
+import org.eclipse.persistence.testing.models.optimisticlocking.TimestampInAggregateObject;
+import org.eclipse.persistence.testing.models.optimisticlocking.TimestampInCache;
+import org.eclipse.persistence.testing.models.optimisticlocking.TimestampInObject;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.BarSystem;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.Cascaded121OptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.Cascaded12MInheritanceListOnSuperOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.Cascaded12MInheritanceOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.Cascaded12MOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.CascadedCollectionOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.CascadedMultiLevel121OptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.CascadedMultiLevel12MOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.CascadedMultiLevelCollectionOptimisticLockingTest;
+import org.eclipse.persistence.testing.tests.optimisticlocking.cascaded.CascadedVersionLockingMultiplePrivateOwnedTest;
 
 public class OptimisticLockingTestModel extends TestModel {
     // No state.

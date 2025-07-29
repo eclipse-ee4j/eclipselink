@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,14 @@ EXCEPTION DESCRIPTION: The field [DatabaseField(LPROJECT.PROJ_ID)] in this
 expression has an invalid table in this context. */
 
 // Domain imports
+
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.Project;
+
 import java.util.Vector;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
-
-//TopLink imports
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
 
 public class ComplexInheritanceTest extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
     public ComplexInheritanceTest() {
@@ -55,7 +56,7 @@ public class ComplexInheritanceTest extends org.eclipse.persistence.testing.test
         Project project = null;
         Vector projects = getSomeProjects();
         for(int i = 0; i < projects.size(); i++) {
-            project = (Project)projects.elementAt(i);
+            project = (Project)projects.get(i);
             if(project instanceof LargeProject) {
                 break;
             }

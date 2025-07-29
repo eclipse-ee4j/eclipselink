@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -653,13 +653,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                 } else if (next == '[') {
                     // Arrays.
                     int start = index;
-                    index++;
-                    next = chars[index];
                     // Nested arrays.
-                    while (next == '[') {
+                    do {
                         index++;
                         next = chars[index];
-                    }
+                    } while (next == '[');
                     if (PRIMITIVES.indexOf(next) == -1) {
                         while (next != ';') {
                             index++;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.types;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestException;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * A Tester for BLOB data, treated as a byte array internally.
@@ -119,12 +123,12 @@ public class BLOBTester extends TypeTester {
     public static Vector testInstances() {
         Vector tests = new Vector();
 
-        tests.addElement(new BLOBTester(1000));
-        tests.addElement(new BLOBTester(5000));
-        tests.addElement(new BLOBTester(10000));
-        tests.addElement(new BLOBTester(25000));
-        tests.addElement(new BLOBTester(32768));
-        tests.addElement(new BLOBTester(33000));
+        tests.add(new BLOBTester(1000));
+        tests.add(new BLOBTester(5000));
+        tests.add(new BLOBTester(10000));
+        tests.add(new BLOBTester(25000));
+        tests.add(new BLOBTester(32768));
+        tests.add(new BLOBTester(33000));
         return tests;
     }
 

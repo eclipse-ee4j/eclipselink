@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import java.util.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.aggregate.Company;
 import org.eclipse.persistence.testing.models.aggregate.Customer;
 import org.eclipse.persistence.testing.models.aggregate.Dependant;
 import org.eclipse.persistence.testing.models.aggregate.House;
 import org.eclipse.persistence.testing.models.aggregate.Oid;
+
+import java.util.List;
+import java.util.Vector;
 
 public class AggregateCollectionUoWTest extends WriteObjectTest {
     public Object unitOfWorkWorkingCopy;
@@ -61,9 +65,9 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         newCustomer.setIncome(1000000);
         newCustomer.setCompany(Company.example4());
         Vector changDependnants = new Vector(3);
-        changDependnants.addElement(new Dependant("Susan", 9));
-        changDependnants.addElement(new Dependant("Julie", 5));
-        changDependnants.addElement(new Dependant("David", 2));
+        changDependnants.add(new Dependant("Susan", 9));
+        changDependnants.add(new Dependant("Julie", 5));
+        changDependnants.add(new Dependant("David", 2));
         newCustomer.setDependants(changDependnants);
         AgentBuilderHelper.addCustomer(object, newCustomer);
     }

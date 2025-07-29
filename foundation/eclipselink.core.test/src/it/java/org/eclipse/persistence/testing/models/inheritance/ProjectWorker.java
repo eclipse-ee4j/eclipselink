@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.inheritance;
 
-import java.util.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+
 import java.io.StringWriter;
-import org.eclipse.persistence.indirection.*;
+import java.util.Vector;
 
 /**
  *  Designed to test cyclical relationships with inheritance.  Has two relationships
@@ -36,7 +38,7 @@ public class ProjectWorker {
     }
 
     public void addProject(BaseProject project) {
-        getProjects().addElement(project);
+        getProjects().add(project);
         project.setTeamLeader(this);
     }
 
@@ -57,7 +59,7 @@ public class ProjectWorker {
     }
 
     public void removeProject(BaseProject project) {
-        getProjects().removeElement(project);
+        getProjects().remove(project);
     }
 
     public void setHeadProject(BaseProject project) {

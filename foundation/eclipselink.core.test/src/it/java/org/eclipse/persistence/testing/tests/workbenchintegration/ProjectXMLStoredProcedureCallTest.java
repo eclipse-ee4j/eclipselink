@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+
+import java.util.Vector;
 
 
 public class ProjectXMLStoredProcedureCallTest extends TestCase {
@@ -88,7 +88,7 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
 
         Vector parameters = new Vector();
 
-        DatabaseRecord row = (DatabaseRecord)((Vector)getSession().executeQuery(query, parameters)).firstElement();
+        DatabaseRecord row = (DatabaseRecord)((Vector)getSession().executeQuery(query, parameters)).get(0);
 
         Integer P_INOUT_FIELD_NAME = (Integer)row.get("P_INOUT_FIELD_NAME");
         Integer P_OUT_FIELD_NAME = (Integer)row.get("P_OUT_FIELD_NAME");
@@ -108,7 +108,7 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
 
         Vector parameters = new Vector();
         DatabaseRecord unamedrow =
-            (DatabaseRecord)((Vector)getSession().executeQuery(UNamedQuery, parameters)).firstElement();
+            (DatabaseRecord)((Vector)getSession().executeQuery(UNamedQuery, parameters)).get(0);
 
         Integer UNAMED_P_INOUT_FIELD_NAME = (Integer)unamedrow.get("P_INOUT_FIELD_NAME");
         Integer UNAMED_P_OUT_FIELD_NAME = (Integer)unamedrow.get("P_OUT_FIELD_NAME");

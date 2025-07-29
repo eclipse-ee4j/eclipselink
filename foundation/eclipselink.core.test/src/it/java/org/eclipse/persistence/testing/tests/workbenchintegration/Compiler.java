@@ -12,11 +12,8 @@
 
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Arrays;
+import org.eclipse.persistence.sessions.Session;
+
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -24,7 +21,11 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
-import org.eclipse.persistence.sessions.Session;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Arrays;
 
 /**
  *

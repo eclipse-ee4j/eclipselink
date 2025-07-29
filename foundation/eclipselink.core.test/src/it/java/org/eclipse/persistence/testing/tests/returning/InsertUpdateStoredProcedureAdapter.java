@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,14 @@
 package org.eclipse.persistence.testing.tests.returning;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 
 /**
  * This adapter is meant to generate INSERT and UPDATE

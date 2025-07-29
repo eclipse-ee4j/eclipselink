@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate;
 
-import java.io.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.tools.schemaframework.*;
 
 public class ProjectDescription implements Serializable {
     public Number id;
@@ -39,13 +41,13 @@ public class ProjectDescription implements Serializable {
         Vector<Language> languages = new Vector<>();
         PopulationManager manger = PopulationManager.getDefaultManager();
 
-        responsibilities.addElement(Responsibility.example1(anEmployee));
-        responsibilities.addElement(Responsibility.example2(anEmployee));
+        responsibilities.add(Responsibility.example1(anEmployee));
+        responsibilities.add(Responsibility.example2(anEmployee));
 
-        languages.addElement((Language) manger.getObject(Language.class, "example1"));
-        languages.addElement((Language) manger.getObject(Language.class, "example2"));
-        languages.addElement((Language) manger.getObject(Language.class, "example3"));
-        languages.addElement((Language) manger.getObject(Language.class, "example4"));
+        languages.add((Language) manger.getObject(Language.class, "example1"));
+        languages.add((Language) manger.getObject(Language.class, "example2"));
+        languages.add((Language) manger.getObject(Language.class, "example3"));
+        languages.add((Language) manger.getObject(Language.class, "example4"));
 
         example.setDescription("TOPLink");
         example.getComputer().setValue(Computer.example1());
@@ -61,11 +63,11 @@ public class ProjectDescription implements Serializable {
         Vector<Language> languages = new Vector<>();
         PopulationManager manager = PopulationManager.getDefaultManager();
 
-        responsibilities.addElement(Responsibility.example3(anEmployee));
-        responsibilities.addElement(Responsibility.example4(anEmployee));
+        responsibilities.add(Responsibility.example3(anEmployee));
+        responsibilities.add(Responsibility.example4(anEmployee));
 
-        languages.addElement((Language) manager.getObject(Language.class, "example3"));
-        languages.addElement((Language) manager.getObject(Language.class, "example4"));
+        languages.add((Language) manager.getObject(Language.class, "example3"));
+        languages.add((Language) manager.getObject(Language.class, "example4"));
 
         example.setDescription("Course Development");
         example.getComputer().setValue(Computer.example2());
@@ -81,11 +83,11 @@ public class ProjectDescription implements Serializable {
         Vector<Language>  languages= new Vector<>();
         PopulationManager manger = PopulationManager.getDefaultManager();
 
-        responsibilities.addElement(Responsibility.example5(anEmployee));
-        responsibilities.addElement(Responsibility.example6(anEmployee));
+        responsibilities.add(Responsibility.example5(anEmployee));
+        responsibilities.add(Responsibility.example6(anEmployee));
 
-        languages.addElement((Language) manger.getObject(Language.class, "example5"));
-        languages.addElement((Language) manger.getObject(Language.class, "example6"));
+        languages.add((Language) manger.getObject(Language.class, "example5"));
+        languages.add((Language) manger.getObject(Language.class, "example6"));
 
         example.setDescription("Network Administration");
         example.getComputer().setValue(Computer.example3());

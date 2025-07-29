@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.types;
 
-import java.util.*;
-import java.sql.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestException;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Vector;
 
 /**
  * This class will test Date, Time, &amp; Timestamp capabilities
@@ -135,21 +140,21 @@ public class TimeDateTester extends TypeTester {
 
     static public Vector testInstances() {
         Vector tests = new Vector();
-        tests.addElement(new TimeDateTester("NOW", Calendar.getInstance()));
-        tests.addElement(new TimeDateTester("ZERO", 1900, 0, 1, 0, 0, 0, 0));// I don't know if this make any sense
-        tests.addElement(new TimeDateTester("New Years Eve", 1997, 11, 31, 23, 59, 59, 900000000));
-        tests.addElement(new TimeDateTester("New Years Day", 1998, 1, 1, 0, 0, 1, 0));
-        tests.addElement(new TimeDateTester("New Years Eve 1999", 1999, 11, 31, 23, 59, 59, 0));
-        tests.addElement(new TimeDateTester("New Years Day 2000", 2000, 1, 1, 0, 0, 1, 0));
-        tests.addElement(new TimeDateTester("Doug's Birth", 1970, 8, 13, 16, 34, 0, 0));
-        tests.addElement(new TimeDateTester("Doug's 100th Birthday", 2070, 8, 13, 16, 34, 0, 0));
+        tests.add(new TimeDateTester("NOW", Calendar.getInstance()));
+        tests.add(new TimeDateTester("ZERO", 1900, 0, 1, 0, 0, 0, 0));// I don't know if this make any sense
+        tests.add(new TimeDateTester("New Years Eve", 1997, 11, 31, 23, 59, 59, 900000000));
+        tests.add(new TimeDateTester("New Years Day", 1998, 1, 1, 0, 0, 1, 0));
+        tests.add(new TimeDateTester("New Years Eve 1999", 1999, 11, 31, 23, 59, 59, 0));
+        tests.add(new TimeDateTester("New Years Day 2000", 2000, 1, 1, 0, 0, 1, 0));
+        tests.add(new TimeDateTester("Doug's Birth", 1970, 8, 13, 16, 34, 0, 0));
+        tests.add(new TimeDateTester("Doug's 100th Birthday", 2070, 8, 13, 16, 34, 0, 0));
         Calendar yearsBack100 = Calendar.getInstance();
         yearsBack100.set(Calendar.YEAR, (yearsBack100.get(Calendar.YEAR) - 100));
-        tests.addElement(new TimeDateTester("100 Years ago", yearsBack100));
+        tests.add(new TimeDateTester("100 Years ago", yearsBack100));
         Calendar yearsAhead100 = Calendar.getInstance();
         yearsAhead100.set(Calendar.YEAR, (yearsAhead100.get(Calendar.YEAR) + 100));
-        tests.addElement(new TimeDateTester("100 Years from now", yearsAhead100));
-        tests.addElement(new TimeDateTester("Before 1970", 1902, 8, 13, 16, 34, 25, 900000000));
+        tests.add(new TimeDateTester("100 Years from now", yearsAhead100));
+        tests.add(new TimeDateTester("Before 1970", 1902, 8, 13, 16, 34, 25, 900000000));
         return tests;
     }
 

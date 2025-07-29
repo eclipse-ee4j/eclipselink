@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,33 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.expressions;
 
-import java.util.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.platform.database.DB2Platform;
+import org.eclipse.persistence.platform.database.DerbyPlatform;
+import org.eclipse.persistence.platform.database.MySQLPlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
+import org.eclipse.persistence.platform.database.PostgreSQLPlatform;
+import org.eclipse.persistence.platform.database.SQLAnywherePlatform;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
+import org.eclipse.persistence.platform.database.SybasePlatform;
+import org.eclipse.persistence.platform.database.SymfowarePlatform;
+import org.eclipse.persistence.platform.database.TimesTenPlatform;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.UnitTestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.database.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.testing.framework.*;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Vector;
 
 /**
  * This test suite is designed to cover all the API in
@@ -307,9 +325,9 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         // The selector should be unique and the selectors for pre-defined operators are > 0.
         int applyRaiseSelector = 0 - "applyRaise".hashCode();
         Vector v = new Vector();
-        v.addElement("(");
-        v.addElement(" * (100 + ");
-        v.addElement(") / 100)");
+        v.add("(");
+        v.add(" * (100 + ");
+        v.add(") / 100)");
         ExpressionOperator applyRaiseOperator = new ExpressionOperator(applyRaiseSelector, v);
         applyRaiseOperator.bePrefix();
         ExpressionOperator.addOperator(applyRaiseOperator);
@@ -317,7 +335,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         // The following query will select all employees who will still have a salary under
         // $50,000 after a 15% raise.
         Vector arguments = new Vector();
-        arguments.addElement(15);
+        arguments.add(15);
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("salary").getFunction(applyRaiseSelector, arguments).lessThan(50000);
 
@@ -334,7 +352,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
      */
     protected void _addGetFunctionWithArgumentsTest() {
         Vector arguments = new Vector();
-        arguments.addElement("Smith");
+        arguments.add("Smith");
         Expression expression = (new ExpressionBuilder()).get("firstName").getFunctionWithArguments("Concat", arguments).equal("BobSmith");
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 1);

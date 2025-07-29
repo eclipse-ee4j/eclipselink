@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning;
 
-import java.util.*;
-
-import org.eclipse.persistence.tools.schemaframework.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
+import org.eclipse.persistence.tools.schemaframework.StoredProcedureGenerator;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * This stored procedure generator is meant to generate INSERT and UPDATE

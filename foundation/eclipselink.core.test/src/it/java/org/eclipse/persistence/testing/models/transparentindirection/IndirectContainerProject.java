@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * override the generated methods with hand-modified methods;
@@ -35,8 +37,8 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(this.orderClass());// bjv
-        Vector vector = new Vector();
-        vector.addElement("ORD");
+        List<String> vector = new ArrayList<>();
+        vector.add("ORD");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ORD.ID");
 
@@ -161,8 +163,8 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(orderLineClass());
-        Vector vector = new Vector();
-        vector.addElement("ORDLINE");
+        List<String> vector = new ArrayList<>();
+        vector.add("ORDLINE");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("ORDLINE.ID");
 
@@ -221,8 +223,8 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(salesRepClass());
-        Vector vector = new Vector();
-        vector.addElement("SALEREP");
+        List<String> vector = new ArrayList<>();
+        vector.add("SALEREP");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SALEREP.ID");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Vikram Bhatia - initial API and implementation
 package org.eclipse.persistence.testing.models.vehicle;
 
-import java.util.Vector;
-
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestSystem;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.Vector;
 
 
 /**

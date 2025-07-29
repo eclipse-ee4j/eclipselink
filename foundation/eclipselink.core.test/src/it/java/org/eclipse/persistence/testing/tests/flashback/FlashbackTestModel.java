@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,21 +14,43 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.flashback;
 
-import java.util.*;
-import java.sql.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.history.AsOfSCNClause;
 import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.tests.expressions.*;
-import org.eclipse.persistence.testing.tests.clientserver.*;
-import org.eclipse.persistence.testing.tests.sessionbroker.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestEntity;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.TestSystem;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
+import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
 import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem;
+import org.eclipse.persistence.testing.tests.clientserver.ClientSessionTestAdapter;
 import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
+import org.eclipse.persistence.testing.tests.expressions.ExpressionSubSelectTestSuite;
+import org.eclipse.persistence.testing.tests.expressions.ExpressionTestSuite;
+import org.eclipse.persistence.testing.tests.expressions.ReadAllExpressionTest;
+import org.eclipse.persistence.testing.tests.sessionbroker.ClientSessionBrokerTestAdapter;
+
+import java.sql.Timestamp;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Tests Oracle Flashback support.

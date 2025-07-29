@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.interfaces;
 
-import java.util.Vector;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.tools.schemaframework.*;
+import java.util.Vector;
 
 public class PersonnelManager implements ManagerialJob, java.io.Serializable {
     public Number jobCode;
@@ -36,11 +37,11 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         example.setSalary(77235.00f);
 
         Vector employees = new Vector(5);
-        employees.addElement(CourseDeveloper.example1());
-        employees.addElement(ProductDeveloper.example1());
-        employees.addElement(Secretary.example1());
-        employees.addElement(Receptionist.example1());
-        employees.addElement(ProductManager.example1());
+        employees.add(CourseDeveloper.example1());
+        employees.add(ProductDeveloper.example1());
+        employees.add(Secretary.example1());
+        employees.add(Receptionist.example1());
+        employees.add(ProductManager.example1());
 
         example.setManagedEmployees(employees);
 
@@ -54,11 +55,11 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         example.setSalary(97235.00f);
 
         Vector employees = new Vector(5);
-        employees.addElement(CourseDeveloper.example2());
-        employees.addElement(ProductDeveloper.example2());
-        employees.addElement(Secretary.example2());
-        employees.addElement(Receptionist.example2());
-        employees.addElement(ProductManager.example2());
+        employees.add(CourseDeveloper.example2());
+        employees.add(ProductDeveloper.example2());
+        employees.add(Secretary.example2());
+        employees.add(Receptionist.example2());
+        employees.add(ProductManager.example2());
 
         example.setManagedEmployees(employees);
 
@@ -72,11 +73,11 @@ public class PersonnelManager implements ManagerialJob, java.io.Serializable {
         example.setSalary(87265.00f);
 
         Vector employees = new Vector(5);
-        employees.addElement(CourseDeveloper.example3());
-        employees.addElement(ProductDeveloper.example3());
-        employees.addElement(Secretary.example3());
-        employees.addElement(Receptionist.example3());
-        employees.addElement(ProductManager.example3());
+        employees.add(CourseDeveloper.example3());
+        employees.add(ProductDeveloper.example3());
+        employees.add(Secretary.example3());
+        employees.add(Receptionist.example3());
+        employees.add(ProductManager.example3());
 
         example.setManagedEmployees(employees);
 

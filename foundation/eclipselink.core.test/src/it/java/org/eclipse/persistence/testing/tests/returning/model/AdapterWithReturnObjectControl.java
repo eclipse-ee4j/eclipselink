@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning.model;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.tests.returning.ProjectAndDatabaseAdapter;
 
 public abstract class AdapterWithReturnObjectControl implements ProjectAndDatabaseAdapter, ReturnObjectControl {
@@ -98,8 +101,8 @@ public abstract class AdapterWithReturnObjectControl implements ProjectAndDataba
             mapping.writeFromObjectIntoRow(object2, row2, (AbstractSession)session, writeType);
 
             for (int i = 0; i < row1.size(); i++) {
-                DatabaseField field = row1.getFields().elementAt(i);
-                Object valueBefore = row1.getValues().elementAt(i);
+                DatabaseField field = row1.getFields().get(i);
+                Object valueBefore = row1.getValues().get(i);
                 Object valueAfter = row2.get(field);
                 boolean changed;
                 if (valueAfter == null) {

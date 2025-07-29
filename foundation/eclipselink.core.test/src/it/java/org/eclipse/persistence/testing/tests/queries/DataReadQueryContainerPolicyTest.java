@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.io.IOException;
-
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.insurance.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.insurance.PolicyHolder;
+
+import java.io.IOException;
 
 /**
  * From the deployment XML, if a direct collection mapping did not specify

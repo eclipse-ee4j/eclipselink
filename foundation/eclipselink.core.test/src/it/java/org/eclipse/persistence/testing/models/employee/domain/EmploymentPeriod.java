@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.employee.domain;
 
-import java.sql.Date;
-import java.io.*;
-import java.beans.PropertyChangeListener;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+
 import java.beans.PropertyChangeEvent;
-import org.eclipse.persistence.descriptors.changetracking.*;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.sql.Date;
 
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization

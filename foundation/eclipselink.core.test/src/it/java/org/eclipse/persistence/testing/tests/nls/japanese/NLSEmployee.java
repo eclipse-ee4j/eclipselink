@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.nls.japanese;
 
-import java.util.*;
-import java.io.*;
-import java.math.BigDecimal;
-import java.sql.Time;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: Represent a employee of an organization.
@@ -99,7 +103,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      */
     @Override
     public void addManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
-        getManagedEmployees().addElement(employee);
+        getManagedEmployees().add(employee);
         employee.setManager(this);
     }
 
@@ -108,18 +112,18 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      */
     @Override
     public void addPhoneNumber(PhoneNumber phoneNumber) {
-        getPhoneNumbers().addElement(phoneNumber);
+        getPhoneNumbers().add(phoneNumber);
         phoneNumber.setOwner(this);
     }
 
     @Override
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
-        getProjects().addElement(project);
+        getProjects().add(project);
     }
 
     @Override
     public void addResponsibility(String responsibility) {
-        getResponsibilitiesList().addElement(responsibility);
+        getResponsibilitiesList().add(responsibility);
     }
 
     /**
@@ -250,7 +254,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      */
     @Override
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
-        getManagedEmployees().removeElement(employee);
+        getManagedEmployees().remove(employee);
         employee.setManager(null);
     }
 
@@ -262,17 +266,17 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      */
     @Override
     public void removePhoneNumber(PhoneNumber phoneNumber) {
-        getPhoneNumbers().removeElement(phoneNumber);
+        getPhoneNumbers().remove(phoneNumber);
     }
 
     @Override
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
-        getProjects().removeElement(project);
+        getProjects().remove(project);
     }
 
     @Override
     public void removeResponsibility(String responsibility) {
-        getResponsibilitiesList().removeElement(responsibility);
+        getResponsibilitiesList().remove(responsibility);
     }
 
     /**

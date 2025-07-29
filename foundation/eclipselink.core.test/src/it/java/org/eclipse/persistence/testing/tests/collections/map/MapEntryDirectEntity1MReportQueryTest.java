@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,16 +12,16 @@
 
 package org.eclipse.persistence.testing.tests.collections.map;
 
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Vector;
-
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ReportQueryResult;
 import org.eclipse.persistence.testing.models.collections.map.DirectEntity1MMapHolder;
 import org.eclipse.persistence.testing.tests.queries.report.ReportQueryTestCase;
+
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Vector;
 
 public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
 
@@ -47,7 +47,7 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
             Association expectedAssocication = (Association)expectedResult.getByIndex(0);
             Association resultAssocication = (Association)result.getByIndex(0);
             if (expectedAssocication.getKey().equals(resultAssocication.getKey()) && expectedAssocication.getValue().equals(resultAssocication.getValue())) {
-                expected.removeElement(expectedResult);
+                expected.remove(expectedResult);
                 return;
             }
         }

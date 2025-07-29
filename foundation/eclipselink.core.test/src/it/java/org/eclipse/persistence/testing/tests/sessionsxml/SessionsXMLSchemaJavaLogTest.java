@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,19 +15,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
-
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 
 
 /**

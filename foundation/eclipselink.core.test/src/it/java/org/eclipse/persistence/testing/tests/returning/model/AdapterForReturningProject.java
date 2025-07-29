@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning.model;
 
-import java.math.*;
-
-import java.util.*;
-
-import java.io.StringWriter;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 // This adapter requires project of type ReturningProject");
 public class AdapterForReturningProject extends AdapterWithReturnObjectControl {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate;
 
-import java.util.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-import org.eclipse.persistence.indirection.*;
+
+import java.util.Vector;
 
 public class Customer {
     private java.lang.String name;
@@ -35,7 +37,7 @@ public class Customer {
     }
 
     public void addDependant(Dependant dependant) {
-        getDependants().addElement(dependant);
+        getDependants().add(dependant);
     }
 
     public static Customer example1() {
@@ -45,8 +47,8 @@ public class Customer {
         example1.setIncome(94320);
         example1.setCompany(Company.example1());
         Vector<Dependant> dependants = new Vector<>(2);
-        dependants.addElement(Dependant.example1());
-        dependants.addElement(Dependant.example2());
+        dependants.add(Dependant.example1());
+        dependants.add(Dependant.example2());
         example1.setDependants(dependants);
         return example1;
     }
@@ -58,7 +60,7 @@ public class Customer {
         example2.setIncome(773388);
         example2.setCompany(Company.example2());
         Vector<Dependant> dependants = new Vector<>(1);
-        dependants.addElement(Dependant.example3());
+        dependants.add(Dependant.example3());
         example2.setDependants(dependants);
         return example2;
     }
@@ -70,8 +72,8 @@ public class Customer {
         example3.setIncome(38338);
         example3.setCompany(Company.example3());
         Vector<Dependant> dependants = new Vector<>(2);
-        dependants.addElement(Dependant.example4());
-        dependants.addElement(Dependant.example5());
+        dependants.add(Dependant.example4());
+        dependants.add(Dependant.example5());
         example3.setDependants(dependants);
 
         return example3;
@@ -111,7 +113,7 @@ public class Customer {
     }
 
     public void removeDependant(Dependant dependant) {
-        getDependants().removeElement(dependant);
+        getDependants().remove(dependant);
     }
 
     public void setCompany(Company newCompany) {

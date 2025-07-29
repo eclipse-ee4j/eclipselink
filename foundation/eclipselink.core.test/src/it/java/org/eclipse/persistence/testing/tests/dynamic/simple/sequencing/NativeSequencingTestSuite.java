@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,17 +20,15 @@
 package org.eclipse.persistence.testing.tests.dynamic.simple.sequencing;
 
 //JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
-//EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
 import org.eclipse.persistence.sequencing.NativeSequence;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
-//domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
 
 public class NativeSequencingTestSuite extends BaseSequencingTestSuite {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.returning.model;
 
+import org.eclipse.persistence.sessions.DataRecord;
+import org.eclipse.persistence.sessions.Session;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import org.eclipse.persistence.sessions.*;
 
 public abstract class BaseClass implements Cloneable {
     public BigDecimal[] a_plus_minus_b_BigDecimal;

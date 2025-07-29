@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.aggregate;
 
-import java.util.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.WriteObjectTest;
 import org.eclipse.persistence.testing.models.aggregate.AddressDescription;
 import org.eclipse.persistence.testing.models.aggregate.Employee;
 import org.eclipse.persistence.testing.models.aggregate.Language;
 import org.eclipse.persistence.testing.models.aggregate.ProjectDescription;
 import org.eclipse.persistence.testing.models.aggregate.Responsibility;
+
+import java.util.Vector;
 
 /**
  * <p>
@@ -106,20 +108,20 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         //1 level aggregate's 1:M mapping, removing an element
         responsibility.setResponsibility("Changed Reponsibility" + suffix);
         responsibilities = (Vector)projectDescription.getResponsibilities().getValue();
-        responsibilities.removeElement(responsibilities.firstElement());
+        responsibilities.remove(responsibilities.get(0));
 
         //1 level aggregate's 1:M mapping, adding a new element
-        responsibilities.addElement(responsibility);
+        responsibilities.add(responsibility);
 
         // 1 level aggregate's M:M mapping, removing an element
         languages = (Vector)projectDescription.getLanguages().getValue();
-        languages.removeElement(languages.firstElement());
+        languages.remove(languages.get(0));
 
         //1 level aggregate's M:M mapping, modifying an element
-        language = (Language)languages.firstElement();
+        language = (Language)languages.get(0);
         language.setLanguage("ModifiedLanguage" + suffix);
         // 1 level aggregate's M:M mapping, adding a new element
-        languages.addElement(Language.example7());
+        languages.add(Language.example7());
 
         // Update the change version.
         changeVersion++;

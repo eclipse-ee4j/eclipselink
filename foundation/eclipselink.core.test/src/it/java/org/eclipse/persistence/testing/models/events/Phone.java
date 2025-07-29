@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,13 @@
 //       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
 package org.eclipse.persistence.testing.models.events;
 
-import java.util.List;
-
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
+
+import java.util.List;
 
 public class Phone implements DescriptorEventListener {
     public String phoneNo;

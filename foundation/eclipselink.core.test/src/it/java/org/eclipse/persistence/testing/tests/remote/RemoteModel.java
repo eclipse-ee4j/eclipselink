@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,37 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.remote;
 
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
+import org.eclipse.persistence.testing.models.readonly.DefaultReadOnlyTestClass;
+import org.eclipse.persistence.testing.models.readonly.ReadOnlySystem;
+import org.eclipse.persistence.testing.models.transparentindirection.IndirectListSystem;
+import org.eclipse.persistence.testing.models.transparentindirection.IndirectMapSystem;
 import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
 import org.eclipse.persistence.testing.tests.insurance.InsuranceBasicTestModel;
-import org.eclipse.persistence.testing.tests.writing.*;
-import org.eclipse.persistence.testing.tests.queries.*;
-import org.eclipse.persistence.testing.models.readonly.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.models.transparentindirection.*;
-import org.eclipse.persistence.testing.tests.transparentindirection.*;
-import org.eclipse.persistence.testing.models.inheritance.InheritanceSystem;
+import org.eclipse.persistence.testing.tests.queries.CascadingAllCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CascadingAllNoCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CascadingNoneCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CascadingNoneNoCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CascadingPrivateCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CascadingPrivateNoCacheTest;
+import org.eclipse.persistence.testing.tests.queries.CursoredStreamTest;
+import org.eclipse.persistence.testing.tests.queries.PessimisticLockTest;
+import org.eclipse.persistence.testing.tests.queries.PredefinedInQueryReadAllTest;
+import org.eclipse.persistence.testing.tests.queries.PredefinedQueryReadObjectTest;
+import org.eclipse.persistence.testing.tests.queries.QueryCacheTest;
+import org.eclipse.persistence.testing.tests.queries.RefreshTest;
+import org.eclipse.persistence.testing.tests.queries.ScrollableCursorAPITest;
+import org.eclipse.persistence.testing.tests.queries.ScrollableCursorBackwardReadingTest;
+import org.eclipse.persistence.testing.tests.queries.ScrollableCursorNavigationAPITest;
+import org.eclipse.persistence.testing.tests.queries.ScrollableCursorTest;
+import org.eclipse.persistence.testing.tests.transparentindirection.IndirectListTestDatabaseRemote;
+import org.eclipse.persistence.testing.tests.transparentindirection.IndirectMapTestDatabaseRemote;
+import org.eclipse.persistence.testing.tests.transparentindirection.RemoteDataReadQueryTest;
+import org.eclipse.persistence.testing.tests.transparentindirection.ZTestSuite;
+import org.eclipse.persistence.testing.tests.writing.ComplexUpdateAndUnitOfWorkTestModel;
 
 public abstract class RemoteModel extends TestModel {
     public static Session originalSession;

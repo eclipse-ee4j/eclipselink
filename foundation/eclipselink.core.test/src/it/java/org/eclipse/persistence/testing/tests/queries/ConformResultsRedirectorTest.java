@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.Vector;
-
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.QueryRedirector;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.DataRecord;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.Session;
-
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.models.employee.domain.Address;
+
+import java.util.Vector;
 
 /**
  *  Test for bug 3324757 REDIRECT QUERY RESULTS DO NOT CONFORM TO A UNITOFWORK
@@ -51,7 +52,7 @@ ConformResultsRedirectorTest extends TestCase implements QueryRedirector {
         UnitOfWork unitOfWork = getSession().acquireUnitOfWork();
         try {
             Vector addresses = (Vector)unitOfWork.executeQuery(query);
-            Address address = (Address)addresses.elementAt(0);
+            Address address = (Address)addresses.get(0);
             unitOfWork.deleteObject(address);
 
             query.setRedirector(this);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.readonly;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.mapping.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.mapping.Employee;
+import org.eclipse.persistence.testing.models.mapping.Phone;
 
 /**
  * <p>
@@ -51,7 +53,7 @@ public class ReadOnlyClassManyToManyTestCase extends AutoVerifyTestCase {
     protected void setup() {
         beginTransaction();
         originalEmployee = (Employee)getSession().readObject(Employee.class);
-        originalPhone = (Phone)originalEmployee.getPhoneNumbers().firstElement();
+        originalPhone = (Phone)originalEmployee.getPhoneNumbers().get(0);
         origAreaCode = originalPhone.areaCode;
 
         uow = getSession().acquireUnitOfWork();
@@ -59,7 +61,7 @@ public class ReadOnlyClassManyToManyTestCase extends AutoVerifyTestCase {
         Employee cloneEmp = (Employee)uow.registerObject(originalEmployee);
 
         // Change the one of the Employee's Phones and one of the Shipments.
-        ((Phone)cloneEmp.getPhoneNumbers().firstElement()).setAreaCode("000");
+        ((Phone)cloneEmp.getPhoneNumbers().get(0)).setAreaCode("000");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.collections;
 
-import java.util.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.mappings.converters.*;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * TopLink generated Project class.
@@ -70,8 +74,8 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Diner.class);
-        Vector vector = new Vector();
-        vector.addElement("COL_PERS");
+        List<String> vector = new ArrayList<>();
+        vector.add("COL_PERS");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_PERS.ID");
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.collections.Person.class);
@@ -96,7 +100,7 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Location.class);
         java.util.Vector vector = new java.util.Vector();
-        vector.addElement("COL_LOCA");
+        vector.add("COL_LOCA");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_LOCA.ID");
 
@@ -147,8 +151,8 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Menu.class);
-        Vector vector = new Vector();
-        vector.addElement("COL_MENU");
+        List<String> vector = new ArrayList<>();
+        vector.add("COL_MENU");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_MENU.ID");
 
@@ -215,8 +219,8 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.collections.MenuItem.class);
-        Vector vector = new Vector();
-        vector.addElement("COL_M_IT");
+        List<String> vector = new ArrayList<>();
+        vector.add("COL_M_IT");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_M_IT.ID");
 
@@ -275,7 +279,7 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.collections.Person.class);
         java.util.Vector vector = new java.util.Vector();
-        vector.addElement("COL_PERS");
+        vector.add("COL_PERS");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_PERS.ID");
 
@@ -325,8 +329,8 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(Restaurant.class);
-        Vector vector = new Vector();
-        vector.addElement("COL_REST");
+        List<String> vector = new ArrayList<>();
+        vector.add("COL_REST");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_REST.ID");
 
@@ -488,7 +492,7 @@ public class CollectionsProject extends org.eclipse.persistence.sessions.Project
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.collections.Waiter.class);
         java.util.Vector vector = new java.util.Vector();
-        vector.addElement("COL_PERS");
+        vector.add("COL_PERS");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("COL_PERS.ID");
         descriptor.getInheritancePolicy().setParentClass(org.eclipse.persistence.testing.models.collections.Person.class);

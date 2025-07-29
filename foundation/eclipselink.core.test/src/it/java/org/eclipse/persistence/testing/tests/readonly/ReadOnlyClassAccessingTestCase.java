@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.readonly;
 
-import java.util.*;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.readonly.Country;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.readonly.Address;
+import org.eclipse.persistence.testing.models.readonly.Country;
 import org.eclipse.persistence.testing.models.readonly.Promoter;
-import org.eclipse.persistence.testing.framework.*;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * <p>
@@ -83,8 +89,8 @@ public class ReadOnlyClassAccessingTestCase extends TestCase {
 
         // Test acquiring a unit of work with a vector of read-only classes.
         Vector classes = new Vector();
-        classes.addElement(Promoter.class);
-        classes.addElement(Country.class);
+        classes.add(Promoter.class);
+        classes.add(Country.class);
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
         uow2.removeAllReadOnlyClasses();
         uow2.addReadOnlyClasses(classes);

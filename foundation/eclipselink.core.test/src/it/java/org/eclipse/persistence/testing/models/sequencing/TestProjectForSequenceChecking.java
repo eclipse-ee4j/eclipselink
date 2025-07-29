@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.sequencing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TOPLink generated Project class.
@@ -62,8 +63,8 @@ public class TestProjectForSequenceChecking extends org.eclipse.persistence.sess
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.sequencing.SeqTestClass1.class);
-        Vector vector = new Vector();
-        vector.addElement("SEQTESTTABLE1");
+        List<String> vector = new ArrayList<>();
+        vector.add("SEQTESTTABLE1");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SEQTESTTABLE1.PKEY");
 
@@ -119,8 +120,8 @@ public class TestProjectForSequenceChecking extends org.eclipse.persistence.sess
 
         // SECTION: DESCRIPTOR
         descriptor.setJavaClass(org.eclipse.persistence.testing.models.sequencing.SeqTestClass2.class);
-        Vector vector = new Vector();
-        vector.addElement("SEQTESTTABLE2");
+        List<String> vector = new ArrayList<>();
+        vector.add("SEQTESTTABLE2");
         descriptor.setTableNames(vector);
         descriptor.addPrimaryKeyFieldName("SEQTESTTABLE2.PKEY");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,21 +20,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.simple.mappings;
 
 //javase imports
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Vector;
 
-//JUnit4 imports
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -49,9 +35,20 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-//domain-specific (testing) imports
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Vector;
+
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SimpleTypes_OneToMany {
 
@@ -258,7 +255,7 @@ public class SimpleTypes_OneToMany {
     public void verifyNewSimpleA() throws Exception {
         DynamicEntity newA = dynamicHelper.getType("SimpleA").newDynamicEntity();
         assertNotNull(newA);
-        assertEquals(((Number) newA.get("id")).intValue(), 0);
+        assertEquals(0, ((Number) newA.get("id")).intValue());
         assertFalse(newA.isSet("value1"));
         assertEquals(Vector.class, newA.get("b").getClass());
         Object b = newA.get("b");

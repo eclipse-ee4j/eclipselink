@@ -56,7 +56,6 @@
 package org.eclipse.persistence.config;
 
 import java.io.File;
-import java.sql.DriverManager;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -142,7 +141,7 @@ public final class PersistenceUnitProperties {
 
     /**
      * The {@code jakarta.persistence.jdbc.driver} property specifies the JDBC
-     * {@link DriverManager} class name used for internal connection pooling when a data
+     * {@link java.sql.DriverManager} class name used for internal connection pooling when a data
      * source is not being used.
      * <p>
      * <b>Allowed Values:</b>

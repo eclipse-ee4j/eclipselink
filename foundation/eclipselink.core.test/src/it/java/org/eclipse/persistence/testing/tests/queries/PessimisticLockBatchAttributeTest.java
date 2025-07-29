@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.queries;
 
-import java.util.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.descriptors.CMPPolicy;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.PessimisticLockingPolicy;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
+
+import java.util.Vector;
 
 /**
  * Tests fine-grained / descriptor level pessimistic locking with batch
@@ -88,7 +96,7 @@ public class PessimisticLockBatchAttributeTest extends TestCase {
 
         // Now trigger the valueholders...  After this all phoneNumbers should be
         // locked by uow1.
-        Vector phones = ((Employee)result.elementAt(0)).getPhoneNumbers();
+        Vector phones = ((Employee)result.get(0)).getPhoneNumbers();
 
         // Test the locks.
         // Because this is on a ServerSession the second UOW will have its own

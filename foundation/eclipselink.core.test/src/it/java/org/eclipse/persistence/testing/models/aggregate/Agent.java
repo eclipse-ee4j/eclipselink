@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.aggregate;
 
-import java.io.*;
-import java.util.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-import org.eclipse.persistence.indirection.*;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Vector;
 
 public class Agent implements Serializable {
     private String firstName;
@@ -37,11 +40,11 @@ public class Agent implements Serializable {
     }
 
     public void addCustomer(Customer customer) {
-        getCustomers().addElement(customer);
+        getCustomers().add(customer);
     }
 
     public void addHouse(House house) {
-        getHouses().addElement(house);
+        getHouses().add(house);
     }
 
     public static void addToDescriptor(ClassDescriptor descriptor) {
@@ -55,13 +58,13 @@ public class Agent implements Serializable {
         example1.setFirstName("Micheal");
         example1.setLastName("Jordan");
         Vector<Customer> customers = new Vector<>();
-        customers.addElement(Customer.example1());
-        customers.addElement(Customer.example2());
+        customers.add(Customer.example1());
+        customers.add(Customer.example2());
         example1.setCustomers(customers);
 
         Vector<House> houses = new Vector<>();
-        houses.addElement(SingleHouse.example1());
-        houses.addElement(TownHouse.example3());
+        houses.add(SingleHouse.example1());
+        houses.add(TownHouse.example3());
         example1.setHouses(houses);
         return example1;
     }
@@ -73,12 +76,12 @@ public class Agent implements Serializable {
         example2.setFirstName("Dennis");
         example2.setLastName("Rodman");
         Vector<Customer> customers = new Vector<>();
-        customers.addElement(Customer.example3());
+        customers.add(Customer.example3());
         example2.setCustomers(customers);
 
         Vector<House> houses = new Vector<>();
-        houses.addElement(SingleHouse.example2());
-        houses.addElement(TownHouse.example4());
+        houses.add(SingleHouse.example2());
+        houses.add(TownHouse.example4());
         example2.setHouses(houses);
         return example2;
     }
@@ -116,11 +119,11 @@ public class Agent implements Serializable {
     }
 
     public void removeCustomer(Customer customer) {
-        getCustomers().removeElement(customer);
+        getCustomers().remove(customer);
     }
 
     public void removeHouse(House house) {
-        getHouses().removeElement(house);
+        getHouses().remove(house);
     }
 
     public void setCustomers(Vector<Customer> customerVector) {

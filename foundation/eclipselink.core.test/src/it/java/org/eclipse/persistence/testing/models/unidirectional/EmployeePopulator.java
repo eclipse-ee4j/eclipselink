@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,10 @@
 //     ailitchev - Uni-directional OneToMany
 package org.eclipse.persistence.testing.models.unidirectional;
 
-import java.util.*;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.
@@ -412,11 +414,11 @@ public class EmployeePopulator {
         return employee;
     }
 
-    protected Vector<Object> getAllObjects() {
+    protected List<Object> getAllObjects() {
         return populationManager.getAllObjects();
     }
 
-    public Vector<Object> getAllObjectsForClass(Class<?> domainClass) {
+    public List<Object> getAllObjectsForClass(Class<?> domainClass) {
         return populationManager.getAllObjectsForClass(domainClass);
     }
 

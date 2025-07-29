@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,13 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.testing.models.orderedlist;
 
+import org.eclipse.persistence.internal.helper.IndexedObject;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.eclipse.persistence.internal.helper.IndexedObject;
-import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
 
 /**
  * Example of a custom OrderedListContainerPolicy that overrides correctOrderList method,

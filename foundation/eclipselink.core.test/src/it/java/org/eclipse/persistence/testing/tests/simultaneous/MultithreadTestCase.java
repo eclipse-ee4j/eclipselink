@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,25 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.simultaneous;
 
-import java.io.*;
-import java.util.*;
-
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.framework.ui.SynchronizedTester;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.ui.SynchronizedTestExecutor;
+import org.eclipse.persistence.testing.framework.ui.SynchronizedTester;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 public class MultithreadTestCase extends AutoVerifyTestCase {
     protected TestCase[] test;
@@ -235,7 +243,7 @@ public class MultithreadTestCase extends AutoVerifyTestCase {
 
             Vector descriptors = new Vector();
             for (ClassDescriptor classDescriptor : databaseSession.getDescriptors().values()) {
-                descriptors.addElement(classDescriptor);
+                descriptors.add(classDescriptor);
             }
             serverSession.addDescriptors(descriptors);
 

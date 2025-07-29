@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.List;
-import java.util.Vector;
-
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
-import org.eclipse.persistence.testing.framework.TestErrorException;
-import org.eclipse.persistence.internal.sessions.factories.*;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
+import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigWriter;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
@@ -40,6 +31,16 @@ import org.eclipse.persistence.internal.sessions.factories.model.session.Databas
 import org.eclipse.persistence.internal.sessions.factories.model.session.ServerSessionConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.JMSTopicTransportManagerConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.transport.naming.JNDINamingServiceConfig;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Tests the OX writing portion of the XMLSessionConfig model.
