@@ -14,74 +14,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.persistence.testing.tests.jpa.datetime;
+package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.time.LocalDateTime;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.sessions.server.ServerSession;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.datetime.Event;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Event;
 
-import static org.junit.Assert.assertEquals;
+public class FractionalSecondsPrecisionTest extends JUnitTestCase {
 
-/**
- * Test fractional seconds precision in time SQL types.
- */
-public class FractionalSecondsPrecisionTest {
-
-    /** Name of persistence unit used in test. */
+    /** Default persistence unit name. */
     private static final String PU_NAME = "fractional";
 
     /**
      * List of {@code Event}s. Array index matches ID.
      */
-    public static final Event[] EVENTS = new Event[] {
+    private static final Event[] EVENTS = new Event[] {
             null, // Skip index 0
             new Event(1L,
                       LocalDateTime.of(2025, 6, 11, 12, 0, 0, 123_451_234)),
     };
 
-    /** Entity manager factory. */
-    private static EntityManagerFactory EMF;
+    public FractionalSecondsPrecisionTest() {
+        super();
+    }
 
-    /** Database platform. */
-    private static DatabasePlatform DBP;
+    public FractionalSecondsPrecisionTest(String name) {
+        super(name);
+    }
 
-    /**
-     * Initialize test static content.
-     */
-    @BeforeClass
-    public static void setupClass() {
-        EMF = JUnitTestCase.getEntityManagerFactory(PU_NAME);
-        DBP = EMF.unwrap(ServerSession.class).getPlatform();
+    public static Test suite() {
+        TestSuite suite = new TestSuite("Null Binding DateTime");
+        suite.addTest(new FractionalSecondsPrecisionTest("testSetup"));
+
+        return suite;
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+        return PU_NAME;
     }
 
     /**
-     * Destroy test static content.
+     * The setup is done as a test, both to record its failure, and to allow
+     * execution in the server.
      */
-    @AfterClass
-    public static void  cleanupClass() {
-        if (EMF != null) {
-            EMF.close();
-            EMF = null;
-        }
-        DBP = null;
+    public void testSetup() {
+
     }
 
     // Test that LocalDateTime returned from the database has precision set in @Column annotation.
     // Event column timestamp has secondPrecision set to 5.
-    @Test
     public void testLocalDateTimeCustomPrecision() {
         // This test makes sense only when platform supports seconds precision in time SQL types
-        if (DBP.supportsFractionalTime()) {
-            try (EntityManager em = EMF.createEntityManager()) {
+        if (supportsFractionalTime()) {
+            try (EntityManager em = createEntityManager()) {
                 EntityTransaction t = em.getTransaction();
                 t.begin();
                 try {
@@ -91,14 +84,24 @@ public class FractionalSecondsPrecisionTest {
                     t.rollback();
                 }
             }
-            EMF.getCache().evictAll();
-            try (EntityManager em = EMF.createEntityManager()) {
+            getEntityManagerFactory().getCache().evictAll();
+            try (EntityManager em = createEntityManager()) {
                 Event event = em.createQuery("SELECT e FROM Event e WHERE e.id = :id", Event.class)
                         .setParameter("id", 1L)
                         .getSingleResult();
                 assertEquals(123_450_000, event.getTimestamp().getNano());
             }
         }
+    }
+
+    // JUnitTestCase returns common Platform so additional check is required to get
+    // fractional seconds precision of DatabasePlatform.
+    private boolean supportsFractionalTime() {
+        Platform platform = getPlatform();
+        if (platform instanceof DatabasePlatform databasePlatform) {
+            return databasePlatform.supportsFractionalTime();
+        }
+        return false;
     }
 
 }

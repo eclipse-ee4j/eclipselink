@@ -205,4 +205,21 @@
             <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
         </properties>
     </persistence-unit>
+
+    <!--
+      - Test fractional seconds precision in time SQL types.
+      - Database schema must be created by JPA provider to validate @Column(secondPrecision = 5)
+      -->
+    <persistence-unit name="fractional" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Event</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
+            <property name="eclipselink.logging.level.sql" value="${eclipselink.logging.sql.level}"/>
+            <property name="eclipselink.logging.parameters" value="${eclipselink.logging.parameters}"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

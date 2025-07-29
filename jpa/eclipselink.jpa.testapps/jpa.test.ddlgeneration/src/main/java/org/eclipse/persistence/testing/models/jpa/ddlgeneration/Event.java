@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.persistence.testing.models.jpa.datetime;
+package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "DATETIME_EVENT")
+@Table(name = "DDL_EVENT")
 public class Event {
 
     @Id private Long id;
