@@ -123,7 +123,7 @@ spec:
                 container('el-build') {
                     sh """
                         echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests,!:p2site' -DskipTests -Pstaging
+                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests' -DskipTests -Pstaging
                     """
                 }
             }
