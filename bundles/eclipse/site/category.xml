@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description url="https://download.eclipse.org/rt/eclipselink/updates/">
+      This site contains runtime and source features for EclipseLink JPA, MOXy and SDO components
+   </description>
+
+   <feature id="org.eclipse.persistence.sdk.asm">
+      <category name="asm"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.asm.source">
+      <category name="asm.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.oracleddlparser">
+      <category name="oracleddlparser"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.oracleddlparser.source">
+      <category name="oracleddlparser.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.jpa.jpql">
+      <category name="jpa.jpql"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.jpa.jpql.source">
+      <category name="jpa.jpql.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.dbws">
+      <category name="dbws"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.dbws.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.dbwsbuilder">
+      <category name="dbwsbuilder"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.dbwsbuilder.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.jpa">
+      <category name="jpa"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.jpa.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.moxy">
+      <category name="moxy"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.moxy.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.native">
+      <category name="native"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.native.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.nosql">
+      <category name="nosql"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.nosql.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk">
+      <category name="sdk"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <feature id="org.eclipse.persistence.sdk.sdo">
+      <category name="sdo"/>
+   </feature>
+   <feature id="org.eclipse.persistence.sdk.sdo.source">
+      <category name="sdk.source"/>
+   </feature>
+
+   <category-def name="asm" label="EclipseLink ASM">
+      <description>
+         EclipseLink ASM Library
+      </description>
+   </category-def>
+   <category-def name="asm.source" label="EclipseLink ASM (Sources)">
+      <description>
+         EclipseLink ASM Library (Sources)
+      </description>
+   </category-def>
+
+   <category-def name="oracleddlparser" label="Oracle DDL Parser"/>
+   <category-def name="oracleddlparser.source" label="Oracle DDL Parser (Sources)"/>
+   <category-def name="jpa.jpql" label="EclipseLink JPQL Parser (Hermes)"/>
+   <category-def name="jpa.jpql.source" label="EclipseLink JPQL Parser (Hermes) (Sources)">
+   </category-def>
+
+   <category-def name="sdk" label="EclipseLink SDK"/>
+
+   <category-def name="dbws" label="EclipseLink DBWS">
+      <category name="sdk"/>
+      <description>
+         EclipseLink DBWS provides a Java-based, declarative Web Service solution for accessing relational databases.
+      </description>
+   </category-def>
+   <category-def name="dbwsbuilder" label="EclipseLink DBWS Builder">
+      <category name="sdk"/>
+      <description>
+         EclipseLink DBWS Builder provides Java-based tooling for developing Web Services for accessing relational databases.
+      </description>
+   </category-def>
+   <category-def name="jpa" label="EclipseLink Persistence (JPA)">
+      <category name="sdk"/>
+      <description>
+         EclipseLink JPA delivers a comprehensive open-source Java Object-Relational persistence solution.
+      </description>
+   </category-def>
+   <category-def name="moxy" label="EclipseLink MOXy">
+      <category name="sdk"/>
+      <description>
+         EclipseLink MOXy delivers a comprehensive open-source Java Object to XML binding solution.
+      </description>
+   </category-def>
+   <category-def name="native" label="EclipseLink Native">
+      <category name="sdk"/>
+      <description>
+         core
+      </description>
+   </category-def>
+   <category-def name="nosql" label="EclipseLink NoSQL">
+      <category name="sdk"/>
+      <description>
+         EclipseLink NoSQL Extension allows users to interact with supported non-SQL Databases
+      </description>
+   </category-def>
+   <category-def name="sdo" label="EclipseLink SDO">
+      <category name="sdk"/>
+      <description>
+         EclipseLink SDO delivers a comprehensive open-source Java &quot;Service Data Objects&quot; solution.
+      </description>
+   </category-def>
+
+    <!-- sources -->
+   <category-def name="sdk.source" label="EclipseLink SDK (Sources)"/>
+
+   <category-def name="dbws.source" label="EclipseLink DBWS (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink DBWS provides a Java-based, declarative Web Service solution for accessing relational databases.
+      </description>
+   </category-def>
+   <category-def name="dbwsbuilder.source" label="EclipseLink DBWS Builder (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink DBWS Builder provides Java-based tooling for developing Web Services for accessing relational databases.
+      </description>
+   </category-def>
+   <category-def name="jpa.source" label="EclipseLink Persistence (JPA) (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink JPA delivers a comprehensive open-source Java Object-Relational persistence solution.
+      </description>
+   </category-def>
+   <category-def name="moxy.source" label="EclipseLink MOXy (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink MOXy delivers a comprehensive open-source Java Object to XML binding solution.
+      </description>
+   </category-def>
+   <category-def name="native.source" label="EclipseLink Native (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         core
+      </description>
+   </category-def>
+   <category-def name="nosql.source" label="EclipseLink NoSQL (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink NoSQL Extension allows users to interact with supported non-SQL Databases
+      </description>
+   </category-def>
+   <category-def name="sdo.source" label="EclipseLink SDO (Sources)">
+      <category name="sdk.source"/>
+      <description>
+         EclipseLink SDO delivers a comprehensive open-source Java &quot;Service Data Objects&quot; solution.
+      </description>
+   </category-def>
+</site>

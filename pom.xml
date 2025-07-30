@@ -80,20 +80,6 @@
         </mailingList>
     </mailingLists>
 
-    <repositories>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Sonatype Nexus Staging</name>
-            <url>${sonatypeOssDistMgmtStagingUrl}</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <properties>
         <!-- Minimum required JDK version -->
         <maven.compiler.release>17</maven.compiler.release>
@@ -120,8 +106,6 @@
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
-        <sonatypeOssDistMgmtNexusUrl>https://jakarta.oss.sonatype.org/</sonatypeOssDistMgmtNexusUrl>
-        <sonatypeOssDistMgmtStagingUrl>${sonatypeOssDistMgmtNexusUrl}content/repositories/staging/</sonatypeOssDistMgmtStagingUrl>
 
         <bundle.version>${release.version}.${build.qualifier}</bundle.version>
         <project.build.testReports.settings>test-report-settings/surefire-report.properties</project.build.testReports.settings>
@@ -208,7 +192,7 @@
         <jaxwsrt.version>4.0.3</jaxwsrt.version>
         <jaxb.version>4.0.5</jaxb.version>
         <jaxb.api.version>4.0.2</jaxb.api.version>
-        <jersey.version>4.0-M1-GF1</jersey.version>
+        <jersey.version>4.0.0-M2</jersey.version>
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
         <jpa.api.version>3.2.0</jpa.api.version>
@@ -331,23 +315,11 @@
                 <artifactId>org.eclipse.persistence.asm</artifactId>
                 <version>${eclipselink.asm.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.corba</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.corba</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -355,23 +327,11 @@
                 <artifactId>org.eclipse.persistence.core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.dbws</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -379,23 +339,11 @@
                 <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.extension</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.extension</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -403,35 +351,17 @@
                 <artifactId>org.eclipse.persistence.jpa</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -442,21 +372,8 @@
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars.server</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpars</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpars</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -464,23 +381,11 @@
                 <artifactId>org.eclipse.persistence.json</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.json</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.moxy</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -488,23 +393,11 @@
                 <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.nosql</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.nosql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -512,23 +405,11 @@
                 <artifactId>org.eclipse.persistence.oracle</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -536,23 +417,11 @@
                 <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.pgsql</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.pgsql</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -560,35 +429,17 @@
                 <artifactId>org.eclipse.persistence.sdo</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.sdo</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>eclipselink</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.utils.rename</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.utils.rename</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <!-- our TEST artifacts TODO: this belongs to BOM pom-->
@@ -597,23 +448,11 @@
                 <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-                <version>${project.version}</version>
-                <classifier>sources</classifier>
             </dependency>
 
             <dependency>
@@ -769,12 +608,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb.api.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
                 <groupId>jakarta.xml.soap</groupId>
                 <artifactId>jakarta.xml.soap-api</artifactId>
                 <version>${soap.api.version}</version>
@@ -818,20 +651,8 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
-                <artifactId>commonj.sdo</artifactId>
-                <version>${commonj.sdo.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
                 <version>${oracle.ddlparser.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-                <version>${oracle.ddlparser.version}</version>
-                <classifier>sources</classifier>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.parsson</groupId>
@@ -1577,6 +1398,24 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>validate</phase>
+                        <id>parse-project-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>validate</phase>
+                        <id>set-current-date</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>release.date</name>
+                            <pattern>MMMM dd, YYYY</pattern>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>release.version-property</id>
                         <goals>
                             <goal>regex-property</goal>
@@ -1596,6 +1435,7 @@
                             <goal>add-test-source</goal>
                         </goals>
                         <configuration>
+                            <skipAddTestSourceIfMissing>true</skipAddTestSourceIfMissing>
                             <sources>
                                 <source>${integration.test.sources.directory}</source>
                             </sources>
@@ -1608,6 +1448,7 @@
                             <goal>add-test-resource</goal>
                         </goals>
                         <configuration>
+                            <skipAddTestResourceIfMissing>true</skipAddTestResourceIfMissing>
                             <resources>
                                 <resource>
                                     <directory>${integration.test.resources.directory}</directory>
@@ -1627,6 +1468,11 @@
                                     <directory>${project.build.licenceResourceDirectory}/md</directory>
                                     <includes>*</includes>
                                     <targetPath>META-INF</targetPath>
+                                </resource>
+                                <resource>
+                                    <directory>${project.build.licenceResourceDirectory}/plugins</directory>
+                                    <includes>*</includes>
+                                    <targetPath>.</targetPath>
                                 </resource>
                             </resources>
                         </configuration>
@@ -1668,6 +1514,9 @@
                         <_noimportjava>true</_noimportjava>
                         <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
                         <Bundle-Version>${bundle.version}</Bundle-Version>
+                        <Extension-Name>${project.artifactId}</Extension-Name>
+                        <Specification-Version>${release.version}</Specification-Version>
+                        <Implementation-Version>${bundle.version}</Implementation-Version>
                     </instructions>
                 </configuration>
                 <executions>

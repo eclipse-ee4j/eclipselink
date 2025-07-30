@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
+//  Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 //  This program and the accompanying materials are made available under the
 //  terms of the Eclipse Public License v. 2.0 which is available at
@@ -123,7 +123,7 @@ spec:
                 container('el-build') {
                     sh """
                         echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution.tests,!:p2site' -DskipTests -Pstaging
+                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.distribution.tests' -DskipTests -Pstaging
                     """
                 }
             }
