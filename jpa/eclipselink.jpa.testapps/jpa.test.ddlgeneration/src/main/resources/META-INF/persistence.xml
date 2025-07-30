@@ -212,7 +212,7 @@
       -->
     <persistence-unit name="fractional" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Event</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.DateTimeEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>

@@ -1,31 +1,27 @@
 /*
- * Copyright (c) 2025 Oracle and/or its affiliates.
- * Copyright (c) 2025 IBM Corporation. All rights reserved.
+ * Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
+
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Event;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.DateTimeEntity;
 
 public class FractionalSecondsPrecisionTest extends JUnitTestCase {
 
@@ -33,12 +29,20 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
     private static final String PU_NAME = "fractional";
 
     /**
-     * List of {@code Event}s. Array index matches ID.
+     * List of {@link DateTimeEntity}. Array index matches ID.
      */
-    private static final Event[] EVENTS = new Event[] {
+    private static final DateTimeEntity[] DATE_TIME_ENTITIES = new DateTimeEntity[] {
             null, // Skip index 0
-            new Event(1L,
-                      LocalDateTime.of(2025, 6, 11, 12, 0, 0, 123_451_234)),
+            new DateTimeEntity(1L,
+                               LocalDateTime.of(1967, 3, 18, 10, 53, 21, 12345_1234),
+                               null,
+                               null,
+                               null),
+            new DateTimeEntity(2L,
+                               null,
+                               LocalTime.of(9, 38, 42, 1234_12345),
+                               null,
+                               null)
     };
 
     public FractionalSecondsPrecisionTest() {
@@ -50,9 +54,10 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("Null Binding DateTime");
-        suite.addTest(new FractionalSecondsPrecisionTest("testSetup"));
-
+        TestSuite suite = new TestSuite("FractionalSecondsPrecisionTest");
+        suite.addTest(new FractionalSecondsPrecisionTest("testLocalDateTimeCustomPrecision"));
+        suite.addTest(new FractionalSecondsPrecisionTest("testLocalTimeCustomPrecision"));
+        suite.addTest(new FractionalSecondsPrecisionTest("testCleanup"));
         return suite;
     }
 
@@ -61,35 +66,75 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
         return PU_NAME;
     }
 
-    /**
-     * The setup is done as a test, both to record its failure, and to allow
-     * execution in the server.
-     */
-    public void testSetup() {
-
-    }
-
     // Test that LocalDateTime returned from the database has precision set in @Column annotation.
     // Event column timestamp has secondPrecision set to 5.
     public void testLocalDateTimeCustomPrecision() {
         // This test makes sense only when platform supports seconds precision in time SQL types
         if (supportsFractionalTime()) {
             try (EntityManager em = createEntityManager()) {
-                EntityTransaction t = em.getTransaction();
-                t.begin();
+                beginTransaction(em);
                 try {
-                    em.persist(EVENTS[1]);
-                    t.commit();
+                    em.persist(DATE_TIME_ENTITIES[1]);
+                    commitTransaction(em);
                 } catch (Exception e) {
-                    t.rollback();
+                    if (isTransactionActive(em)) {
+                        rollbackTransaction(em);
+                    }
+                    throw e;
                 }
             }
             getEntityManagerFactory().getCache().evictAll();
             try (EntityManager em = createEntityManager()) {
-                Event event = em.createQuery("SELECT e FROM Event e WHERE e.id = :id", Event.class)
+                DateTimeEntity dateTimeEntity = em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id",
+                                                               DateTimeEntity.class)
                         .setParameter("id", 1L)
                         .getSingleResult();
-                assertEquals(123_450_000, event.getTimestamp().getNano());
+                assertEquals(12345_0000, dateTimeEntity.getLocalDateTime().getNano());
+            }
+        }
+    }
+
+    // Test that LocalTime returned from the database has precision set in @Column annotation.
+    // Event column timestamp has secondPrecision set to 5.
+    public void testLocalTimeCustomPrecision() {
+        // This test makes sense only when platform supports seconds precision in time SQL types
+        if (supportsFractionalTime()) {
+            try (EntityManager em = createEntityManager()) {
+                beginTransaction(em);
+                try {
+                    em.persist(DATE_TIME_ENTITIES[2]);
+                    commitTransaction(em);
+                } catch (Exception e) {
+                    if (isTransactionActive(em)) {
+                        rollbackTransaction(em);
+                    }
+                    throw e;
+                }
+            }
+            getEntityManagerFactory().getCache().evictAll();
+            try (EntityManager em = createEntityManager()) {
+                DateTimeEntity dateTimeEntity = em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id",
+                                                               DateTimeEntity.class)
+                        .setParameter("id", 2L)
+                        .getSingleResult();
+                assertEquals(1234_00000, dateTimeEntity.getLocalTime().getNano());
+            }
+        }
+    }
+
+    // Cleanup DateTimeEntity related database content
+    public void testCleanup() {
+        try (EntityManager em = createEntityManager()) {
+            beginTransaction(em);
+            try {
+                em.createQuery("DELETE FROM DateTimeEntity")
+                        .executeUpdate();
+                commitTransaction(em);
+            } catch (Exception e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                throw e;
             }
         }
     }
