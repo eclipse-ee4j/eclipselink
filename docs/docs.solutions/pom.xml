@@ -22,7 +22,6 @@
 
     <name>Documentation - Solutions</name>
     <description>EclipseLink Documentation for the WebSite - Solutions</description>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.documentation.solutions</artifactId>
     <version>4.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>

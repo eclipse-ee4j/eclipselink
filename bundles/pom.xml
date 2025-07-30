@@ -19,7 +19,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Bundles Parent</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.bundles</artifactId>
     <packaging>pom</packaging>
 
@@ -49,19 +48,6 @@
                 <module>moxy-standalone</module>
                 <module>eclipselink</module>
                 <module>tests</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>no-deploy</id>
-            <activation>
-                <property>
-                    <name>!deploy</name>
-                </property>
-            </activation>
-            <modules>
-                <module>tests</module>
-                <module>others</module>
-                <module>p2site</module>
             </modules>
         </profile>
     </profiles>

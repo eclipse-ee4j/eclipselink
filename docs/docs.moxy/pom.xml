@@ -22,7 +22,6 @@
 
     <name>Documentation - MOXy</name>
     <description>EclipseLink Documentation for the WebSite - MOXy</description>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.documentation.moxy</artifactId>
     <version>4.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>

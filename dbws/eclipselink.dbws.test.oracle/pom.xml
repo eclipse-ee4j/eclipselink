@@ -19,7 +19,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink DBWS Test Oracle</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.dbws.oracle.test</artifactId>
     <packaging>jar</packaging>
 

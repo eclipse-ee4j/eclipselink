@@ -19,7 +19,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Bundles eclipselink.jar (non-OSGi)</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>eclipselink</artifactId>
     <packaging>jar</packaging>
 
@@ -553,6 +552,7 @@
                             <mainClass>${manifest.main.class}</mainClass>
                         </manifest>
                         <manifestEntries>
+                            <Extension-Name>${project.artifactId}</Extension-Name>
                             <Specification-Title>${manifest.specification.title}</Specification-Title>
                             <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
                             <Specification-Version>${release.version}</Specification-Version>

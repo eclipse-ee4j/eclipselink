@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,27 +22,12 @@
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
-        <!--License files-->
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
-            <scope>provided</scope>
-            <outputDirectory>eclipselink/</outputDirectory>
-            <includes>
-                <include>${project.groupId}:org.eclipse.persistence.parent:zip:common-license</include>
-            </includes>
-            <unpack>true</unpack>
-            <unpackOptions>
-                <includes>
-                    <include>*.html</include>
-                </includes>
-            </unpackOptions>
-        </dependencySet>
         <dependencySet>
             <useProjectAttachments>true</useProjectAttachments>
             <outputDirectory>eclipselink/jlib/</outputDirectory>
             <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
             <includes>
-                <include>${project.groupId}:eclipselink</include>
+                <include>${project.groupId}:eclipselink:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
@@ -94,14 +79,6 @@
         </dependencySet>
         <dependencySet>
             <useProjectArtifact>false</useProjectArtifact>
-            <scope>provided</scope>
-            <outputDirectory>eclipselink/jlib/sdo/</outputDirectory>
-            <includes>
-                <include>${project.groupId}:commonj.sdo</include>
-            </includes>
-        </dependencySet>
-        <dependencySet>
-            <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
             <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
             <includes>
@@ -139,6 +116,21 @@
                 <include>**/*.sh</include>
             </includes>
         </fileSet>
+        <!--License, readme & other files-->
+        <fileSet>
+            <directory>${project.build.licenceResourceDirectory}/dist</directory>
+            <outputDirectory>eclipselink/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.licenceResourceDirectory}/plugins</directory>
+            <outputDirectory>eclipselink/</outputDirectory>
+            <includes>
+                <include>about.html</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>${project.build.scriptSourceDirectory}</directory>
             <outputDirectory>eclipselink/</outputDirectory>
@@ -146,7 +138,6 @@
                 <exclude>**/*.sh</exclude>
             </excludes>
         </fileSet>
-        <!--package-rename.properties to utils/rename directory-->
         <!--XML Schemas-->
         <fileSet>
             <directory>${gen.zip.dir}</directory>

@@ -22,7 +22,6 @@
 
     <name>Documentation - Concepts</name>
     <description>EclipseLink Documentation for the WebSite - Concepts</description>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.documentation.concepts</artifactId>
     <version>4.0.8-SNAPSHOT</version>
     <packaging>pom</packaging>

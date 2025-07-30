@@ -26,7 +26,6 @@
     </parent>
 
     <name>EclipseLink Bundles tests</name>
-    <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.distribution.tests</artifactId>
     <packaging>jar</packaging>
 
