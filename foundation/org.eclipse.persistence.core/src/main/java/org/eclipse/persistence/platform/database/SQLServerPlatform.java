@@ -265,14 +265,14 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2"));
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2", false));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2", false));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2", false));
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2"));
+        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("DATETIME2"));
 
         return fieldTypeMapping;
     }
@@ -984,6 +984,13 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     @Override
     public boolean supportsSequenceObjects() {
         return isVersion11OrHigher;
+    }
+
+    // Verified that fractional seconds precision in time SQL types is supported
+    // at least from SQL Server 2016.
+    @Override
+    public boolean supportsFractionalTime() {
+        return true;
     }
 
     /**

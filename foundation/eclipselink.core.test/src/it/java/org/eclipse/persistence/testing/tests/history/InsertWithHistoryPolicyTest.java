@@ -48,7 +48,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
     protected void setup() {
         DatabasePlatform platform = getSession().getPlatform();
         if (platform.isMySQL()) {
-            if (!((MySQLPlatform) platform).isFractionalTimeSupported()) {
+            if (!platform.supportsFractionalTime()) {
                 throwWarning("This test will not work with MySQL pre-5.6.4 because it doesn't support millisecond granularity.");
             }
         } else if (platform.isSybase()) {

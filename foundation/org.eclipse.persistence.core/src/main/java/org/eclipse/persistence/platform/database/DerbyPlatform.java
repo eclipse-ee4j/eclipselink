@@ -1009,6 +1009,11 @@ public class DerbyPlatform extends DB2Platform {
     }
 
     @Override
+    public boolean supportsFractionalTime() {
+        return false;
+    }
+
+    @Override
     public boolean isAlterSequenceObjectSupported() {
         return false;
     }

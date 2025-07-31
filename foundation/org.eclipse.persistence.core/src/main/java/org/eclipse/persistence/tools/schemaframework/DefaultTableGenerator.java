@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -829,6 +829,10 @@ public class DefaultTableGenerator {
                     } else if (dbField.getPrecision() > 0) {
                         fieldDef.setSize(dbField.getPrecision());
                         fieldDef.setSubSize(dbField.getScale());
+                    // @Column(secondPrecision = <precision>), default value is -1 (not set)
+                    // Support of this feature must be explicitly turned on in specific DatabasePlatform
+                    } else if (dbField.getSecondPrecision() >= 0 && databasePlatform.supportsFractionalTime()) {
+                        fieldDef.setSize(dbField.getSecondPrecision());
                     }
                 }
 
