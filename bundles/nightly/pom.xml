@@ -252,42 +252,10 @@
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
-                                    <sourceFile>../others/target/eclipselink-plugins.zip</sourceFile>
-                                    <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins${nightlyVersion}.zip
-                                    </destinationFile>
-                                </fileSet>
-                                <fileSet>
-                                    <sourceFile>../others/target/eclipselink-plugins-nosql.zip</sourceFile>
-                                    <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql${nightlyVersion}.zip
-                                    </destinationFile>
-                                </fileSet>
-                                <fileSet>
-                                    <sourceFile>../others/target/eclipselink-test-jars.zip</sourceFile>
-                                    <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-test-jars${nightlyVersion}.zip
-                                    </destinationFile>
-                                </fileSet>
-                                <fileSet>
-                                    <sourceFile>../others/target/eclipselink-test-src.zip</sourceFile>
-                                    <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-test-src${nightlyVersion}.zip
-                                    </destinationFile>
-                                </fileSet>
-                                <fileSet>
                                     <sourceFile>
                                         ../eclipselink/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink.jar
                                     </sourceFile>
                                     <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar
-                                    </destinationFile>
-                                </fileSet>
-                                <fileSet>
-                                    <sourceFile>
-                                        ../eclipselink/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink-sources.jar
-                                    </sourceFile>
-                                    <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                             </fileSets>
