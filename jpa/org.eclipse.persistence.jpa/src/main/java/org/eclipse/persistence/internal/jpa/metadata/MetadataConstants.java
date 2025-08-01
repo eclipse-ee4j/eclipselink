@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ public final class MetadataConstants {
     public static final String JPA_ENTITY_LISTENERS = "jakarta.persistence.EntityListeners";
     public static final String JPA_ENTITY_RESULT = "jakarta.persistence.EntityResult";
     public static final String JPA_ENUMERATED = "jakarta.persistence.Enumerated";
+    public static final String JPA_ENUMERATED_VALUE = "jakarta.persistence.EnumeratedValue";
     public static final String JPA_EXCLUDE_DEFAULT_LISTENERS = "jakarta.persistence.ExcludeDefaultListeners";
     public static final String JPA_EXCLUDE_SUPERCLASS_LISTENERS = "jakarta.persistence.ExcludeSuperclassListeners";
     public static final String JPA_FIELD_RESULT = "jakarta.persistence.FieldResult";

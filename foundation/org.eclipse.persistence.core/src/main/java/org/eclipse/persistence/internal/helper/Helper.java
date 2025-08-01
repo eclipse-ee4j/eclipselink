@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1038,6 +1038,17 @@ public class Helper implements Serializable {
      */
     public static boolean isPrimitiveWrapper(Class<?> classInQuestion) {
         return classInQuestion.equals(Character.class) || classInQuestion.equals(Boolean.class) || classInQuestion.equals(Byte.class) || classInQuestion.equals(Short.class) || classInQuestion.equals(Integer.class) || classInQuestion.equals(Long.class) || classInQuestion.equals(Float.class) || classInQuestion.equals(Double.class);
+    }
+
+    /**
+     * ADVANCED
+     * returns true if the class in question is a integer number type include wrapper types
+     */
+    public static boolean isIntegerNumber(Class<?> classInQuestion) {
+        return classInQuestion.equals(byte.class) || classInQuestion.equals(Byte.class) ||
+                classInQuestion.equals(short.class) || classInQuestion.equals(Short.class) ||
+                classInQuestion.equals(int.class) || classInQuestion.equals(Integer.class) ||
+                classInQuestion.equals(long.class) || classInQuestion.equals(Long.class);
     }
 
     /**

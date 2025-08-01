@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,6 +37,7 @@ public class ConversionException extends EclipseLinkException {
     public final static int COULD_NOT_BE_CONVERTED_TO_CLASS = 3007;
     public final static int INCORRECT_DATE_TIME_FORMAT = 3008;
     public final static int UNABLE_TO_SET_PROPERTIES = 3009;
+    public static final int UNABLE_GET_VALUE_FROM_ENUM = 3011;
 
     /**
      * INTERNAL:
@@ -164,6 +165,14 @@ public class ConversionException extends EclipseLinkException {
 
     public static ConversionException incorrectDateTimeFormat(String dateTimeString) {
         return incorrectDateTimeFormat(dateTimeString, Calendar.class);
+    }
+
+    public static ConversionException unableGetValueFromEnum(Object targetClass, String attributeName, Exception error) {
+        Object[] args = { targetClass, attributeName, String.valueOf(error) };
+        String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, UNABLE_GET_VALUE_FROM_ENUM, args);
+        ConversionException conversionException = new ConversionException(message, targetClass, null, error);
+        conversionException.setErrorCode(UNABLE_GET_VALUE_FROM_ENUM);
+        return conversionException;
     }
 
     /**
