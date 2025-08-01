@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,7 +37,8 @@ public final class ConversionExceptionResource extends ListResourceBundle {
                                            { "3007", "The object [{0}], of class [{1}], could not be converted to [{2}].  Ensure that the class [{2}] is on the CLASSPATH.  You may need to use alternate API passing in the appropriate class loader as required, or setting it on the default ConversionManager" },
                                            { "3008", "Incorrect date-time format: [{0}] (expected [YYYY-MM-DD''T''HH:MM:SS])" },
                                            { "3009", "Unable to set {0} properties [{1}] into [{2}]." },
-                                           { "3010", "Incorrect date value [YYYY-MM-DD]: [{0}]." }
+                                           { "3010", "Incorrect date value [YYYY-MM-DD]: [{0}]." },
+                                           { "3011", "Unable to get the value from the enum : [{0}] from the field [{1}] due \n [{2}]." }
     };
 
     /**

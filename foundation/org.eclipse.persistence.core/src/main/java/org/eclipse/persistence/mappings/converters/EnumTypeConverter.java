@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,12 +16,15 @@
 //       - 354678: Temp classloader is still being used during metadata processing
 package org.eclipse.persistence.mappings.converters;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.Session;
 
+import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.EnumSet;
@@ -40,6 +43,7 @@ import java.util.Iterator;
 public class EnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;
     private String m_enumClassName;
+    private Field m_enumField;
     private boolean m_useOrdinalValues;
 
     /**
@@ -60,9 +64,10 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * Creating an enum converter this way will create the conversion values
      * for you using ordinal or name values.
      */
-    public EnumTypeConverter(DatabaseMapping mapping, String enumClassName, boolean useOrdinalValues) {
+    public EnumTypeConverter(DatabaseMapping mapping, String enumClassName, boolean useOrdinalValues, Field valueField) {
         this(mapping, enumClassName);
         m_useOrdinalValues = useOrdinalValues;
+        m_enumField = valueField;
     }
 
     /**
@@ -83,11 +88,20 @@ public class EnumTypeConverter extends ObjectTypeConverter {
 
             while (i.hasNext()) {
                 Enum theEnum = i.next();
-
-                if (m_useOrdinalValues) {
-                    addConversionValue(theEnum.ordinal(), theEnum.name());
+                if (m_enumField != null) {
+                    Object theEnumValue = null;
+                    try {
+                        theEnumValue = AccessController.doPrivileged(new PrivilegedGetValueFromField(m_enumField, theEnum));
+                    } catch (PrivilegedActionException exception) {
+                        throw ConversionException.unableGetValueFromEnum(theEnums.getClass().getName(), m_enumField.getName(), exception);
+                    }
+                    addConversionValue(theEnumValue, theEnum.name());
                 } else {
-                    addConversionValue(theEnum.name(), theEnum.name());
+                    if (m_useOrdinalValues) {
+                        addConversionValue(theEnum.ordinal(), theEnum.name());
+                    } else {
+                        addConversionValue(theEnum.name(), theEnum.name());
+                    }
                 }
             }
         }

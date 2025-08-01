@@ -17,6 +17,8 @@ import java.util.Map;
 import jakarta.persistence.EntityManager;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
+import org.eclipse.persistence.testing.models.jpa.persistence32.TrainerStatusOrdinal;
+import org.eclipse.persistence.testing.models.jpa.persistence32.TrainerStatusString;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Type;
 
 /**
@@ -34,8 +36,9 @@ public abstract class AbstractPokemonSuite extends AbstractSuite {
     // Value of ID = 0 does not exist so it's array instance is set to null.
     static final Trainer[] TRAINERS = new Trainer[] {
             null, // Skip array index 0
-            new Trainer(1, "Ash", TEAMS[1]),
-            new Trainer(2, "Brock", TEAMS[1])
+            new Trainer(1, "Ash", TEAMS[1], TrainerStatusOrdinal.ACTIVE, TrainerStatusString.ACTIVE),
+            new Trainer(2, "Brock", TEAMS[1], TrainerStatusOrdinal.SUSPENDED, TrainerStatusString.SUSPENDED),
+            new Trainer(3, "Cynthia", TEAMS[1],  TrainerStatusOrdinal.RETIRED, TrainerStatusString.RETIRED),
     };
 
     // Pokemon types. Array index is ID value.

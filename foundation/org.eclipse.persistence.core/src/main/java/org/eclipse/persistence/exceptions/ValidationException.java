@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -213,6 +213,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_COMPOSITE_PK_ATTRIBUTE = 7149;
     public static final int INVALID_COMPOSITE_PK_SPECIFICATION = 7150;
     public static final int INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE = 7151;
+    public static final int INCORRECT_NUMBER_ENUMERATED_VALUE = 7361;
+    public static final int INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL = 7362;
+    public static final int INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING = 7363;
     public static final int MAPPING_ANNOTATIONS_APPLIED_TO_TRANSIENT_ATTRIBUTE = 7153;
     public static final int NO_MAPPED_BY_ATTRIBUTE_FOUND = 7154;
     public static final int INVALID_TYPE_FOR_SERIALIZED_ATTRIBUTE = 7155;
@@ -1146,6 +1149,27 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { attributeName, targetClass, entityClass };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE, args));
         validationException.setErrorCode(INVALID_TYPE_FOR_ENUMERATED_ATTRIBUTE);
+        return validationException;
+    }
+
+    public static ValidationException incorrectNumberOfEnumeratedValueAnnotation(Object targetClass) {
+        Object[] args = { targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INCORRECT_NUMBER_ENUMERATED_VALUE, args));
+        validationException.setErrorCode(INCORRECT_NUMBER_ENUMERATED_VALUE);
+        return validationException;
+    }
+
+    public static ValidationException invalidFieldTypeForOrdinalEnumType(String attributeName, Object targetClass) {
+        Object[] args = { attributeName, targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL, args));
+        validationException.setErrorCode(INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_ORDINAL);
+        return validationException;
+    }
+
+    public static ValidationException invalidFieldTypeForStringEnumType(String attributeName, Object targetClass) {
+        Object[] args = { attributeName, targetClass };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING, args));
+        validationException.setErrorCode(INVALID_ATTRIBUTE_TYPE_FOR_ENUMERATED_STRING);
         return validationException;
     }
 
