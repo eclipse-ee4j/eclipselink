@@ -1041,17 +1041,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * ADVANCED
-     * returns true if the class in question is a integer number type include wrapper types
-     */
-    public static boolean isIntegerNumber(Class<?> classInQuestion) {
-        return classInQuestion.equals(byte.class) || classInQuestion.equals(Byte.class) ||
-                classInQuestion.equals(short.class) || classInQuestion.equals(Short.class) ||
-                classInQuestion.equals(int.class) || classInQuestion.equals(Integer.class) ||
-                classInQuestion.equals(long.class) || classInQuestion.equals(Long.class);
-    }
-
-    /**
      * Returns true if the string given is an all upper case string
      */
     public static boolean isUpperCaseString(String s) {

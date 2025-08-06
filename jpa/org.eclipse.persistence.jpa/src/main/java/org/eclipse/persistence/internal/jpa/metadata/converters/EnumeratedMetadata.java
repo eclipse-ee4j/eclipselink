@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -159,7 +159,7 @@ public class EnumeratedMetadata extends MetadataConverter {
         }
         if (field != null) {
             if (isOrdinal) {
-                if (!Helper.isIntegerNumber(field.getType())) {
+                if (!BasicTypeHelperImpl.getInstance().isIntegralType(field.getType()) || field.getType().equals(char.class) || field.getType().equals(Character.class)) {
                     throw ValidationException.invalidFieldTypeForOrdinalEnumType(annotatedFields.get(0).getName(), referenceClass);
                 }
             } else {
