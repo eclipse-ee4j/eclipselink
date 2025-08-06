@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,9 @@ package org.eclipse.persistence.testing.models.jpa.persistence32;
 import java.util.List;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
@@ -25,6 +27,8 @@ import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import static jakarta.persistence.EnumType.ORDINAL;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -43,6 +47,7 @@ public class Trainer {
 
     // ID is assigned in tests to avoid collisions
     @Id
+    @Column(name = "ID")
     private int id;
 
     private String name;
@@ -50,16 +55,26 @@ public class Trainer {
     @ManyToOne(fetch = LAZY)
     private Team team;
 
+    @Column(name = "STATUS_ORDINAL")
+    @Enumerated(ORDINAL)
+    private TrainerStatusOrdinal statusOrdinal;
+
+    @Column(name = "STATUS_STRING")
+    @Enumerated(STRING)
+    private TrainerStatusString statusString;
+
     @OneToMany(mappedBy = "trainer")
     private List<Pokemon> pokemons;
 
     public Trainer() {
     }
 
-    public Trainer(int id, String name, Team team) {
+    public Trainer(int id, String name, Team team, TrainerStatusOrdinal statusOrdinal, TrainerStatusString statusString) {
         this.id = id;
         this.name = name;
         this.team = team;
+        this.statusOrdinal = statusOrdinal;
+        this.statusString = statusString;
     }
 
     public int getId() {
@@ -76,6 +91,22 @@ public class Trainer {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TrainerStatusOrdinal getStatusOrdinal() {
+        return statusOrdinal;
+    }
+
+    public void setStatusOrdinal(TrainerStatusOrdinal statusOrdinal) {
+        this.statusOrdinal = statusOrdinal;
+    }
+
+    public TrainerStatusString getStatusString() {
+        return statusString;
+    }
+
+    public void setStatusString(TrainerStatusString statusString) {
+        this.statusString = statusString;
     }
 
     public Team getTeam() {
@@ -95,17 +126,19 @@ public class Trainer {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        return id == ((Trainer) obj).id
-                && Objects.equals(name, ((Trainer) obj).name);
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Trainer trainer = (Trainer) o;
+        return id == trainer.id
+                && Objects.equals(name, trainer.name)
+                && Objects.equals(team, trainer.team)
+                && statusOrdinal == trainer.statusOrdinal
+                && statusString == trainer.statusString
+                && Objects.equals(pokemons, trainer.pokemons);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
     }
-
 }
