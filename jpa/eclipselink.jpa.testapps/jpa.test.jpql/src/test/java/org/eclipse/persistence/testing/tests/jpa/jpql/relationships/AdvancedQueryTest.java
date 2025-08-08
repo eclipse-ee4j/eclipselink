@@ -84,6 +84,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTest("testConcurrentLoadGroup"));
         suite.addTest(new AdvancedQueryTest("testSelectOnNames"));
         suite.addTest(new AdvancedQueryTest("testSelectOnRecipientInfo"));
+        suite.addTest(new AdvancedQueryTest("testSelectOnEmbeddable"));
         suite.addTest(new AdvancedQueryTest("testTearDown"));
         return suite;
     }
@@ -284,7 +285,7 @@ public class AdvancedQueryTest extends JUnitTestCase {
         }
     }
 
-    // Issue #2414 test: IS NOT EMPTY on @ElementCollection of @Embeddable class
+    // Issue #2414 test: IS NOT EMPTY on @ElementCollection of @Embeddable class with single value (String in this case)
     public void testSelectOnRecipientInfo() {
         EntityManager em = createEntityManager();
         try {
@@ -296,4 +297,15 @@ public class AdvancedQueryTest extends JUnitTestCase {
         }
     }
 
+    // Issue #2477 test: IS NOT EMPTY on @ElementCollection of @Embeddable class with multiple attributes
+    public void testSelectOnEmbeddable() {
+        EntityManager em = createEntityManager();
+        try {
+            List<?> result = em.createQuery("SELECT o FROM ShippingAddress o WHERE (o.alternateAddresses IS NOT EMPTY)")
+                    .getResultList();
+            assertEquals(1, result.size());
+        } finally {
+            closeEntityManager(em);
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -99,10 +99,12 @@ public class SubSelectExpression extends BaseExpression {
                 ClassDescriptor descriptor = baseExpression.getSession().getDescriptor(sourceClass);
                 if (descriptor != null){
                     DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-                    if (mapping != null && mapping.isDirectCollectionMapping()){
+                    if (mapping != null && (mapping.isDirectCollectionMapping() || mapping.isAggregateCollectionMapping())){
                         subQuery.setExpressionBuilder(baseExpression.getBuilder());
                         subQuery.setReferenceClass(sourceClass);
-                        subQuery.addCount(attribute, subQuery.getExpressionBuilder().anyOf(attribute), returnType);
+                        if (mapping.isDirectCollectionMapping() || subQuery.getItems().isEmpty()) {
+                            subQuery.addCount(attribute, subQuery.getExpressionBuilder().anyOf(attribute), returnType);
+                        }
                         return;
                     }
                 }

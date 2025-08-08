@@ -71,6 +71,7 @@ public class RelationshipsExamples {
         orderExample2.setSalesPerson(salesPerson2);
 
         ShippingAddress shippingAddressExample1 = shippingAddressExample1();
+        ShippingAddress shippingAddressExample2 = shippingAddressExample2();
 
         allObjects.add(customerExample1);
         allObjects.add(customerExample2);
@@ -95,6 +96,7 @@ public class RelationshipsExamples {
         allObjects.add(rep2);
 
         allObjects.add(shippingAddressExample1);
+        allObjects.add(shippingAddressExample2);
 
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         unitOfWork.registerAllObjects(allObjects);
@@ -205,7 +207,23 @@ public class RelationshipsExamples {
                                    List.of("Peter", "Parker"),
                                    new StreetAddress(2800,
                                                      "37th St NW",
-                                                     List.of("Receiving Dock", "Building 040-1")));
+                                                     List.of("Receiving Dock", "Building 040-1")),
+                                   null);
     }
 
+    public static ShippingAddress shippingAddressExample2() {
+        List<AlternateAddress> alternateAddresses = new ArrayList<>();
+        AlternateAddress alternateAddress1 = new AlternateAddress(456,"Kratka");
+        alternateAddresses.add(alternateAddress1);
+
+        return new ShippingAddress(2002L,
+                "Prague",
+                "Czech Republic",
+                11000,
+                null,
+                new StreetAddress(123,
+                        "Dlouha",
+                        null),
+                alternateAddresses);
+    }
 }
