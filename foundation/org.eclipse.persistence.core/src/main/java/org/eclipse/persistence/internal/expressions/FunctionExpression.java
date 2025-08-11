@@ -834,7 +834,13 @@ public class FunctionExpression extends BaseExpression {
                 if ((newDescriptor.getPrimaryKeyFields().size() == 1) || !distinctUsed) {
                     // case 1: single PK =>
                     // treat COUNT(entity) as COUNT(entity.pk)
-                    Expression countArg = baseExp.getField(newDescriptor.getPrimaryKeyFields().get(0));
+                    Expression countArg = null;
+                    if (newDescriptor.getPrimaryKeyFields().size() > 1 && !newDescriptor.getAdditionalAggregateCollectionKeyFields().isEmpty()) {
+                        // count foreign key if primary is not specified like @ElementCollection with @Embeddable
+                        countArg = baseExp.getField(newDescriptor.getAdditionalAggregateCollectionKeyFields().get(0));
+                    } else {
+                        countArg = baseExp.getField(newDescriptor.getPrimaryKeyFields().get(0));
+                    }
                     if (distinctUsed) {
                         countArg = countArg.distinct();
                     }

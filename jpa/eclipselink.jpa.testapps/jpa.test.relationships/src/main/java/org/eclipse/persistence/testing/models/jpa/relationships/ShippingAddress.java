@@ -42,8 +42,11 @@ public class ShippingAddress {
 
     private int zipCode;
 
+    @ElementCollection
+    List<AlternateAddress> alternateAddresses;
+
     public ShippingAddress() {
-        this(-1L, null, null, -1, List.of(), null);
+        this(-1L, null, null, -1, List.of(), null, List.of());
     }
 
     public ShippingAddress(Long id,
@@ -51,13 +54,16 @@ public class ShippingAddress {
                            String state,
                            int zipCode,
                            List<String> names,
-                           StreetAddress streetAddress) {
+                           StreetAddress streetAddress,
+                           List<AlternateAddress> alternateAddresses
+    ) {
         this.id = id;
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
         this.names = names;
         this.streetAddress = streetAddress;
+        this.alternateAddresses = alternateAddresses;
     }
 
     public Long getId() {
@@ -108,4 +114,11 @@ public class ShippingAddress {
         this.zipCode = zipCode;
     }
 
+    public List<AlternateAddress> getAlternateAddresses() {
+        return alternateAddresses;
+    }
+
+    public void setAlternateAddresses(List<AlternateAddress> alternateAddresses) {
+        this.alternateAddresses = alternateAddresses;
+    }
 }
