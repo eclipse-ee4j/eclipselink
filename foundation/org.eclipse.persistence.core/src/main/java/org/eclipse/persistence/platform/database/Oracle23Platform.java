@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,19 @@
 package org.eclipse.persistence.platform.database;
 
 public class Oracle23Platform extends Oracle21Platform {
+
     public Oracle23Platform() {
         super();
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether current platform is Oracle 23c or later.
+     * @return Always returns {@code true} for instances of Oracle 23c platform.
+     * @since 4.0.2
+     */
+    @Override
+    public boolean isOracle23() {
+        return true;
     }
 }
