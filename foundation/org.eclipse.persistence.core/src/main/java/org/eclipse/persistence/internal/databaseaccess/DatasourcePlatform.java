@@ -698,6 +698,11 @@ public class DatasourcePlatform implements Platform {
     }
 
     @Override
+    public boolean isOracle21() {
+        return false;
+    }
+
+    @Override
     public boolean isOracle23() {
         return false;
     }

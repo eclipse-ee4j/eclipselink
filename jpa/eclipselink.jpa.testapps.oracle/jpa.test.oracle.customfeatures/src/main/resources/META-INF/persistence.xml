@@ -16,7 +16,6 @@
     <persistence-unit name="customfeatures" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.customfeatures.Employee</class>
-        <!--property name="eclipselink.logging.level" value="FINEST"/-->
         <properties>
             <property name="eclipselink.jdbc.batch-writing" value="Oracle-JDBC"/>
         </properties>

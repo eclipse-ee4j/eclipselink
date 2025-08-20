@@ -1853,6 +1853,7 @@
         <profile>
             <id>weblogic</id>
             <properties>
+                <weblogic.version>15.1.1.0.0</weblogic.version>
                 <testjee.properties.file>${user.home}/${testjee.weblogic.properties.file}</testjee.properties.file>
                 <testjee.properties.fileName>${testjee.weblogic.properties.file}</testjee.properties.fileName>
                 <jee.client.groupId>com.oracle.weblogic</jee.client.groupId>
