@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,99 +16,63 @@
 package org.eclipse.persistence.testing.tests.jpa22.identity;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.sessions.server.ServerSession;
+import junit.framework.TestSuite;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa22.identity.Person;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import junit.framework.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Test proper identity column value generation.
  */
-public class IdentityTest {
+public class IdentityTest extends JUnitTestCase{
 
-    /** Name of persistence unit used in test. */
-    private static final String PU_NAME = "identity-pu";
-
-    /** Entity manager factory. */
-    private static EntityManagerFactory EMF;
-
-    /** Database platform. */
-    private static DatabasePlatform DBP;
-
-    /** Entity manager. */
-    private EntityManager em;
-
-    /**
-     * Initialize test static content.
-     */
-    @BeforeClass
-    public static void setupClass() {
-        EMF = JUnitTestCase.getEntityManagerFactory(PU_NAME);
-        DBP = EMF.unwrap(ServerSession.class).getPlatform();
+    public IdentityTest() {
+        super();
     }
 
-    /**
-     * Destroy test static content.
-     */
-    @AfterClass
-    public static void  cleanupClass() {
-        EMF = null;
-        DBP = null;
+    public IdentityTest(String name) {
+        super(name);
+        setPuName(getPersistenceUnitName());
     }
 
-    /**
-     * Initialize test environment.
-     */
-    @Before
-    public void setup() {
-        em = EMF.createEntityManager();
+    @Override
+    public String getPersistenceUnitName() {
+        return "identity-pu";
     }
 
-    /**
-     * Destroy test environment.
-     */
-    @After
-    public void cleanup() {
-        if (em != null) {
-            em.close();
-        }
+    public static Test suite() {
+        TestSuite suite = new TestSuite();
+        suite.setName("IdentityTest");
+        suite.addTest(new IdentityTest("testIdentity"));
+        return suite;
     }
 
     /**
      * Test identity column value generation.
      */
-    @Test
     public void testIdentity() {
-        if (!DBP.supportsIdentity()) {
+        EntityManager em = createEntityManager();
+        DatabaseSession session = getPersistenceUnitServerSession();
+
+        if (!session.getPlatform().supportsIdentity()) {
             return;
         }
-        EntityTransaction t = em.getTransaction();
         final Person p1 = new Person("John", "Smith");
         final Person p2 = new Person("Bob", "Brown");
-        t.begin();
+        beginTransaction(em);
         try {
             em.persist(p1);
             em.persist(p2);
-            t.commit();
+            commitTransaction(em);
         } catch (PersistenceException | IllegalArgumentException ex) {
-            if (t.isActive()) {
-                t.rollback();
-            }
+            rollbackTransaction(em);
             ex.printStackTrace();
             throw ex;
         }
@@ -122,5 +86,4 @@ public class IdentityTest {
             assertEquals(p.getId(), pV.getId());
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,6 +88,8 @@ public class SessionBeanTest extends JUnitTestCase {
     "java:comp/env/ejb/EmployeeService", "ejb/EmployeeService",
     // WLS
     "EmployeeService#org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
+    // WLS 15
+    "java:global.org.eclipse.persistence.jpa.testapps.sessionbean.ha.org.eclipse.persistence.jpa.testapps.sessionbean.ha_ejb.EmployeeServiceBean!org.eclipse.persistence.testing.models.jpa.sessionbean.ha/EmployeeService",
     // WAS
     "org.eclipse.persistence.testing.models.jpa.sessionbean.ha.EmployeeService",
     // jboss
