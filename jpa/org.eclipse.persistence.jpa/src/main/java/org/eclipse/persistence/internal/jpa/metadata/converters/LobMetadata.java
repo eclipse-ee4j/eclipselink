@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,10 +120,14 @@ public class LobMetadata extends MetadataConverter {
         // referenceClass type.
         if (isValidClobType(referenceClass)) {
             setFieldClassification(mapping, java.sql.Clob.class, isForMapKey);
-            setConverter(mapping, new TypeConversionConverter(mapping), isForMapKey);
+            TypeConversionConverter typeConversionConverter = new TypeConversionConverter(mapping);
+            typeConversionConverter.setDataClass(java.sql.Clob.class);
+            setConverter(mapping, typeConversionConverter, isForMapKey);
         } else if (isValidBlobType(referenceClass)) {
             setFieldClassification(mapping, java.sql.Blob.class, isForMapKey);
-            setConverter(mapping, new TypeConversionConverter(mapping), isForMapKey);
+            TypeConversionConverter typeConversionConverter = new TypeConversionConverter(mapping);
+            typeConversionConverter.setDataClass(java.sql.Blob.class);
+            setConverter(mapping, typeConversionConverter, isForMapKey);
         } else if (referenceClass.extendsInterface(Serializable.class)) {
             setFieldClassification(mapping, java.sql.Blob.class, isForMapKey);
             setConverter(mapping, new SerializedObjectConverter(mapping), isForMapKey);

@@ -432,10 +432,11 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             assertEquals(1, resultSet.size());
             
             final DatabaseRecord dr = resultSet.firstElement();
-            assertEquals(900L, dr.get("ID"));
-            assertEquals(2L, dr.get("VERSION")); // should be incremented by the pessimistic lock
+            //To avoid platform dependent result types in dr.get(...) Integer, Long, BigDecimal.... values are converted to String
+            assertEquals( "900", dr.get("ID").toString());
+            assertEquals("2", dr.get("VERSION").toString()); // should be incremented by the pessimistic lock
             assertNull(dr.get("NAME")); // should be unchanged
-            assertEquals(1L, dr.get("PRIORITY")); // should be unchanged
+            assertEquals("1", dr.get("PRIORITY").toString()); // should be unchanged
             
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)) {
@@ -497,10 +498,11 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         assertEquals(1, resultSet.size());
         
         final DatabaseRecord dr = (DatabaseRecord) resultSet.firstElement();
-        assertEquals(901L, dr.get("ID"));
-        assertEquals(1L, dr.get("VERSION")); // should be unchanged
+        //To avoid platform dependent result types in dr.get(...) Integer, Long, BigDecimal.... values are converted to String
+        assertEquals("901", dr.get("ID").toString());
+        assertEquals("1", dr.get("VERSION").toString()); // should be unchanged
         assertNull(dr.get("NAME")); // should be unchanged
-        assertEquals(1L, dr.get("PRIORITY")); // should be unchanged
+        assertEquals("1", dr.get("PRIORITY").toString()); // should be unchanged
     }
 
     /**
@@ -547,10 +549,11 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         assertEquals(1, resultSet.size());
         
         final DatabaseRecord dr = (DatabaseRecord) resultSet.firstElement();
-        assertEquals(902L, dr.get("ID"));
-        assertEquals(2L, dr.get("VERSION")); // should be incremented by the pessimistic lock
+        //To avoid platform dependent result types in dr.get(...) Integer, Long, BigDecimal.... values are converted to String
+        assertEquals("902", dr.get("ID").toString());
+        assertEquals("2", dr.get("VERSION").toString()); // should be incremented by the pessimistic lock
         assertEquals("Do some work", dr.get("NAME")); // new value
-        assertEquals(2L, dr.get("PRIORITY")); // new value
+        assertEquals("2", dr.get("PRIORITY").toString()); // new value
     }
 
     //--------------------Helper Methods ---------------//

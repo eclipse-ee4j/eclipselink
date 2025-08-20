@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -249,6 +249,20 @@ public class DatasourcePlatform implements Platform {
     @Override
     public <T> T convertObject(Object sourceObject, Class<T> javaClass) throws ConversionException {
         return getConversionManager().convertObject(sourceObject, javaClass);
+    }
+
+    /**
+     * Convert the object to the appropriate type by invoking the appropriate
+     * ConversionManager method.
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @param session current database session
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
+     */
+    @Override
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException {
+        return convertObject(sourceObject, javaClass);
     }
 
     /**
