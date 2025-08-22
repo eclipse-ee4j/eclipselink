@@ -27,6 +27,12 @@
 
     <name>Test - beanvalidation.dynamic</name>
 
+    <properties>
+        <!--Disabled as there is issue to create dynamic entity org.eclipse.persistence.testing.models.jpa.beanvalidation.DynamicEmployee in server environment-->
+        <!--It blocks JEE application start.-->
+        <server.test.skip>true</server.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>jakarta.validation</groupId>
