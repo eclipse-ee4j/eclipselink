@@ -20,8 +20,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 
+import java.io.Serializable;
+
 @Entity(name="CMP3_BV_TASK")
-public class Task {
+public class Task implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
     private int id;

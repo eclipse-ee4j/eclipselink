@@ -19,7 +19,6 @@ import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.LockModeType;
-import jakarta.persistence.RollbackException;
 import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -272,6 +271,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             Employee e = em.find(Employee.class, EMPLOYEE_PK);
             e.setName(invalidName);
             commitTransaction(em);
+          //We have to keep generic (RuntimeException) there are different exceptions in JSE and JEE environments should be thrown
           } catch (RuntimeException e) {
             assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));
             Throwable cause = e.getCause();
@@ -476,15 +476,20 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             task.setPriority(2);
             
             commitTransaction(em);
-        }  catch (RollbackException e) {
-            // we're expecting a rollback exception because we've changed the object
-            // and it isn't passing validation. Check that the cause is a ConstraintViolationException.
-
-            final ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
-            final Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-            final ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            assertEquals("must not be null", constraintViolation.getMessage());
-            gotConstraintViolations = true;
+        //We have to keep generic (RuntimeException) there are different exceptions in JSE and JEE environments should be thrown
+        }  catch (RuntimeException e) {
+            Throwable cause = e.getCause();
+            while(cause != null) {
+                if (cause instanceof ConstraintViolationException){
+                    ConstraintViolationException cve = (ConstraintViolationException)cause;
+                    Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+                    ConstraintViolation<?> constraintViolation = constraintViolations.iterator().next();
+                    assertEquals("must not be null", constraintViolation.getMessage());
+                    gotConstraintViolations = true;
+                    break;
+                }else
+                    cause = cause.getCause();
+            }
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
