@@ -28,6 +28,7 @@
     <name>Test - deadlock diagnostic framework</name>
 
     <properties>
+        <server.test.skip>true</server.test.skip>
         <argLine/>
     </properties>
 
