@@ -2159,5 +2159,31 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>all-sources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>all-sources</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/all-sources.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
