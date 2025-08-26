@@ -173,8 +173,6 @@ module eclipselink {
     exports org.eclipse.persistence.jaxb.metadata;
     exports org.eclipse.persistence.jaxb.plugins;
     exports org.eclipse.persistence.jaxb.rs;
-    exports org.eclipse.persistence.jpa.rs.util;
-    exports org.eclipse.persistence.jpa.rs.logging;
     exports org.eclipse.persistence.jaxb.xmlmodel;
 
     exports org.eclipse.persistence.jaxb.xjc;
@@ -197,8 +195,10 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.features.core.selflinks;
     exports org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
     exports org.eclipse.persistence.jpa.rs.features.paging;
+    exports org.eclipse.persistence.jpa.rs.logging;
     exports org.eclipse.persistence.jpa.rs.resources;
     exports org.eclipse.persistence.jpa.rs.resources.common;
+    exports org.eclipse.persistence.jpa.rs.util;
     exports org.eclipse.persistence.jpa.rs.util.list;
 
     //exported through EclipseLink PUBLIC API
