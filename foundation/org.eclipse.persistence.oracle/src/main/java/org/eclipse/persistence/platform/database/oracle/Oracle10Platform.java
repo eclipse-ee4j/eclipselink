@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +19,9 @@ import java.sql.Statement;
 import java.util.Hashtable;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 import oracle.jdbc.OraclePreparedStatement;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 /**
  * <p><b>Purpose:</b>
@@ -42,8 +43,8 @@ public class Oracle10Platform extends Oracle9Platform  {
         Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
         // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
         // TIMESTAMP WITH TIME ZONE is supported since 10g
-        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
-        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
+        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP(9) WITH TIME ZONE"));
+        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP(9) WITH TIME ZONE"));
         return fieldTypes;
     }
 
