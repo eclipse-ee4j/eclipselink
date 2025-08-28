@@ -67,6 +67,7 @@ import org.eclipse.persistence.testing.models.jpa.ddlgeneration.City;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Comment;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Country;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Course;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.DateTimeEntity;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Employee;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapKey;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.EntityMapValue;
@@ -97,6 +98,12 @@ import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Zipcode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -153,6 +160,7 @@ public class DDLGenerationTest extends DDLGenerationTestBase {
         tests.add("testDeleteObjectWithEmbeddedManyToMany");
         tests.add("testLAZYLOBWithEmbeddedId");
         tests.add("testBug386939");
+        tests.add("testDateTimePrecision");
 
         for (String test : tests) {
             suite.addTest(new DDLGenerationTest(test));
@@ -1294,5 +1302,49 @@ public class DDLGenerationTest extends DDLGenerationTestBase {
             closeEntityManager(em);
         }
         */
+    }
+
+    public void testDateTimePrecision() {
+        final LocalDate LOCAL_DATE = LocalDate.now();
+        final LocalTime LOCAL_TIME = LocalTime.now();
+        final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.now();
+        final OffsetTime OFFSET_TIME = OffsetTime.of(LOCAL_TIME, ZoneOffset.ofHours(0));
+        final OffsetDateTime OFFSET_DATE_TIME = OffsetDateTime.of(LOCAL_DATE_TIME, ZoneOffset.ofHours(0));
+        DateTimeEntity dateTimeEntity = new DateTimeEntity(1L, LOCAL_DATE, LOCAL_TIME, LOCAL_DATE_TIME, OFFSET_TIME, OFFSET_DATE_TIME);
+
+        //Only Oracle and Derby platform yet as there is consistent support for various java.time.* classes mapping and DB types
+        if (getPersistenceUnitServerSession().getPlatform().isOracle() ||
+                getPersistenceUnitServerSession().getPlatform().isDerby()) {
+            EntityManager em = createEntityManager();
+            try {
+                beginTransaction(em);
+                em.persist(dateTimeEntity);
+                commitTransaction(em);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
+                }
+                fail("Error persisting the DateTimePrecision : " + e);
+            } finally {
+                closeEntityManager(em);
+            }
+            clearCache();
+
+        verifyDateTimeQuery("DateTimeEntity.findByLocalDate", "date", dateTimeEntity.getLocalDate());
+        verifyDateTimeQuery("DateTimeEntity.findByLocalTime", "time", dateTimeEntity.getLocalTime());
+        verifyDateTimeQuery("DateTimeEntity.findByLocalDateTime", "dateTime", dateTimeEntity.getLocalDateTime());
+        verifyDateTimeQuery("DateTimeEntity.findByOffsetTime", "time", dateTimeEntity.getOffsetTime());
+        verifyDateTimeQuery("DateTimeEntity.findByOffsetDateTime", "dateTime", dateTimeEntity.getOffsetDateTime());
+        }
+    }
+
+    private void verifyDateTimeQuery(String queryName, String parameterName, Object parameterValue) {
+        //Open and close EntityManager per each execution to eliminate caching influence in UnitOfWork
+        EntityManager em = createEntityManager();
+        DateTimeEntity dateTimeEntityResult = (DateTimeEntity) em.createNamedQuery(queryName)
+                .setParameter(parameterName, parameterValue)
+                .getSingleResult();
+        assertNotNull("The query " + queryName + " returned nothing: ", dateTimeEntityResult);
+        closeEntityManager(em);
     }
 }
