@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.util.ArrayList;
@@ -73,6 +71,14 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
     public NamedNativeQueryMetadata(MetadataAnnotation namedNativeQuery, MetadataAccessor accessor) {
         super(namedNativeQuery, accessor);
 
+        if (namedNativeQuery.getAttributeString("resultSetMapping") != null &&
+                !namedNativeQuery.getAttributeString("resultSetMapping").isEmpty() &&
+                (namedNativeQuery.getAttributeArray("entities").length != 0 ||
+                namedNativeQuery.getAttributeArray("classes").length != 0 ||
+                namedNativeQuery.getAttributeArray("columns").length != 0)) {
+            throw ValidationException.duplicitResultSetMappingInNativeQuery(accessor.getIdentifier(), getName());
+        }
+
         m_resultSetMapping = namedNativeQuery.getAttributeString("resultSetMapping");
 
         for (Object entityResult : namedNativeQuery.getAttributeArray("entities")) {
@@ -87,6 +93,13 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
             m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
 
+        if (namedNativeQuery.getAttributeArray("entities").length != 0 ||
+                namedNativeQuery.getAttributeArray("classes").length != 0 ||
+                namedNativeQuery.getAttributeArray("columns").length != 0) {
+            SQLResultSetMappingMetadata sqlResultSetMapping = new SQLResultSetMappingMetadata(namedNativeQuery, accessor,  m_entityResults, m_constructorResults, m_columnResults);
+            m_resultSetMapping = sqlResultSetMapping.getName();
+            getProject().addSQLResultSetMapping(sqlResultSetMapping);
+        }
     }
 
     /**
