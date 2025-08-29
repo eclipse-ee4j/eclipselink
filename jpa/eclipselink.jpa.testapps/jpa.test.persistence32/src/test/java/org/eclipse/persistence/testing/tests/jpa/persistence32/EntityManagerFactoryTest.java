@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa.persistence32;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.testing.models.jpa.persistence32.LocalDateTimeVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Team;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Trainer;
@@ -66,6 +68,11 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
                 new EntityManagerFactoryTest("testLoadEntity"),
                 new EntityManagerFactoryTest("testGetVersionOnEntityWithVersion"),
                 new EntityManagerFactoryTest("testGetVersionOnEntityWithoutVersion"),
+                new EntityManagerFactoryTest("testIsInstanceInPersistenceUnit"),
+                new EntityManagerFactoryTest("testIsInstanceNotInPersistenceUnit"),
+                new EntityManagerFactoryTest("testIsInstanceInPersistenceUnitIsNotInstance"),
+                new EntityManagerFactoryTest("testGetClass"),
+                new EntityManagerFactoryTest("testGetClassNotInPersistenceUnit"),
                 new EntityManagerFactoryTest("testGetNamedPokemonQueries"),
                 new EntityManagerFactoryTest("testGetNamedAllQueries"),
                 new EntityManagerFactoryTest("testGetNamedPokemonEntityGraphs"),
@@ -375,6 +382,61 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
             assertTrue(
                     "Unexpected exception message: " + iae.getMessage(),
                     iae.getMessage().contains("which has no version attribute"));
+        }
+    }
+
+    // Test Object PersistenceUnitUtil#isInstance(Object entity, Class<?> entityClass) on entity
+    // For loaded entity and class will match.
+    public void testIsInstanceInPersistenceUnit() {
+        Team entity = new Team(101, "Team");
+        emf.runInTransaction(em -> em.persist(entity));
+        boolean result = emf.getPersistenceUnitUtil().isInstance(entity, Team.class);
+        assertTrue("Entity is not belonging to the persistence unit or is not instance of the given entity class", result);
+    }
+
+    // Test Object PersistenceUnitUtil#isInstance(Object entity, Class<?> entityClass) on entity
+    // For entity which is not in specified persistence unit.
+    public void testIsInstanceNotInPersistenceUnit() {
+        LocalDateTimeVersionEntity entity = new LocalDateTimeVersionEntity(1, LocalDateTime.now(), "First");
+        try {
+            emf.getPersistenceUnitUtil().isInstance(entity, LocalDateTimeVersionEntity.class);
+            fail("PersistenceUnitUtil#isInstance(Object entity, Class<?> entityClass) passed on entity which is not in specified persistence unit. It must throw IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            assertTrue(
+                    "Unexpected exception message: " + iae.getMessage(),
+                    iae.getMessage().contains("which is not a persistent object"));
+        }
+    }
+
+    // Test Object PersistenceUnitUtil#isInstance(Object entity, Class<?> entityClass) on entity
+    // For loaded entity and class will not match.
+    public void testIsInstanceInPersistenceUnitIsNotInstance() {
+        Team entity = new Team(102, "Team");
+        emf.runInTransaction(em -> em.persist(entity));
+        boolean result = emf.getPersistenceUnitUtil().isInstance(entity, Pokemon.class);
+        assertFalse("Entity is belonging to the persistence unit or is not instance of the given entity class which is not expected in this test.", result);
+    }
+
+    // Test Object PersistenceUnitUtil#getClass(T entity) on entity
+    // For loaded entity available and specified persistence unit.
+    public void testGetClass() {
+        Team entity = new Team(103, "Team");
+        emf.runInTransaction(em -> em.persist(entity));
+        Class<?> result = emf.getPersistenceUnitUtil().getClass(entity);
+        assertEquals("Entity is not org.eclipse.persistence.testing.models.jpa.persistence32.Team instance.", Team.class, result);
+    }
+
+    // Test Object PersistenceUnitUtil#getClass(T entity) on entity
+    // For entity which is not in specified persistence unit.
+    public void testGetClassNotInPersistenceUnit() {
+        LocalDateTimeVersionEntity entity = new LocalDateTimeVersionEntity(1, LocalDateTime.now(), "First");
+        try {
+            emf.getPersistenceUnitUtil().getClass(entity);
+            fail("PersistenceUnitUtil#getClass(T entity) passed on entity which is not in specified persistence unit. It must throw IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            assertTrue(
+                    "Unexpected exception message: " + iae.getMessage(),
+                    iae.getMessage().contains("which is not a persistent object"));
         }
     }
 
