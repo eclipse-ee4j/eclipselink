@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -181,6 +181,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             suite.addTest(constructor.newInstance("simpleConcatTestWithConstantsLiteralFirst"));
             suite.addTest(constructor.newInstance("simpleCountTest"));
             suite.addTest(constructor.newInstance("simpleThreeArgConcatTest"));
+            suite.addTest(constructor.newInstance("simpleListArgConcatTest"));
             suite.addTest(constructor.newInstance("simpleDistinctTest"));
             suite.addTest(constructor.newInstance("simpleDistinctNullTest"));
             suite.addTest(constructor.newInstance("simpleDistinctMultipleResultTest"));
@@ -723,6 +724,41 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
             cq.where( qb.equal( wrapper.get(root, Employee_firstName), qb.concat(qb.literal(partOne), qb.concat( qb.literal(partTwo), qb.literal(partThree)) ) ) );
+            List<Employee> result = em.createQuery(cq).getResultList();
+
+            assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+
+    }
+
+    public void simpleListArgConcatTest() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Employee expectedResult = (Employee)(getPersistenceUnitServerSession().readAllObjects(Employee.class).firstElement());
+
+            clearCache();
+
+            String partOne, partTwo, partThree;
+
+            partOne = expectedResult.getFirstName().substring(0, 1);
+            partTwo = expectedResult.getFirstName().substring(1, 2);
+            partThree = expectedResult.getFirstName().substring(2);
+
+            //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = CONCAT(\"" + partOne + "\", CONCAT(\"" + partTwo
+            //      + "\", \"" + partThree + "\") )"
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> root = wrapper.from(cq, Employee.class);
+            List<jakarta.persistence.criteria.Expression<String>> concatExpressions = new ArrayList<>();
+            concatExpressions.add(qb.literal(partOne));
+            concatExpressions.add(qb.literal(partTwo));
+            concatExpressions.add(qb.literal(partThree));
+
+            cq.where( qb.equal( wrapper.get(root, Employee_firstName), qb.concat(concatExpressions)));
             List<Employee> result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));

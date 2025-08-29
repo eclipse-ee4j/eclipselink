@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -558,6 +558,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         //assertEquals(Double.class, budgetClass);
 
         // Test LargeProject.budget.buyingDays
+
+        //Test new Jakarta Persistence 3.2 method jakarta.persistence.metamodel.Metamodel.entity(java.lang.String)
+        EntityType<Buyer> entityBuyerByName = (EntityType<Buyer>) metamodel.entity("org.eclipse.persistence.testing.models.jpa.advanced.Buyer");
+        assertNotNull(entityBuyerByName);
 
         // Check an EnumSet on an Entity
         EntityType<Buyer> entityBuyer = metamodel.entity(Buyer.class);
