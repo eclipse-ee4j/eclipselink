@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.sessions.Session;
@@ -43,7 +44,7 @@ import java.util.Iterator;
 public class EnumTypeConverter extends ObjectTypeConverter {
     private Class m_enumClass;
     private String m_enumClassName;
-    private Field m_enumField;
+    private String m_enumFieldName;
     private boolean m_useOrdinalValues;
 
     /**
@@ -61,17 +62,6 @@ public class EnumTypeConverter extends ObjectTypeConverter {
 
     /**
      * PUBLIC:
-     * Creating an enum converter this way will create the conversion values
-     * for you using ordinal or name values.
-     */
-    public EnumTypeConverter(DatabaseMapping mapping, String enumClassName, boolean useOrdinalValues, Field valueField) {
-        this(mapping, enumClassName);
-        m_useOrdinalValues = useOrdinalValues;
-        m_enumField = valueField;
-    }
-
-    /**
-     * PUBLIC:
      * Creating an enum converter this way expects that you will provide
      * the conversion values separately.
      */
@@ -80,12 +70,20 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         m_enumClassName = enumClassName;
     }
 
-    protected void initializeConversions(Class enumClass) {
+    //Call after convertClassNamesToClasses or at the end to ensure, that all required classes are available
+    private void initializeConversions(Class enumClass) {
         // Initialize conversion if not already set by Converter
         if (getFieldToAttributeValues().isEmpty()) {
             EnumSet theEnums = EnumSet.allOf(enumClass);
             Iterator<Enum> i = theEnums.iterator();
-
+            Field m_enumField = null;
+            if (m_enumFieldName != null) {
+                try {
+                    m_enumField = AccessController.doPrivileged(new PrivilegedGetDeclaredField(m_enumClass, m_enumFieldName, true));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.invalidFieldForClass(m_enumFieldName, m_enumClassName);
+                }
+            }
             while (i.hasNext()) {
                 Enum theEnum = i.next();
                 if (m_enumField != null) {
@@ -113,6 +111,14 @@ public class EnumTypeConverter extends ObjectTypeConverter {
 
     public String getEnumClassName() {
         return m_enumClassName;
+    }
+
+    public void setEnumFieldName(String m_enumFieldName) {
+        this.m_enumFieldName = m_enumFieldName;
+    }
+
+    public void setUseOrdinalValues(boolean m_useOrdinalValues) {
+        this.m_useOrdinalValues = m_useOrdinalValues;
     }
 
     /**
