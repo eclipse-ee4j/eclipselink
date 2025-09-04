@@ -21,16 +21,12 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
@@ -143,33 +139,32 @@ public class EnumeratedMetadata extends MetadataConverter {
         if (annotatedFields.size() > 1) {
             throw ValidationException.incorrectNumberOfEnumeratedValueAnnotation(referenceClass.getName());
         }
-        Field field = null;
+        MetadataField annotatedField = null;
+        Class<?> fieldType = null;
         if (annotatedFields.size() == 1) {
-            try {
-                Class<?> clazz = AccessController.doPrivileged(new PrivilegedClassForName<>(referenceClass.getName()));
-                field = AccessController.doPrivileged(new PrivilegedGetDeclaredField(clazz, annotatedFields.get(0).getName(), true));
-            } catch (PrivilegedActionException exception) {
-                throw ValidationException.invalidFieldForClass(annotatedFields.get(0).getName(), referenceClass);
-            }
-
+            MetadataClass metadataClass = getMetadataFactory().getMetadataClass(referenceClass.getName());
+            annotatedField = metadataClass.getField(annotatedFields.get(0).getName());
+            fieldType = MetadataHelper.getClassForName(annotatedField.getType(), getMetadataFactory().getLoader());
         }
         boolean isOrdinal = true;
         if (m_enumeratedType != null) {
             isOrdinal = m_enumeratedType.equals(JPA_ENUM_ORDINAL);
         }
-        if (field != null) {
+        EnumTypeConverter enumTypeConverter = new EnumTypeConverter(mapping, referenceClass.getName());
+        enumTypeConverter.setUseOrdinalValues(isOrdinal);
+        if (annotatedField != null) {
             if (isOrdinal) {
-                if (!BasicTypeHelperImpl.getInstance().isIntegralType(field.getType()) || field.getType().equals(char.class) || field.getType().equals(Character.class)) {
+                if (!BasicTypeHelperImpl.getInstance().isIntegralType(fieldType) || char.class.equals(fieldType) || Character.class.equals(fieldType)) {
                     throw ValidationException.invalidFieldTypeForOrdinalEnumType(annotatedFields.get(0).getName(), referenceClass);
                 }
             } else {
-                if (!field.getType().equals(String.class)) {
+                if (!String.class.equals(fieldType)) {
                     throw ValidationException.invalidFieldTypeForStringEnumType(annotatedFields.get(0).getName(), referenceClass);
                 }
-
             }
+            enumTypeConverter.setEnumFieldName(annotatedField.getName());
         }
-        setConverter(mapping, new EnumTypeConverter(mapping, referenceClass.getName(), isOrdinal, field), isForMapKey);
+        setConverter(mapping, enumTypeConverter, isForMapKey);
     }
 
     /**
