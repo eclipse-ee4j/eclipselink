@@ -35,6 +35,9 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.jpa.EntityGraphImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa.persistence32.LocalDateTimeVersionEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.Pokemon;
@@ -77,7 +80,8 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
                 new EntityManagerFactoryTest("testGetNamedAllQueries"),
                 new EntityManagerFactoryTest("testGetNamedPokemonEntityGraphs"),
                 new EntityManagerFactoryTest("testGetNamedAllEntityGraphs"),
-                new EntityManagerFactoryTest("testGetName")
+                new EntityManagerFactoryTest("testGetName"),
+                new EntityManagerFactoryTest("testCreateEntityManagerFactoryFromPersistenceConfiguration")
         );
     }
 
@@ -508,6 +512,19 @@ public class EntityManagerFactoryTest extends AbstractPokemonSuite {
 
     public void testGetName() {
         assertEquals(this.getPersistenceUnitName(), emf.getName());
+    }
+
+    // Test PersistenceConfiguration.createEntityManagerFactory()
+    public void testCreateEntityManagerFactoryFromPersistenceConfiguration() {
+        PersistenceConfiguration configuration = createPersistenceConfiguration(emf, "persistence32_internal_test");
+        try (EntityManagerFactory emfFromConfig = configuration.createEntityManagerFactory();
+             EntityManager emFromConfig = emfFromConfig.createEntityManager();) {
+            assertNotNull(emFromConfig);
+            assertNotNull(emFromConfig);
+            //Check if EclipseLink is used as a provider
+            assertEquals(EntityManagerFactoryImpl.class, (emfFromConfig.unwrap(EntityManagerFactoryImpl.class)).getClass());
+            assertEquals(EntityManagerImpl.class, (emFromConfig.unwrap(JpaEntityManager.class).getClass()));
+        }
     }
 
     private static PersistenceConfiguration createPersistenceConfiguration(JpaEntityManagerFactory emf, String puName) {
