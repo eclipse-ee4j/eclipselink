@@ -474,6 +474,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_PERSISTENCE_ROOT_URL = 7357;
     public static final int INCORRECT_ASM_SERVICE_PROVIDED = 7358;
     public static final int NOT_AVAILABLE_ASM_SERVICE = 7359;
+    public static final int DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY = 7364;
 
     /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.exceptions.BeanValidationException}. */
 
@@ -2669,6 +2670,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { specifiedBooleanValue };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES, args));
         validationException.setErrorCode(INVALID_BOOLEAN_VALUE_FOR_SETTING_ALLOW_NATIVESQL_QUERIES);
+        return validationException;
+    }
+
+    public static ValidationException duplicitResultSetMappingInNativeQuery(String entityName, String queryName) {
+        Object[] args = { entityName, queryName };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY, args));
+        validationException.setErrorCode(DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY);
         return validationException;
     }
 

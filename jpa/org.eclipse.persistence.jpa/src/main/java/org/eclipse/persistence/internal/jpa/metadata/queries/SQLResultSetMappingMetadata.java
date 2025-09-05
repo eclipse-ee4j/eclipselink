@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -59,6 +60,7 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
     private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<>();
     private List<EntityResultMetadata> m_entityResults = new ArrayList<>();
     private String m_name;
+    private static final AtomicInteger defaultNameCounter = new AtomicInteger();
 
     /**
      * INTERNAL:
@@ -101,6 +103,18 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
         // class name.
         m_name = entityClass.getName();
         m_entityResults.add(new EntityResultMetadata(entityClass, accessibleObject));
+    }
+
+    /**
+     * INTERNAL:
+     * Used for annotation specified as a part of @NamedNativeQuery.
+     */
+    public SQLResultSetMappingMetadata(MetadataAnnotation sqlResultSetMapping, MetadataAccessor accessor, List<EntityResultMetadata> entityResults, List<ConstructorResultMetadata> constructorResults,  List<ColumnResultMetadata> columnResults) {
+        super(sqlResultSetMapping, accessor);
+        m_name = "_default_" + defaultNameCounter.getAndIncrement();
+        m_entityResults = entityResults;
+        m_constructorResults = constructorResults;
+        m_columnResults = columnResults;
     }
 
     /**
