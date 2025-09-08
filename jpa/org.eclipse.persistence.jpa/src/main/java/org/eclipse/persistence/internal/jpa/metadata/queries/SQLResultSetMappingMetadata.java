@@ -26,7 +26,6 @@ package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -60,7 +59,6 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
     private List<ConstructorResultMetadata> m_constructorResults = new ArrayList<>();
     private List<EntityResultMetadata> m_entityResults = new ArrayList<>();
     private String m_name;
-    private static final AtomicInteger defaultNameCounter = new AtomicInteger();
 
     /**
      * INTERNAL:
@@ -109,9 +107,8 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for annotation specified as a part of @NamedNativeQuery.
      */
-    public SQLResultSetMappingMetadata(MetadataAnnotation sqlResultSetMapping, MetadataAccessor accessor, List<EntityResultMetadata> entityResults, List<ConstructorResultMetadata> constructorResults,  List<ColumnResultMetadata> columnResults) {
-        super(sqlResultSetMapping, accessor);
-        m_name = "_default_" + defaultNameCounter.getAndIncrement();
+    public SQLResultSetMappingMetadata(MetadataAccessibleObject accessibleObject, MetadataProject project, Object location, List<EntityResultMetadata> entityResults, List<ConstructorResultMetadata> constructorResults,  List<ColumnResultMetadata> columnResults) {
+        super(accessibleObject, project, location);
         m_entityResults = entityResults;
         m_constructorResults = constructorResults;
         m_columnResults = columnResults;

@@ -64,6 +64,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -311,6 +312,23 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public static DatabaseQuery buildSQLDatabaseQuery(String sqlResultSetMappingName, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         query.setSQLResultSetMappingName(sqlResultSetMappingName);
+        query.setCall(((DatasourcePlatform)session.getDatasourcePlatform()).buildNativeCall(sqlString));
+        query.setIsUserDefined(true);
+
+        // apply any query hints
+        return applyHints(hints, query, classLoader, session);
+    }
+
+    /**
+     * Build a ResultSetMappingQuery from a sql result set mapping name and sql
+     * string.
+     *
+     * @param hints
+     *            a list of hints to be applied to the query.
+     */
+    public static DatabaseQuery buildSQLDatabaseQuery(SQLResultSetMapping sqlResultSetMapping, String sqlString, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+        ResultSetMappingQuery query = new ResultSetMappingQuery();
+        query.addSQLResultSetMapping(sqlResultSetMapping);
         query.setCall(((DatasourcePlatform)session.getDatasourcePlatform()).buildNativeCall(sqlString));
         query.setIsUserDefined(true);
 

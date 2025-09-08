@@ -92,14 +92,6 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         for (Object columnResult : namedNativeQuery.getAttributeArray("columns")) {
             m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
-
-        if (namedNativeQuery.getAttributeArray("entities").length != 0 ||
-                namedNativeQuery.getAttributeArray("classes").length != 0 ||
-                namedNativeQuery.getAttributeArray("columns").length != 0) {
-            SQLResultSetMappingMetadata sqlResultSetMapping = new SQLResultSetMappingMetadata(namedNativeQuery, accessor,  m_entityResults, m_constructorResults, m_columnResults);
-            m_resultSetMapping = sqlResultSetMapping.getName();
-            getProject().addSQLResultSetMapping(sqlResultSetMapping);
-        }
     }
 
     /**
@@ -208,6 +200,10 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         // Process the result class.
         if (!getResultClass().isVoid()) {
             query.setResultClassName(getJavaClassName(getResultClass()));
+        } else if (!this.getEntityResults().isEmpty() || !this.getConstructorResults().isEmpty() || !this.getColumnResults().isEmpty()) {
+            SQLResultSetMappingMetadata sqlResultSetMapping = new SQLResultSetMappingMetadata(this.getAccessibleObject(), this.getProject(), this.getLocation(), m_entityResults, m_constructorResults, m_columnResults);
+            sqlResultSetMapping.setName(getName());
+            query.setLocalResultSetMappingMetadata(sqlResultSetMapping);
         } else if (hasResultSetMapping(session)) {
             query.addResultSetMapping(getResultSetMapping());
         }

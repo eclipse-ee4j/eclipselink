@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class JPAQuery extends DatabaseQuery  {
     private String resultClassName;
     private List<String> resultClassNames;
     private List<String> resultSetMappingNames;
+    private SQLResultSetMappingMetadata localResultSetMappingMetadata;
     private Map<String, Object> hints;
 
     public JPAQuery() {
@@ -235,6 +237,9 @@ public class JPAQuery extends DatabaseQuery  {
         if (resultClassName != null) {
             Class<?> clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = EJBQueryImpl.buildSQLDatabaseQuery(clazz, sqlString, hints, loader, (AbstractSession)session);
+        } else if (localResultSetMappingMetadata != null) {
+            SQLResultSetMapping sqlResultSetMapping = localResultSetMappingMetadata.process();
+            query = EJBQueryImpl.buildSQLDatabaseQuery(sqlResultSetMapping, sqlString, hints, loader, (AbstractSession)session);
         } else if (resultSetMappingNames != null) {
             query = EJBQueryImpl.buildSQLDatabaseQuery(resultSetMappingNames.get(0), sqlString, hints, loader, (AbstractSession)session);
         } else {
@@ -315,5 +320,9 @@ public class JPAQuery extends DatabaseQuery  {
 
     public void setResultSetMappings(List<String> resultSetMappings){
         this.resultSetMappingNames = resultSetMappings;
+    }
+
+    public void setLocalResultSetMappingMetadata(SQLResultSetMappingMetadata localResultSetMappingMetadata){
+        this.localResultSetMappingMetadata = localResultSetMappingMetadata;
     }
 }
