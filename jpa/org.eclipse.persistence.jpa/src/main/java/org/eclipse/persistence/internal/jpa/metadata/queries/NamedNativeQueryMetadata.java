@@ -197,7 +197,7 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
             query.setResultClassName(getJavaClassName(getResultClass()));
         } else if (hasResultSetMapping(session)) {
             query.addResultSetMapping(getResultSetMapping());
-        } else {
+        } else if (!this.getEntityResults().isEmpty() || !this.getConstructorResults().isEmpty() || !this.getColumnResults().isEmpty()) {
             // Initialize a new SqlResultSetMapping (with the metadata name)
             SQLResultSetMapping sqlResultSetMapping = new SQLResultSetMapping(getName());
             // Process the entity results first.
