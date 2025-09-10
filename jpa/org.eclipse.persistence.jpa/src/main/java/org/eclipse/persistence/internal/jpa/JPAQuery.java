@@ -20,18 +20,17 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 package org.eclipse.persistence.internal.jpa;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.OptimisticLockException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.LockModeType;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
@@ -54,7 +53,7 @@ public class JPAQuery extends DatabaseQuery  {
     private String resultClassName;
     private List<String> resultClassNames;
     private List<String> resultSetMappingNames;
-    private SQLResultSetMappingMetadata localResultSetMappingMetadata;
+    private SQLResultSetMapping localResultSetMapping;
     private Map<String, Object> hints;
 
     public JPAQuery() {
@@ -237,9 +236,8 @@ public class JPAQuery extends DatabaseQuery  {
         if (resultClassName != null) {
             Class<?> clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = EJBQueryImpl.buildSQLDatabaseQuery(clazz, sqlString, hints, loader, (AbstractSession)session);
-        } else if (localResultSetMappingMetadata != null) {
-            SQLResultSetMapping sqlResultSetMapping = localResultSetMappingMetadata.process();
-            query = EJBQueryImpl.buildSQLDatabaseQuery(sqlResultSetMapping, sqlString, hints, loader, (AbstractSession)session);
+        } else if (localResultSetMapping != null) {
+            query = EJBQueryImpl.buildSQLDatabaseQuery(localResultSetMapping, sqlString, hints, loader, (AbstractSession)session);
         } else if (resultSetMappingNames != null) {
             query = EJBQueryImpl.buildSQLDatabaseQuery(resultSetMappingNames.get(0), sqlString, hints, loader, (AbstractSession)session);
         } else {
@@ -322,7 +320,7 @@ public class JPAQuery extends DatabaseQuery  {
         this.resultSetMappingNames = resultSetMappings;
     }
 
-    public void setLocalResultSetMappingMetadata(SQLResultSetMappingMetadata localResultSetMappingMetadata){
-        this.localResultSetMappingMetadata = localResultSetMappingMetadata;
+    public void setLocalResultSetMapping(SQLResultSetMapping localResultSetMapping){
+        this.localResultSetMapping = localResultSetMapping;
     }
 }
