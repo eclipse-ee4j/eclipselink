@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -55,6 +55,7 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -923,7 +924,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         } finally {
             try {
                 if (resultSet != null) {
+                    Statement statement = resultSet.getStatement();
                     resultSet.close();
+
+                    if (statement != null && !statement.isClosed()) {
+                        statement.close();
+                    }
                 }
             } catch (SQLException cleanupSQLException) {
                 if (!exceptionOccured) {
