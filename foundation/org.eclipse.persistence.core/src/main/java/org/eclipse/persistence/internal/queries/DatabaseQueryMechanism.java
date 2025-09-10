@@ -24,6 +24,7 @@ package org.eclipse.persistence.internal.queries;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -923,7 +924,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         } finally {
             try {
                 if (resultSet != null) {
+                    Statement statement = resultSet.getStatement();
                     resultSet.close();
+
+                    if (statement != null && !statement.isClosed()) {
+                        statement.close();
+                    }
                 }
             } catch (SQLException cleanupSQLException) {
                 if (!exceptionOccured) {
