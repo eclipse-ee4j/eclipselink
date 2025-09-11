@@ -501,8 +501,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "encryptor_script_usage", "Usage is `passwordUpdate.sh|.cmd -ip <old encrypted password>`"},
         { "encryptor_script_description", "This application internally decrypts an old encrypted password that was used by a previous EclipseLink version and encrypts it by the latest algorithm."},
         { "encryptor_script_output", "The reencrypted password is: {0}"},
-        { "cache_key_null_read_lock_manager", "CacheKey instance: {0} , locked by cache read lock manager has null primary key." },
-        { "cache_key_null_identity_map", "CacheKey instance: {0} , stored into identity map has null primary key." }
+        { "cache_key_null_read_lock_manager", "CacheKey instance: {0} , locked by cache read lock manager, has a null primary key." },
+        { "cache_key_null_identity_map", "CacheKey instance: {0} , stored into identity map, has a null primary key." }
     };
 
     /**
