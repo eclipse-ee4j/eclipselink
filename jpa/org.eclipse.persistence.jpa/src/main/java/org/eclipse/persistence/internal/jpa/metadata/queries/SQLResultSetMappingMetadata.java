@@ -92,30 +92,6 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
-     * Used for result class processing.
-     */
-    public SQLResultSetMappingMetadata(MetadataClass entityClass, MetadataAccessibleObject accessibleObject, MetadataProject project, Object location) {
-        super(accessibleObject, project, location);
-
-        // Since a result set mapping requires a name, set it to the entity
-        // class name.
-        m_name = entityClass.getName();
-        m_entityResults.add(new EntityResultMetadata(entityClass, accessibleObject));
-    }
-
-    /**
-     * INTERNAL:
-     * Used for annotation specified as a part of @NamedNativeQuery.
-     */
-    public SQLResultSetMappingMetadata(MetadataAccessibleObject accessibleObject, MetadataProject project, Object location, List<EntityResultMetadata> entityResults, List<ConstructorResultMetadata> constructorResults,  List<ColumnResultMetadata> columnResults) {
-        super(accessibleObject, project, location);
-        m_entityResults = entityResults;
-        m_constructorResults = constructorResults;
-        m_columnResults = columnResults;
-    }
-
-    /**
-     * INTERNAL:
      */
     @Override
     public boolean equals(Object objectToCompare) {
