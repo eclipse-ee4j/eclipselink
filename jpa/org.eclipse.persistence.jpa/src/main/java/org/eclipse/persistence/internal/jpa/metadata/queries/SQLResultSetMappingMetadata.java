@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,6 +101,17 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
         // class name.
         m_name = entityClass.getName();
         m_entityResults.add(new EntityResultMetadata(entityClass, accessibleObject));
+    }
+
+    /**
+     * INTERNAL:
+     * Used for annotation specified as a part of @NamedNativeQuery.
+     */
+    public SQLResultSetMappingMetadata(MetadataAccessibleObject accessibleObject, MetadataProject project, Object location, List<EntityResultMetadata> entityResults, List<ConstructorResultMetadata> constructorResults,  List<ColumnResultMetadata> columnResults) {
+        super(accessibleObject, project, location);
+        m_entityResults = entityResults;
+        m_constructorResults = constructorResults;
+        m_columnResults = columnResults;
     }
 
     /**

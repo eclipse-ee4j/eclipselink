@@ -15,7 +15,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.ConstructorResult;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityResult;
+import jakarta.persistence.FieldResult;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -26,26 +30,72 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.FetchAttribute;
 import org.eclipse.persistence.annotations.FetchGroup;
 import org.eclipse.persistence.annotations.FetchGroups;
 
 @Entity
-@Table(name="PERSISTENCE32_POKEMON")
-@NamedQuery(name="Pokemon.get", query="SELECT p FROM Pokemon p WHERE p.id = :id")
-@NamedNativeQuery(name="Pokemon.deleteAllTypes", query="DELETE FROM PERSISTENCE32_POKEMON_TYPE")
-@NamedNativeQuery(name="Pokemon.deleteAll", query="DELETE FROM PERSISTENCE32_POKEMON")
+@Table(name = "PERSISTENCE32_POKEMON")
+@NamedQuery(name = "Pokemon.get", query = "SELECT p FROM Pokemon p WHERE p.id = :id")
+@NamedNativeQuery(name = "Pokemon.deleteAllTypes", query = "DELETE FROM PERSISTENCE32_POKEMON_TYPE")
+@NamedNativeQuery(name = "Pokemon.deleteAll", query = "DELETE FROM PERSISTENCE32_POKEMON")
+@NamedNativeQuery(name = "Pokemon.selectByIdResultSetMapping", query = "SELECT * FROM PERSISTENCE32_POKEMON WHERE ID=?",
+        resultSetMapping = "pokemon-map"
+)
+@NamedNativeQuery(name = "Pokemon.selectByIdEntitiesProperty", query = "SELECT * FROM PERSISTENCE32_POKEMON WHERE ID=?",
+        entities = {
+                @EntityResult(
+                        entityClass = Pokemon.class,
+                        fields = {
+                                @FieldResult(name = "ID", column = "id"),
+                                @FieldResult(name = "NAME", column = "name")
+                        }
+                )}
+)
+@NamedNativeQuery(name = "Pokemon.selectByIdColumnsProperty", query = "SELECT * FROM PERSISTENCE32_POKEMON WHERE ID=?",
+        columns = {
+                @ColumnResult(name = "id"),
+                @ColumnResult(name = "name")
+        }
+)
+@NamedNativeQuery(name = "Pokemon.selectByIdClassesProperty", query = "SELECT * FROM PERSISTENCE32_POKEMON WHERE ID=?",
+        classes = {
+                @ConstructorResult(
+                        targetClass = Pokemon.class,
+                        columns = {
+                                @ColumnResult(name = "id", type = Integer.class),
+                                @ColumnResult(name = "name", type = String.class),
+                        }
+                )
+        }
+)
+@SqlResultSetMappings({
+        @SqlResultSetMapping(
+                name = "pokemon-map",
+                entities = {
+                        @EntityResult(
+                                entityClass = Pokemon.class,
+                                fields = {
+                                        @FieldResult(name = "ID", column = "id"),
+                                        @FieldResult(name = "NAME", column = "name")
+                                }
+                        )
+                }
+        )
+})
 @FetchGroups({
         @FetchGroup(name = "FetchTypes", attributes = {@FetchAttribute(name = "types")})
 })
 @NamedEntityGraph(name = "Pokemon.fetchGraph",
-                  attributeNodes = {
-                        @NamedAttributeNode("name"),
-                        @NamedAttributeNode(value = "types", subgraph = "types")
-                  },
-                  subgraphs = @NamedSubgraph(name = "types",
-                                             attributeNodes = @NamedAttributeNode("name"))
+        attributeNodes = {
+                @NamedAttributeNode("name"),
+                @NamedAttributeNode(value = "types", subgraph = "types")
+        },
+        subgraphs = @NamedSubgraph(name = "types",
+                attributeNodes = @NamedAttributeNode("name"))
 )
 public class Pokemon {
 
@@ -61,14 +111,14 @@ public class Pokemon {
 
     @ManyToMany
     @JoinTable(name = "PERSISTENCE32_POKEMON_TYPE",
-               joinColumns = @JoinColumn(
-                       name = "POKEMON_ID",
-                       referencedColumnName = "ID"
-               ),
-               inverseJoinColumns = @JoinColumn(
-                       name = "TYPE_ID",
-                       referencedColumnName = "ID"
-               ))
+            joinColumns = @JoinColumn(
+                    name = "POKEMON_ID",
+                    referencedColumnName = "ID"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "TYPE_ID",
+                    referencedColumnName = "ID"
+            ))
     private Collection<Type> types;
 
     public Pokemon() {

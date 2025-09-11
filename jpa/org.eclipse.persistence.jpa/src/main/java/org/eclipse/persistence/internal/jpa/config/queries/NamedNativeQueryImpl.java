@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,9 @@
 package org.eclipse.persistence.internal.jpa.config.queries;
 
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.jpa.config.ColumnResult;
+import org.eclipse.persistence.jpa.config.ConstructorResult;
+import org.eclipse.persistence.jpa.config.EntityResult;
 import org.eclipse.persistence.jpa.config.NamedNativeQuery;
 
 /**
@@ -41,4 +44,24 @@ public class NamedNativeQueryImpl extends AbstractQueryImpl<NamedNativeQueryMeta
         return this;
     }
 
+    @Override
+    public ColumnResult addColumnResult() {
+        ColumnResultImpl columnResult = new ColumnResultImpl();
+        getMetadata().getColumnResults().add(columnResult.getMetadata());
+        return columnResult;
+    }
+
+    @Override
+    public ConstructorResult addConstructorResult() {
+        ConstructorResultImpl constructorResult = new ConstructorResultImpl();
+        getMetadata().getConstructorResults().add(constructorResult.getMetadata());
+        return constructorResult;
+    }
+
+    @Override
+    public EntityResult addEntityResult() {
+        EntityResultImpl entityResult = new EntityResultImpl();
+        getMetadata().getEntityResults().add(entityResult.getMetadata());
+        return entityResult;
+    }
 }

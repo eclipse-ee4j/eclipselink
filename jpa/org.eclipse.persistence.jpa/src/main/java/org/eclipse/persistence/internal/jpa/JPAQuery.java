@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,17 +20,17 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 package org.eclipse.persistence.internal.jpa;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.OptimisticLockException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.LockModeType;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
@@ -53,6 +53,7 @@ public class JPAQuery extends DatabaseQuery  {
     private String resultClassName;
     private List<String> resultClassNames;
     private List<String> resultSetMappingNames;
+    private SQLResultSetMapping localResultSetMapping;
     private Map<String, Object> hints;
 
     public JPAQuery() {
@@ -235,6 +236,8 @@ public class JPAQuery extends DatabaseQuery  {
         if (resultClassName != null) {
             Class<?> clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = EJBQueryImpl.buildSQLDatabaseQuery(clazz, sqlString, hints, loader, (AbstractSession)session);
+        } else if (localResultSetMapping != null) {
+            query = EJBQueryImpl.buildSQLDatabaseQuery(localResultSetMapping, sqlString, hints, loader, (AbstractSession)session);
         } else if (resultSetMappingNames != null) {
             query = EJBQueryImpl.buildSQLDatabaseQuery(resultSetMappingNames.get(0), sqlString, hints, loader, (AbstractSession)session);
         } else {
@@ -315,5 +318,9 @@ public class JPAQuery extends DatabaseQuery  {
 
     public void setResultSetMappings(List<String> resultSetMappings){
         this.resultSetMappingNames = resultSetMappings;
+    }
+
+    public void setLocalResultSetMapping(SQLResultSetMapping localResultSetMapping){
+        this.localResultSetMapping = localResultSetMapping;
     }
 }

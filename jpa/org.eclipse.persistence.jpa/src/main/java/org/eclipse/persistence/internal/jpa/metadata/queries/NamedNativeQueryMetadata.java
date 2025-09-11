@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,9 +28,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +85,6 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
         for (Object columnResult : namedNativeQuery.getAttributeArray("columns")) {
             m_columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
-
     }
 
     /**
@@ -189,16 +187,33 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      */
     @Override
     public void process(AbstractSession session) {
+        if (hasResultSetMapping(session) && (!m_entityResults.isEmpty() || !m_constructorResults.isEmpty() || !m_columnResults.isEmpty())) {
+            throw ValidationException.duplicitResultSetMappingInNativeQuery(getAccessibleObjectName(), getName());
+        }
         // Create a JPA query to store internally on the session.
         JPAQuery query = new JPAQuery(getName(), getQuery(), processQueryHints(session));
-
         // Process the result class.
         if (!getResultClass().isVoid()) {
             query.setResultClassName(getJavaClassName(getResultClass()));
         } else if (hasResultSetMapping(session)) {
             query.addResultSetMapping(getResultSetMapping());
+        } else if (!this.getEntityResults().isEmpty() || !this.getConstructorResults().isEmpty() || !this.getColumnResults().isEmpty()) {
+            // Initialize a new SqlResultSetMapping (with the metadata name)
+            SQLResultSetMapping sqlResultSetMapping = new SQLResultSetMapping(getName());
+            // Process the entity results first.
+            for (EntityResultMetadata entityResult : m_entityResults) {
+                sqlResultSetMapping.addResult(entityResult.process());
+            }
+            // Process the constructor results second.
+            for (ConstructorResultMetadata constructorResult : m_constructorResults) {
+                sqlResultSetMapping.addResult(constructorResult.process());
+            }
+            // Process the column results third.
+            for (ColumnResultMetadata columnResult : m_columnResults) {
+                sqlResultSetMapping.addResult(columnResult.process());
+            }
+            query.setLocalResultSetMapping(sqlResultSetMapping);
         }
-
         addJPAQuery(query, session);
     }
 
