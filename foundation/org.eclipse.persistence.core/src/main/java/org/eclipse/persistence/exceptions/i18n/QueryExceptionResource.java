@@ -215,7 +215,7 @@ public final class QueryExceptionResource extends ListResourceBundle {
        { "6181", "sopObject has a wrong version [{0}] in [{1}] in [{2}]"},
        { "6182", "sopObject has a wrong primary key [{0}] in [{1}] in [{2}]"},
        { "6183",  "The mapping type {1} for attribute {2} from {0} is not supported with Query By Example functionality.  If the attribute can safely be ignored then add it to the ignore list or set example validation to false in the policy."},
-       { "6184", "Incorrect value type {0} is passed to the constructor expression. Complex types like arrays, collections, objects are not supported." },
+       { "6184", "Incorrect value type {0} is passed to the constructor expression. Complex types (for example, arrays, collections, or objects) are not supported." },
 
     };
 

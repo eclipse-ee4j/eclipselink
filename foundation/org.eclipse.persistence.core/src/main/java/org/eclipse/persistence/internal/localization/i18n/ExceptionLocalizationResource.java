@@ -276,7 +276,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "json_ora21c_resultset_to_jsonvalue", "Could not convert JDBC ResultSet type to JsonValue."},
                                            { "schema_validation", "Schema validation"},
                                            { "schema_validation_failed", "Schema validation failed"},
-                                           { "schema_validation_missing_table", "The {0} table has not found in the schema"},
+                                           { "schema_validation_missing_table", "The {0} table is not found in the schema"},
                                            { "schema_validation_table_surplus_columns", "The {0} table has surplus columns in the schema"},
                                            { "schema_validation_table_missing_columns", "The {0} table has missing columns in the schema"},
                                            { "schema_validation_table_different_columns", "The {0} table has different columns in the schema"},
