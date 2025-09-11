@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -171,7 +171,13 @@ public class DBPlatformHelper {
      */
     private static InputStream openResourceInputStream(final String resourceName) throws IOException {
         return PrivilegedAccessHelper.callDoPrivilegedWithException(
-                () -> DBPlatformHelper.class.getModule().getResourceAsStream(resourceName),
+                () -> {
+                    InputStream inputStream = DBPlatformHelper.class.getModule().getResourceAsStream(resourceName);
+                    if (inputStream == null) {
+                        inputStream = DBPlatformHelper.class.getClassLoader().getResourceAsStream(resourceName);
+                    }
+                    return inputStream;
+                    },
                 (ex) -> (IOException) ex);
     }
 
