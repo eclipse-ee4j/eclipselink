@@ -2063,7 +2063,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 List<Expression> baseExpressionsTmp = new ArrayList<>(fieldsSize);
                 for(DatabaseMapping databaseMapping: getEmbeddableMappings(mapping.getReferenceDescriptor())) {
                     String aName = databaseMapping.getAttributeName();
-                    ParameterExpression exp = (ParameterExpression) ((ParameterExpression)valueObject).clone().getField(new DatabaseField(aName));
+                    DatabaseField databaseField = new DatabaseField(aName);
+                    databaseField.setType(databaseMapping.getAttributeClassification());
+                    ParameterExpression exp = (ParameterExpression) ((ParameterExpression)valueObject).clone().getField(databaseField);
                     builder.setSession(getSession());
                     if (baseExpression.isQueryKeyExpression()) {
                         //It will set mapping and descriptor if it was not initialized before
