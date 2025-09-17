@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,8 @@ public class SchemaManagerValidateOnMissingSchemaTest extends AbstractSchemaMana
                     "PERSISTENCE32_POKEMON_TYPE",
                     "PERSISTENCE32_SYNTAX_ENTITY",
                     "PERSISTENCE32_VERSION_ENTITY",
-                    "PERSISTENCE32_SE_COLTABLE"
+                    "PERSISTENCE32_SE_COLTABLE",
+                    "PERSISTENCE32_INNER_TEAM"
             };
             Set<String> missingTablesSet = new HashSet<>(Arrays.asList(missingTables));
             Set<String> initialMissingTablesSet = Set.copyOf(missingTablesSet);
