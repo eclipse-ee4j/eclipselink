@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,10 +15,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.SessionLog;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +25,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * @author Mitesh Meswani
@@ -171,7 +169,13 @@ public class DBPlatformHelper {
      */
     private static InputStream openResourceInputStream(final String resourceName) throws IOException {
         return PrivilegedAccessHelper.callDoPrivilegedWithException(
-                () -> DBPlatformHelper.class.getModule().getResourceAsStream(resourceName),
+                () -> {
+                    InputStream inputStream = DBPlatformHelper.class.getModule().getResourceAsStream(resourceName);
+                    if (inputStream == null) {
+                        inputStream = DBPlatformHelper.class.getClassLoader().getResourceAsStream(resourceName);
+                    }
+                    return inputStream;
+                    },
                 (ex) -> (IOException) ex);
     }
 
