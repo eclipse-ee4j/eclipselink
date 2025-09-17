@@ -13,6 +13,7 @@ package org.eclipse.persistence.testing.models.jpa.persistence32;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -25,9 +26,8 @@ public class InnerEntitiesContainer {
     @Table(name="PERSISTENCE32_INNER_TEAM")
     public static class InnerTeamEntity {
 
-        // ID is assigned in tests to avoid collisions
-        @Id
-        private int id;
+        @EmbeddedId
+        private InnerPK innerPK;
 
         private String name;
         private InnerEmbeddableClass  embeddableAttribute;
@@ -36,17 +36,17 @@ public class InnerEntitiesContainer {
         }
 
         public InnerTeamEntity(int id, String name, InnerEmbeddableClass embeddableAttribute) {
-            this.id = id;
+            this.innerPK = new InnerPK(id);
             this.name = name;
             this.embeddableAttribute = embeddableAttribute;
         }
 
-        public int getId() {
-            return id;
+        public InnerPK getInnerPK() {
+            return innerPK;
         }
 
-        public void setId(int id) {
-            this.id = id;
+        public void setInnerPK(InnerPK innerPK) {
+            this.innerPK = innerPK;
         }
 
         public String getName() {
@@ -70,14 +70,49 @@ public class InnerEntitiesContainer {
         public boolean equals(Object o) {
             if (o == null || getClass() != o.getClass()) return false;
             InnerTeamEntity that = (InnerTeamEntity) o;
-            return id == that.id && Objects.equals(name, that.name) && Objects.equals(embeddableAttribute, that.embeddableAttribute);
+            return Objects.equals(innerPK, that.innerPK) && Objects.equals(name, that.name) && Objects.equals(embeddableAttribute, that.embeddableAttribute);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(id, name, embeddableAttribute);
+            return Objects.hash(innerPK, name, embeddableAttribute);
         }
     }
+
+    //It's not public and non - Serializable to verify "Primary key classes are no longer required to be public and serializable" from Jakarta Persistence 3.2.0
+    @Embeddable
+    static class InnerPK {
+
+        InnerPK() {
+        }
+
+        InnerPK(int id) {
+            this.id = id;
+        }
+
+        private int id;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            InnerPK innerPK = (InnerPK) o;
+            return id == innerPK.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(id);
+        }
+    }
+
 
     @Embeddable
     public static class InnerEmbeddableClass {

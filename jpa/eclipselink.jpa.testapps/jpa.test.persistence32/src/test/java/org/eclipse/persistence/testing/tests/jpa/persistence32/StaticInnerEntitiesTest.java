@@ -68,15 +68,15 @@ public class StaticInnerEntitiesTest extends AbstractSuite {
 
     public void testFindInnerTeamEntity() {
         InnerEntitiesContainer.InnerTeamEntity innerTeamEntity = emf.callInTransaction(em -> em
-                .find(InnerEntitiesContainer.InnerTeamEntity.class, ENTITIES[1].getId()));
+                .find(InnerEntitiesContainer.InnerTeamEntity.class, ENTITIES[1].getInnerPK()));
         assertEquals(ENTITIES[1], innerTeamEntity);
     }
 
     public void testQueryInnerTeamEntity() {
         InnerEntitiesContainer.InnerTeamEntity innerTeamEntity = emf.callInTransaction(em -> em
-                .createQuery("SELECT e FROM InnerEntitiesContainer$InnerTeamEntity e WHERE e.id=:id",
+                .createQuery("SELECT e FROM InnerEntitiesContainer$InnerTeamEntity e WHERE e.innerPK=:innerPK",
                         InnerEntitiesContainer.InnerTeamEntity.class)
-                .setParameter("id", ENTITIES[1].getId())
+                .setParameter("innerPK", ENTITIES[1].getInnerPK())
                 .getSingleResult());
         assertEquals(ENTITIES[1], innerTeamEntity);
     }
