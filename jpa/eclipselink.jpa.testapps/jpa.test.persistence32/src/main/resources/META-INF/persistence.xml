@@ -27,6 +27,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.Type</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.SyntaxEntity</class>
         <class>org.eclipse.persistence.testing.models.jpa.persistence32.VersionEntity</class>
+        <class>org.eclipse.persistence.testing.models.jpa.persistence32.InnerEntitiesContainer$InnerTeamEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.schema-generation.scripts.action" value="none"/>
