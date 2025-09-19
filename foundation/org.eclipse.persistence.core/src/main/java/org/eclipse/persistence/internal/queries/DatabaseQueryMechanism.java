@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -924,6 +924,11 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             try {
                 if (resultSet != null) {
                     resultSet.close();
+                }
+                if (dbAccessor != null) {
+                    if (call.getStatement() != null) {
+                        dbAccessor.releaseStatement(call.getStatement(), call.getSQLString(), call, session);
+                    }
                 }
             } catch (SQLException cleanupSQLException) {
                 if (!exceptionOccured) {
