@@ -925,6 +925,11 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
                 if (resultSet != null) {
                     resultSet.close();
                 }
+                if (dbAccessor != null) {
+                    if (call.getStatement() != null) {
+                        dbAccessor.releaseStatement(call.getStatement(), call.getSQLString(), call, session);
+                    }
+                }
             } catch (SQLException cleanupSQLException) {
                 if (!exceptionOccured) {
                     throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, session, false);
