@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+    Copyright (c) 2025 Contributors to the Eclipse Foundation.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!-- 
+    
+    This starts a DB2 instance via docker and runs a test against it that continously
+    creates statements. EclipseLink should close the statements. 
+    
+    Note that due to way the DB2 instance is set up it needs to initialize at first start, 
+    which can take a lot of time (5 minutes on an ARM/M1).
+    
+    Note 2: for macOs it may be needed to set the "DOCKER_HOST" env variable, eg
+    
+    export DOCKER_HOST=unix:///Users/[your user]/.docker/run/docker.sock
+    
+    Usage: 
+    
+    
+    ####
+    mvn clean install 
+    
+    Starts docker and DB2, runs the test, closes and removes DB2 volume after the test
+    
+    
+    ####
+    mvn clean install -Ddocker.keeprunning
+    
+    Starts docker and DB2, runs the test, leaves DB2 running after the test
+    
+    
+    ####
+    mvn clean install -Ddocker.donotstart -Ddocker.keeprunning
+    
+    Runs the test against a currently running DB2 instance
+    
+    
+    ###
+    mvn clean install -Ddocker.donotstart  -Ddocker.keeprunning -Declipselink.version=5.0.0-B10
+    
+    Runs the test against a currently running DB2 instance using a specific EclipseLink version.
+    
+    
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>db2-integration-test</artifactId>
+    <packaging>jar</packaging>
+
+    <name>DB2 Integration Test Project</name>
+    <description>Project with DB2 Docker integration for testing</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        
+        <eclipselink.version>${project.version}</eclipselink.version>
+        
+        <docker.keeprunning>false</docker.keeprunning>
+        <docker.donotstart>false</docker.donotstart>
+        
+        <db2.host>localhost</db2.host>
+        <db2.port>50000</db2.port>
+        <db2.database>DB</db2.database>
+        <db2.user>db2inst1</db2.user>
+        <db2.password>db2inst1</db2.password>
+    </properties>
+
+    <dependencies>
+        <!-- JUnit 5 for testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- DB2 JDBC Driver for integration tests -->
+        <dependency>
+            <groupId>com.ibm.db2</groupId>
+            <artifactId>jcc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Docker Maven Plugin -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.46.0</version>
+                <configuration>
+                    <!-- Declare the named volume "db2data" so we can create/remove it -->
+                    <volumes>
+                        <volume>
+                            <name>db2data</name>
+                            <driver>local</driver>
+                        </volume>
+                    </volumes>
+                    
+                    <images>
+                        <image>
+                            <alias>db2</alias>
+                            <name>icr.io/db2_community/db2</name>
+                            <run>
+                                <!-- Give the container a fixed name (like name db2server) -->
+                                <containerNamePattern>db2server</containerNamePattern>
+                                
+                                <!-- Match: hostname=db2host -->
+                                <hostname>db2host</hostname>
+                                
+                                <!-- Match: publish 50000:50000 -->
+                                <ports>
+                                    <port>50000:${db2.port}</port>
+                                </ports>
+                                
+                                <platform>linux/amd64</platform>
+                                
+                                <!-- Match: env ... -->
+                                <env>
+                                    <LICENSE>accept</LICENSE>
+                                    <DB2INSTANCE>${db2.user}</DB2INSTANCE>
+                                    <DB2INST1_PASSWORD>${db2.password}</DB2INST1_PASSWORD>
+                                    <DBNAME>${db2.database}</DBNAME>
+                                </env>
+                                
+                                <!-- Match: privileged=true -->
+                                <privileged>true</privileged>
+                                
+                                <!-- Match: volume db2data:/database -->
+                                <volumes>
+                                    <bind>
+                                        <volume>db2data:/database</volume>
+                                    </bind>
+                                </volumes>
+                                
+                                <!-- 
+                                    Wait for DB2 to be ready before proceeding
+                                    
+                                    Note: this can take quite some time. On a M1 Pro:
+                                    DOCKER> [icr.io/db2_community/db2:latest] "db2": Waited on log out 'Setup has completed' 302450 ms 
+                                -->
+                                <wait>
+                                    <log>Setup has completed</log>
+                                    <time>3000000</time> <!-- 5 minutes timeout -->
+                                </wait>
+                                <!-- Container is started detached by the plugin (no TTY needed). -->
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <!-- Force stop and remove specific container by name -->
+                    <execution>
+                        <id>force-remove-db2server</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>remove</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.donotstart}</skip>
+                            <verbose>true</verbose>
+                            <!-- Target specific container name -->
+                            <containerNamePattern>db2server</containerNamePattern>
+                            <!-- Force removal -->
+                            <removeVolumes>false</removeVolumes>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- Stop and remove any existing db2server container first -->
+                    <execution>
+                        <id>cleanup-old-container</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>remove</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.donotstart}</skip>
+                            <verbose>true</verbose>
+                            <!-- Remove all containers for this image -->
+                            <allContainers>true</allContainers>
+                            <removeVolumes>true</removeVolumes>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- docker volume rm db2data (ignore error if it didn't exist) -->
+                    <execution>
+                        <id>cleanup-old-volume</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>volume-remove</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.donotstart}</skip>
+                            <verbose>true</verbose>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- docker volume create db2data -->
+                    <execution>
+                        <id>create-db2-volume</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>volume-create</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.donotstart}</skip>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- docker run ... -->
+                    <execution>
+                        <id>start-db2</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.donotstart}</skip>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- docker stop + rm db2server + docker volume rm db2data -->
+                    <execution>
+                        <id>stop-and-clean-db2</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                            <goal>remove</goal>
+                            <goal>volume-remove</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${docker.keeprunning}</skip>
+                            <removeVolumes>true</removeVolumes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven Failsafe Plugin for integration tests -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- Make DB2 connection info available to integration tests -->
+                        <db2.host>${db2.host}</db2.host>
+                        <db2.port>${db2.port}</db2.port>
+                        <db2.database>${db2.database}</db2.database>
+                        <db2.user>${db2.user}</db2.user>
+                        <db2.password>${db2.password}</db2.password>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>io.fabric8</groupId>
+                                        <artifactId>
+                                            docker-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [0.46.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>stop</goal>
+                                            <goal>remove</goal>
+                                            <goal>volume-remove</goal>
+                                            <goal>volume-create</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <!-- Profile for manual Docker operations -->
+        <profile>
+            <id>docker-manual</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>manual-cleanup</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                    <goal>volume-remove</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        
+        <!-- Profile to skip Docker operations -->
+        <profile>
+            <id>skip-docker</id>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
+</project>

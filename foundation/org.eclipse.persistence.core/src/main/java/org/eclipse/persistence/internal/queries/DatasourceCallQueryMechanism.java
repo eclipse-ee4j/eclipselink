@@ -285,7 +285,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /**
      * Execute a non selecting call.
      * @exception  DatabaseException - an error has occurred on the database.
-     * @return Returns either a {@link DatabaseCall} or Integer value, 
+     * @return Returns either a {@link DatabaseCall} or Integer value,
      * depending on if this INSERT call needs to return generated keys
      */
     @Override
@@ -301,6 +301,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @exception  DatabaseException - an error has occurred on the database.
      * @return the row count.
      */
+    @Override
     public DatabaseCall generateKeysExecuteNoSelect() throws DatabaseException {
         return (DatabaseCall)executeCall();
     }
@@ -436,6 +437,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             }
         } else {
             Object result = executeCall();
+
             // Set the return row if one was returned (Postgres).
             if (result instanceof AbstractRecord) {
                 this.query.setProperty("output", result);
@@ -443,12 +445,17 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             if (returnFields != null) {
                 updateObjectAndRowWithReturnRow(returnFields, true);
             }
+
             if (usesSequencing && shouldAcquireValueAfterInsert) {
                 if(result instanceof DatabaseCall) {
                     updateObjectAndRowWithSequenceNumber((DatabaseCall) result);
                 } else {
                     updateObjectAndRowWithSequenceNumber();
                 }
+            }
+
+            if (call.isFinished()) {
+                this.query.setAccessor(null);
             }
         }
 
