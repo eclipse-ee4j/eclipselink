@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,20 @@
 //     Oracle - Initial API and implementation.
 package org.eclipse.persistence.testing.tests.jpa.advanced.embeddable;
 
+import java.util.List;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.EmbeddableRecordTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Point;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.RecordAttribute;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.RecordEntity;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.RecordNestedAttribute;
 import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.RecordPK;
+import org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Segment;
 
 public class EntityEmbeddableRecordTest extends JUnitTestCase {
 
@@ -82,6 +86,9 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         suite.addTest(new EntityEmbeddableRecordTest("testQuery1"));
         suite.addTest(new EntityEmbeddableRecordTest("testQuery2"));
         suite.addTest(new EntityEmbeddableRecordTest("testQuery3"));
+        suite.addTest(new EntityEmbeddableRecordTest("testPersistSegment"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegment1"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegment2"));
         return suite;
     }
 
@@ -242,4 +249,66 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    // Issue #2245 - store single record with @Embedded record into database
+    public void testPersistSegment() {
+        EntityManager em = createEntityManager();
+        try {
+            Segment segment = new Segment(-1L, new Point(1,1), new Point(2,2));
+            em.getTransaction().begin();
+            em.persist(segment);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception occurred: " + e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    // Issue #2245 - database query with old syntax
+    public void testQuerySegment1() {
+        EntityManager em = createEntityManager();
+        try {
+            List<Segment> result = em.createQuery(
+                    "SELECT s FROM Segment s WHERE s.pointB.y < :yMax ORDER BY s.pointB.y ASC, s.id ASC",
+                    Segment.class)
+                    .setParameter("yMax", 10)
+                    .getResultList();
+            assertEquals(1, result.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception occurred: " + e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    // Issue #2245 - database query with new simplified syntax
+    public void testQuerySegment2() {
+        EntityManager em = createEntityManager();
+        try {
+            List<Segment> result = em.createQuery(
+                            "FROM Segment WHERE this.pointB.y < :yMax ORDER BY this.pointB.y ASC, this.id ASC",
+                            Segment.class)
+                    .setParameter("yMax", 10)
+                    .getResultList();
+            assertEquals(1, result.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception occurred: " + e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            closeEntityManager(em);
+        }
+    }
+
 }
