@@ -87,8 +87,10 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         suite.addTest(new EntityEmbeddableRecordTest("testQuery2"));
         suite.addTest(new EntityEmbeddableRecordTest("testQuery3"));
         suite.addTest(new EntityEmbeddableRecordTest("testPersistSegment"));
-        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegment1"));
-        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegment2"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegmentOldJPQLSyntaxTypedQuery"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegmentOldJPQLSyntaxGenericQuery"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegmentNewJPQLSyntaxTypedQuery"));
+        suite.addTest(new EntityEmbeddableRecordTest("testQuerySegmentNewJPQLSyntaxGenericQuery"));
         return suite;
     }
 
@@ -270,7 +272,7 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
     }
 
     // Issue #2245 - database query with old syntax
-    public void testQuerySegment1() {
+    public void testQuerySegmentOldJPQLSyntaxTypedQuery() {
         EntityManager em = createEntityManager();
         try {
             List<Segment> result = em.createQuery(
@@ -290,8 +292,28 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         }
     }
 
+    // Issue #2245 - database query with old syntax
+    public void testQuerySegmentOldJPQLSyntaxGenericQuery() {
+        EntityManager em = createEntityManager();
+        try {
+            List<Segment> result = em.createQuery(
+                            "SELECT s FROM Segment s WHERE s.pointB.y < :yMax ORDER BY s.pointB.y ASC, s.id ASC")
+                    .setParameter("yMax", 10)
+                    .getResultList();
+            assertEquals(1, result.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception occurred: " + e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            closeEntityManager(em);
+        }
+    }
+
     // Issue #2245 - database query with new simplified syntax
-    public void testQuerySegment2() {
+    public void testQuerySegmentNewJPQLSyntaxTypedQuery() {
         EntityManager em = createEntityManager();
         try {
             List<Segment> result = em.createQuery(
@@ -311,4 +333,23 @@ public class EntityEmbeddableRecordTest extends JUnitTestCase {
         }
     }
 
+    // Issue #2245 - database query with new simplified syntax
+    public void testQuerySegmentNewJPQLSyntaxGenericQuery() {
+        EntityManager em = createEntityManager();
+        try {
+            List<Segment> result = em.createQuery(
+                            "FROM Segment WHERE this.pointB.y < :yMax ORDER BY this.pointB.y ASC, this.id ASC")
+                    .setParameter("yMax", 10)
+                    .getResultList();
+            assertEquals(1, result.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception occurred: " + e.getMessage());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            closeEntityManager(em);
+        }
+    }
 }
