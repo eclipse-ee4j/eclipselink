@@ -189,7 +189,7 @@
         <el.version>5.0.0-M1</el.version>
         <glassfish.version>7.0.5</glassfish.version>
         <jaxwsrt.version>4.0.3</jaxwsrt.version>
-        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.version>4.0.6</jaxb.version>
         <jaxb.api.version>4.0.4</jaxb.api.version>
         <soap.api.version>3.0.2</soap.api.version>
         <helidon.version>4.2.3</helidon.version>
