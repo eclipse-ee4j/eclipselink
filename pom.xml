@@ -180,8 +180,8 @@
         <!--Eclipse Dependencies version-->
         <eclipselink.asm.version>9.8.0</eclipselink.asm.version>
         <asm.version>9.8</asm.version>
-        <activation-api.version>2.1.3</activation-api.version>
-        <angus-activation.version>2.0.2</angus-activation.version>
+        <activation-api.version>2.1.4</activation-api.version>
+        <angus-activation.version>2.0.3</angus-activation.version>
         <annotation.version>2.1.1</annotation.version>
         <cdi.version>4.0.1</cdi.version>
         <ejb.version>4.0.1</ejb.version>
@@ -197,8 +197,8 @@
         <jms.version>3.1.0</jms.version>
         <json.version>2.1.3</json.version>
         <jpa.api.version>3.1.0</jpa.api.version>
-        <mail-api.version>2.1.3</mail-api.version>
-        <angus-mail.version>2.0.3</angus-mail.version>
+        <mail-api.version>2.1.5</mail-api.version>
+        <angus-mail.version>2.0.5</angus-mail.version>
         <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.5</org.glassfish.corba.version>
         <parsson.version>1.1.7</parsson.version>
