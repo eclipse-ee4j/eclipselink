@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -231,13 +231,14 @@ public class TableGeneratorMetadata extends TableMetadata {
     /**
      * INTERNAL:
      */
-    public TableSequence process(MetadataLogger logger) {
+    public TableSequence process(MetadataLogger logger, String generatedName) {
         TableSequence sequence = new TableSequence();
+        String name = (m_generatorName != null) ? m_generatorName : generatedName;
 
         // Process the sequence name.
         if (m_pkColumnValue == null || m_pkColumnValue.isEmpty()) {
-            logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
-            sequence.setName(m_generatorName);
+            logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, name, getAccessibleObject(), getLocation());
+            sequence.setName(name);
         } else {
             sequence.setName(m_pkColumnValue);
         }

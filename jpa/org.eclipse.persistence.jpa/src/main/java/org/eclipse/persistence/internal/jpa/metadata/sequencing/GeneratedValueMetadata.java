@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -121,13 +121,13 @@ public class GeneratedValueMetadata extends ORMetadata {
      * INTERNAL:
      */
     public void process(MetadataDescriptor descriptor, Map<String, Sequence> sequences, DatasourceLogin login) {
-        // If the generator value is null then it was loaded from XML (and it
+      // If the generator value is null then it was loaded from XML (and it
         // wasn't specified) so assign it the annotation default of ""
         if (m_generator == null) {
             m_generator = "";
         }
 
-        Sequence sequence = sequences.get(m_generator);
+        Sequence sequence = (sequences.get(m_generator) != null) ? sequences.get(m_generator) : sequences.get(descriptor.getEntityAccessor().getEntityName());
 
         if (sequence == null) {
             // A null strategy will default to AUTO.

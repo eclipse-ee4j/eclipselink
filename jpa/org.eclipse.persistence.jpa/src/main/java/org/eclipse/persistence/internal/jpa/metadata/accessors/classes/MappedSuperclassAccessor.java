@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1550,20 +1550,20 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processSequenceGenerator() {
         // Process the xml defined sequence generator first.
         if (m_sequenceGenerator != null) {
-            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
 
         MetadataAnnotation sequenceGenerators = getAnnotation(JPA_SEQUENCE_GENERATORS);
         if (sequenceGenerators != null) {
             for (Object sequenceGenerator : sequenceGenerators.getAttributeArray("value")) {
                 // Ask the common processor to process what we found.
-                getProject().addSequenceGenerator(new SequenceGeneratorMetadata((MetadataAnnotation) sequenceGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+                getProject().addSequenceGenerator(new SequenceGeneratorMetadata((MetadataAnnotation) sequenceGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
             }
         }
 
         if (isAnnotationPresent(JPA_SEQUENCE_GENERATOR)) {
             // Ask the common processor to process what we found.
-            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
     }
 
@@ -1622,19 +1622,19 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void processTableGenerator() {
         // Process the xml defined table generator first.
         if (m_tableGenerator != null) {
-            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
 
         MetadataAnnotation tableGenerators = getAnnotation(JPA_TABLE_GENERATORS);
         if (tableGenerators != null) {
             for (Object tableGenerator : tableGenerators.getAttributeArray("value")) {
                 // Ask the common processor to process what we found.
-                getProject().addTableGenerator(new TableGeneratorMetadata((MetadataAnnotation) tableGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+                getProject().addTableGenerator(new TableGeneratorMetadata((MetadataAnnotation) tableGenerator, this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
             }
         }
 
         if (isAnnotationPresent(JPA_TABLE_GENERATOR)) {
-            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema(), null);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -766,13 +766,13 @@ public class XMLEntityMappings extends ORMetadata {
         // Add the XML table generators to the project.
         for (TableGeneratorMetadata tableGenerator : m_tableGenerators) {
             tableGenerator.initXMLObject(m_file, this);
-            m_project.addTableGenerator(tableGenerator, getDefaultCatalog(), getDefaultSchema());
+            m_project.addTableGenerator(tableGenerator, getDefaultCatalog(), getDefaultSchema(), null);
         }
 
         // Add the XML sequence generators to the project.
         for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators) {
             sequenceGenerator.initXMLObject(m_file, this);
-            m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema());
+            m_project.addSequenceGenerator(sequenceGenerator, getDefaultCatalog(), getDefaultSchema(), null);
         }
 
         // Add the XML uuid generators to the project.

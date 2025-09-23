@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -236,16 +236,20 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public NativeSequence process(MetadataLogger logger) {
+    public NativeSequence process(MetadataLogger logger, String generatedName) {
         NativeSequence sequence = new NativeSequence();
 
         // Process the sequence name.
-        if (m_sequenceName == null || m_sequenceName.isEmpty()) {
-            logger.logConfigMessage(MetadataLogger.SEQUENCE_GENERATOR_SEQUENCE_NAME, m_name, getAccessibleObject(), getLocation());
-            sequence.setName(m_name);
+        String name = null;
+        if (m_sequenceName != null && !m_sequenceName.isEmpty()) {
+            name = m_sequenceName;
+        } else if (m_name != null && !m_name.isEmpty()) {
+            name = m_name;
         } else {
-            sequence.setName(m_sequenceName);
+            name = generatedName;
         }
+        logger.logConfigMessage(MetadataLogger.SEQUENCE_GENERATOR_SEQUENCE_NAME, name, getAccessibleObject(), getLocation());
+        sequence.setName(name);
 
         // Set the should use identity flag.
         sequence.setShouldUseIdentityIfPlatformSupports(m_useIdentityIfPlatformSupports);
