@@ -616,7 +616,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     
     private static final class DB2ExtractOperator extends ExtractOperator {
 
-    	// DATE emulation: CAST(:first AS DATE)
+        // DATE emulation: CAST(:first AS DATE)
         private static final String[] DATE_STRINGS = new String[] {"CAST(", " AS DATE)"};
 
         private DB2ExtractOperator() {
