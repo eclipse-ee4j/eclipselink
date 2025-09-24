@@ -20,6 +20,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.logging.jul.JavaLog;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
@@ -196,7 +197,7 @@ public class JPAAdvPropertiesTest extends JUnitTestCase {
     public void testLoggingTyperProperty(){
         EntityManager em = createEntityManager();
         ServerSession session = em.unwrap(ServerSession.class);
-        if(!(session.getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)){
+        if(!(session.getSessionLog() instanceof JavaLog)){
             fail("Logging type set to JavaLog, it however has been detected as different type logger.");
         }
         closeEntityManager(em);

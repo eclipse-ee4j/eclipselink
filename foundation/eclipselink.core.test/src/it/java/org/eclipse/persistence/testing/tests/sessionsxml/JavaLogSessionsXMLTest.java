@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLValidationTest;
-import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.logging.jul.JavaLog;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
-
+import org.eclipse.persistence.testing.framework.TestErrorException;
 
 // TopLink imports
 
@@ -42,7 +41,7 @@ public class JavaLogSessionsXMLTest extends SessionsXMLValidationTest {
 
     @Override
     public void verify() {
-        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader(), false, false).getSessionLog() instanceof org.eclipse.persistence.logging.JavaLog)) {
+        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader(), false, false).getSessionLog() instanceof JavaLog)) {
             throw new TestErrorException("Failed to create TopLink Session Log");
         }
     }
