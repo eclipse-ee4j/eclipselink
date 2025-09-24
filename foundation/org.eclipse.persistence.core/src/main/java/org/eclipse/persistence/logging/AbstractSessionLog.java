@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -45,7 +45,6 @@ import java.time.temporal.TemporalAccessor;
  * @see SessionLog
  * @see SessionLogEntry
  * @see DefaultSessionLog
- * @see JavaLog
  */
 public abstract class AbstractSessionLog implements SessionLog, java.lang.Cloneable {
 
@@ -134,38 +133,64 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldLogExceptionStackTrace;
 
     /**
      * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldPrintDate;
 
     /**
      * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldPrintThread;
 
     /**
      * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldPrintSession;
 
     /**
      * Allows the printing of the connection to be explicitly disabled/enabled.
      * CR #4157545.
      * null value is default behavior of determining from log level.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldPrintConnection;
 
-    /** Used to determine if bingdparameters should be logged or hidden. */
+    /**
+     * Used to determine if bind parameters should be logged or hidden.
+     *
+     * @deprecated This field will become private, use appropriate setter and getter
+     *             to access the value of this field.
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Boolean shouldDisplayData;
 
     /**
