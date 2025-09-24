@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.ExtractOperator;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
@@ -529,6 +530,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         addOperator(coalesceOperator());
 
         addOperator(roundOperator());
+        addOperator(db2ExtractOperator());
     }
 
     /**
@@ -610,6 +612,35 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                 super.printJavaCollection(items, printer);
             }
         };
+    }
+    
+    private static final class DB2ExtractOperator extends ExtractOperator {
+
+        // DATE emulation: CAST(:first AS DATE)
+        private static final String[] DATE_STRINGS = new String[] {"CAST(", " AS DATE)"};
+
+        private DB2ExtractOperator() {
+            super();
+        }
+
+        @Override
+        protected void printDateSQL(final Expression first, Expression second, final ExpressionSQLPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printSQL(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+
+        @Override
+        protected void printDateJava(final Expression first, Expression second, final ExpressionJavaPrinter printer) {
+            printer.printString(DATE_STRINGS[0]);
+            first.printJava(printer);
+            printer.printString(DATE_STRINGS[1]);
+        }
+    }
+
+    // Create EXTRACT operator for DB2 platform
+    private static ExpressionOperator db2ExtractOperator() {
+        return new DB2Platform.DB2ExtractOperator();
     }
 
     /**
