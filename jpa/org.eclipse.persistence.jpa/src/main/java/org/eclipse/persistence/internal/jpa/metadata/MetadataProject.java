@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -727,8 +727,8 @@ public class MetadataProject {
      * Add a sequence generator metadata to the project. The actual processing
      * isn't done till processSequencing is called.
      */
-    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String defaultCatalog, String defaultSchema) {
-        String name = sequenceGenerator.getName();
+    public void addSequenceGenerator(SequenceGeneratorMetadata sequenceGenerator, String defaultCatalog, String defaultSchema, String generatedName) {
+        String name = (sequenceGenerator.getName() != null) ? sequenceGenerator.getName() : generatedName;
 
         // Check if the sequence generator name uses a reserved name.
         if (name.equals(DEFAULT_TABLE_GENERATOR)) {
@@ -764,7 +764,7 @@ public class MetadataProject {
         // Add the sequence generator if there isn't an existing one or if
         // we should override an existing one.
         if (sequenceGenerator.shouldOverride(m_sequenceGenerators.get(name))) {
-            m_sequenceGenerators.put(sequenceGenerator.getName(), sequenceGenerator);
+            m_sequenceGenerators.put(name, sequenceGenerator);
         }
     }
 
@@ -814,11 +814,11 @@ public class MetadataProject {
      * Add a table generator metadata to the project. The actual processing
      * isn't done till processSequencing is called.
      */
-    public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema) {
+    public void addTableGenerator(TableGeneratorMetadata tableGenerator, String defaultCatalog, String defaultSchema, String generatedName) {
         // Process the default values.
         processTable(tableGenerator, "", defaultCatalog, defaultSchema, tableGenerator);
 
-        String generatorName = tableGenerator.getGeneratorName();
+        String generatorName = (tableGenerator.getGeneratorName() != null) ? tableGenerator.getGeneratorName() : generatedName;
 
         // Check if the table generator name uses a reserved name.
         if (generatorName.equals(DEFAULT_SEQUENCE_GENERATOR)) {
@@ -1763,24 +1763,24 @@ public class MetadataProject {
      *   3 - you can't have both a sequence generator and a table generator with
      *       the same DEFAULT_AUTO_GENERATOR name.
      *
-     * @see #addTableGenerator(TableGeneratorMetadata, String, String)
-     * @see #addSequenceGenerator(SequenceGeneratorMetadata, String, String)
+     * @see #addTableGenerator(TableGeneratorMetadata, String, String, String)
+     * @see #addSequenceGenerator(SequenceGeneratorMetadata, String, String, String)
      */
     protected void processSequencingAccessors() {
         if (! m_generatedValues.isEmpty()) {
             // 1 - Build our map of sequences keyed on generator names.
             Hashtable<String, Sequence> sequences = new Hashtable<>();
 
-            for (SequenceGeneratorMetadata sequenceGenerator : m_sequenceGenerators.values()) {
-                sequences.put(sequenceGenerator.getName(), sequenceGenerator.process(m_logger));
+            for (String key: m_sequenceGenerators.keySet()) {
+                sequences.put(key, m_sequenceGenerators.get(key).process(m_logger, key));
             }
 
             for (UuidGeneratorMetadata uuidGenerator : m_uuidGenerators.values()) {
                 sequences.put(uuidGenerator.getName(), uuidGenerator.process(m_logger));
             }
 
-            for (TableGeneratorMetadata tableGenerator : m_tableGenerators.values()) {
-                sequences.put(tableGenerator.getGeneratorName(), tableGenerator.process(m_logger));
+            for (String key: m_tableGenerators.keySet()) {
+                sequences.put(key, m_tableGenerators.get(key).process(m_logger, key));
             }
 
             // 2 - Check if the user defined default generators, otherwise
@@ -1798,15 +1798,15 @@ public class MetadataProject {
                 // Process the default values.
                 processTable(tableGenerator, defaultTableGeneratorName, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), tableGenerator);
 
-                sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger));
+                sequences.put(DEFAULT_TABLE_GENERATOR, tableGenerator.process(m_logger, defaultTableGeneratorName));
             }
 
             if (! sequences.containsKey(DEFAULT_SEQUENCE_GENERATOR)) {
-                sequences.put(DEFAULT_SEQUENCE_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_SEQUENCE_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema()).process(m_logger));
+                sequences.put(DEFAULT_SEQUENCE_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_SEQUENCE_GENERATOR, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema()).process(m_logger, DEFAULT_SEQUENCE_GENERATOR));
             }
 
             if (! sequences.containsKey(DEFAULT_IDENTITY_GENERATOR)) {
-                sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger));
+                sequences.put(DEFAULT_IDENTITY_GENERATOR, new SequenceGeneratorMetadata(DEFAULT_IDENTITY_GENERATOR, 1, getPersistenceUnitDefaultCatalog(), getPersistenceUnitDefaultSchema(), true).process(m_logger, DEFAULT_IDENTITY_GENERATOR));
             }
 
             if (! sequences.containsKey(DEFAULT_UUID_GENERATOR)) {
