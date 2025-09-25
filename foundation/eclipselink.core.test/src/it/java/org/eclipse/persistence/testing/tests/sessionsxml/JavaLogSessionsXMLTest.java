@@ -14,16 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.logging.jul.JavaLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.testing.framework.TestErrorException;
-
-
-// TopLink imports
-
-
-// Testing imports
 
 /**
  * Test a complete sessions.xml which contains all elements.
@@ -42,7 +36,12 @@ public class JavaLogSessionsXMLTest extends SessionsXMLValidationTest {
 
     @Override
     public void verify() {
-        if (!(new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()), getSessionName(), this.getClass().getClassLoader(), false, false).getSessionLog() instanceof JavaLog)) {
+        SessionLog sessionLog = new SessionManager().getSession(new XMLSessionConfigLoader(getSessionXmlFileName()),
+                                                                getSessionName(),
+                                                                this.getClass().getClassLoader(),
+                                                                false,
+                                                                false).getSessionLog();
+        if (!"org.eclipse.persistence.logging.jul.JavaLog".equals(sessionLog.getClass().getName())) {
             throw new TestErrorException("Failed to create TopLink Session Log");
         }
     }
