@@ -82,26 +82,17 @@ final class MessagerLog extends AbstractSessionLog {
 
     @Override
     public boolean shouldPrintThread() {
-        if (shouldPrintThread == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintThread;
+        return false;
     }
 
     @Override
     public boolean shouldPrintDate() {
-        if (shouldPrintDate == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintDate;
+        return false;
     }
 
     @Override
     public boolean shouldPrintConnection() {
-        if (shouldPrintConnection == null) {
-            return getLevel() < FINER;
-        }
-        return shouldPrintConnection;
+        return false;
     }
 
     @Override

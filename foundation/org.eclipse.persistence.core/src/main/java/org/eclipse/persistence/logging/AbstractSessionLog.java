@@ -17,6 +17,7 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
@@ -129,93 +130,72 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected DateTimeFormatter timeStampFormatter;
 
-    /**
+    /*
      * Allows the printing of the stack to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldLogExceptionStackTrace;
+    private Boolean shouldLogExceptionStackTrace;
 
-    /**
+    /*
      * Allows the printing of the date to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldPrintDate;
+    private Boolean shouldPrintDate;
 
-    /**
+    /*
      * Allows the printing of the thread to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldPrintThread;
+    private Boolean shouldPrintThread;
 
-    /**
+    /*
      * Allows the printing of the session to be explicitly disabled/enabled.
      * CR #3870467.
      * null value is default behavior of determining from log level.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldPrintSession;
+    private Boolean shouldPrintSession;
 
-    /**
+    /*
      * Allows the printing of the connection to be explicitly disabled/enabled.
      * CR #4157545.
      * null value is default behavior of determining from log level.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldPrintConnection;
+    private Boolean shouldPrintConnection;
 
-    /**
+    /*
      * Used to determine if bind parameters should be logged or hidden.
-     *
-     * @deprecated This field will become private, use appropriate setter and getter
-     *             to access the value of this field.
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Boolean shouldDisplayData;
+    private Boolean shouldDisplayData;
 
     /**
      * Return the system default log level property value.
-     * @return The system default log level property value or {@code null} if no such property is set.
+     *
+     * @return the system default log level property value or {@code null} if no such property is set.
      */
     private static String getDefaultLoggingLevelProperty() {
         if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("eclipselink.logging.level", null));
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<String>) () -> System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL, null));
         } else {
-            return System.getProperty("eclipselink.logging.level", null);
+            return System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL, null);
         }
     }
 
     /**
      * Return the system default log level.
      * This is based on the System property "eclipselink.logging.level", or INFO if not set.
+     *
+     * @return the system default log level
      */
     public static int getDefaultLoggingLevel() {
         return translateStringToLoggingLevel(getDefaultLoggingLevelProperty());
     }
 
     /**
-     * PUBLIC:
-     * Create a new AbstractSessionLog
+     * Creates a new instance of {@link AbstractSessionLog} class.
      */
     protected AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
@@ -280,21 +260,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public void setLevel(int level, String category) {
         this.level = level;
-    }
-
-    /**
-     * PUBLIC:
-     * Return true if SQL logging should log visible bind parameters. If the
-     * shouldDisplayData is not set, check the session log level and return
-     * true for a level greater than CONFIG.
-     */
-    @Override
-    public boolean shouldDisplayData() {
-        if (this.shouldDisplayData != null) {
-            return shouldDisplayData;
-        } else {
-            return this.level < SessionLog.CONFIG;
-        }
     }
 
     /**
@@ -614,63 +579,97 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * By default the session (and its connection is available) are printed,
-     * this can be turned off.
+     * Whether the session should be printed as part of the log messages.
+     * By default, the session is always printed, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the session should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintSession() {
-        return (shouldPrintSession == null) || shouldPrintSession;
+        return shouldPrintSession == null || shouldPrintSession;
     }
 
     /**
-     * By default the session (and its connection is available) are printed,
-     * this can be turned off.
+     * Turn printing of the session as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintSession value of {@code true} when the session should be printed
+     *                           as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintSession(boolean shouldPrintSession) {
-        if (shouldPrintSession) {
-            this.shouldPrintSession = Boolean.TRUE;
-        } else {
-            this.shouldPrintSession = Boolean.FALSE;
-        }
+        this.shouldPrintSession = shouldPrintSession;
     }
 
     /**
-     * By default the connection is printed, this can be turned off.
+     * Whether the connection should be printed as part of the log messages.
+     * By default, the connection is always printed when available, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the connection should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintConnection() {
-        return (shouldPrintConnection == null) || shouldPrintConnection;
+        return shouldPrintConnection == null || shouldPrintConnection;
     }
 
     /**
-     * By default the connection is printed, this can be turned off.
+     * Turn printing of the connection as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintConnection value of {@code true} when the connection should be printed
+     *                              as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintConnection(boolean shouldPrintConnection) {
-        if (shouldPrintConnection) {
-            this.shouldPrintConnection = Boolean.TRUE;
-        } else {
-            this.shouldPrintConnection = Boolean.FALSE;
-        }
+        this.shouldPrintConnection = shouldPrintConnection;
     }
 
     /**
-     * By default the stack is logged for FINER or less (finest).
-     * The logging of the stack can also be explicitly turned on or off.
+     * Whether the {@link Exception} stack trace should be logged.
+     * By default, the stack is logged for FINER or less (finest). The logging of the stack
+     * can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the {@link Exception} stack trace should be logged
+     * or {@code false} otherwise
      */
     @Override
     public boolean shouldLogExceptionStackTrace() {
-        if (shouldLogExceptionStackTrace == null) {
-            return getLevel() <= FINER;
-        } else {
-            return shouldLogExceptionStackTrace;
-        }
+        return shouldLogExceptionStackTrace == null
+                ? getLevel() <= FINER
+                : shouldLogExceptionStackTrace;
     }
 
     /**
-     * PUBLIC:
-     * Set whether bind parameters should be displayed when logging SQL.
+     * Turn {@link Exception} stack trace logging on or off explicitly.
+     *
+     * @param shouldLogExceptionStackTrace value of {@code true} when the {@link Exception} stack trace
+     *                                     should be logged or {@code false} otherwise
+     */
+    @Override
+    public void setShouldLogExceptionStackTrace(boolean shouldLogExceptionStackTrace) {
+        this.shouldLogExceptionStackTrace = shouldLogExceptionStackTrace;
+    }
+
+    /**
+     * Whether the SQL logging should log visible the bind parameters.
+     * By default, the bind parameters are printed for FINE or less (finer, etc.). The printing of the bind
+     * parameters can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the bind parameters should be printed as part of the SQL log messages
+     *         or {@code false} otherwise
+     */
+    @Override
+    public boolean shouldDisplayData() {
+        return this.shouldDisplayData == null
+                ? getLevel() <= FINE
+                : shouldDisplayData;
+    }
+
+    /**
+     * Turn printing of the bind parameters as part of the SQL log messages on or off explicitly.
+     *
+     * @param shouldDisplayData value of {@code true} when the bind parameters should be printed
+     *                          as part of the SQL log messages or {@code false} otherwise
      */
     @Override
     public void setShouldDisplayData(Boolean shouldDisplayData) {
@@ -678,62 +677,52 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * By default the stack is logged for FINER or less (finest).
-     * The logging of the stack can also be explicitly turned on or off.
-     */
-    @Override
-    public void setShouldLogExceptionStackTrace(boolean shouldLogExceptionStackTrace) {
-        if (shouldLogExceptionStackTrace) {
-            this.shouldLogExceptionStackTrace = Boolean.TRUE;
-        } else {
-            this.shouldLogExceptionStackTrace = Boolean.FALSE;
-        }
-    }
-
-    /**
-     * By default the date is always printed, but can be turned off.
+     * Whether the date should be printed as part of the log messages.
+     * By default, the date is always printed, but can be explicitly turned off or on.
+     *
+     * @return value of {@code true} when the date should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintDate() {
-        return (shouldPrintDate == null) || (shouldPrintDate);
+        return shouldPrintDate == null || shouldPrintDate;
     }
 
     /**
-     * By default the date is always printed, but can be turned off.
+     * Turn printing of the date as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintDate value of {@code true} when the date should be printed as part
+     *                        of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintDate(boolean shouldPrintDate) {
-        if (shouldPrintDate) {
-            this.shouldPrintDate = Boolean.TRUE;
-        } else {
-            this.shouldPrintDate = Boolean.FALSE;
-        }
+        this.shouldPrintDate = shouldPrintDate;
     }
 
     /**
-     * By default the thread is logged for FINE or less (finer,etc.).
-     * The logging of the thread can also be explicitly turned on or off.
+     * Whether the thread should be printed as part of the log messages.
+     * By default, the thread is printed for FINE or less (finer, etc.). The printing of the thread
+     * can be explicitly turned on or off.
+     *
+     * @return value of {@code true} when the thread should be printed as part of the log messages
+     *         or {@code false} otherwise
      */
     @Override
     public boolean shouldPrintThread() {
-        if (shouldPrintThread == null) {
-            return getLevel() <= FINE;
-        } else {
-            return shouldPrintThread;
-        }
+        return shouldPrintThread == null
+                ? getLevel() <= FINE
+                : shouldPrintThread;
     }
 
     /**
-     * By default the thread is logged for FINE or less (finer,etc.).
-     * The logging of the thread can also be explicitly turned on or off.
+     * Turn printing of the thread as part of the log messages on or off explicitly.
+     *
+     * @param shouldPrintThread value of {@code true} when the thread should be printed
+     *                          as part of the log messages or {@code false} otherwise
      */
     @Override
     public void setShouldPrintThread(boolean shouldPrintThread) {
-        if (shouldPrintThread) {
-            this.shouldPrintThread = Boolean.TRUE;
-        } else {
-            this.shouldPrintThread = Boolean.FALSE;
-        }
+        this.shouldPrintThread = shouldPrintThread;
     }
 
     /**
@@ -967,9 +956,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * INTERNAL:
      * Translate the string value of the log level to the constant value.
-     * If value is null or invalid use the default.
+     * If value is {@code null} or invalid use the default.
+     *
+     * @return the constant value of the provided log level {@link String}
      */
     public static int translateStringToLoggingLevel(String loggingLevel) {
         final LogLevel logLevel = LogLevel.toValue(loggingLevel);
