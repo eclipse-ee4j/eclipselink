@@ -14,7 +14,7 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.logging.JavaLog;
+import org.eclipse.persistence.logging.jul.JavaLog;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;

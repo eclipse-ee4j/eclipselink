@@ -75,6 +75,7 @@ module eclipselink {
     exports org.eclipse.persistence.history;
     exports org.eclipse.persistence.indirection;
     exports org.eclipse.persistence.logging;
+    exports org.eclipse.persistence.logging.jul;
     exports org.eclipse.persistence.mappings;
     exports org.eclipse.persistence.mappings.converters;
     exports org.eclipse.persistence.mappings.foundation;
