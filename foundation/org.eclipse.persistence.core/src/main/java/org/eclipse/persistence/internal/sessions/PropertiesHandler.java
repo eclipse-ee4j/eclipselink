@@ -491,7 +491,7 @@ public class PropertiesHandler {
             String pcg = "org.eclipse.persistence.logging.";
             valueArray = new Object[][] {
                 {LoggerType.DefaultLogger, pcg + "DefaultSessionLog"},
-                {LoggerType.JavaLogger, pcg + "JavaLog"}
+                {LoggerType.JavaLogger, pcg + "jul.JavaLog"}
             };
         }
     }
