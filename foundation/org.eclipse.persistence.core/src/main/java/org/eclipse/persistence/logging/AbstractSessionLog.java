@@ -17,7 +17,6 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
@@ -48,6 +47,9 @@ import java.time.temporal.TemporalAccessor;
  * @see DefaultSessionLog
  */
 public abstract class AbstractSessionLog implements SessionLog, java.lang.Cloneable {
+
+    // Copy of PersistenceUnitProperties.LOGGING_LEVEL to break dependency
+    private static final String LOGGING_LEVEL = "eclipselink.logging.level";
 
     /**
      * Represents the log level
@@ -178,9 +180,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     private static String getDefaultLoggingLevelProperty() {
         if (System.getSecurityManager() != null) {
             return AccessController.doPrivileged(
-                    (PrivilegedAction<String>) () -> System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL, null));
+                    (PrivilegedAction<String>) () -> System.getProperty(LOGGING_LEVEL, null));
         } else {
-            return System.getProperty(PersistenceUnitProperties.LOGGING_LEVEL, null);
+            return System.getProperty(LOGGING_LEVEL, null);
         }
     }
 
