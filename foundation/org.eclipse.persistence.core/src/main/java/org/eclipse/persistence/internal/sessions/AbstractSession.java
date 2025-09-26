@@ -4851,7 +4851,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(level, category, this, message, params, accessor, shouldTranslate));
+            log(new SessionLogEntry(level, category, this, message, params,
+                                    accessor != null ? accessor.getConnectionId() : null, shouldTranslate));
             endOperationProfile(SessionProfiler.Logging);
         }
     }
@@ -4873,7 +4874,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(this, level, category, throwable));
+            log(new SessionLogEntry(level, category, this, "", throwable));
             endOperationProfile(SessionProfiler.Logging);
         }
     }

@@ -18,7 +18,6 @@
 package org.eclipse.persistence.logging;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.sessions.Session;
@@ -558,7 +557,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level)) {
             return;
         }
-        log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
+        log(new SessionLogEntry(level, null, null, message, params, (Integer) null, shouldTranslate));
     }
 
     /**
@@ -577,7 +576,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level, category)) {
             return;
         }
-        log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
+        log(new SessionLogEntry(level, category, null, message, params, (Integer) null, shouldTranslate));
     }
 
     /**
@@ -799,8 +798,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write(this.getSessionString(entry.getSession()));
             writer.write("--");
         }
-        if (shouldPrintConnection() && (entry.getConnection() != null)) {
-            writer.write(this.getConnectionString(entry.getConnection()));
+        if (shouldPrintConnection() && (entry.getConnectionId() != null)) {
+            writer.write(this.getConnectionString(entry.getConnectionId()));
             writer.write("--");
         }
         if (shouldPrintThread()) {
@@ -835,13 +834,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Return the specified connection information.
      */
-    protected String getConnectionString(Accessor connection) {
-        // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
-        if (connection.getDatasourceConnection() == null){
-            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
-        } else {
-             return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
-        }
+    protected String getConnectionString(int connectionId) {
+        return CONNECTION_STRING + "(" + connectionId + ")";
     }
 
     /**
@@ -978,9 +972,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public void throwing(Throwable throwable) {
         if (shouldLog(FINER)) {
-            SessionLogEntry entry = new SessionLogEntry(null, throwable);
-            entry.setLevel(FINER);
-            log(entry);
+            log(new SessionLogEntry(FINER, null, null, "", throwable));
         }
     }
 
@@ -1087,7 +1079,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level)) {
-            log(new SessionLogEntry(null, level, null, throwable));
+            log(new SessionLogEntry(level, null, null, "", throwable));
         }
     }
 
@@ -1103,7 +1095,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, String category, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
-            log(new SessionLogEntry(null, level, category, throwable));
+            log(new SessionLogEntry(level, category, null, "", throwable));
         }
     }
 
