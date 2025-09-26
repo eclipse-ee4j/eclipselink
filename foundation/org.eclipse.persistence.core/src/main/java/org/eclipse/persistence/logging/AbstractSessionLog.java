@@ -18,6 +18,7 @@
 package org.eclipse.persistence.logging;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.sessions.Session;
@@ -833,6 +834,26 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Return the specified connection information.
+     *
+     * @param connection the datasource connection accessor
+     * @return connection string to be printed to the logs
+     * @deprecated Use {@link #getConnectionString(int)} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
+    protected String getConnectionString(Accessor connection) {
+        // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
+        if (connection.getDatasourceConnection() == null){
+            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
+        } else {
+            return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
+        }
+    }
+
+    /**
+     * Return the specified connection information.
+     *
+     * @param connectionId the identifier of the datasource connection
+     * @return connection string to be printed to the logs
      */
     protected String getConnectionString(int connectionId) {
         return CONNECTION_STRING + "(" + connectionId + ")";
