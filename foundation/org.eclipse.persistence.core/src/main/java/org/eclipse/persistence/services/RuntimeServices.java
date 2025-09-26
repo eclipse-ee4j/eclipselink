@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.jul.JavaLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -1180,9 +1179,7 @@ public abstract class RuntimeServices {
      * @return the log type
      */
      public String getLogType() {
-         if (this.getSession().getSessionLog().getClass() == JavaLog.class) {
-             return "Java";
-         } else if (this.getSession().getSessionLog().getClass() == DefaultSessionLog.class) {
+         if (this.getSession().getSessionLog().getClass() == DefaultSessionLog.class) {
              return EclipseLink_Product_Name;
          } else {
              return this.getSession().getSessionLog().getClass().getSimpleName();
