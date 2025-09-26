@@ -3715,9 +3715,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         try {
             super.replaceTables(session);
         } catch (DatabaseException de) {
-            SessionLogEntry sle = new SessionLogEntry(null, SessionLog.WARNING, null, de);
-            sle.setMessage("Test setup failed, retrying...");
-            session.getSessionLog().log(sle);
+            session.getSessionLog()
+                    .log(new SessionLogEntry(SessionLog.WARNING, null, null, "Test setup failed, retrying...", de));
             //give it one more try in case of some possibly random failure
             super.replaceTables(session);
         }
