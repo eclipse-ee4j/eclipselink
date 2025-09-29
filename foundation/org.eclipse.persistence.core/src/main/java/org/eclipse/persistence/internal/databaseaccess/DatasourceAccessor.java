@@ -642,6 +642,7 @@ public abstract class DatasourceAccessor implements Accessor {
     @Override
     public int getConnectionId() {
         return this.datasourceConnection != null
+                // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
                 ? System.identityHashCode(this.datasourceConnection)
                 : System.identityHashCode(this);
     }

@@ -50,7 +50,7 @@ public class SessionLogEntry implements Serializable {
     // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
     protected transient Accessor connection;
     // Value 0 means no connectionId is available
-    private final transient int connectionId;
+    private final int connectionId;
     protected String message;
     protected Throwable throwable;
     protected int level;

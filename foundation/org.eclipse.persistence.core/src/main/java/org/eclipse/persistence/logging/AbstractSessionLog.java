@@ -804,7 +804,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             if (entry.getConnection() != null) {
                 writer.write(this.getConnectionString(entry.getConnection()));
                 writer.write("--");
-            } else if (entry.getConnectionId() > 0) {
+            } else {
                 writer.write(this.getConnectionString(entry.getConnectionId()));
                 writer.write("--");
             }
