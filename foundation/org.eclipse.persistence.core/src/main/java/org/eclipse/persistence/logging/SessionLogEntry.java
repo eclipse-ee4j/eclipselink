@@ -284,7 +284,7 @@ public class SessionLogEntry implements Serializable {
     /**
      * Return the datasource connection identifier that generated the log entry.
      *
-     * @return the datasource connection identifier or {@code 0} when no identifier exists
+     * @return the datasource connection identifier
      */
     public int getConnectionId() {
         return connectionId;

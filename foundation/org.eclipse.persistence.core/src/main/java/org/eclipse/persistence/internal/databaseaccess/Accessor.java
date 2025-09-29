@@ -146,11 +146,7 @@ public interface Accessor extends Cloneable {
      *
      * @return the datasource connection identifier
      */
-    default Integer getConnectionId() {
-        return getDatasourceConnection() != null
-                ? System.identityHashCode(getDatasourceConnection())
-                : System.identityHashCode(this);
-    }
+    int getConnectionId();
 
     /**
      * Return the driver level connection,

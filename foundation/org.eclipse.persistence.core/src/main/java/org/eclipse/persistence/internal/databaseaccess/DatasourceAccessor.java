@@ -639,6 +639,13 @@ public abstract class DatasourceAccessor implements Accessor {
         return (java.sql.Connection)this.datasourceConnection;
     }
 
+    @Override
+    public int getConnectionId() {
+        return this.datasourceConnection != null
+                ? System.identityHashCode(this.datasourceConnection)
+                : System.identityHashCode(this);
+    }
+
     /**
      * Return column information for the specified
      * database objects.
