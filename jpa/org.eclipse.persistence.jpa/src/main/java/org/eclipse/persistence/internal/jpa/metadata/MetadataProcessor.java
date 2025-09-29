@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,6 +61,7 @@ import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
@@ -69,6 +70,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Converter
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.PackageAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
@@ -332,6 +334,9 @@ public class MetadataProcessor {
         // Add all the <class> specifications.
         List<String> classNames = new ArrayList<>(persistenceUnitInfo.getManagedClassNames());
 
+        // Package names used by PU entities.
+        Set<String> packageNames = new HashSet<>();
+
         // Add all the classes from the <jar> specifications.
         for (URL url : persistenceUnitInfo.getJarFileUrls()) {
             classNames.addAll(PersistenceUnitProcessor.getClassNamesFromURL(url, m_loader, null));
@@ -359,6 +364,9 @@ public class MetadataProcessor {
             }
             if (iterator.hasNext()) {
                 String className = iterator.next();
+                int dot = className.lastIndexOf(StringHelper.DOT);
+                String packageName = (dot != -1) ? className.substring(0, dot) : StringHelper.EMPTY_STRING;
+                packageNames.add(packageName);
                 MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
                 // JBoss Bug 227630: Do not process a null class whether it was from a
                 // NPE or a CNF, a warning or exception is thrown in loadClass()
@@ -379,6 +387,13 @@ public class MetadataProcessor {
                                 candidateClass, m_project));
                     }
                 }
+            }
+        }
+        for (String packageName : packageNames) {
+            MetadataClass metadataPackageInfo = m_factory.getMetadataClass(packageName + ".package-info", unlisted);
+            //Add to the list only existing package-info.class
+            if (metadataPackageInfo.getSuperclassName() != null) {
+                m_project.addPackageAccessor(new PackageAccessor(null, metadataPackageInfo, m_project));
             }
         }
     }
