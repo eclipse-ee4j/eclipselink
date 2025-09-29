@@ -47,9 +47,10 @@ public class SessionLogEntry implements Serializable {
      * @deprecated Use {@link #getConnectionId()} instead, Accessor instance won't be available
      */
     @Deprecated(forRemoval=true, since="4.0.9")
-    protected transient Accessor connection;
     // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
-    private final transient Integer connectionId;
+    protected transient Accessor connection;
+    // Value 0 means no connectionId is available
+    private final transient int connectionId;
     protected String message;
     protected Throwable throwable;
     protected int level;
@@ -63,7 +64,7 @@ public class SessionLogEntry implements Serializable {
 
     // Constructor for all the parameters
     private SessionLogEntry(int level,  String nameSpace, Session session, String message, Object[] parameters,
-                            Integer connectionId, boolean shouldTranslate, Throwable throwable) {
+                            int connectionId, boolean shouldTranslate, Throwable throwable) {
         this.session = session;
         this.thread = Thread.currentThread();
         this.connectionId = connectionId;
@@ -98,7 +99,7 @@ public class SessionLogEntry implements Serializable {
      * @see SessionLog
      */
     public SessionLogEntry(int level, String category, Session session, String message,
-                           Object[] params, Integer connectionId, boolean shouldTranslate) {
+                           Object[] params, int connectionId, boolean shouldTranslate) {
         this(level, category, session, message, params, connectionId, shouldTranslate, null);
     }
 
@@ -119,7 +120,7 @@ public class SessionLogEntry implements Serializable {
      * @see SessionLog
      */
     public SessionLogEntry(int level, String category, Session session, String message, Throwable throwable) {
-        this(level, category, session, message, null, null, false, throwable);
+        this(level, category, session, message, null, 0, false, throwable);
     }
 
     /**
@@ -190,7 +191,7 @@ public class SessionLogEntry implements Serializable {
      * @param connection the accessor that generated the log entry
      *
      * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], Integer, boolean)}
+     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], int, boolean)}
      *             with the following parameters:
      *             <ul>
      *             <li>level set to {@link SessionLog#INFO}</li>
@@ -204,7 +205,7 @@ public class SessionLogEntry implements Serializable {
     @Deprecated(forRemoval=true, since="4.0.9")
     public SessionLogEntry(Session session, String message, Accessor connection) {
         this(SessionLog.INFO, null, session, message, null,
-             connection != null ? connection.getConnectionId() : null, false);
+             connection != null ? connection.getConnectionId() : 0, false);
         this.connection = connection;
     }
 
@@ -220,13 +221,13 @@ public class SessionLogEntry implements Serializable {
      * @param shouldTranslate whether the log message should be translated
      *
      * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], Integer, boolean)}
+     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], int, boolean)}
      *             with category set to {@code null}
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     public SessionLogEntry(int level, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
         this(level, null, session, message, params,
-             connection != null ? connection.getConnectionId() : null, shouldTranslate, null);
+             connection != null ? connection.getConnectionId() : 0, shouldTranslate, null);
         this.connection = connection;
     }
 
@@ -243,12 +244,12 @@ public class SessionLogEntry implements Serializable {
      * @param shouldTranslate true if the entry should be translated
      *
      * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], Integer, boolean)}
+     * @deprecated Use {@link #SessionLogEntry(int, String, Session, String, Object[], int, boolean)}
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     public SessionLogEntry(int level, String category, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
         this(level, category, session, message, params,
-             connection != null ? connection.getConnectionId() : null, shouldTranslate, null);
+             connection != null ? connection.getConnectionId() : 0, shouldTranslate, null);
         this.connection = connection;
     }
 
@@ -283,9 +284,9 @@ public class SessionLogEntry implements Serializable {
     /**
      * Return the datasource connection identifier that generated the log entry.
      *
-     * @return the datasource connection identifier
+     * @return the datasource connection identifier or {@code 0} when no identifier exists
      */
-    public Integer getConnectionId() {
+    public int getConnectionId() {
         return connectionId;
     }
 

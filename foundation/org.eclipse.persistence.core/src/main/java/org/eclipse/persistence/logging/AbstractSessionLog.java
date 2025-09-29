@@ -558,7 +558,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level)) {
             return;
         }
-        log(new SessionLogEntry(level, null, null, message, params, (Integer) null, shouldTranslate));
+        log(new SessionLogEntry(level, null, null, message, params, 0, shouldTranslate));
     }
 
     /**
@@ -577,7 +577,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level, category)) {
             return;
         }
-        log(new SessionLogEntry(level, category, null, message, params, (Integer) null, shouldTranslate));
+        log(new SessionLogEntry(level, category, null, message, params, 0, shouldTranslate));
     }
 
     /**
@@ -799,9 +799,15 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write(this.getSessionString(entry.getSession()));
             writer.write("--");
         }
-        if (shouldPrintConnection() && (entry.getConnectionId() != null)) {
-            writer.write(this.getConnectionString(entry.getConnectionId()));
-            writer.write("--");
+        if (shouldPrintConnection()) {
+            // Keep backwards compatibility in 4.0
+            if (entry.getConnection() != null) {
+                writer.write(this.getConnectionString(entry.getConnection()));
+                writer.write("--");
+            } else if (entry.getConnectionId() > 0) {
+                writer.write(this.getConnectionString(entry.getConnectionId()));
+                writer.write("--");
+            }
         }
         if (shouldPrintThread()) {
             writer.write(this.getThreadString(entry.getThread()));

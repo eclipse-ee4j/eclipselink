@@ -4851,8 +4851,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(level, category, this, message, params,
-                                    accessor != null ? accessor.getConnectionId() : null, shouldTranslate));
+            // Keep backwards compatibility in 4.0
+            log(new SessionLogEntry(level, category, this, message, params, accessor, shouldTranslate));
             endOperationProfile(SessionProfiler.Logging);
         }
     }
