@@ -15,7 +15,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import junit.framework.Test;
 import org.eclipse.persistence.testing.models.jpa.persistence32.SequenceGeneratorEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.SequenceGeneratorWithoutNamePackageScopeEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.SequenceGeneratorPackageScopeEntity;
 import org.eclipse.persistence.testing.models.jpa.persistence32.TableGeneratorEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.TableGeneratorWithoutNamePackageScopeEntity;
+import org.eclipse.persistence.testing.models.jpa.persistence32.TableGeneratorPackageScopeEntity;
 
 
 public class TableSequenceGeneratorTest extends AbstractSuite {
@@ -26,7 +30,11 @@ public class TableSequenceGeneratorTest extends AbstractSuite {
         return suite(
                 "StaticInnerEntitiesTest",
                 new TableSequenceGeneratorTest("testTableGeneratorWithoutName"),
-                new TableSequenceGeneratorTest("testSequenceGeneratorWithoutName")
+                new TableSequenceGeneratorTest("testSequenceGeneratorWithoutName"),
+                new TableSequenceGeneratorTest("testTableGeneratorPackageScope"),
+                new TableSequenceGeneratorTest("testSequenceGeneratorPackageScope"),
+                new TableSequenceGeneratorTest("testTableGeneratorWithoutNamePackageScope"),
+                new TableSequenceGeneratorTest("testSequenceGeneratorWithoutNamePackageScope")
         );
     }
 
@@ -85,4 +93,81 @@ public class TableSequenceGeneratorTest extends AbstractSuite {
             }
         }
     }
+
+    public void testTableGeneratorPackageScope() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                TableGeneratorPackageScopeEntity entity = new TableGeneratorPackageScopeEntity();
+                entity.setName(NAME);
+                em.persist(entity);
+                et.commit();
+                em.clear();
+                TableGeneratorPackageScopeEntity fetchedEntity = em.find(TableGeneratorPackageScopeEntity.class, entity.getId());
+                assertEquals(entity, fetchedEntity);
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testSequenceGeneratorPackageScope() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                SequenceGeneratorPackageScopeEntity entity = new SequenceGeneratorPackageScopeEntity();
+                entity.setName(NAME);
+                em.persist(entity);
+                et.commit();
+                em.clear();
+                SequenceGeneratorPackageScopeEntity fetchedEntity = em.find(SequenceGeneratorPackageScopeEntity.class, entity.getId());
+                assertEquals(entity, fetchedEntity);
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testTableGeneratorWithoutNamePackageScope() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                TableGeneratorWithoutNamePackageScopeEntity entity = new TableGeneratorWithoutNamePackageScopeEntity();
+                entity.setName(NAME);
+                em.persist(entity);
+                et.commit();
+                em.clear();
+                TableGeneratorWithoutNamePackageScopeEntity fetchedEntity = em.find(TableGeneratorWithoutNamePackageScopeEntity.class, entity.getId());
+                assertEquals(entity, fetchedEntity);
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
+    public void testSequenceGeneratorWithoutNamePackageScope() {
+        try (EntityManager em = emf.createEntityManager()) {
+            EntityTransaction et = em.getTransaction();
+            try {
+                et.begin();
+                SequenceGeneratorWithoutNamePackageScopeEntity entity = new SequenceGeneratorWithoutNamePackageScopeEntity();
+                entity.setName(NAME);
+                em.persist(entity);
+                et.commit();
+                em.clear();
+                SequenceGeneratorWithoutNamePackageScopeEntity fetchedEntity = em.find(SequenceGeneratorWithoutNamePackageScopeEntity.class, entity.getId());
+                assertEquals(entity, fetchedEntity);
+            } catch (Exception e) {
+                et.rollback();
+                throw e;
+            }
+        }
+    }
+
 }

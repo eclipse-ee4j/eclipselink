@@ -61,7 +61,11 @@ public class SchemaManagerValidateOnMissingSchemaTest extends AbstractSchemaMana
                     "PERSISTENCE32_SE_COLTABLE",
                     "PERSISTENCE32_INNER_TEAM",
                     "PERSISTENCE32_SEQUENCE_GEN_ENTITY",
-                    "PERSISTENCE32_TABLE_GEN_ENTITY"
+                    "PERSISTENCE32_SEQUENCE_GEN_PCKG_ENTITY",
+                    "PERSISTENCE32_SEQUENCE_GEN_PCKG_ENTITY1",
+                    "PERSISTENCE32_TABLE_GEN_ENTITY",
+                    "PERSISTENCE32_TABLE_GEN_PCKG_ENTITY",
+                    "PERSISTENCE32_TABLE_GEN_PCKG_ENTITY1"
             };
             Set<String> missingTablesSet = new HashSet<>(Arrays.asList(missingTables));
             Set<String> initialMissingTablesSet = Set.copyOf(missingTablesSet);
