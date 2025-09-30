@@ -363,8 +363,7 @@ public class JPARSLogger {
     }
 
     private static SessionLogEntry newLogEntry(Session session) {
-        return new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS,
-                                   session instanceof AbstractSession ? session : null, "", null);
+        return new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, session instanceof AbstractSession ? session : null, "", null);
     }
 
     private static String readData(InputStream is) throws IOException {

@@ -138,8 +138,7 @@ public class MetadataAsmFactory extends MetadataFactory {
                             ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
                     // our fall-back failed, this is severe
                     if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                        log.log(new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, getLogger().getSession(),
-                                                    ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className}), e));
+                        log.log(new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, getLogger().getSession(), ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className}), e));
                     }
                     addMetadataClass(getVirtualMetadataClass(className));
                 }
