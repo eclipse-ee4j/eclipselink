@@ -63,7 +63,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Represents the session that owns this SessionLog
+     *
+     * @deprecated {@link Session} instance will be removed
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Session session;
 
     /**
@@ -330,6 +333,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return  session
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     @Override
     public Session getSession() {
         return this.session;
@@ -343,6 +347,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param session  a Session
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     @Override
     public void setSession(Session session) {
         this.session = session;
@@ -795,9 +800,15 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write(getTimeStampString(entry.getTimeStamp()));
             writer.write("--");
         }
-        if (shouldPrintSession() && (entry.getSession() != null)) {
-            writer.write(this.getSessionString(entry.getSession()));
-            writer.write("--");
+        if (shouldPrintSession()) {
+            // Keep backwards compatibility in 4.0
+            if (entry.getSession() != null) {
+                writer.write(this.getSessionString(entry.getSession()));
+                writer.write("--");
+            } else if (entry.getSessionId() != null) {
+                writer.write(entry.getSessionId());
+                writer.write("--");
+            }
         }
         if (shouldPrintConnection()) {
             // Keep backwards compatibility in 4.0
@@ -826,7 +837,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Return the current session including the type and id.
+     *
+     * @param session the current session
+     * @return the session string to be printed to the logs
+     * @deprecated Use {@link SessionLogEntry#getSessionId()} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String getSessionString(Session session) {
         // For bug 3422759 the session to log against should be the one in the
         // event, not the static one in the SessionLog, for there are many

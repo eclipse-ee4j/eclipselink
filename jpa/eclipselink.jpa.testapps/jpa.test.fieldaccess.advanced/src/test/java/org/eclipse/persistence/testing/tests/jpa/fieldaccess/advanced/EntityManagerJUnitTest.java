@@ -3044,7 +3044,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (RuntimeException e){
-            getDatabaseSession().log(new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, getDatabaseSession(), "", e));
+            // Keep backwards compatibility in 4.0
+            Session session = getDatabaseSession();
+            SessionLogEntry entry = new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, session != null ? session.getSessionId() : null, "", e);
+            // New SessionLogEntry constructors do not accept Session, so it must be set
+            entry.setSession(session);
+            getDatabaseSession().log(entry);
         }
         closeEntityManager(em);
     }

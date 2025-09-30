@@ -363,7 +363,12 @@ public class JPARSLogger {
     }
 
     private static SessionLogEntry newLogEntry(Session session) {
-        return new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, session instanceof AbstractSession ? session : null, "", null);
+        // Keep backwards compatibility in 4.0
+        AbstractSession abstractSession = session instanceof AbstractSession ? (AbstractSession) session : null;
+        SessionLogEntry entry = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, abstractSession != null ? abstractSession.getSessionId() : null, "", null);
+        // New SessionLogEntry constructors do not accept Session, so it must be set
+        entry.setSession(abstractSession);
+        return entry;
     }
 
     private static String readData(InputStream is) throws IOException {
