@@ -333,8 +333,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @return  session
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public Session getSession() {
         return this.session;
     }
@@ -347,8 +347,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param session  a Session
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         this.session = session;
     }
@@ -801,7 +801,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write("--");
         }
         if (shouldPrintSession()) {
-            // Keep backwards compatibility in 4.0
+            // Keep backwards compatibility in 4.x
             if (entry.getSession() != null) {
                 writer.write(this.getSessionString(entry.getSession()));
                 writer.write("--");
@@ -811,7 +811,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             }
         }
         if (shouldPrintConnection()) {
-            // Keep backwards compatibility in 4.0
+            // Keep backwards compatibility in 4.x
             if (entry.getConnection() != null) {
                 writer.write(this.getConnectionString(entry.getConnection()));
                 writer.write("--");

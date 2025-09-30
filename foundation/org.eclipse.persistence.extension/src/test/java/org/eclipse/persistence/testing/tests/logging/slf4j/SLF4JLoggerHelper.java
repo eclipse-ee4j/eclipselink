@@ -70,7 +70,7 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final Throwable throwable) {
-        // Keep backwards compatibility in 4.0
+        // Keep backwards compatibility in 4.x
         SessionLogEntry logEntry = new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, "", throwable);
         // New SessionLogEntry constructors do not accept Session, so it must be set
         logEntry.setSession(session);
@@ -87,7 +87,7 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final String message) {
-        // Keep backwards compatibility in 4.0
+        // Keep backwards compatibility in 4.x
         SessionLogEntry logEntry = new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, message, null);
         // New SessionLogEntry constructors do not accept Session, so it must be set
         logEntry.setSession(session);
@@ -105,7 +105,7 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final String message, final Throwable throwable) {
-        // Keep backwards compatibility in 4.0
+        // Keep backwards compatibility in 4.x
         SessionLogEntry logEntry =  new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, message, throwable);
         // New SessionLogEntry constructors do not accept Session, so it must be set
         logEntry.setSession(session);

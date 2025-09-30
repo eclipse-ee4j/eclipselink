@@ -363,7 +363,7 @@ public class JPARSLogger {
     }
 
     private static SessionLogEntry newLogEntry(Session session) {
-        // Keep backwards compatibility in 4.0
+        // Keep backwards compatibility in 4.x
         AbstractSession abstractSession = session instanceof AbstractSession ? (AbstractSession) session : null;
         SessionLogEntry entry = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, abstractSession != null ? abstractSession.getSessionId() : null, "", null);
         // New SessionLogEntry constructors do not accept Session, so it must be set
