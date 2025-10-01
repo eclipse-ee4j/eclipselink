@@ -332,6 +332,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @return  session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")
@@ -346,6 +347,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @param session  a Session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")
