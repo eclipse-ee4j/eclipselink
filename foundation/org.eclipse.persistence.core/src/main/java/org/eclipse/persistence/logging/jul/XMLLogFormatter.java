@@ -135,9 +135,15 @@ public class XMLLogFormatter extends XMLFormatter {
                 sb.append("</session>\n");
             }
 
+            // Keep backwards compatibility in 4.x
             if (record.getConnection() != null) {
                 sb.append("  <connection>");
                 sb.append(System.identityHashCode(record.getConnection()));
+                sb.append("</connection>\n");
+            }
+            else if (record.getConnectionId() != null) {
+                sb.append("  <connection>");
+                sb.append(record.getConnectionId());
                 sb.append("</connection>\n");
             }
 

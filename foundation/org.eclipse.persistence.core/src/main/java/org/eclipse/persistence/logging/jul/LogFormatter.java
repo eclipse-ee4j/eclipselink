@@ -22,8 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
-import org.eclipse.persistence.logging.AbstractSessionLog;
-
 /**
  * Print a brief summary of a TopLink LogRecord in a human-readable format.
  * The summary will typically be 1 or 2 lines.
@@ -91,9 +89,14 @@ public class LogFormatter extends SimpleFormatter {
                 sb.append(" ");
                 sb.append(record.getSessionString());
             }
+            // Keep backwards compatibility in 4.x
             if (record.getConnection() != null) {
                 sb.append(" ");
                 sb.append(CONNECTION_STRING + "(").append(System.identityHashCode(record.getConnection())).append(")");
+            }
+            else if (record.getConnectionId() != null) {
+                sb.append(" ");
+                sb.append(CONNECTION_STRING + "(").append(record.getConnectionId()).append(")");
             }
             if (record.shouldPrintThread()) {
                 sb.append(" ");

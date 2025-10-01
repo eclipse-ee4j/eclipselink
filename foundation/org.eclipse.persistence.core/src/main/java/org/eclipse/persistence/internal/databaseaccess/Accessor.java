@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,6 +138,15 @@ public interface Accessor extends Cloneable {
      * This will fail for non-relational accessors.
      */
     java.sql.Connection getConnection();
+
+    /**
+     * Return datasource connection identifier.
+     * If driver level connection is available, it's used to create the identifier. Otherwise,
+     * whole {@link Accessor} instance is used as a source.
+     *
+     * @return the datasource connection identifier
+     */
+    int getConnectionId();
 
     /**
      * Return the driver level connection,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,21 +61,6 @@ public class SLF4JLoggerHelper {
     }
 
     /**
-     * Create a new instance of {@link SessionLogEntry} class and set provided session, log level and logging category
-     * to it.
-     * @param level    Log level of the new log entry.
-     * @param category Logging category of the new log entry.
-     * @return The new instance of {@link SessionLogEntry} class with all provided values set.
-     */
-    private SessionLogEntry initLogEntry(
-            final LogCategory category, final LogLevel level) {
-        final SessionLogEntry logEntry = new SessionLogEntry(session);
-        logEntry.setLevel(level.getId());
-        logEntry.setNameSpace(category.getName());
-        return logEntry;
-    }
-
-    /**
      * Create a new instance of {@link SessionLogEntry} class and set provided session, log level, logging category
      * and {@link Throwable} to it.
      * @param level     Log level of the new log entry.
@@ -85,8 +70,10 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final Throwable throwable) {
-        final SessionLogEntry logEntry = initLogEntry(category, level);
-        logEntry.setException(throwable);
+        // Keep backwards compatibility in 4.x
+        SessionLogEntry logEntry = new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, "", throwable);
+        // New SessionLogEntry constructors do not accept Session, so it must be set
+        logEntry.setSession(session);
         return logEntry;
     }
 
@@ -100,8 +87,10 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final String message) {
-        final SessionLogEntry logEntry = initLogEntry(category, level);
-        logEntry.setMessage(message);
+        // Keep backwards compatibility in 4.x
+        SessionLogEntry logEntry = new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, message, null);
+        // New SessionLogEntry constructors do not accept Session, so it must be set
+        logEntry.setSession(session);
         return logEntry;
     }
 
@@ -116,9 +105,10 @@ public class SLF4JLoggerHelper {
      */
     private SessionLogEntry createLogEntry(
             final LogCategory category, final LogLevel level, final String message, final Throwable throwable) {
-        final SessionLogEntry logEntry = initLogEntry(category, level);
-        logEntry.setMessage(message);
-        logEntry.setException(throwable);
+        // Keep backwards compatibility in 4.x
+        SessionLogEntry logEntry =  new SessionLogEntry(level.getId(), category.getName(), session != null ? session.getSessionId() : null, message, throwable);
+        // New SessionLogEntry constructors do not accept Session, so it must be set
+        logEntry.setSession(session);
         return logEntry;
     }
 

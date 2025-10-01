@@ -205,8 +205,10 @@ public class JavaLog extends AbstractSessionLog {
      * </p>
      *
      * @param session  a Session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         super.setSession(session);
         if (session != null) {
@@ -286,9 +288,11 @@ public class JavaLog extends AbstractSessionLog {
         lr.setSourceMethodName(entry.getSourceMethodName());
         lr.setLoggerName(getNameSpaceString(entry.getNameSpace()));
         if (shouldPrintSession()) {
+            // To be changed in 5.x
             lr.setSessionString(getSessionString(entry.getSession()));
         }
         if (shouldPrintConnection()) {
+            lr.setConnectionId(entry.getConnectionId());
             lr.setConnection(entry.getConnection());
         }
         lr.setThrown(entry.getException());

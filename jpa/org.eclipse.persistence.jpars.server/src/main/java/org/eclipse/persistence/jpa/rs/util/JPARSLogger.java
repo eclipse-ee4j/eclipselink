@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -363,12 +363,11 @@ public class JPARSLogger {
     }
 
     private static SessionLogEntry newLogEntry(Session session) {
-        SessionLogEntry entry = session instanceof AbstractSession
-                ? new SessionLogEntry(session)
-                : new SessionLogEntry(null);
-        entry.setLevel(SessionLog.FINEST);
-        entry.setNameSpace(SessionLog.JPARS);
-        entry.setShouldTranslate(false);
+        // Keep backwards compatibility in 4.x
+        AbstractSession abstractSession = session instanceof AbstractSession ? (AbstractSession) session : null;
+        SessionLogEntry entry = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, abstractSession != null ? abstractSession.getSessionId() : null, "", null);
+        // New SessionLogEntry constructors do not accept Session, so it must be set
+        entry.setSession(abstractSession);
         return entry;
     }
 
