@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -3044,7 +3044,12 @@ public class EntityManagerJUnitTest extends JUnitTestCase {
 
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (RuntimeException e){
-            getDatabaseSession().log(new SessionLogEntry(getDatabaseSession(), SessionLog.WARNING, SessionLog.TRANSACTION, e));
+            // Keep backwards compatibility in 4.x
+            Session session = getDatabaseSession();
+            SessionLogEntry entry = new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, session != null ? session.getSessionId() : null, "", e);
+            // New SessionLogEntry constructors do not accept Session, so it must be set
+            entry.setSession(session);
+            getDatabaseSession().log(entry);
         }
         closeEntityManager(em);
     }

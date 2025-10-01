@@ -86,9 +86,14 @@ public class LogFormatter extends SimpleFormatter {
                 sb.append(" ");
                 sb.append(record.getSessionString());
             }
+            // Keep backwards compatibility in 4.x
             if (record.getConnection() != null) {
                 sb.append(" ");
                 sb.append(CONNECTION_STRING + "(").append(System.identityHashCode(record.getConnection())).append(")");
+            }
+            else if (record.getConnectionId() != null) {
+                sb.append(" ");
+                sb.append(CONNECTION_STRING + "(").append(record.getConnectionId()).append(")");
             }
             if (record.shouldPrintThread()) {
                 sb.append(" ");
