@@ -58,6 +58,7 @@ public class JavaLog extends AbstractSessionLog {
     /**
      * Represents the HashMap that stores all the name space strings.
      * The keys are category names.  The values are namespace strings.
+     * Only initLoggers() method can change content of this Map.
      */
     private final Map<String, String> nameSpaceMap  = new HashMap<>();
 
@@ -172,10 +173,18 @@ public class JavaLog extends AbstractSessionLog {
      * Return the name space for the given category from the map.
      */
     protected String getNameSpaceString(String category) {
-        if ((category == null) || (category.isEmpty())) {
-            return sessionNameSpace;
+        if (getSessionName() == null) {
+            return DEFAULT_TOPLINK_NAMESPACE;
         } else {
-            return nameSpaceMap.get(category);
+            // Lazy initialization of loggers, sessionNameSpace and nameSpaceMap
+            if (nameSpaceMap.isEmpty()) {
+                initLoggers();
+            }
+            if ((category == null) || (category.isEmpty())) {
+                return sessionNameSpace;
+            } else {
+                return nameSpaceMap.get(category);
+            }
         }
     }
 
@@ -184,7 +193,13 @@ public class JavaLog extends AbstractSessionLog {
      * Return the Logger for the given category
      */
     protected Logger getLogger(String category) {
-        if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
+        // Lazy initialization of loggers, sessionNameSpace and nameSpaceMap
+        if (nameSpaceMap.isEmpty()) {
+            initLoggers();
+        }
+        if (getSessionName() == null) {
+            return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
+        } else if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
             return categoryloggers.get(sessionNameSpace);
         } else {
             Logger logger = categoryloggers.get(category);
@@ -194,34 +209,19 @@ public class JavaLog extends AbstractSessionLog {
         }
     }
 
-    //TODO: How to handle this?
-    /**
-     * PUBLIC:
-     * <p>
-     * Set the session and session namespace.
-     * </p>
-     *
-     * @param session  a Session
-     * @deprecated {@link Session} instance will be removed
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public void setSession(Session session) {
-        if (session != null) {
-            String sessionName = session.getName();
-            if ((sessionName != null) && (!sessionName.isEmpty())) {
-                sessionNameSpace = SESSION_TOPLINK_NAMESPACE + "." + sessionName;
-            } else {
-                sessionNameSpace = DEFAULT_TOPLINK_NAMESPACE;
-            }
-
-            //Initialize loggers eagerly
-            addLogger(sessionNameSpace, sessionNameSpace);
-             for (int i = 0; i < loggerCatagories.length; i++) {
-                String loggerCategory =  loggerCatagories[i];
-                String loggerNameSpace = sessionNameSpace + "." + loggerCategory;
-                nameSpaceMap.put(loggerCategory, loggerNameSpace);
-                addLogger(loggerCategory, loggerNameSpace);
-            }
+    // Initialize loggers, sessionNameSpace and nameSpaceMap
+    private void initLoggers() {
+        if (getSessionName() != null) {
+            sessionNameSpace = SESSION_TOPLINK_NAMESPACE + "." + getSessionName();
+        } else {
+            sessionNameSpace = DEFAULT_TOPLINK_NAMESPACE;
+        }
+        addLogger(sessionNameSpace, sessionNameSpace);
+        for (String loggerCategory : loggerCatagories) {
+            String loggerNameSpace = sessionNameSpace + "." + loggerCategory;
+            // Content of nameSpaceMap should not be changed anywhere else
+            nameSpaceMap.put(loggerCategory, loggerNameSpace);
+            addLogger(loggerCategory, loggerNameSpace);
         }
     }
 
@@ -244,6 +244,10 @@ public class JavaLog extends AbstractSessionLog {
      */
     @Override
     public boolean shouldLog(int level, String category) {
+        // Lazy initialization of loggers, sessionNameSpace and nameSpaceMap
+        if (nameSpaceMap.isEmpty()) {
+            initLoggers();
+        }
         Logger logger = getLogger(category);
         return logger.isLoggable(getJavaLevel(level));
     }

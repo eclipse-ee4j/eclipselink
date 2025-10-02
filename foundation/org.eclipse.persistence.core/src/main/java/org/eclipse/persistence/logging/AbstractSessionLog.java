@@ -59,6 +59,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected static SessionLog defaultLog;
 
+    private String sessionName;
+
     /**
      * Represents prefix to logged severe
      */
@@ -312,6 +314,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     public static void setLog(SessionLog sessionLog) {
         defaultLog = sessionLog;
+        defaultLog.setSessionName(null);
+    }
+
+    @Override
+    public String getSessionName() {
+        return sessionName;
+    }
+
+    @Override
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
     }
 
     /**

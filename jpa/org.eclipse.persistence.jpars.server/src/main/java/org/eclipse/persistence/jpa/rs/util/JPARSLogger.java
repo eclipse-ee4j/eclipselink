@@ -27,14 +27,12 @@ import java.util.logging.Level;
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * Logger for EclipseLink JPA-RS related functionality.

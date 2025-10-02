@@ -45,6 +45,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
         this.session = session;
         this.originalLog = session.getSessionLog();
         setLevel(SessionLog.FINEST);
+        setSessionName(session.getName());
         setWriter(this.originalLog.getWriter());
         session.setSessionLog(this);
         this.listener = buildListener();

@@ -13074,6 +13074,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             //by an instance of DefaultSessionLog
             LogWrapper lw = new LogWrapper("detect_server_platform");
             AbstractSessionLog.setLog(lw);
+            AbstractSessionLog.getLog().setSessionName(null);
+            lw.setSessionName(null);
             ServerPlatformUtils.detectServerPlatform(null);
             assertEquals("detect_server_platform should be printed at FINER level",
                     lw.getLevel() <= SessionLog.FINER, lw.expected());

@@ -794,6 +794,20 @@ public interface SessionLog extends Cloneable {
     void logThrowable(int level, Throwable throwable);
 
     /**
+     * Return the name of the session.
+     *
+     * @return the name of the session
+     */
+    String getSessionName();
+
+    /**
+     * Set the name of the session.
+     *
+     * @param sessionName the name of the session
+     */
+    void setSessionName(String sessionName);
+
+    /**
      * PUBLIC:
      * Log a throwable with level.
      * <p>

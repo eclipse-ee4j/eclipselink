@@ -4247,6 +4247,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setSessionLog(SessionLog sessionLog) {
         this.isLoggingOff = false;
         this.sessionLog = sessionLog;
+        if (sessionLog != null) {
+            sessionLog.setSessionName(this.getName());
+        }
     }
 
     /**
