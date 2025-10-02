@@ -172,9 +172,7 @@ public class JavaLog extends AbstractSessionLog {
      * Return the name space for the given category from the map.
      */
     protected String getNameSpaceString(String category) {
-        if (session == null) {
-            return DEFAULT_TOPLINK_NAMESPACE;
-        } else if ((category == null) || (category.isEmpty())) {
+        if ((category == null) || (category.isEmpty())) {
             return sessionNameSpace;
         } else {
             return nameSpaceMap.get(category);
@@ -186,9 +184,7 @@ public class JavaLog extends AbstractSessionLog {
      * Return the Logger for the given category
      */
     protected Logger getLogger(String category) {
-        if (session == null) {
-            return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
-        } else if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
+        if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
             return categoryloggers.get(sessionNameSpace);
         } else {
             Logger logger = categoryloggers.get(category);
@@ -198,6 +194,7 @@ public class JavaLog extends AbstractSessionLog {
         }
     }
 
+    //TODO: How to handle this?
     /**
      * PUBLIC:
      * <p>
@@ -207,10 +204,8 @@ public class JavaLog extends AbstractSessionLog {
      * @param session  a Session
      * @deprecated {@link Session} instance will be removed
      */
-    @Override
     @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
-        super.setSession(session);
         if (session != null) {
             String sessionName = session.getName();
             if ((sessionName != null) && (!sessionName.isEmpty())) {
@@ -288,12 +283,10 @@ public class JavaLog extends AbstractSessionLog {
         lr.setSourceMethodName(entry.getSourceMethodName());
         lr.setLoggerName(getNameSpaceString(entry.getNameSpace()));
         if (shouldPrintSession()) {
-            // To be changed in 5.x
-            lr.setSessionString(getSessionString(entry.getSession()));
+            lr.setSessionString(entry.getSessionId());
         }
         if (shouldPrintConnection()) {
             lr.setConnectionId(entry.getConnectionId());
-            lr.setConnection(entry.getConnection());
         }
         lr.setThrown(entry.getException());
         lr.setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace());

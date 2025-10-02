@@ -1204,7 +1204,6 @@ public class SessionsFactory {
             ConversionManager conversionManager = new ConversionManager();
             conversionManager.setLoader(getClass().getClassLoader());
             javaLog = ((Class<SessionLog>)conversionManager.convertObject("org.eclipse.persistence.logging.jul.JavaLog", Class.class)).getConstructor().newInstance();
-            javaLog.setSession(session);
         } catch (Exception exception) {
             throw ValidationException.unableToLoadClass("org.eclipse.persistence.logging.jul.JavaLog", exception);
         }

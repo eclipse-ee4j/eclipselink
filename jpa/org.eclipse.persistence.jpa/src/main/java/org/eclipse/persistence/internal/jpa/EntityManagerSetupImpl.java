@@ -1854,7 +1854,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                             tempSession.setName(this.sessionName);
                             tempSession.setSessionLog(session.getSessionLog());
-                            tempSession.getSessionLog().setSession(tempSession);
                             if (this.staticWeaveInfo != null) {
                                 tempSession.setLogLevel(this.staticWeaveInfo.getLogLevel());
                             }

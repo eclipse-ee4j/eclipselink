@@ -3658,8 +3658,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             return;
         }
         if (shouldLog(entry.getLevel(), entry.getNameSpace())) {
-            if (entry.getSession() == null) {// Used for proxy session.
-                entry.setSession(this);
+            if (entry.getSessionId() == null) {// Used for proxy session.
+                entry.setSessionId(this.getSessionId());
             }
             getSessionLog().log(entry);
         }
@@ -4247,9 +4247,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void setSessionLog(SessionLog sessionLog) {
         this.isLoggingOff = false;
         this.sessionLog = sessionLog;
-        if ((sessionLog != null) && (sessionLog.getSession() == null)) {
-            sessionLog.setSession(this);
-        }
     }
 
     /**
@@ -4851,7 +4848,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(level, category, this, message, params, accessor, shouldTranslate));
+            log(new SessionLogEntry(level, category, this.getSessionId(), message, params, accessor != null ? accessor.getConnectionId() : null, shouldTranslate));
             endOperationProfile(SessionProfiler.Logging);
         }
     }
@@ -4873,7 +4870,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(this, level, category, throwable));
+            log(new SessionLogEntry(level, category, this.getSessionId(), "", throwable));
             endOperationProfile(SessionProfiler.Logging);
         }
     }

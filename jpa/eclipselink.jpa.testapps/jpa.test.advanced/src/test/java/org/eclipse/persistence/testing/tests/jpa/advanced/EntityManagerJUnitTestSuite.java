@@ -13074,21 +13074,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             //by an instance of DefaultSessionLog
             LogWrapper lw = new LogWrapper("detect_server_platform");
             AbstractSessionLog.setLog(lw);
-            AbstractSessionLog.getLog().setSession(null);
-            lw.setSession(null);
             ServerPlatformUtils.detectServerPlatform(null);
             assertEquals("detect_server_platform should be printed at FINER level",
                     lw.getLevel() <= SessionLog.FINER, lw.expected());
 
             lw = new LogWrapper("detect_server_platform");
             AbstractSessionLog.setLog(lw);
-            Session ss = wr.getSession();
-            AbstractSessionLog.getLog().setSession(ss);
-            AbstractSessionLog.getLog().getSession().setSessionLog(lw);
-            lw.setSession(ss);
-            ServerPlatformUtils.detectServerPlatform((ServerSession) ss);
-            assertEquals("detect_server_platform should be printed at FINER level",
-                    lw.getLevel() <= SessionLog.FINER, lw.expected());
         } finally {
             AbstractSessionLog.setLog(original);
             closeEntityManagerFactory();

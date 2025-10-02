@@ -80,7 +80,6 @@ public class SLF4JLoggerTest {
         final int configuredDefaultLevel = AbstractSessionLog.getDefaultLoggingLevel();
         final SLF4JLogger logger = new SLF4JLogger();
         final SLF4JLoggerHelper helper = new SLF4JLoggerHelper((AbstractSession)session, loggerContext, logger);
-        logger.setSession(session);
         final int defaultLevel = logger.getLevel();
         final String defaultLevelString = LogLevelHelper.logIdToName(defaultLevel);
         assertEquals("SLF4J logging level " + defaultLevelString + " did not match configured level "
@@ -96,7 +95,6 @@ public class SLF4JLoggerTest {
         final SLF4JLogger logger = new SLF4JLogger();
         final SLF4JLoggerHelper helper = new SLF4JLoggerHelper(
                 (AbstractSession)session, loggerContext, logger);
-        logger.setSession(session);
         helper.testLogMessage();
     }
 
@@ -108,7 +106,6 @@ public class SLF4JLoggerTest {
         final SLF4JLogger logger = new SLF4JLogger();
         final SLF4JLoggerHelper helper = new SLF4JLoggerHelper(
                 (AbstractSession)session, loggerContext, logger);
-        logger.setSession(session);
         logger.setShouldLogExceptionStackTrace(false);
         helper.testLogExceptionWithoutStackTrace();
     }
@@ -121,7 +118,6 @@ public class SLF4JLoggerTest {
         final SLF4JLogger logger = new SLF4JLogger();
         final SLF4JLoggerHelper helper = new SLF4JLoggerHelper(
                 (AbstractSession)session, loggerContext, logger);
-        logger.setSession(session);
         logger.setShouldLogExceptionStackTrace(true);
         helper.testLogExceptionStackTrace();
     }

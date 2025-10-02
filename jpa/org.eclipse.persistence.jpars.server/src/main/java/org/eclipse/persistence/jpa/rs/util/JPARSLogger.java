@@ -66,11 +66,10 @@ public class JPARSLogger {
     public static void entering(SessionLog sessionLog, String sourceClass, String sourceMethod, Object[] params) {
         // Logger logs entering logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
         if (isLoggableFinest(sessionLog)) {
-            SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+            // TODO: Session is no more available from sessionLog, how to get one?
+            SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, null, "ENTRY {0}", getParamsWithAdditionalInfo(params), null, false);
             sle.setSourceClassName(sourceClass);
             sle.setSourceMethodName(sourceMethod);
-            sle.setMessage("ENTRY {0}");
-            sle.setParameters(getParamsWithAdditionalInfo(params));
             sessionLog.log(sle);
         }
     }
@@ -105,11 +104,11 @@ public class JPARSLogger {
                 String data = readData(in);
                 in.reset();
                 if (data != null) {
-                    SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+                    Object[] logParams = getParamsWithAdditionalInfo(new Object[] { data });
+                    // TODO: Session is no more available from sessionLog, how to get one?
+                    SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, null, "ENTRY {0}", logParams, null, false);
                     sle.setSourceClassName(sourceClass);
                     sle.setSourceMethodName(sourceMethod);
-                    sle.setMessage("ENTRY {0}");
-                    sle.setParameters(getParamsWithAdditionalInfo(new Object[] { data }));
                     sessionLog.log(sle);
                 }
             } catch (Throwable throwable) {
@@ -141,11 +140,11 @@ public class JPARSLogger {
         // Logger logs exiting logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
         if (isLoggableFinest()) {
             try {
-                SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+                Object[] logParams = new Object[] {new MethodExitLogData(getParamsWithAdditionalInfo(params))};
+                // TODO: Session is no more available from sessionLog, how to get one?
+                SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, null, "RETURN {0}", logParams, null, false);
                 sle.setSourceClassName(sourceClass);
                 sle.setSourceMethodName(sourceMethod);
-                sle.setMessage("RETURN {0}");
-                sle.setParameters(new Object[] {new MethodExitLogData(getParamsWithAdditionalInfo(params))});
                 sessionLog.log(sle);
             } catch (Throwable throwable) {
                 exception(throwable.getMessage(), new Object[] {}, throwable);
@@ -353,22 +352,11 @@ public class JPARSLogger {
     private static void log(SessionLog sessionLog, int level, String message, Object[] params, Throwable t) {
         Objects.requireNonNull(sessionLog);
         if (sessionLog.shouldLog(level, SessionLog.JPARS)) {
-            SessionLogEntry sle = newLogEntry(sessionLog.getSession());
-            sle.setLevel(level);
-            sle.setMessage(LoggingLocalization.buildMessage(message, params));
+            // TODO: Session is no more available from sessionLog, how to get one?
+            SessionLogEntry sle = new SessionLogEntry(level, SessionLog.JPARS, null, LoggingLocalization.buildMessage(message, params), t);
             sle.setParameters(params);
-            sle.setException(t);
             sessionLog.log(sle);
         }
-    }
-
-    private static SessionLogEntry newLogEntry(Session session) {
-        // Keep backwards compatibility in 4.x
-        AbstractSession abstractSession = session instanceof AbstractSession ? (AbstractSession) session : null;
-        SessionLogEntry entry = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, abstractSession != null ? abstractSession.getSessionId() : null, "", null);
-        // New SessionLogEntry constructors do not accept Session, so it must be set
-        entry.setSession(abstractSession);
-        return entry;
     }
 
     private static String readData(InputStream is) throws IOException {

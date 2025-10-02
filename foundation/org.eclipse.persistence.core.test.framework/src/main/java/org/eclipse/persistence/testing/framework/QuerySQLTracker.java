@@ -34,6 +34,8 @@ import java.util.List;
  * during a session.  This allows you to ensure proper amounts of SQL are run in various scenarios.
  */
 public class QuerySQLTracker extends DefaultSessionLog {
+    // DefaultSessionLog does not contain session, so it must be stored locally.
+    private final Session session;
     private SessionLog originalLog;
     private SessionEventListener listener;
     // Track SQL statements
@@ -46,13 +48,13 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * and store the old log.  The old log will be replaced when remove() is called.
      */
     public QuerySQLTracker(Session session) {
+        this.session = session;
         this.originalLog = session.getSessionLog();
         setLevel(SessionLog.FINEST);
-        setSession(session);
         setWriter(this.originalLog.getWriter());
-        getSession().setSessionLog(this);
+        session.setSessionLog(this);
         this.listener = buildListener();
-        getSession().getEventManager().addListener(this.listener);
+        session.getEventManager().addListener(this.listener);
     }
 
     /**
@@ -60,8 +62,8 @@ public class QuerySQLTracker extends DefaultSessionLog {
      * logging to progress as normal.
      * */
     public void remove() {
-        getSession().setSessionLog(originalLog);
-        getSession().getEventManager().removeListener(this.listener);
+        session.setSessionLog(originalLog);
+        session.getEventManager().removeListener(this.listener);
     }
 
     @Override
