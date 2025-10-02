@@ -138,8 +138,11 @@ public class MetadataAsmFactory extends MetadataFactory {
                             ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
                     // our fall-back failed, this is severe
                     if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                        SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
-                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                        // Keep backwards compatibility in 4.x
+                        String sessionId = getLogger().getSession() != null ? getLogger().getSession().getSessionId() : null;
+                        SessionLogEntry entry = new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, sessionId, ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className}), e);
+                        // New SessionLogEntry constructors do not accept Session, so it must be set
+                        entry.setSession(getLogger().getSession());
                         log.log(entry);
                     }
                     addMetadataClass(getVirtualMetadataClass(className));

@@ -17,30 +17,31 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.internal.localization.TraceLocalization;
+import org.eclipse.persistence.sessions.Session;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.DateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
-import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
  * It contains a singleton SessionLog that logs messages from outside any EclipseLink session.
  * The singleton SessionLog can also be passed to an EclipseLink session when messages
- * are logged through that session.  When JDK1.4 is used, a singleton JavaLog is created.
- * Otherwise a singleton DefaultSessionLog is created.
+ * are logged through that session. By default, a singleton {@linkplain DefaultSessionLog} is created.
  *
  * @see SessionLog
  * @see SessionLogEntry
@@ -60,7 +61,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Represents the session that owns this SessionLog
+     *
+     * @deprecated {@link Session} instance will be removed
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Session session;
 
     /**
@@ -118,11 +122,23 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected Writer writer;
 
+    /**
+     * The pattern for formatting date-time in the log entries.
+     * By default, set to {@code "yyyy.MM.dd HH:mm:ss.SSS"}.
+     */
     protected static String DATE_FORMAT_STR = "yyyy.MM.dd HH:mm:ss.SSS";
+
     /**
      * Format use to print the current date/time.
+     * @deprecated Use {@link #timeStampFormatter}.
      */
+    @Deprecated(forRemoval = true)
     protected DateFormat dateFormat;
+
+    /**
+     * Formatter used to print the current date/time.
+     */
+    protected DateTimeFormatter timeStampFormatter;
 
     /**
      * Allows the printing of the stack to be explicitly disabled/enabled.
@@ -193,7 +209,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @return The system default log level property value or {@code null} if no such property is set.
      */
     private static String getDefaultLoggingLevelProperty() {
-        return PrivilegedAccessHelper.getSystemProperty(PersistenceUnitProperties.LOGGING_LEVEL);
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty("eclipselink.logging.level", null));
+        } else {
+            return System.getProperty("eclipselink.logging.level", null);
+        }
     }
 
     /**
@@ -353,8 +373,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @return  session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public Session getSession() {
         return this.session;
     }
@@ -366,8 +388,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @param session  a Session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         this.session = session;
     }
@@ -582,7 +606,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level)) {
             return;
         }
-        log(new SessionLogEntry(level, null, message, params, null, shouldTranslate));
+        log(new SessionLogEntry(level, null, null, message, params, (Integer) null, shouldTranslate));
     }
 
     /**
@@ -601,18 +625,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level, category)) {
             return;
         }
-        log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
+        log(new SessionLogEntry(level, category, null, message, params, (Integer) null, shouldTranslate));
     }
-
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a SessionLogEntry
-     *
-     * @param sessionLogEntry SessionLogEntry that holds all the information for an EclipseLink logging event
-     */
-    @Override
-    public abstract void log(SessionLogEntry sessionLogEntry);
 
     /**
      * By default the session (and its connection is available) are printed,
@@ -777,7 +791,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Return the date format to be used when printing a log entry date.
      * @return the date format
+     * @deprecated Use {@link #getTimeStampFormatter()}.
      */
+    @Deprecated(forRemoval = true)
     public DateFormat getDateFormat() {
         return dateFormat;
     }
@@ -785,20 +801,35 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * Return the specified date and/or time information in string.
      * The format will be determined by the date format settings.
+     * @deprecated Use {@link #getTimeStampString(TemporalAccessor)}.
      */
+    @Deprecated(forRemoval = true)
     protected String getDateString(Date date) {
-        if (getDateFormat() != null) {
-            return getDateFormat().format(date);
-
-        }
-
         if (date == null) {
             return null;
         }
+        return getTimeStampString(date.toInstant());
+    }
 
-        // Since we currently do not have a thread-safe way to format dates,
-        // we will use ConversionManager to build the string.
-        return ConversionManager.getDefaultManager().convertObject(date, String.class).toString();
+    /**
+     * Return the specified date and/or time information in string.
+     * The format will be determined by the {@linkplain  DateTimeFormatter} settings.
+     * By default, the value of the {@linkplain #DATE_FORMAT_STR} pattern is used.
+     */
+    public DateTimeFormatter getTimeStampFormatter() {
+        if (timeStampFormatter == null) {
+            timeStampFormatter = DateTimeFormatter
+                    .ofPattern(DATE_FORMAT_STR)
+                    .withZone(ZoneId.systemDefault());
+        }
+        return timeStampFormatter;
+    }
+
+    protected String getTimeStampString(TemporalAccessor temporalAccessor) {
+        if (temporalAccessor == null) {
+            return null;
+        }
+        return getTimeStampFormatter().format(temporalAccessor);
     }
 
     /**
@@ -809,16 +840,28 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         StringWriter writer = new StringWriter();
 
         if (shouldPrintDate()) {
-            writer.write(getDateString(entry.getDate()));
+            writer.write(getTimeStampString(entry.getTimeStamp()));
             writer.write("--");
         }
-        if (shouldPrintSession() && (entry.getSession() != null)) {
-            writer.write(this.getSessionString(entry.getSession()));
-            writer.write("--");
+        if (shouldPrintSession()) {
+            // Keep backwards compatibility in 4.x
+            if (entry.getSession() != null) {
+                writer.write(this.getSessionString(entry.getSession()));
+                writer.write("--");
+            } else if (entry.getSessionId() != null) {
+                writer.write(entry.getSessionId());
+                writer.write("--");
+            }
         }
-        if (shouldPrintConnection() && (entry.getConnection() != null)) {
-            writer.write(this.getConnectionString(entry.getConnection()));
-            writer.write("--");
+        if (shouldPrintConnection()) {
+            // Keep backwards compatibility in 4.x
+            if (entry.getConnection() != null) {
+                writer.write(this.getConnectionString(entry.getConnection()));
+                writer.write("--");
+            } else if (entry.getConnectionId() != null) {
+                writer.write(this.getConnectionString(entry.getConnectionId()));
+                writer.write("--");
+            }
         }
         if (shouldPrintThread()) {
             writer.write(this.getThreadString(entry.getThread()));
@@ -837,13 +880,18 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Return the current session including the type and id.
+     *
+     * @param session the current session
+     * @return the session string to be printed to the logs
+     * @deprecated Use {@link SessionLogEntry#getSessionId()} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String getSessionString(Session session) {
         // For bug 3422759 the session to log against should be the one in the
         // event, not the static one in the SessionLog, for there are many
         // sessions but only one SessionLog.
         if (session != null) {
-            return ((org.eclipse.persistence.internal.sessions.AbstractSession)session).getLogSessionString();
+            return session.getSessionId();
         } else {
             return "";
         }
@@ -851,14 +899,29 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
     /**
      * Return the specified connection information.
+     *
+     * @param connection the datasource connection accessor
+     * @return connection string to be printed to the logs
+     * @deprecated Use {@link #getConnectionString(int)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String getConnectionString(Accessor connection) {
         // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
         if (connection.getDatasourceConnection() == null){
             return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
         } else {
-             return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
+            return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
         }
+    }
+
+    /**
+     * Return the specified connection information.
+     *
+     * @param connectionId the identifier of the datasource connection
+     * @return connection string to be printed to the logs
+     */
+    protected String getConnectionString(int connectionId) {
+        return CONNECTION_STRING + "(" + connectionId + ")";
     }
 
     /**
@@ -938,13 +1001,24 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * PUBLIC:
      * Set the date format to be used when printing a log entry date.
      * <p>Note: the JDK's <code>java.text.SimpleDateFormat</code> is <b>NOT</b> thread-safe.<br>
-     * The user is <b>strongly</b> advised to consider using Apache Commons<br>
-     * <code>org.apache.commons.lang.time.FastDateFormat</code> instead.</p>
+     * The user is <b>strongly</b> advised to use {@linkplain #setTimeStampFormatter(DateTimeFormatter)} instead.</p>
      *
      * @param dateFormat java.text.DateFormat
+     * @deprecated Use {@link #setTimeStampFormatter(DateTimeFormatter)}.
      */
+    @Deprecated(forRemoval = true)
     public void setDateFormat(DateFormat dateFormat) {
         this.dateFormat = dateFormat;
+    }
+
+    /**
+     * PUBLIC:
+     * Set the date-time format to be used when printing a log entry date.
+     *
+     * @param timeStampFormatter Formatter for printing time stamp in the log entry.
+     */
+    public void setTimeStampFormatter(DateTimeFormatter timeStampFormatter) {
+        this.timeStampFormatter = timeStampFormatter;
     }
 
     /**
@@ -963,7 +1037,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         } else {
             //Bug5976657, if there are entry parameters and the string "{0" contained in the message
             //body, we assume it needs to be formatted.
-            if (entry.getParameters()!=null && entry.getParameters().length>0 && message.indexOf("{0") >= 0) {
+            if (entry.getParameters() != null && entry.getParameters().length > 0 && message.contains("{0")) {
                 message = java.text.MessageFormat.format(message, entry.getParameters());
             }
         }
@@ -990,9 +1064,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Override
     public void throwing(Throwable throwable) {
         if (shouldLog(FINER)) {
-            SessionLogEntry entry = new SessionLogEntry(null, throwable);
-            entry.setLevel(FINER);
-            log(entry);
+            log(new SessionLogEntry(FINER, null, null, "", throwable));
         }
     }
 
@@ -1099,7 +1171,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level)) {
-            log(new SessionLogEntry(null, level, null, throwable));
+            log(new SessionLogEntry(level, null, null, "", throwable));
         }
     }
 
@@ -1115,7 +1187,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     public void logThrowable(int level, String category, Throwable throwable) {
         // Must not create the log if not logging as is a performance issue.
         if (shouldLog(level, category)) {
-            log(new SessionLogEntry(null, level, category, throwable));
+            log(new SessionLogEntry(level, category, null, "", throwable));
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2931,7 +2931,12 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (RuntimeException e){
-            getPersistenceUnitServerSession().log(new SessionLogEntry(getPersistenceUnitServerSession(), SessionLog.WARNING, SessionLog.TRANSACTION, e));
+            // Keep backwards compatibility in 4.x
+            Session session = getPersistenceUnitServerSession();
+            SessionLogEntry entry = new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, session != null ? session.getSessionId() : null, "", e);
+            // New SessionLogEntry constructors do not accept Session, so it must be set
+            entry.setSession(session);
+            getPersistenceUnitServerSession().log(entry);
         }
         closeEntityManager(em);
     }

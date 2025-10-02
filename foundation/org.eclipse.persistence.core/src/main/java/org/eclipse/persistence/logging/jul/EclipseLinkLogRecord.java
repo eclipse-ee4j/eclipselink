@@ -26,7 +26,9 @@ import org.eclipse.persistence.internal.databaseaccess.Accessor;
  */
 public class EclipseLinkLogRecord extends LogRecord {
     private String sessionString;
+    // To be removed in 5.x
     private Accessor connection;
+    private Integer connectionId;
     private boolean shouldLogExceptionStackTrace;
     private boolean shouldPrintDate;
     private boolean shouldPrintThread;
@@ -43,12 +45,44 @@ public class EclipseLinkLogRecord extends LogRecord {
         this.sessionString = sessionString;
     }
 
+    /**
+     * Return the datasource connection accessor.
+     *
+     * @return the connection accessor
+     * @deprecated Use {@link #getConnectionId()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public Accessor getConnection() {
         return connection;
     }
 
+    /**
+     * Set the datasource connection accessor.
+     *
+     * @param connection the connection accessor
+     * @deprecated Use {@link #getConnectionId()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setConnection(Accessor connection) {
         this.connection = connection;
+    }
+
+    /**
+     * Return the datasource connection identifier.
+     *
+     * @return the datasource connection identifier
+     */
+    public Integer getConnectionId() {
+        return connectionId;
+    }
+
+    /**
+     * Set the datasource connection identifier.
+     *
+     * @param connectionId the datasource connection identifier
+     */
+    public void setConnectionId(Integer connectionId) {
+        this.connectionId = connectionId;
     }
 
     public boolean shouldLogExceptionStackTrace() {

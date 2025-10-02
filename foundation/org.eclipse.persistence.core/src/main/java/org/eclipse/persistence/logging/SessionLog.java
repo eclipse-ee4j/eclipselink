@@ -170,7 +170,7 @@ public interface SessionLog extends Cloneable {
      * All the pertinent information will be contained in
      * the specified entry.
      *
-     * @param entry org.eclipse.persistence.sessions.LogEntry
+     * @param entry SessionLogEntry that holds all the information for an EclipseLink logging event
      */
     void log(SessionLogEntry entry);
 

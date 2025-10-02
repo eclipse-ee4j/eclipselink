@@ -140,14 +140,14 @@ public class JavaLog extends AbstractSessionLog {
         if (logger == null) {
             return;
         }
-
-        AccessController.doPrivileged(new PrivilegedAction() {
-            @Override
-            public Object run() {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
                 logger.setLevel(getJavaLevel(level));
                 return null; // nothing to return
-            }
-        });
+            });
+        } else {
+            logger.setLevel(getJavaLevel(level));
+        }
     }
 
     /**
@@ -174,7 +174,7 @@ public class JavaLog extends AbstractSessionLog {
     protected String getNameSpaceString(String category) {
         if (session == null) {
             return DEFAULT_TOPLINK_NAMESPACE;
-        } else if ((category == null) || (category.length() == 0)) {
+        } else if ((category == null) || (category.isEmpty())) {
             return sessionNameSpace;
         } else {
             return nameSpaceMap.get(category);
@@ -188,7 +188,7 @@ public class JavaLog extends AbstractSessionLog {
     protected Logger getLogger(String category) {
         if (session == null) {
             return categoryloggers.get(DEFAULT_TOPLINK_NAMESPACE);
-        } else if ((category == null) || (category.length() == 0) || !this.categoryloggers.containsKey(category)) {
+        } else if ((category == null) || (category.isEmpty()) || !this.categoryloggers.containsKey(category)) {
             return categoryloggers.get(sessionNameSpace);
         } else {
             Logger logger = categoryloggers.get(category);
@@ -205,13 +205,15 @@ public class JavaLog extends AbstractSessionLog {
      * </p>
      *
      * @param session  a Session
+     * @deprecated {@link Session} instance will be removed
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         super.setSession(session);
         if (session != null) {
             String sessionName = session.getName();
-            if ((sessionName != null) && (sessionName.length() != 0)) {
+            if ((sessionName != null) && (!sessionName.isEmpty())) {
                 sessionNameSpace = SESSION_TOPLINK_NAMESPACE + "." + sessionName;
             } else {
                 sessionNameSpace = DEFAULT_TOPLINK_NAMESPACE;
@@ -219,7 +221,7 @@ public class JavaLog extends AbstractSessionLog {
 
             //Initialize loggers eagerly
             addLogger(sessionNameSpace, sessionNameSpace);
-             for (int i = 0; i < loggerCatagories.length; i++) {
+            for (int i = 0; i < loggerCatagories.length; i++) {
                 String loggerCategory =  loggerCatagories[i];
                 String loggerNameSpace = sessionNameSpace + "." + loggerCategory;
                 nameSpaceMap.put(loggerCategory, loggerNameSpace);
@@ -286,9 +288,11 @@ public class JavaLog extends AbstractSessionLog {
         lr.setSourceMethodName(entry.getSourceMethodName());
         lr.setLoggerName(getNameSpaceString(entry.getNameSpace()));
         if (shouldPrintSession()) {
+            // To be changed in 5.x
             lr.setSessionString(getSessionString(entry.getSession()));
         }
         if (shouldPrintConnection()) {
+            lr.setConnectionId(entry.getConnectionId());
             lr.setConnection(entry.getConnection());
         }
         lr.setThrown(entry.getException());
