@@ -95,6 +95,10 @@ public class JavaLog extends AbstractSessionLog {
      * Return catagoryloggers
      */
      public Map<String, Logger> getCategoryLoggers() {
+         // Lazy initialization of loggers, sessionNameSpace and nameSpaceMap
+         if (nameSpaceMap.isEmpty()) {
+             initLoggers();
+         }
          return categoryloggers;
      }
 
