@@ -48,7 +48,7 @@ if [ ${DRY_RUN} = 'true' ]; then
   MVN_DEPLOY_ARGS='install'
   echo '-[ Skipping GitHub branch and tag checks ]--------------------------------------'
 else
-  MVN_DEPLOY_ARGS='deploy'
+  MVN_DEPLOY_ARGS='install javadoc:jar gpg:sign org.sonatype.central:central-publishing-maven-plugin:0.9.0:publish  '
   GIT_ORIGIN=`git remote`
   echo '-[ Prepare branch ]-------------------------------------------------------------'
   if [[ -n `git branch -r | grep "${GIT_ORIGIN}/${RELEASE_BRANCH}"` ]]; then
