@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.logging.jul;
 
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -24,8 +22,6 @@ import java.util.logging.LogRecord;
  */
 public class EclipseLinkLogRecord extends LogRecord {
     private String sessionString;
-    // To be removed in 5.x
-    private Accessor connection;
     private Integer connectionId;
     private boolean shouldLogExceptionStackTrace;
     private boolean shouldPrintDate;
@@ -47,28 +43,6 @@ public class EclipseLinkLogRecord extends LogRecord {
 
     public void setSessionString(String sessionString) {
         this.sessionString = sessionString;
-    }
-
-    /**
-     * Return the datasource connection accessor.
-     *
-     * @return the connection accessor
-     * @deprecated Use {@link #getConnectionId()} instead
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public Accessor getConnection() {
-        return connection;
-    }
-
-    /**
-     * Set the datasource connection accessor.
-     *
-     * @param connection the connection accessor
-     * @deprecated Use {@link #getConnectionId()} instead
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public void setConnection(Accessor connection) {
-        this.connection = connection;
     }
 
     /**

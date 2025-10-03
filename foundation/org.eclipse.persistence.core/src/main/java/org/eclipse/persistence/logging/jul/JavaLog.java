@@ -17,7 +17,6 @@ package org.eclipse.persistence.logging.jul;
 
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.OutputStream;
 import java.security.AccessController;
@@ -45,8 +44,6 @@ public class JavaLog extends AbstractSessionLog {
      * Stores the default session name in case there is the session name is missing.
      */
     public static final String TOPLINK_NAMESPACE = "org.eclipse.persistence";
-    protected static final String LOGGING_LOCALIZATION_STRING = "org.eclipse.persistence.internal.localization.i18n.LoggingLocalizationResource";
-    protected static final String TRACE_LOCALIZATION_STRING = "org.eclipse.persistence.internal.localization.i18n.TraceLocalizationResource";
     public static final String DEFAULT_TOPLINK_NAMESPACE = TOPLINK_NAMESPACE + ".default";
     public static final String SESSION_TOPLINK_NAMESPACE = TOPLINK_NAMESPACE + ".session";
 
