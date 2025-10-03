@@ -62,6 +62,8 @@ public class ClearDatabaseSchemaTest extends TestCase {
             resetHsql(session);
         } else if (platform.isPostgreSQL()) {
             resetPostgres(session);
+        } else if (platform.isDB2()) {
+            resetDB2(session);
         } else {
             fail("Clear DB test run on unsupported DB");
         }
@@ -129,6 +131,58 @@ public class ClearDatabaseSchemaTest extends TestCase {
                 END LOOP; END;""");
         session.executeNonSelectingSQL("PURGE user_recyclebin");
         session.executeNonSelectingSQL("PURGE recyclebin");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resetDB2(AbstractSession session) {
+        // 1) Determine target schema (fallback to USER), TRIM padding and quote
+        Vector<ArrayRecord> rows = session.executeSQL("VALUES COALESCE(CURRENT SCHEMA, USER)");
+        String schema = ((String) rows.get(0).getValues().get(0)).trim().replace("\"", "\"\"");
+
+        // Safety guard: never touch system schemas
+        switch (schema) {
+            case "SYSIBM": case "SYSIBMADM": case "SYSCAT": case "SYSTOOLS":
+            case "SYSSTAT": case "SYSFUN": case "SYSPROC": case "SYSIBMTS":
+            case "NULLID":
+                throw new IllegalStateException("Refusing to drop system schema: " + schema);
+        }
+
+        // Remove error table up front, so SYSPROC.ADMIN_DROP_SCHEMA can create it
+        // without issues
+        try {
+           session.executeNonSelectingSQL("DROP TABLE SYSTOOLS.DROP_ERRORS");
+        } catch (Exception ignore) {
+           // no-op
+        }
+
+        // 2) Drop the schema and everything in it.
+        session.executeNonSelectingSQL("""
+            BEGIN ATOMIC
+              DECLARE v_schema     VARCHAR(128);
+              DECLARE v_errschema  VARCHAR(128);
+              DECLARE v_errtable   VARCHAR(128);
+
+              -- Recompute from session to avoid literal issues; Db2 will use the variable values
+              SET v_schema = COALESCE(CURRENT_SCHEMA, USER);
+              SET v_errschema = 'SYSTOOLS';
+              SET v_errtable  = 'DROP_ERRORS';
+
+              CALL SYSPROC.ADMIN_DROP_SCHEMA(v_schema, NULL, v_errschema, v_errtable);
+            END
+        """);
+
+        // 3) Re-create the schema (quote & escape)
+        session.executeNonSelectingSQL("CREATE SCHEMA \"" + schema + "\"");
+
+        // 4) Re-assert CURRENT SCHEMA
+        session.executeNonSelectingSQL("SET CURRENT SCHEMA \"" + schema + "\"");
+
+        // 5) Optional: clean up the error table (ignore if it’s locked or missing)
+        try {
+           session.executeNonSelectingSQL("DROP TABLE SYSTOOLS.DROP_ERRORS");
+        } catch (Exception ignore) {
+           // no-op
+        }
     }
 
     @SuppressWarnings({"unchecked"})
