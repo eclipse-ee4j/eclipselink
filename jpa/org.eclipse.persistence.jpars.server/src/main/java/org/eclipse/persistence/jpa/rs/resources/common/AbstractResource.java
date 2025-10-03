@@ -57,10 +57,9 @@ import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Base class for all resources.
@@ -191,13 +190,13 @@ public abstract class AbstractResource {
      */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, String entityType, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
-            DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
+            JPARSLogger.DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
             throw new IllegalArgumentException();
         }
 
         PersistenceContext context = getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
         if (context == null) {
-            DEFAULT_LOGGER.error(null, "jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
+            JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             throw JPARSException.persistenceContextCouldNotBeBootstrapped(persistenceUnit);
         }
 

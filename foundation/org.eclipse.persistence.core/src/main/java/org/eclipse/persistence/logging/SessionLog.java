@@ -67,7 +67,6 @@ import java.io.Writer;
  *
  * @see AbstractSessionLog
  * @see SessionLogEntry
- * @see org.eclipse.persistence.sessions.Session
  *
  * @since TOPLink/Java 3.0
  */

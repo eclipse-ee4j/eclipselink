@@ -89,7 +89,7 @@ public class LogFormatter extends SimpleFormatter {
                 sb.append(" ");
                 sb.append(record.getSessionString());
             }
-            else if (record.getConnectionId() != null) {
+            if (record.getConnectionId() != null) {
                 sb.append(" ");
                 sb.append(CONNECTION_STRING + "(").append(record.getConnectionId()).append(")");
             }

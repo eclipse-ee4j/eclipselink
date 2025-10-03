@@ -46,10 +46,9 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ItemLinksBuilder;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Base class for persistent unit resources.
@@ -69,9 +68,9 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
      * @return response containing a list of persistence contexts.
      */
     protected Response getContextsInternal(String version, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsInternal", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsInternal", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
         if (!isValidVersion(version)) {
-            DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
+            JPARSLogger.DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
             throw JPARSException.invalidServiceVersion(version);
         }
 
@@ -84,10 +83,10 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
 
     @SuppressWarnings("rawtypes")
     protected Response callSessionBeanInternal(String version, HttpHeaders headers, UriInfo uriInfo, InputStream is) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "callSessionBeanInternal", new Object[] { "POST", headers.getMediaType(), version, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "callSessionBeanInternal", new Object[] { "POST", headers.getMediaType(), version, uriInfo.getRequestUri().toASCIIString() });
         try {
             if (!isValidVersion(version)) {
-                DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
+                JPARSLogger.DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
                 throw JPARSException.invalidServiceVersion(version);
             }
 
@@ -95,14 +94,14 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
 
             String jndiName = call.getJndiName();
             if (!isValid(jndiName)) {
-                DEFAULT_LOGGER.error(null, "jpars_invalid_jndi_name", new Object[] { jndiName });
+                JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_invalid_jndi_name", new Object[] { jndiName });
                 throw JPARSException.jndiNamePassedIsInvalid(jndiName);
             }
             
             javax.naming.Context ctx = new InitialContext();
             Object ans = ctx.lookup(jndiName);
             if (ans == null) {
-                DEFAULT_LOGGER.error(null, "jpars_could_not_find_session_bean", new Object[] { jndiName });
+                JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_could_not_find_session_bean", new Object[] { jndiName });
                 throw JPARSException.sessionBeanCouldNotBeFound(jndiName);
             }
 
@@ -110,7 +109,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             if (call.getContext() != null) {
                 context = getPersistenceFactory().get(call.getContext(), uriInfo.getBaseUri(), version, null);
                 if (context == null) {
-                    DEFAULT_LOGGER.error(null, "jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
+                    JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
                     throw JPARSException.persistenceContextCouldNotBeBootstrapped(call.getContext());
                 }
             }
@@ -138,7 +137,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             Object returnValue = method.invoke(ans, args);
             return Response.ok(new StreamingOutputMarshaller(null, returnValue, headers.getAcceptableMediaTypes())).build();
         } catch (JAXBException | NamingException | ReflectiveOperationException | RuntimeException e) {
-            DEFAULT_LOGGER.exception(null, "exception_in_callSessionBeanInternal", new Object[]{version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, e);
+            JPARSLogger.DEFAULT_LOGGER.exception(null, "exception_in_callSessionBeanInternal", new Object[]{version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, e);
             throw JPARSException.exceptionOccurred(e);
         }
     }
@@ -172,7 +171,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
      * @return Response object
      */
     private Response getContextsV1(String version, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsV1", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsV1", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
         try {
             final Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
             final String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
@@ -198,7 +197,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             }
             return Response.ok(new StreamingOutputMarshaller(null, result, headers.getAcceptableMediaTypes())).build();
         } catch (JAXBException ex) {
-            DEFAULT_LOGGER.exception(null, "exception_in_getContextsV1", new Object[] {version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, ex);
+            JPARSLogger.DEFAULT_LOGGER.exception(null, "exception_in_getContextsV1", new Object[] {version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, ex);
             throw JPARSException.exceptionOccurred(ex);
         }
     }
@@ -212,7 +211,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
      * @return Response object
      */
     private Response getContextsV2(String version, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsV2", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getContextsV2", new Object[] { "GET", version, uriInfo.getRequestUri().toASCIIString() });
         try {
             final ContextsCatalog result = new ContextsCatalog();
 
@@ -234,7 +233,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
 
             return Response.ok(new StreamingOutputMarshaller(null, marshalled, headers.getAcceptableMediaTypes())).build();
         } catch (JAXBException ex) {
-            DEFAULT_LOGGER.exception(null, "exception_in_getContextsV2", new Object[] {version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, ex);
+            JPARSLogger.DEFAULT_LOGGER.exception(null, "exception_in_getContextsV2", new Object[] {version, headers.getMediaType(), uriInfo.getRequestUri().toASCIIString()}, ex);
             throw JPARSException.exceptionOccurred(ex);
         }
     }

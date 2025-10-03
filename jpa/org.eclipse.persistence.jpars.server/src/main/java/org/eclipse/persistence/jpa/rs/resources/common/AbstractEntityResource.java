@@ -47,6 +47,7 @@ import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringVa
 import org.eclipse.persistence.jpa.rs.features.paging.PageableFieldValidator;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -55,8 +56,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Base class for entity resource.
@@ -67,7 +66,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     private static final String CLASS_NAME = AbstractEntityResource.class.getName();
 
     protected Response findAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "findAttributeInternal", new Object[] { "GET", version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "findAttributeInternal", new Object[] { "GET", version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
 
         EntityManager em = null;
         try {
@@ -152,7 +151,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response findInternal(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "findInternal", new Object[] { "GET", version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "findInternal", new Object[] { "GET", version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
 
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
@@ -183,7 +182,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response createInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "createInternal", new Object[] { "PUT", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             final ClassDescriptor descriptor = context.getDescriptor(type);
@@ -320,7 +319,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response updateInternal(String version, String persistenceUnit, String type, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "updateInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "updateInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entity = context.unmarshalEntity(type, mediaType(headers.getAcceptableMediaTypes()), in);
@@ -332,7 +331,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response setOrAddAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo, InputStream in) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "setOrAddAttributeInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "setOrAddAttributeInternal", new Object[] { "POST", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Object entityId = IdHelper.buildId(context, type, id);
@@ -356,7 +355,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String id, String attribute, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "removeAttributeInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "removeAttributeInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, attribute, uriInfo.getRequestUri().toASCIIString() });
         try {
             String listItemId = null;
             Map<String, String> matrixParams = getMatrixParameters(uriInfo, attribute);
@@ -396,7 +395,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response deleteInternal(String version, String persistenceUnit, String type, String id, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "deleteInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "deleteInternal", new Object[] { "DELETE", headers.getMediaType(), version, persistenceUnit, type, id, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, type, uriInfo.getBaseUri(), version, null);
             Map<String, String> discriminators = getMatrixParameters(uriInfo, persistenceUnit);
@@ -409,7 +408,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     protected Response buildEntityOptionsResponse(String version, String persistenceUnit, String entityName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntityOptionsResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntityOptionsResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
         final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
 
         // We need to make sure that entity with given name exists

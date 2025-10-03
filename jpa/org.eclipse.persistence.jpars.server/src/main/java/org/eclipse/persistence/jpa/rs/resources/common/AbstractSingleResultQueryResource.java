@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.FeatureResponseBuilder;
 import org.eclipse.persistence.jpa.rs.features.FeatureSet.Feature;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -34,8 +35,6 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBElement;
 import java.util.List;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Base class for all single result query resources.
@@ -57,7 +56,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
      */
     @SuppressWarnings("rawtypes")
     protected Response namedQuerySingleResultInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQuerySingleResultInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQuerySingleResultInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));

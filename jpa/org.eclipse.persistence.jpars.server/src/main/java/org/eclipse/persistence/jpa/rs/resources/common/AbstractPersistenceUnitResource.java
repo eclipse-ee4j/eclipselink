@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -50,8 +51,6 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
-
 /**
  * @author gonural
  *
@@ -60,7 +59,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     private static final String CLASS_NAME = AbstractPersistenceUnitResource.class.getName();
 
     protected Response getDescriptorMetadataInternal(String version, String persistenceUnit, String descriptorAlias, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getDescriptorMetadataInternal", new Object[] { "GET", version, persistenceUnit, descriptorAlias, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getDescriptorMetadataInternal", new Object[] { "GET", version, persistenceUnit, descriptorAlias, uriInfo.getRequestUri().toASCIIString() });
 
         String result = null;
         try {
@@ -82,7 +81,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getQueriesMetadataInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueriesMetadataInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueriesMetadataInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
 
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
@@ -104,7 +103,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getQueryMetadataInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             List<Query> returnQueries = new ArrayList<>();
@@ -131,7 +130,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getTypesInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
         try {
             URI baseURI = uriInfo.getBaseUri();
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);

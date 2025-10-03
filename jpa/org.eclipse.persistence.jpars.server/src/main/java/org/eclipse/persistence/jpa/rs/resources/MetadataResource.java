@@ -50,6 +50,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ItemLinksBuilder;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -57,8 +58,6 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * JPARS 2.0 metadata catalog. Resource metadata and schemas.
@@ -145,7 +144,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildMetadataCatalogResponse(String version, String persistenceUnit, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildMetadataCatalogResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildMetadataCatalogResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -160,7 +159,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildEntityMetadataResponse(String version, String persistenceUnit, String entityName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntityMetadataResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntityMetadataResponse", new Object[]{"GET", version, persistenceUnit, entityName, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -181,7 +180,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildQueryMetadataResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryMetadataResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryMetadataResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -204,7 +203,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildEntitySchemaResponse(String version, String persistenceUnit, String entityName, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntitySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildEntitySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {
@@ -243,7 +242,7 @@ public class MetadataResource extends AbstractResource {
     }
 
     private Response buildQuerySchemaResponse(String version, String persistenceUnit, String queryName, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQuerySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQuerySchemaResponse", new Object[]{"GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString()});
 
         final String result;
         try {

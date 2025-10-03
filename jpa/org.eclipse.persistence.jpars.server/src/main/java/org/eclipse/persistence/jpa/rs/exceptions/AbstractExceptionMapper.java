@@ -21,6 +21,7 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 import javax.naming.NamingException;
@@ -48,8 +49,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Map;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 public abstract class AbstractExceptionMapper {
     @Context
@@ -128,7 +127,7 @@ public abstract class AbstractExceptionMapper {
             marshaller.marshal(errorResponse, writer);
             return writer.toString();
         } catch (Exception ex) {
-            DEFAULT_LOGGER.exception(null, ex.getMessage(), null, ex);
+            JPARSLogger.DEFAULT_LOGGER.exception(null, ex.getMessage(), null, ex);
         }
         return null;
     }

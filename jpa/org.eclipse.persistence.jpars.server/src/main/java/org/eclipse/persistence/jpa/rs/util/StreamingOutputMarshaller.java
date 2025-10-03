@@ -43,8 +43,6 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
-
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided
  * {@link JAXBContext} to marshal the result when requested to either XML or
@@ -137,7 +135,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 if (context != null) {
                     context.getLogger().error(context.getSessionId(), "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
                 } else {
-                    DEFAULT_LOGGER.error(null, "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                    JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
                 }
                 throw new WebApplicationException();
             }
@@ -203,7 +201,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 try {
                     mediaType = StreamingOutputMarshaller.mediaType(accepts);
                 } catch (Exception ex) {
-                    DEFAULT_LOGGER.exception(null, "Exception in getResponseMediaType", new Object[]{headers}, ex);
+                    JPARSLogger.DEFAULT_LOGGER.exception(null, "Exception in getResponseMediaType", new Object[]{headers}, ex);
                 }
             }
         }

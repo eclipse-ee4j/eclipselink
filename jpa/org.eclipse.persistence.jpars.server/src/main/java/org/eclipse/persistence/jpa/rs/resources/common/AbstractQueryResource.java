@@ -41,11 +41,10 @@ import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilteringVa
 import org.eclipse.persistence.jpa.rs.features.paging.PageableQueryValidator;
 import org.eclipse.persistence.jpa.rs.features.paging.PagingResponseBuilder;
 import org.eclipse.persistence.jpa.rs.util.HrefHelper;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Base class for query resource.
@@ -67,7 +66,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryUpdateInternal", new Object[] { "POST", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryUpdateInternal", new Object[] { "POST", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             int result = context.queryExecuteUpdate(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
@@ -89,7 +88,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
      * @return the response
      */
     protected Response namedQueryInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "namedQueryInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             final Query query = context.buildQuery(getMatrixParameters(uriInfo, persistenceUnit), queryName, getMatrixParameters(uriInfo, queryName), getQueryParameters(uriInfo));
@@ -110,7 +109,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
     }
 
     protected Response buildQueryOptionsResponse(String version, String persistenceUnit, String queryName, HttpHeaders httpHeaders, UriInfo uriInfo) {
-        DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
+        JPARSLogger.DEFAULT_LOGGER.entering(null, CLASS_NAME, "buildQueryOptionsResponse", new Object[]{"GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString()});
         final PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
 
         // We need to make sure that query with given name exists

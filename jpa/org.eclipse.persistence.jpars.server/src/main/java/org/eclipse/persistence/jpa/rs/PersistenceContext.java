@@ -166,6 +166,7 @@ public class PersistenceContext {
      */
     private Map<String, RestPageableQuery> pageableQueries;
 
+    // Lazy initialization, always access with getter
     private JPARSLogger logger;
 
     protected PersistenceContext() {
@@ -216,7 +217,7 @@ public class PersistenceContext {
         try {
             this.jaxbContext = createDynamicJAXBContext(JpaHelper.getServerSession(emf));
         } catch (JAXBException | IOException jaxbe) {
-            logger.exception(getSessionId(), "exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
+            getLogger().exception(getSessionId(), "exception_creating_jaxb_context", new Object[] { emfName, jaxbe.toString() }, jaxbe);
             emf.close();
         }
     }
@@ -490,10 +491,10 @@ public class PersistenceContext {
                     setMappingValueInObject(object, attributeValue, mapping, partnerMapping);
                     transaction.commitTransaction(em);
                 } catch (RollbackException e) {
-                    logger.exception(getSessionId(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
+                    getLogger().exception(getSessionId(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     return null;
                 } catch (Exception e) {
-                    logger.exception(getSessionId(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
+                    getLogger().exception(getSessionId(), "exception_while_updating_attribute", new Object[] { entityName, getName() }, e);
                     transaction.rollbackTransaction(em);
                     return null;
                 }
@@ -579,7 +580,7 @@ public class PersistenceContext {
             }
             return null;
         } catch (Exception e) {
-            logger.exception(getSessionId(), "exception_while_removing_attribute", new Object[] { fieldName, entityName, getName() }, e);
+            getLogger().exception(getSessionId(), "exception_while_removing_attribute", new Object[] { fieldName, entityName, getName() }, e);
             transaction.rollbackTransaction(em);
             return null;
         } finally {
@@ -807,7 +808,7 @@ public class PersistenceContext {
                     return jaxbType.newDynamicEntity();
                 }
             }
-            logger.exception(getSessionId(), "exception_thrown_while_creating_dynamic_entity", new Object[] { type }, e);
+            getLogger().exception(getSessionId(), "exception_thrown_while_creating_dynamic_entity", new Object[] { type }, e);
             throw e;
         }
         return entity;
@@ -972,16 +973,16 @@ public class PersistenceContext {
      * @throws JAXBException the JAXB exception
      */
     public Object unmarshalEntity(String type, MediaType acceptedMediaType, InputStream in) throws JAXBException {
-        if (logger.isLoggableFinest()) {
+        if (getLogger().isLoggableFinest()) {
             in = in.markSupported() ? in : new BufferedInputStream(in);
             // TODO: Make readlimit configurable. Some http servers allow http post size to be unlimited.
             // If this is the case and if an application is sending huge post requests while jpars log
             // level configured to finest, this readlimit might not be sufficient.
             in.mark(52428800); // (~50MB)
-            logger.entering(getSessionId(), CLASS_NAME, "unmarshalEntity", in);
+            getLogger().entering(getSessionId(), CLASS_NAME, "unmarshalEntity", in);
         }
         Object unmarshalled = unmarshal(getClass(type), acceptedMediaType, in);
-        logger.exiting(getSessionId(), CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
+        getLogger().exiting(getSessionId(), CLASS_NAME, "unmarshalEntity", new Object[] { unmarshalled.getClass().getName(), unmarshalled });
         return unmarshalled;
     }
 
@@ -1079,7 +1080,7 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping instanceof XMLInverseReferenceMapping) {
                         // we require Fetch groups to handle relationships
-                        logger.error(getSessionId(), "weaving_required_for_relationships", new Object[] {});
+                        getLogger().error(getSessionId(), "weaving_required_for_relationships", new Object[] {});
                         throw JPARSException.invalidConfiguration();
                     }
                 }
@@ -1094,9 +1095,9 @@ public class PersistenceContext {
      * rather than attempting to marshall the data in those relationships
      */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
-        logger.entering(getSessionId(), CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
+        getLogger().entering(getSessionId(), CLASS_NAME, "marshallEntity", new Object[] { object, mediaType });
         marshall(object, mediaType, output, true);
-        logger.exiting(getSessionId(), CLASS_NAME, "marshallEntity", this, object, mediaType);
+        getLogger().exiting(getSessionId(), CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
     /**
@@ -1108,9 +1109,9 @@ public class PersistenceContext {
      * @param output the result.
      */
     public void marshallEntity(Object object, FieldsFilter filter, MediaType mediaType, OutputStream output) throws JAXBException {
-        logger.entering(getSessionId(), CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
+        getLogger().entering(getSessionId(), CLASS_NAME, "marshallEntity", new Object[] { object, filter, mediaType });
         marshall(object, mediaType, output, true, filter);
-        logger.exiting(getSessionId(), CLASS_NAME, "marshallEntity", this, object, mediaType);
+        getLogger().exiting(getSessionId(), CLASS_NAME, "marshallEntity", this, object, mediaType);
     }
 
     /**

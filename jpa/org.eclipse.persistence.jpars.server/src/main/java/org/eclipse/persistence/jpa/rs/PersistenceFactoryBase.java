@@ -36,8 +36,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
-
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 /**
  * Manages the PersistenceContexts that are used by a JPA-RS deployment.  Provides a single point to bootstrap
@@ -183,7 +182,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
 
                 persistenceContext = bootstrapPersistenceContext(persistenceUnitName, factory, defaultURI, version, true);
             } catch (Exception e) {
-                DEFAULT_LOGGER.exception(null, "exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
+                JPARSLogger.DEFAULT_LOGGER.exception(null, "exception_creating_persistence_context", new Object[] { persistenceUnitName, e.toString() }, e);
             }
         }
 

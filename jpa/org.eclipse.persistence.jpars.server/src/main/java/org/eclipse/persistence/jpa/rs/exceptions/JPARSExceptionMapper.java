@@ -20,8 +20,6 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
-import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
-
 @Provider
 public class JPARSExceptionMapper extends AbstractExceptionMapper implements ExceptionMapper<JPARSException> {
 
@@ -35,7 +33,7 @@ public class JPARSExceptionMapper extends AbstractExceptionMapper implements Exc
     public Response toResponse(JPARSException exception) {
         JPARSLogger logger = exception.getSession() != null
                 ? new JPARSLogger(exception.getSession().getSessionLog())
-                : DEFAULT_LOGGER;
+                : JPARSLogger.DEFAULT_LOGGER;
         if (exception.getCause() != null) {
             logger.exception(sessionId(exception), "jpars_caught_exception", new Object[] {}, exception.getCause());
         } else {
