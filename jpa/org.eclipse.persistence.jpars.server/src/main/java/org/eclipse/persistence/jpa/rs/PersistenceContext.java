@@ -142,7 +142,7 @@ public class PersistenceContext {
     protected String name = null;
 
     /** The EntityManagerFactory used to interact using JPA **/
-    private EntityManagerFactory emf;
+    protected EntityManagerFactory emf;
 
     /** The JAXBConext used to produce JSON or XML **/
     protected JAXBContext jaxbContext = null;
