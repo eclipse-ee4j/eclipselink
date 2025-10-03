@@ -2930,12 +2930,8 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
 
             em.createNamedQuery("findAllSQLDepartments").getResultList();
         } catch (RuntimeException e){
-            // Keep backwards compatibility in 4.x
-            Session session = getPersistenceUnitServerSession();
-            SessionLogEntry entry = new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, session != null ? session.getSessionId() : null, "", e);
-            // New SessionLogEntry constructors do not accept Session, so it must be set
-            entry.setSession(session);
-            getPersistenceUnitServerSession().log(entry);
+            String sessionId = getPersistenceUnitServerSession() != null ? getPersistenceUnitServerSession().getSessionId() : null;
+            getPersistenceUnitServerSession().log(new SessionLogEntry(SessionLog.WARNING, SessionLog.TRANSACTION, sessionId, "", e));
         }
         closeEntityManager(em);
     }

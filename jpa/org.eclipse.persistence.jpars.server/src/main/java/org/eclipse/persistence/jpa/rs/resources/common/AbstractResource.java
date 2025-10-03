@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ public abstract class AbstractResource {
     public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d|latest";
     public static final String APPLICATION_SCHEMA_JSON ="application/schema+json";
     public static final MediaType APPLICATION_SCHEMA_JSON_TYPE = new MediaType("application","schema+json");
+
     protected PersistenceContextFactory factory;
 
     /**
@@ -189,18 +190,18 @@ public abstract class AbstractResource {
      */
     protected PersistenceContext getPersistenceContext(String persistenceUnit, String entityType, URI baseURI, String version, Map<String, Object> initializationProperties) {
         if (!isValidVersion(version)) {
-            JPARSLogger.error("unsupported_service_version_in_the_request", new Object[] { version });
+            JPARSLogger.DEFAULT_LOGGER.error(null, "unsupported_service_version_in_the_request", new Object[] { version });
             throw new IllegalArgumentException();
         }
 
         PersistenceContext context = getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
         if (context == null) {
-            JPARSLogger.error("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
+            JPARSLogger.DEFAULT_LOGGER.error(null, "jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             throw JPARSException.persistenceContextCouldNotBeBootstrapped(persistenceUnit);
         }
 
         if ((entityType != null) && (context.getClass(entityType) == null)) {
-            JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_class_in_persistence_unit", new Object[] { entityType, persistenceUnit });
+            context.getLogger().error(context.getSessionId(), "jpars_could_not_find_class_in_persistence_unit", new Object[] { entityType, persistenceUnit });
             throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(entityType, persistenceUnit);
         }
 

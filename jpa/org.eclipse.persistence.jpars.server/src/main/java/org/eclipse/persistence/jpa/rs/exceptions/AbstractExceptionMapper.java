@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -126,7 +127,7 @@ public abstract class AbstractExceptionMapper {
             marshaller.marshal(errorResponse, writer);
             return writer.toString();
         } catch (Exception ex) {
-            JPARSLogger.exception(ex.getMessage(), null, ex);
+            JPARSLogger.DEFAULT_LOGGER.exception(null, ex.getMessage(), null, ex);
         }
         return null;
     }

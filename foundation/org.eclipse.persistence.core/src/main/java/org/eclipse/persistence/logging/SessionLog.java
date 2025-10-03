@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.sessions.Session;
-
 import java.io.Writer;
 
 /**
@@ -69,7 +67,6 @@ import java.io.Writer;
  *
  * @see AbstractSessionLog
  * @see SessionLogEntry
- * @see Session
  *
  * @since TOPLink/Java 3.0
  */
@@ -796,6 +793,20 @@ public interface SessionLog extends Cloneable {
     void logThrowable(int level, Throwable throwable);
 
     /**
+     * Return the name of the session.
+     *
+     * @return the name of the session
+     */
+    String getSessionName();
+
+    /**
+     * Set the name of the session.
+     *
+     * @param sessionName the name of the session
+     */
+    void setSessionName(String sessionName);
+
+    /**
      * PUBLIC:
      * Log a throwable with level.
      * <p>
@@ -814,18 +825,6 @@ public interface SessionLog extends Cloneable {
      * </table>
      */
     void logThrowable(int level, String category, Throwable throwable);
-
-    /**
-     * PUBLIC:
-     * Get the session that owns this SessionLog.
-     */
-    Session getSession();
-
-    /**
-     * PUBLIC:
-     * Set the session that owns this SessionLog.
-     */
-    void setSession(Session session);
 
     /**
      * PUBLIC:
