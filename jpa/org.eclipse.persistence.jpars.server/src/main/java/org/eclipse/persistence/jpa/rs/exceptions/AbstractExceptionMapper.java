@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.features.ServiceVersion;
-import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 import javax.naming.NamingException;
@@ -42,12 +41,15 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Map;
+
+import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 public abstract class AbstractExceptionMapper {
     @Context
@@ -126,7 +128,7 @@ public abstract class AbstractExceptionMapper {
             marshaller.marshal(errorResponse, writer);
             return writer.toString();
         } catch (Exception ex) {
-            JPARSLogger.exception(ex.getMessage(), null, ex);
+            DEFAULT_LOGGER.exception(null, ex.getMessage(), null, ex);
         }
         return null;
     }

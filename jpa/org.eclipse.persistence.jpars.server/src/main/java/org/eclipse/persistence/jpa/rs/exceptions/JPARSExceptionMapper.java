@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,8 @@ import jakarta.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
+import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
+
 @Provider
 public class JPARSExceptionMapper extends AbstractExceptionMapper implements ExceptionMapper<JPARSException> {
 
@@ -31,11 +33,19 @@ public class JPARSExceptionMapper extends AbstractExceptionMapper implements Exc
 
     @Override
     public Response toResponse(JPARSException exception) {
+        JPARSLogger logger = exception.getSession() != null
+                ? new JPARSLogger(exception.getSession().getSessionLog())
+                : DEFAULT_LOGGER;
         if (exception.getCause() != null) {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception.getCause());
+            logger.exception(sessionId(exception), "jpars_caught_exception", new Object[] {}, exception.getCause());
         } else {
-            JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
+            logger.exception(sessionId(exception), "jpars_caught_exception", new Object[] {}, exception);
         }
         return buildResponse(exception);
     }
+
+    private static String sessionId(JPARSException exception) {
+        return exception.getSession() != null ? exception.getSession().getSessionId() : null;
+    }
+
 }

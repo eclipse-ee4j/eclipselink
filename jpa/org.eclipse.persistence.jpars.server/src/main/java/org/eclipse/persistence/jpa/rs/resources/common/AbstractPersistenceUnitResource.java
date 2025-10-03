@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,6 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
-import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -51,6 +50,8 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
+import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
+
 /**
  * @author gonural
  *
@@ -59,7 +60,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     private static final String CLASS_NAME = AbstractPersistenceUnitResource.class.getName();
 
     protected Response getDescriptorMetadataInternal(String version, String persistenceUnit, String descriptorAlias, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "getDescriptorMetadataInternal", new Object[] { "GET", version, persistenceUnit, descriptorAlias, uriInfo.getRequestUri().toASCIIString() });
+        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getDescriptorMetadataInternal", new Object[] { "GET", version, persistenceUnit, descriptorAlias, uriInfo.getRequestUri().toASCIIString() });
 
         String result = null;
         try {
@@ -67,7 +68,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);
             ClassDescriptor descriptor = context.getServerSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
-                JPARSLogger.error(context.getSessionLog(), "jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
+                context.getLogger().error(context.getSessionId(), "jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
                 throw JPARSException.classOrClassDescriptorCouldNotBeFoundForEntity(descriptorAlias, persistenceUnit);
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(headers.getAcceptableMediaTypes()).toString();
@@ -81,7 +82,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getQueriesMetadataInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "getQueriesMetadataInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
+        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueriesMetadataInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
 
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
@@ -103,7 +104,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getQueryMetadataInternal(String version, String persistenceUnit, String queryName, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
+        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getQueryMetadataInternal", new Object[] { "GET", version, persistenceUnit, queryName, uriInfo.getRequestUri().toASCIIString() });
         try {
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, uriInfo.getBaseUri(), version, null);
             List<Query> returnQueries = new ArrayList<>();
@@ -130,7 +131,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     protected Response getTypesInternal(String version, String persistenceUnit, HttpHeaders headers, UriInfo uriInfo) {
-        JPARSLogger.entering(CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
+        DEFAULT_LOGGER.entering(null, CLASS_NAME, "getTypesInternal", new Object[] { "GET", version, persistenceUnit, uriInfo.getRequestUri().toASCIIString() });
         try {
             URI baseURI = uriInfo.getBaseUri();
             PersistenceContext context = getPersistenceContext(persistenceUnit, null, baseURI, version, null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,8 @@ import org.eclipse.persistence.jpa.rs.features.fieldsfiltering.FieldsFilter;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpa.rs.util.list.ReportQueryResultList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
+
+import static org.eclipse.persistence.jpa.rs.util.JPARSLogger.DEFAULT_LOGGER;
 
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided
@@ -118,7 +120,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception ex) {
-                    JPARSLogger.exception(context.getSessionLog(), "jpars_caught_exception", new Object[] {}, ex);
+                    context.getLogger().exception(context.getSessionId(), "jpars_caught_exception", new Object[] {}, ex);
                     throw JPARSException.exceptionOccurred(ex);
                 }
             }
@@ -133,9 +135,9 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 output.write(baos.toByteArray());
             } else {
                 if (context != null) {
-                    JPARSLogger.error(context.getSessionLog(), "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                    context.getLogger().error(context.getSessionId(), "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
                 } else {
-                    JPARSLogger.error("jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
+                    DEFAULT_LOGGER.error(null, "jpars_could_not_marshal_requested_result_to_requested_type", new Object[] { result });
                 }
                 throw new WebApplicationException();
             }
@@ -201,7 +203,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 try {
                     mediaType = StreamingOutputMarshaller.mediaType(accepts);
                 } catch (Exception ex) {
-                    JPARSLogger.exception("Exception in getResponseMediaType", new Object[]{headers}, ex);
+                    DEFAULT_LOGGER.exception(null, "Exception in getResponseMediaType", new Object[]{headers}, ex);
                 }
             }
         }
