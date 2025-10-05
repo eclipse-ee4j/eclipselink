@@ -272,7 +272,7 @@ public class QuerySQLTracker extends SessionEventAdapter {
         protected SQLTrackingSessionLog(Session session, QuerySQLTracker aTracker) {
             this.tracker = aTracker;
             this.originalLog = session.getSessionLog();
-            setSession(session);
+            setSessionName(session.getName());
             setWriter(this.originalLog.getWriter());
         }
 

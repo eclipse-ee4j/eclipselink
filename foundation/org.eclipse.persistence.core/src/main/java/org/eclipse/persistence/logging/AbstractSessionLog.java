@@ -18,10 +18,8 @@
 package org.eclipse.persistence.logging;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -61,13 +59,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     protected static SessionLog defaultLog;
 
-    /**
-     * Represents the session that owns this SessionLog
-     *
-     * @deprecated {@link Session} instance will be removed
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected Session session;
+    private String sessionName;
 
     /**
      * Represents prefix to logged severe
@@ -322,37 +314,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     public static void setLog(SessionLog sessionLog) {
         defaultLog = sessionLog;
-        defaultLog.setSession(null);
+        defaultLog.setSessionName(null);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Get the session.
-     * </p>
-     *
-     * @return  session
-     * @deprecated {@link Session} instance will be removed
-     */
     @Override
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public Session getSession() {
-        return this.session;
+    public String getSessionName() {
+        return sessionName;
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Set the session.
-     * </p>
-     *
-     * @param session  a Session
-     * @deprecated {@link Session} instance will be removed
-     */
     @Override
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public void setSession(Session session) {
-        this.session = session;
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
     }
 
     /**
@@ -802,25 +774,13 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write(getTimeStampString(entry.getTimeStamp()));
             writer.write("--");
         }
-        if (shouldPrintSession()) {
-            // Keep backwards compatibility in 4.x
-            if (entry.getSession() != null) {
-                writer.write(this.getSessionString(entry.getSession()));
-                writer.write("--");
-            } else if (entry.getSessionId() != null) {
-                writer.write(entry.getSessionId());
-                writer.write("--");
-            }
+        if (shouldPrintSession() && entry.getSessionId() != null) {
+            writer.write(entry.getSessionId());
+            writer.write("--");
         }
-        if (shouldPrintConnection()) {
-            // Keep backwards compatibility in 4.x
-            if (entry.getConnection() != null) {
-                writer.write(this.getConnectionString(entry.getConnection()));
-                writer.write("--");
-            } else if (entry.getConnectionId() != null) {
-                writer.write(this.getConnectionString(entry.getConnectionId()));
-                writer.write("--");
-            }
+        if (shouldPrintConnection() && entry.getConnectionId() != null) {
+            writer.write(this.getConnectionString(entry.getConnectionId()));
+            writer.write("--");
         }
         if (shouldPrintThread()) {
             writer.write(this.getThreadString(entry.getThread()));
@@ -835,42 +795,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             writer.write("--");
         }
         return writer.toString();
-    }
-
-    /**
-     * Return the current session including the type and id.
-     *
-     * @param session the current session
-     * @return the session string to be printed to the logs
-     * @deprecated Use {@link SessionLogEntry#getSessionId()} instead
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected String getSessionString(Session session) {
-        // For bug 3422759 the session to log against should be the one in the
-        // event, not the static one in the SessionLog, for there are many
-        // sessions but only one SessionLog.
-        if (session != null) {
-            return session.getSessionId();
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * Return the specified connection information.
-     *
-     * @param connection the datasource connection accessor
-     * @return connection string to be printed to the logs
-     * @deprecated Use {@link #getConnectionString(int)} instead
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    protected String getConnectionString(Accessor connection) {
-        // Bug 3630182 - if possible, print the actual connection's hashcode instead of just the accessor
-        if (connection.getDatasourceConnection() == null){
-            return CONNECTION_STRING + "(" + System.identityHashCode(connection) + ")";
-        } else {
-            return CONNECTION_STRING + "(" + System.identityHashCode(connection.getDatasourceConnection()) + ")";
-        }
     }
 
     /**

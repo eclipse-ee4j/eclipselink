@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.sessions.Session;
-
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -38,24 +35,8 @@ public class SessionLogEntry implements Serializable {
 
     // Empty message value.
     private static final String EMPTY_MESSAGE = "";
-    /**
-     * The session that generated the log entry.
-     *
-     * @deprecated Use {@link #getConnectionId()} instead, Accessor instance won't be available
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
-    protected transient Session session;
-    private final String sessionId;
+    private String sessionId;
     protected transient Thread thread;
-    /**
-     * The connection that generated the log entry.
-     *
-     * @deprecated Use {@link #getConnectionId()} instead, Accessor instance won't be available
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
-    protected transient Accessor connection;
     private final Integer connectionId;
     protected String message;
     protected Throwable throwable;
@@ -82,9 +63,6 @@ public class SessionLogEntry implements Serializable {
         this.sourceClassName = null;
         this.sourceMethodName = null;
         this.timeStamp = Instant.now();
-        // To be removed in master
-        this.session = null;
-        this.connection = null;
     }
 
     /**
@@ -129,168 +107,6 @@ public class SessionLogEntry implements Serializable {
     }
 
     /**
-     * Create a new session log entry for a session.
-     *
-     * @param session the session that generated the log entry
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Throwable)}
-     *             with the following parameters:<ul>
-     *             <li>level set to {@link SessionLog#INFO}</li>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li>
-     *             <li>category set to {@code null}</li>
-     *             <li>message set to {@code ""}</li>
-     *             <li>throwable set to {@code null}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(Session session) {
-        this(SessionLog.INFO, null, session != null ? session.getSessionId() : null, EMPTY_MESSAGE, null);
-        this.session = session;
-    }
-
-    /**
-     * Create a new session log entry for the specified session and throwable.
-     *
-     * @param session   the session that generated the log entry
-     * @param throwable the exception that caused the log entry
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Throwable)}
-     *             with the following parameters:<ul>
-     *             <li>level set to {@link SessionLog#SEVERE}</li>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li>
-     *             <li>category set to {@code null}</li>
-     *             <li>message set to {@code ""}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(Session session, Throwable throwable) {
-        this(SessionLog.SEVERE, null, session != null ? session.getSessionId() : null, EMPTY_MESSAGE, throwable);
-        this.session = session;
-    }
-
-    /**
-     * Create a new session log entry for a session and a message.
-     *
-     * @param session the session that generated the log entry
-     * @param message the log message to be recorded
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Throwable)}
-     *             with the following parameters:<ul>
-     *             <li>level set to {@link SessionLog#INFO}</li>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li>
-     *             <li>category set to {@code null}</li>
-     *             <li>throwable set to {@code null}</li></ul>
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public SessionLogEntry(Session session, String message) {
-        this(SessionLog.INFO, null, session != null ? session.getSessionId() : null, message, null);
-        this.session = session;
-    }
-
-    /**
-     * Create a new session log entry for the specified session, message, and accessor.
-     *
-     * @param session    the session that generated the log entry
-     * @param message    the log message
-     * @param connection the accessor that generated the log entry
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Object[], Integer, boolean)}
-     *             with the following parameters:<ul>
-     *             <li>level set to {@link SessionLog#INFO}</li>
-     *             <li>category set to {@code null}</li>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li>
-     *             <li>params set to {@code null}</li>
-     *             <li>connectionId set to {@link Accessor#getConnectionId()} or {@code null} when {@code connection} is {@code null}</li>
-     *             <li>shouldTranslate set to {@code false}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(Session session, String message, Accessor connection) {
-        this(SessionLog.INFO, null, session != null ? session.getSessionId() : null, message, null, connection != null ? connection.getConnectionId() : null, false);
-        this.session = session;
-        this.connection = connection;
-    }
-
-    /**
-     * Create a new session log entry for the specified log level, session, message,
-     * parameters, and datasource connection.
-     *
-     * @param level           the log level of the entry
-     * @param session         the session that generated the log entry
-     * @param message         the log message
-     * @param params          an array of parameters associated with the log message
-     * @param connection      the datasource connection that generated the log entry
-     * @param shouldTranslate whether the log message should be translated
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Object[], Integer, boolean)}
-     *             with the following parameters:<ul>
-     *             <li>category set to {@code null}</li>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(int level, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
-        this(level, null, session != null ? session.getSessionId() : null, message, params, connection != null ? connection.getConnectionId() : null, shouldTranslate, null);
-        this.session = session;
-        this.connection = connection;
-    }
-
-    /**
-     * Create a new session log entry for the specified log level, category, session,
-     * message, parameters, and datasource connection.
-     *
-     * @param level the log level
-     * @param category the category
-     * @param session the session
-     * @param message the message
-     * @param params array of parameters
-     * @param connection the accessor
-     * @param shouldTranslate true if the entry should be translated
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Object[], Integer, boolean)}
-     *             with the following parameters:<ul>
-     *             <li>sessionId set to {@link Session#getSessionId()} or {@code null} when {@code session} is {@code null}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(int level, String category, Session session, String message, Object[] params, Accessor connection, boolean shouldTranslate) {
-        this(level, category, session != null ? session.getSessionId() : null, message, params, connection != null ? connection.getConnectionId() : null, shouldTranslate, null);
-        this.session = session;
-        this.connection = connection;
-    }
-
-    /**
-     * Creates a new session log entry for the specified session, log level, category, and exception.
-     *
-     * @param session    the session that generated the log entry
-     * @param level      the log level of the entry
-     * @param category   the category of the log entry
-     * @param throwable  the exception associated with the log entry
-     *
-     * @see SessionLog
-     * @deprecated Use {@link #SessionLogEntry(int, String, String, String, Throwable)}
-     *             with the following parameters:<ul>
-     *             <li>message set to {@code ""}</li></ul>
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public SessionLogEntry(Session session, int level, String category, Throwable throwable) {
-        this(level, category, session != null ? session.getSessionId() : null, EMPTY_MESSAGE, throwable);
-        this.session = session;
-    }
-
-    /**
-     * Return the connection that generated the log entry.
-     *
-     * @return the connection accessor
-     * @deprecated Use {@link #getConnectionId()} instead
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public Accessor getConnection() {
-        return connection;
-    }
-
-    /**
      * Return the datasource connection identifier that generated the log entry.
      *
      * @return the datasource connection identifier
@@ -319,15 +135,6 @@ public class SessionLogEntry implements Serializable {
      */
     public String getMessage() {
         return message;
-    }
-
-    /**
-     * Return the session that generated the log entry.
-     *
-     * @return the session
-     */
-    public Session getSession() {
-        return session;
     }
 
     /**
@@ -412,17 +219,6 @@ public class SessionLogEntry implements Serializable {
         return getMessage() != null && !getMessage().isEmpty();
     }
 
-    /**
-     * Set the connection that generated the log entry.
-     *
-     * @param connection the connection
-     * @deprecated Accessor instance will be removed and replaced with readonly {@code connectionId}
-     */
-    @Deprecated(forRemoval=true, since="4.0.9")
-    public void setConnection(Accessor connection) {
-        this.connection = connection;
-    }
-
     public void setTimeStamp(Instant timeStamp) {
         this.timeStamp = timeStamp;
     }
@@ -446,12 +242,12 @@ public class SessionLogEntry implements Serializable {
     }
 
     /**
-     * Set the session that generated the log entry.
+     * Set the session identifier that generated the log entry.
      *
-     * @param session the session
+     * @param sessionId the session identifier
      */
-    public void setSession(Session session) {
-        this.session = session;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     /**

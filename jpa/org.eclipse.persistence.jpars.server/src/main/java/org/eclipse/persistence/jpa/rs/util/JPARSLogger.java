@@ -22,19 +22,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.logging.Level;
 
 import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * Logger for EclipseLink JPA-RS related functionality.
@@ -42,35 +39,33 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class JPARSLogger {
 
-    private static final SessionLog defaultLog = AbstractSessionLog.getLog();
+    public static final JPARSLogger DEFAULT_LOGGER = new JPARSLogger(AbstractSessionLog.getLog());
 
-    /**
-     * Entering
-     *
-     * @param sourceClass the source class
-     * @param sourceMethod the source method
-     * @param params parameters
-     */
-    public static void entering(String sourceClass, String sourceMethod, Object[] params) {
-        entering(defaultLog, sourceClass, sourceMethod, params);
+    private SessionLog sessionLog;
+
+    public JPARSLogger(SessionLog sessionLog) {
+        this.sessionLog = sessionLog;
+    }
+
+
+    public void setSessionLog(SessionLog sessionLog) {
+        this.sessionLog = sessionLog;
     }
 
     /**
      * Entering
      *
-     * @param sessionLog the log
      * @param sourceClass the source class
      * @param sourceMethod the source method
-     * @param params parameters
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
+     * @param params an array of parameters associated with the log message
      */
-    public static void entering(SessionLog sessionLog, String sourceClass, String sourceMethod, Object[] params) {
+    public void entering(String sourceClass, String sourceMethod, String sessionId, Object[] params) {
         // Logger logs entering logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
-        if (isLoggableFinest(sessionLog)) {
-            SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+        if (isLoggableFinest()) {
+            SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, sessionId, "ENTRY {0}", getParamsWithAdditionalInfo(params), null, false);
             sle.setSourceClassName(sourceClass);
             sle.setSourceMethodName(sourceMethod);
-            sle.setMessage("ENTRY {0}");
-            sle.setParameters(getParamsWithAdditionalInfo(params));
             sessionLog.log(sle);
         }
     }
@@ -80,40 +75,28 @@ public class JPARSLogger {
      *
      * @param sourceClass the source class
      * @param sourceMethod the source method
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param in the input stream
      */
-    public static void entering(String sourceClass, String sourceMethod, InputStream in) {
-        entering(defaultLog, sourceClass, sourceMethod, in);
-    }
-
-    /**
-     * Entering
-     *
-     * @param sessionLog log receiving the message
-     * @param sourceClass the source class
-     * @param sourceMethod the source method
-     * @param in the input stream
-     */
-    public static void entering(SessionLog sessionLog, String sourceClass, String sourceMethod, InputStream in) {
+    public void entering(String sourceClass, String sourceMethod, String sessionId, InputStream in) {
         // Logger logs entering logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
 
         // make sure input stream supports mark so that the or create a new BufferedInputStream which supports mark.
         // when mark is supported, the stream remembers all the bytes read after the call to mark and
         // stands ready to supply those same bytes again if and whenever the method reset is called.
-        if (isLoggableFinest(sessionLog) && (in.markSupported())) {
+        if (isLoggableFinest() && (in.markSupported())) {
             try {
                 String data = readData(in);
                 in.reset();
                 if (data != null) {
-                    SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+                    Object[] logParams = getParamsWithAdditionalInfo(new Object[] { data });
+                    SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, sessionId, "ENTRY {0}", logParams, null, false);
                     sle.setSourceClassName(sourceClass);
                     sle.setSourceMethodName(sourceMethod);
-                    sle.setMessage("ENTRY {0}");
-                    sle.setParameters(getParamsWithAdditionalInfo(new Object[] { data }));
                     sessionLog.log(sle);
                 }
             } catch (Throwable throwable) {
-                exception(throwable.getMessage(), new Object[] {}, throwable);
+                exception(sessionId, throwable.getMessage(), new Object[] {}, throwable);
             }
         }
     }
@@ -123,32 +106,20 @@ public class JPARSLogger {
      *
      * @param sourceClass the source class
      * @param sourceMethod the source method
-     * @param params parameters
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
+     * @param params an array of parameters associated with the log message
      */
-    public static void exiting(String sourceClass, String sourceMethod, Object[] params) {
-        exiting(defaultLog, sourceClass, sourceMethod, params);
-    }
-
-    /**
-     * Exiting
-     *
-     * @param sessionLog the log
-     * @param sourceClass the source class
-     * @param sourceMethod the source method
-     * @param params parameters
-     */
-    public static void exiting(SessionLog sessionLog, String sourceClass, String sourceMethod, Object[] params) {
+    public void exiting(String sourceClass, String sourceMethod, String sessionId, Object[] params) {
         // Logger logs exiting logs when log level <= FINER. But, we want to get these logs created only when the log level is FINEST.
         if (isLoggableFinest()) {
             try {
-                SessionLogEntry sle = newLogEntry(sessionLog.getSession());
+                Object[] logParams = new Object[] {new MethodExitLogData(getParamsWithAdditionalInfo(params))};
+                SessionLogEntry sle = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, sessionId, "RETURN {0}", logParams, null, false);
                 sle.setSourceClassName(sourceClass);
                 sle.setSourceMethodName(sourceMethod);
-                sle.setMessage("RETURN {0}");
-                sle.setParameters(new Object[] {new MethodExitLogData(getParamsWithAdditionalInfo(params))});
                 sessionLog.log(sle);
             } catch (Throwable throwable) {
-                exception(throwable.getMessage(), new Object[] {}, throwable);
+                exception(sessionId, throwable.getMessage(), new Object[] {}, throwable);
             }
         }
     }
@@ -158,37 +129,24 @@ public class JPARSLogger {
      *
      * @param sourceClass the source class
      * @param sourceMethod the source method
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param context the context
      * @param object the object
      * @param mediaType the media type
      */
-    public static void exiting(String sourceClass, String sourceMethod, PersistenceContext context, Object object, MediaType mediaType) {
-        exiting(defaultLog, sourceClass, sourceMethod, context, object, mediaType);
-    }
-
-    /**
-     * Exiting
-     *
-     * @param sessionLog the log
-     * @param sourceClass the source class
-     * @param sourceMethod the source method
-     * @param context the context
-     * @param object the object
-     * @param mediaType the media type
-     */
-    public static void exiting(SessionLog sessionLog, String sourceClass, String sourceMethod, PersistenceContext context, Object object, MediaType mediaType) {
+    public void exiting(String sourceClass, String sourceMethod, String sessionId, PersistenceContext context, Object object, MediaType mediaType) {
         // Log marshaled object only when the log level is FINEST
-        if (isLoggableFinest(sessionLog) && (context != null) && (object != null) && (mediaType != null)) {
+        if (isLoggableFinest() && (context != null) && (object != null) && (mediaType != null)) {
             try {
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 context.marshall(object, mediaType, outputStream, true);
                 if (object instanceof PersistenceWeavedRest) {
-                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { object.getClass().getName(), outputStream.toString(StandardCharsets.UTF_8)});
+                    exiting(sourceClass, sourceMethod, sessionId, new Object[] { object.getClass().getName(), outputStream.toString(StandardCharsets.UTF_8)});
                 } else {
-                    exiting(sessionLog, sourceClass, sourceMethod, new Object[] { outputStream.toString(StandardCharsets.UTF_8) });
+                    exiting(sourceClass, sourceMethod, sessionId, new Object[] { outputStream.toString(StandardCharsets.UTF_8) });
                 }
             } catch (Throwable throwable) {
-                exception(throwable.getMessage(), new Object[] {}, throwable);
+                exception(sessionId, throwable.getMessage(), new Object[] {}, throwable);
             }
         }
     }
@@ -196,108 +154,57 @@ public class JPARSLogger {
     /**
      * Finest
      *
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param message the message
      * @param params parameters
      */
-    public static void finest(String message, Object[] params) {
-        finest(defaultLog, message, params);
-    }
-
-    /**
-     * Finest
-     *
-     * @param sessionLog the log
-     * @param message the message
-     * @param params parameters
-     */
-    public static void finest(SessionLog sessionLog, String message, Object[] params) {
-        log(sessionLog, SessionLog.FINEST, message, getParamsWithAdditionalInfo(params));
+    public void finest(String sessionId, String message, Object[] params) {
+        log(SessionLog.FINEST, sessionId, message, getParamsWithAdditionalInfo(params));
     }
 
     /**
      * Fine
      *
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param message the message
      * @param params parameters
      */
-    public static void fine(String message, Object[] params) {
-        fine(defaultLog, message, params);
-    }
-
-    /**
-     * Fine
-     *
-     * @param sessionLog the log
-     * @param message the message
-     * @param params parameters
-     */
-    public static void fine(SessionLog sessionLog, String message, Object[] params) {
-        log(sessionLog, SessionLog.FINE, message, getParamsWithAdditionalInfo(params));
+    public void fine(String sessionId, String message, Object[] params) {
+        log(SessionLog.FINE, sessionId, message, getParamsWithAdditionalInfo(params));
     }
 
     /**
      * Warning
      *
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param message the message
      * @param params parameters
      */
-    public static void warning(String message, Object[] params) {
-        warning(defaultLog, message, params);
-    }
-
-    /**
-     * Warning
-     *
-     * @param sessionLog the log
-     * @param message the message
-     * @param params parameters
-     */
-    public static void warning(SessionLog sessionLog, String message, Object[] params) {
-        log(sessionLog, SessionLog.WARNING, message, getParamsWithAdditionalInfo(params));
+    public void warning(String sessionId, String message, Object[] params) {
+        log(SessionLog.WARNING, sessionId, message, getParamsWithAdditionalInfo(params));
     }
 
     /**
      * Error
      *
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param message the message
      * @param params parameters
      */
-    public static void error(String message, Object[] params) {
-        error(defaultLog, message, params);
-    }
-
-    /**
-     * Error
-     *
-     * @param sessionLog the log
-     * @param message the message
-     * @param params parameters
-     */
-    public static void error(SessionLog sessionLog, String message, Object[] params) {
-        log(sessionLog, SessionLog.SEVERE, message, getParamsWithAdditionalInfo(params));
+    public void error(String sessionId, String message, Object[] params) {
+        log(SessionLog.SEVERE, sessionId, message, getParamsWithAdditionalInfo(params));
     }
 
     /**
      * Exception
      *
+     * @param sessionId the identifier of the session that generated the log entry or {@code null} when no session is available
      * @param message the message
      * @param params parameters
      * @param exc the throwable
      */
-    public static void exception(String message, Object[] params, Throwable exc) {
-        exception(defaultLog, message, params, exc);
-    }
-
-    /**
-     * Exception
-     *
-     * @param sessionLog the log
-     * @param message the message
-     * @param params parameters
-     * @param exc the throwable
-     */
-    public static void exception(SessionLog sessionLog, String message, Object[] params, Throwable exc) {
-        log(sessionLog, SessionLog.SEVERE, message, getParamsWithAdditionalInfo(params), exc);
+    public void exception(String sessionId, String message, Object[] params, Throwable exc) {
+        log(SessionLog.SEVERE, sessionId, message, getParamsWithAdditionalInfo(params), exc);
     }
 
     /**
@@ -305,37 +212,18 @@ public class JPARSLogger {
      *
      * @param level the new log level
      */
-    public static void setLogLevel(Level level) {
-        setLogLevel(defaultLog, AbstractSessionLog.translateStringToLoggingLevel(level.getName()));
-    }
-
-    /**
-     * Sets the log level
-     *
-     * @param sessionLog the log
-     * @param level the new log level
-     */
-    public static void setLogLevel(SessionLog sessionLog, int level) {
+    public void setLogLevel(int level) {
         sessionLog.setLevel(level, SessionLog.JPARS);
     }
 
     /**
      * @return true if log level is set to {@link SessionLog#FINEST}
      */
-    public static boolean isLoggableFinest() {
-        return isLoggableFinest(defaultLog);
-    }
-
-    /**
-     * @param sessionLog the log
-     *
-     * @return true if log level is set to {@link SessionLog#FINEST}
-     */
-    public static boolean isLoggableFinest(SessionLog sessionLog) {
+    public boolean isLoggableFinest() {
         return sessionLog.shouldLog(SessionLog.FINEST, SessionLog.JPARS);
     }
 
-    private static Object[] getParamsWithAdditionalInfo(Object[] params) {
+    private Object[] getParamsWithAdditionalInfo(Object[] params) {
         String requestId = (String) DataStorage.get(DataStorage.REQUEST_ID);
         if (params != null) {
             Object[] paramsWithRequestId = new Object[params.length + 1];
@@ -346,32 +234,20 @@ public class JPARSLogger {
         return new Object[] { requestId };
     }
 
-    private static void log(SessionLog sessionLog, int level, String message, Object[] params) {
-        log(sessionLog, level, message, params, null);
+    private void log(int level, String sessionId, String message, Object[] params) {
+        log(level, sessionId, message, params, null);
     }
 
-    private static void log(SessionLog sessionLog, int level, String message, Object[] params, Throwable t) {
+    private void log(int level, String sessionId, String message, Object[] params, Throwable t) {
         Objects.requireNonNull(sessionLog);
         if (sessionLog.shouldLog(level, SessionLog.JPARS)) {
-            SessionLogEntry sle = newLogEntry(sessionLog.getSession());
-            sle.setLevel(level);
-            sle.setMessage(LoggingLocalization.buildMessage(message, params));
+            SessionLogEntry sle = new SessionLogEntry(level, SessionLog.JPARS, sessionId, LoggingLocalization.buildMessage(message, params), t);
             sle.setParameters(params);
-            sle.setException(t);
             sessionLog.log(sle);
         }
     }
 
-    private static SessionLogEntry newLogEntry(Session session) {
-        // Keep backwards compatibility in 4.x
-        AbstractSession abstractSession = session instanceof AbstractSession ? (AbstractSession) session : null;
-        SessionLogEntry entry = new SessionLogEntry(SessionLog.FINEST, SessionLog.JPARS, abstractSession != null ? abstractSession.getSessionId() : null, "", null);
-        // New SessionLogEntry constructors do not accept Session, so it must be set
-        entry.setSession(abstractSession);
-        return entry;
-    }
-
-    private static String readData(InputStream is) throws IOException {
+    private String readData(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ByteArrayInputStream bais = null;
         int nRead;
