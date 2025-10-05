@@ -23,9 +23,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestCase;
 
-import static java.sql.Types.VARCHAR;
-
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
