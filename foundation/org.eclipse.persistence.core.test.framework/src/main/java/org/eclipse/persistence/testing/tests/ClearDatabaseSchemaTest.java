@@ -23,6 +23,9 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.testing.framework.TestCase;
 
+import static java.sql.Types.VARCHAR;
+
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -134,56 +137,92 @@ public class ClearDatabaseSchemaTest extends TestCase {
         session.executeNonSelectingSQL("PURGE recyclebin");
     }
 
-    @SuppressWarnings("unchecked")
     private void resetDB2(AbstractSession session) {
-        // 1) Determine target schema (fallback to USER), TRIM padding and quote
-        Vector<ArrayRecord> rows = session.executeSQL("VALUES COALESCE(CURRENT SCHEMA, USER)");
-        String schema = ((String) rows.get(0).getValues().get(0)).trim().replace("\"", "\"\"");
-
-        // Safety guard: never touch system schemas
-        switch (schema) {
-            case "SYSIBM": case "SYSIBMADM": case "SYSCAT": case "SYSTOOLS":
-            case "SYSSTAT": case "SYSFUN": case "SYSPROC": case "SYSIBMTS":
-            case "NULLID":
-                throw new IllegalStateException("Refusing to drop system schema: " + schema);
-        }
-
-        // Remove error table up front, so SYSPROC.ADMIN_DROP_SCHEMA can create it
-        // without issues
-        try {
-           session.executeNonSelectingSQL("DROP TABLE SYSTOOLS.DROP_ERRORS");
-        } catch (Exception ignore) {
-           // no-op
-        }
-
-        // 2) Drop the schema and everything in it.
         session.executeNonSelectingSQL("""
-            BEGIN ATOMIC
-              DECLARE v_schema     VARCHAR(128);
-              DECLARE v_errschema  VARCHAR(128);
-              DECLARE v_errtable   VARCHAR(128);
+            BEGIN
+              -- Optional: continue if an object isn't found
+              DECLARE CONTINUE HANDLER FOR SQLSTATE '42704' BEGIN END;
 
-              -- Recompute from session to avoid literal issues; Db2 will use the variable values
-              SET v_schema = COALESCE(CURRENT_SCHEMA, USER);
-              SET v_errschema = 'SYSTOOLS';
-              SET v_errtable  = 'DROP_ERRORS';
+              -- 1) Drop views
+              FOR v AS
+                  SELECT
+                      VIEWSCHEMA, VIEWNAME
+                  FROM
+                      SYSCAT.VIEWS
+                  WHERE
+                      RTRIM(VIEWSCHEMA) = RTRIM(CURRENT SCHEMA)
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP VIEW "' || RTRIM(v.VIEWSCHEMA) || '"."' || RTRIM(v.VIEWNAME) || '"';
+              END FOR;
 
-              CALL SYSPROC.ADMIN_DROP_SCHEMA(v_schema, NULL, v_errschema, v_errtable);
+
+              -- 2) Drop constraints (FK/PK/UNIQUE/CHECK)
+              FOR c AS
+                  SELECT
+                      CONSTNAME, TABSCHEMA, TABNAME
+                  FROM
+                      SYSCAT.TABCONST
+                  WHERE
+                      RTRIM(TABSCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      TYPE IN ('F','P','U','C')
+              DO
+                  EXECUTE IMMEDIATE
+                      'ALTER TABLE "' || RTRIM(c.TABSCHEMA) || '"."' || RTRIM(c.TABNAME) ||
+                      '" DROP CONSTRAINT "' || RTRIM(c.CONSTNAME) || '"';
+              END FOR;
+
+
+              -- 3) Drop tables
+              FOR t AS
+                  SELECT
+                      TABSCHEMA, TABNAME
+                  FROM
+                      SYSCAT.TABLES
+                  WHERE
+                      RTRIM(TABSCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      TYPE = 'T'
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP TABLE "' || RTRIM(t.TABSCHEMA) || '"."' || RTRIM(t.TABNAME) || '"';
+              END FOR;
+
+
+              -- 4) Drop sequences
+              FOR q AS
+                  SELECT
+                      SEQSCHEMA, SEQNAME
+                  FROM
+                      SYSCAT.SEQUENCES
+                  WHERE
+                      RTRIM(SEQSCHEMA) = RTRIM(CURRENT SCHEMA)
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP SEQUENCE "' || RTRIM(q.SEQSCHEMA) || '"."' || RTRIM(q.SEQNAME) || '"';
+              END FOR;
+
+
+              -- 5) Drop routines using SPECIFIC names (avoids overload issues)
+              FOR r AS
+                  SELECT
+                      ROUTINESCHEMA, SPECIFICNAME, ROUTINETYPE
+                  FROM SYSCAT.ROUTINES
+                  WHERE
+                      RTRIM(ROUTINESCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      ROUTINETYPE IN ('F','P')
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP ' ||
+                      CASE r.ROUTINETYPE
+                          WHEN 'F' THEN
+                              'SPECIFIC FUNCTION'
+                          ELSE
+                              'SPECIFIC PROCEDURE'
+                      END ||
+                      ' "' || RTRIM(r.ROUTINESCHEMA) || '"."' || RTRIM(r.SPECIFICNAME) || '"';
+              END FOR;
             END
-        """);
-
-        // 3) Re-create the schema (quote & escape)
-        session.executeNonSelectingSQL("CREATE SCHEMA \"" + schema + "\"");
-
-        // 4) Re-assert CURRENT SCHEMA
-        session.executeNonSelectingSQL("SET CURRENT SCHEMA \"" + schema + "\"");
-
-        // 5) Optional: clean up the error table (ignore if it’s locked or missing)
-        try {
-           session.executeNonSelectingSQL("DROP TABLE SYSTOOLS.DROP_ERRORS");
-        } catch (Exception ignore) {
-           // no-op
-        }
+            """);
     }
 
     @SuppressWarnings({"unchecked"})
