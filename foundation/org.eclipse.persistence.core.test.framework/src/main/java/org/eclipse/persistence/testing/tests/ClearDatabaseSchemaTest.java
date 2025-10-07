@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to Eclipse Foundation.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -39,13 +40,13 @@ import java.util.Vector;
 public class ClearDatabaseSchemaTest extends TestCase {
 
     public ClearDatabaseSchemaTest() {
-        setDescription("Clears the database for MYSQL, Oracle DB, Derby, MSSQL, HSQL, Postgres.");
+        setDescription("Clears the database for MYSQL, Oracle DB, Derby, MSSQL, HSQL, Postgres, DB2.");
     }
 
     @Override
     public void test() {
         //TODO: add missing platforms, currently supported are:
-        //MySQL, MariaDB, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL
+        //MySQL, MariaDB, Oracle DB, Derby, HSQLDB, PostgreSQL, MSSQL, DB2
         AbstractSession session = (AbstractSession) getSession();
         Platform platform = session.getDatasourcePlatform();
         if (platform.isMySQL() || platform.isMariaDB()) {
@@ -62,6 +63,8 @@ public class ClearDatabaseSchemaTest extends TestCase {
             resetHsql(session);
         } else if (platform.isPostgreSQL()) {
             resetPostgres(session);
+        } else if (platform.isDB2()) {
+            resetDB2(session);
         } else {
             fail("Clear DB test run on unsupported DB");
         }
@@ -129,6 +132,106 @@ public class ClearDatabaseSchemaTest extends TestCase {
                 END LOOP; END;""");
         session.executeNonSelectingSQL("PURGE user_recyclebin");
         session.executeNonSelectingSQL("PURGE recyclebin");
+    }
+
+    private void resetDB2(AbstractSession session) {
+        session.executeNonSelectingSQL("""
+            BEGIN
+              -- Optional: continue if an object isn't found
+              DECLARE CONTINUE HANDLER FOR SQLSTATE '42704' BEGIN END;
+
+              -- 1) Drop aliases
+              FOR a AS
+                  SELECT
+                      TABSCHEMA, TABNAME
+                  FROM
+                      SYSCAT.TABLES
+                  WHERE RTRIM(TABSCHEMA) = RTRIM(CURRENT SCHEMA)
+                    AND TYPE = 'A'              -- alias
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP ALIAS "' || RTRIM(a.TABSCHEMA) || '"."' || RTRIM(a.TABNAME) || '"';
+              END FOR;
+
+              -- 2) Drop views
+              FOR v AS
+                  SELECT
+                      VIEWSCHEMA, VIEWNAME
+                  FROM
+                      SYSCAT.VIEWS
+                  WHERE
+                      RTRIM(VIEWSCHEMA) = RTRIM(CURRENT SCHEMA)
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP VIEW "' || RTRIM(v.VIEWSCHEMA) || '"."' || RTRIM(v.VIEWNAME) || '"';
+              END FOR;
+
+              -- 3) Drop routines using SPECIFIC names (avoids overload issues)
+              FOR r AS
+                  SELECT
+                      ROUTINESCHEMA, SPECIFICNAME, ROUTINETYPE
+                  FROM SYSCAT.ROUTINES
+                  WHERE
+                      RTRIM(ROUTINESCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      ROUTINETYPE IN ('F','P')
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP ' ||
+                      CASE r.ROUTINETYPE
+                          WHEN 'F' THEN
+                              'SPECIFIC FUNCTION'
+                          ELSE
+                              'SPECIFIC PROCEDURE'
+                      END ||
+                      ' "' || RTRIM(r.ROUTINESCHEMA) || '"."' || RTRIM(r.SPECIFICNAME) || '"';
+              END FOR;
+
+
+              -- 4) Drop constraints (FK/PK/UNIQUE/CHECK)
+              FOR c AS
+                  SELECT
+                      CONSTNAME, TABSCHEMA, TABNAME
+                  FROM
+                      SYSCAT.TABCONST
+                  WHERE
+                      RTRIM(TABSCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      TYPE IN ('F','P','U','C')
+              DO
+                  EXECUTE IMMEDIATE
+                      'ALTER TABLE "' || RTRIM(c.TABSCHEMA) || '"."' || RTRIM(c.TABNAME) ||
+                      '" DROP CONSTRAINT "' || RTRIM(c.CONSTNAME) || '"';
+              END FOR;
+
+
+              -- 5) Drop tables
+              FOR t AS
+                  SELECT
+                      TABSCHEMA, TABNAME
+                  FROM
+                      SYSCAT.TABLES
+                  WHERE
+                      RTRIM(TABSCHEMA) = RTRIM(CURRENT SCHEMA) AND
+                      TYPE = 'T'
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP TABLE "' || RTRIM(t.TABSCHEMA) || '"."' || RTRIM(t.TABNAME) || '"';
+              END FOR;
+
+
+              -- 6) Drop sequences
+              FOR q AS
+                  SELECT
+                      SEQSCHEMA, SEQNAME
+                  FROM
+                      SYSCAT.SEQUENCES
+                  WHERE
+                      RTRIM(SEQSCHEMA) = RTRIM(CURRENT SCHEMA)
+              DO
+                  EXECUTE IMMEDIATE
+                      'DROP SEQUENCE "' || RTRIM(q.SEQSCHEMA) || '"."' || RTRIM(q.SEQNAME) || '"';
+              END FOR;
+            END
+            """);
     }
 
     @SuppressWarnings({"unchecked"})
