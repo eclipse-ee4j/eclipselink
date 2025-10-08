@@ -741,7 +741,7 @@ public class CoreAttributeGroup<
     //changed for EclipseLink 415779 to avoid stack overflows when using graphs with circular references
     @Override
     public String toString() {
-        String className = String.valueOf(getClass().getSimpleName());
+        String className = getClass().getSimpleName();
         String name = String.valueOf(getName());
         if (toStringLoopCount >1) {
             return className+StringHelper.LEFT_BRACKET+name+ " Loop detected "+ StringHelper.RIGHT_BRACKET;

@@ -347,7 +347,7 @@ public class IndexMetadata extends ORMetadata {
             // Append all the field names to it.
             for (String field : indexDefinition.getFields()) {
                 name.append(FIELD_SEP);
-                name.append(String.valueOf(field));
+                name.append(field);
             }
 
             return name.toString();
