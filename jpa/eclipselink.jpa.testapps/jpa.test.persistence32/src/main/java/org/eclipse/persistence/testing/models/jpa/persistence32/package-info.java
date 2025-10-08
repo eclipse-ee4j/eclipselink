@@ -9,29 +9,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
-@TableGenerator(
-        name="TableGeneratorPackageScope",
-        table="PERSISTENCE32_TABLE_PCKG_GENERATOR",
-        pkColumnName="SEQ_NAME",
-        valueColumnName="SEQ_COUNT"
-)
-@TableGenerator(
-        table="PERSISTENCE32_TABLE_PCKG_GENERATOR1",
-        pkColumnName="SEQ_NAME",
-        valueColumnName="SEQ_COUNT"
-)
-@SequenceGenerator(
-        name="SequenceGeneratorPackageScope",
-        sequenceName = "PERSISTENCE32_SEQUENCE_PCKG_GENERATOR",
-        allocationSize = 1
-)
-@SequenceGenerator(
-        sequenceName = "PERSISTENCE32_SEQUENCE_PCKG_GENERATOR1",
-        allocationSize = 1
-)
+@TableGenerators({
+        @TableGenerator(
+                name = "TableGeneratorPackageScope",
+                table = "PERSISTENCE32_TABLE_PCKG_GENERATOR",
+                pkColumnName = "SEQ_NAME",
+                valueColumnName = "SEQ_COUNT"
+        ),
+        @TableGenerator(
+                table = "PERSISTENCE32_TABLE_PCKG_GENERATOR1",
+                pkColumnName = "SEQ_NAME",
+                valueColumnName = "SEQ_COUNT"
+        )
+})
+@SequenceGenerators({
+        @SequenceGenerator(
+                name = "SequenceGeneratorPackageScope",
+                sequenceName = "PERSISTENCE32_SEQUENCE_PCKG_GENERATOR",
+                allocationSize = 1
+        ),
+        @SequenceGenerator(
+                sequenceName = "PERSISTENCE32_SEQUENCE_PCKG_GENERATOR1",
+                allocationSize = 1
+        )
+})
 
 package org.eclipse.persistence.testing.models.jpa.persistence32;
 
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.SequenceGenerators;
 import jakarta.persistence.TableGenerator;
+import jakarta.persistence.TableGenerators;
 
