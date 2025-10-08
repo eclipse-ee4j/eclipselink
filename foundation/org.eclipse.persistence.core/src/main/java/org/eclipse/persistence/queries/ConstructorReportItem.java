@@ -21,7 +21,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -236,14 +235,14 @@ public class ConstructorReportItem extends ReportItem  {
 
     @Override
     public String toString() {
-        String name = StringHelper.nonNullString(getName());
+        String name = String.valueOf(getName());
         // Calculate string length
         int length = TO_STR_PREFIX.length() + name.length()
                 + TO_STR_ARRAY.length() + TO_STR_SUFFIX.length();
         int size = reportItems != null ? reportItems.size() : 0;
         String[] items = new String[size];
         for (int i=0; i < size; i++) {
-            items[i] = StringHelper.nonNullString(reportItems.get(i).toString());
+            items[i] = String.valueOf(reportItems.get(i).toString());
             length += items[i].length();
         }
         // Build string
