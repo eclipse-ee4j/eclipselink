@@ -178,8 +178,8 @@
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
         <!--Eclipse Dependencies version-->
-        <eclipselink.asm.version>9.8.0</eclipselink.asm.version>
-        <asm.version>9.8</asm.version>
+        <eclipselink.asm.version>9.9.0</eclipselink.asm.version>
+        <asm.version>9.9</asm.version>
         <activation-api.version>2.1.4</activation-api.version>
         <angus-activation.version>2.0.3</angus-activation.version>
         <annotation.version>2.1.1</annotation.version>
