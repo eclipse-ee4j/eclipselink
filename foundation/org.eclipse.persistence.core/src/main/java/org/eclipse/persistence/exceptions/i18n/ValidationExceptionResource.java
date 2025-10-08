@@ -375,7 +375,7 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7358", "Incorrect ASM service name provided."},
                                            { "7359", "No any ASM service available."},
                                            { "7360", "Database password was encrypted by deprecated algorithm. Reencrypt it by `passwordUpdate.sh` from eclipselink.zip bundle."},
-                                           { "7364", "In the entity [{0}] in NamedNativeQuery [{1}] is implicit SqlResultSetMapping (\"entities\" or \"classes\" or \"columns\" attribute) used together with external SqlResultSetMapping referred by \"resultSetMapping\" attribute. This is not allowed."},
+                                           { "7364", "In the entity [{0}] in NamedNativeQuery [{1}], an implicit SqlResultSetMapping (\"entities\", \"classes\", or \"columns\" attribute) is used together with an external SqlResultSetMapping that is referred to by the \"resultSetMapping\" attribute. This combination is not allowed."},
  };
 
     /**
