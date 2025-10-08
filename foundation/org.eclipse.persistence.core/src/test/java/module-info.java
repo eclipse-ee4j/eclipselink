@@ -19,6 +19,7 @@ open module org.eclipse.persistence.core.test {
     requires jakarta.xml.bind;
     requires org.eclipse.persistence.core;
     requires junit;
+    requires com.tngtech.archunit;
 
     exports org.eclipse.persistence.testing.oxm;
     exports org.eclipse.persistence.testing.oxm.classloader;

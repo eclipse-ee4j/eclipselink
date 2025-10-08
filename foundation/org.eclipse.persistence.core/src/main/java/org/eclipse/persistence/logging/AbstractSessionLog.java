@@ -17,7 +17,6 @@
 //       - 526957 : Split the logging and trace messages
 package org.eclipse.persistence.logging;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 
@@ -822,7 +821,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         try {
                 this.getWriter().write(getPrefixString(level, category));
         } catch (IOException exception) {
-            throw ValidationException.logIOError(exception);
+            throw new RuntimeException(exception);
         }
     }
 

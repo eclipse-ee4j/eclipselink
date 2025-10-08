@@ -135,6 +135,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.parsson</groupId>
             <artifactId>parsson</artifactId>
             <scope>test</scope>
@@ -347,6 +352,7 @@
                         <configuration>
                             <includes>
                                 <include>org/eclipse/persistence/testing/tests/junit/**/*Test</include>
+                                <include>org/eclipse/persistence/testing/tests/archunit/**/*Test</include>
                             </includes>
                         </configuration>
                     </execution>
