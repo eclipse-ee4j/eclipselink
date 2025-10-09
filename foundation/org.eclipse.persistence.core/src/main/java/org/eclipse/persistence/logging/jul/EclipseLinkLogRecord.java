@@ -20,7 +20,7 @@ import java.util.logging.LogRecord;
 /**
  * TopLink's own logging properties that will be formatted by a TopLink Formatter.
  */
-public class EclipseLinkLogRecord extends LogRecord {
+class EclipseLinkLogRecord extends LogRecord {
     private String sessionString;
     private Integer connectionId;
     private boolean shouldLogExceptionStackTrace;

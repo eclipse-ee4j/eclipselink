@@ -13,7 +13,7 @@
 module org.eclipse.persistence.core {
 
     requires transitive java.desktop;
-    requires transitive java.logging;
+    requires java.logging;
     requires transitive java.management; //server platforms
     requires transitive java.naming;
     requires transitive java.rmi;
