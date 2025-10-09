@@ -39,10 +39,22 @@ public class ArchCoreUnitTest {
     @Test
     public void checkLogging() {
         final String[] sourcePackageNames = new String[]{
-                "org.eclipse.persistence.logging",
+                "org.eclipse.persistence.logging"
+        };
+        final String[] dependencyPackages = new String[]{
+                "org.eclipse.persistence.internal.localization"};
+
+        checkPackageDependencies(sourcePackageNames, dependencyPackages);
+    }
+
+    // Verify that package org.eclipse.persistence.logging.jul doesn't have any dependencies to other packages than resource bundles
+    @Test
+    public void checkLoggingJul() {
+        final String[] sourcePackageNames = new String[]{
                 "org.eclipse.persistence.logging.jul"
         };
         final String[] dependencyPackages = new String[]{
+                "org.eclipse.persistence.logging",
                 "org.eclipse.persistence.internal.localization"};
 
         checkPackageDependencies(sourcePackageNames, dependencyPackages);
