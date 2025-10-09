@@ -36,7 +36,6 @@ import java.util.logging.StreamHandler;
  *  @see org.eclipse.persistence.logging.SessionLog
  *  @see org.eclipse.persistence.logging.AbstractSessionLog
  *  @see org.eclipse.persistence.logging.SessionLogEntry
- *  @see org.eclipse.persistence.sessions.Session
  */
 public class JavaLog extends AbstractSessionLog {
 

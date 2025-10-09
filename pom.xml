@@ -214,6 +214,7 @@
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.15</ant.version>
+        <archunit.version>1.4.1</archunit.version>
         <aspectj.version> 1.9.22.1</aspectj.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.17.1.0</derby.version>
@@ -737,6 +738,12 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+            </dependency>
+            <!--Test framework to specify and assert architecture rules in plain Java-->
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit</artifactId>
+                <version>${archunit.version}</version>
             </dependency>
             <!--APIs and other libs used in test classes-->
             <dependency>
