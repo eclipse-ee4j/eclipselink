@@ -221,6 +221,7 @@ module eclipselink {
     exports org.eclipse.persistence.internal.identitymaps;
     exports org.eclipse.persistence.internal.indirection;
     exports org.eclipse.persistence.internal.jaxb;
+    exports org.eclipse.persistence.internal.jaxb.many;
     exports org.eclipse.persistence.internal.jpa;
     exports org.eclipse.persistence.internal.jpa.deployment;
     exports org.eclipse.persistence.internal.jpa.metadata.xml;
