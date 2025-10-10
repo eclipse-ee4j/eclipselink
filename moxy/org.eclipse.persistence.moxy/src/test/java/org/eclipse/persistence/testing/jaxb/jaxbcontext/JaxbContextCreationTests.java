@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -203,5 +204,32 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName() + ".xlink");
         assertNotNull(context);
     }
+
+    public void testCreateContextWithMultipleOutputDocuments() throws Exception {
+        final StringWriter sw = new StringWriter();
+
+        //Describe types
+        Class<?>[] classes = new Class<?>[2];
+        classes[0] = Collection.class;
+        classes[1] = Employee.class;
+
+        //Prepare data to marshall
+        Employee e1 = new Employee();
+        e1.id = 1;
+        e1.name = "Jeeves Sobs";
+        Employee e2 = new Employee();
+        e2.id = 2;
+        e2.name = "John Smith";
+        Collection<Employee> employeeCollection = new HashSet<>();
+        employeeCollection.add(e1);
+        employeeCollection.add(e2);
+
+        JAXBContext jaxbContext = JAXBContextFactory.createContext(classes, null);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.marshal(employeeCollection, sw);
+        assertTrue(sw.toString().contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee id=\"1\"><name>Jeeves Sobs</name></employee>"));
+        assertTrue(sw.toString().contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?><employee id=\"2\"><name>John Smith</name></employee>"));
+    }
+
 
 }
