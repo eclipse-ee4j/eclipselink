@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -741,15 +741,15 @@ public class CoreAttributeGroup<
     //changed for EclipseLink 415779 to avoid stack overflows when using graphs with circular references
     @Override
     public String toString() {
-        String className = StringHelper.nonNullString(getClass().getSimpleName());
-        String name = StringHelper.nonNullString(getName());
+        String className = getClass().getSimpleName();
+        String name = String.valueOf(getName());
         if (toStringLoopCount >1) {
             return className+StringHelper.LEFT_BRACKET+name+ " Loop detected "+ StringHelper.RIGHT_BRACKET;
         }
         try {
             toStringLoopCount++;
-            String items = StringHelper.nonNullString(toStringItems());
-            String additionalInfo = StringHelper.nonNullString(toStringAdditionalInfo());
+            String items = String.valueOf(toStringItems());
+            String additionalInfo = String.valueOf(toStringAdditionalInfo());
             StringBuilder str = new StringBuilder(className.length() + name.length()
                     + additionalInfo.length() + items.length() + 4);
             str.append(className);

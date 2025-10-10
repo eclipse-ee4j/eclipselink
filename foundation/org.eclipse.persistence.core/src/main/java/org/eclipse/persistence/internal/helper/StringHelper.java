@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,24 +61,4 @@ public class StringHelper {
 
     /** <code>"null"</code> {@link String}. */
     public static final String NULL_STRING = "null";
-
-    /**
-     * Never return null but replace it with <code>"null"</code> {@link String}.
-     * @param str String to be checked for null and eventually replaced with
-     *            <code>"null"</code> {@link String}.
-     * @return Provided string when not null or <code>"null"</code> {@link String}.
-     */
-    public static final String nonNullString(String str) {
-        return str != null ? str : NULL_STRING;
-    }
-
-    /**
-     * Checks if {@link String} is {@code null}, is empty ({@code ""}) or contains white spaces only.
-     * @param str {@link String}  to be checked.
-     * @return Value of {@code true} if @link String} is {@code null}, is empty ({@code ""}) or contains white spaces 
-     *         only or {@code false} otherwise
-     */
-    public static final boolean isBlank(final String str) {
-        return str == null || str.trim().isEmpty();
-    }
 }
