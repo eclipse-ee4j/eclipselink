@@ -143,6 +143,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Embeddabl
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.PackageAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
@@ -328,6 +329,9 @@ public class MetadataProject {
     // persistence unit (unless they exclude them).
     private Set<EntityListenerMetadata> m_defaultListeners;
 
+    // The package accessors for this project
+    private Map<String, PackageAccessor> m_packageAccessors;
+
     /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo,
@@ -381,6 +385,7 @@ public class MetadataProject {
 
         m_idClasses = new HashSet<>();
         m_interfacesImplementedByEntities = new HashSet<>();
+        m_packageAccessors = new HashMap<>();
     }
 
     /**
@@ -721,6 +726,15 @@ public class MetadataProject {
     public void addRootEmbeddableAccessor(EmbeddableAccessor accessor) {
         m_rootEmbeddableAccessors.put(accessor.getJavaClassName(), accessor);
     }
+
+    /**
+     * INTERNAL:
+     * Add a package-info metadata to the project.
+     */
+    public void addPackageAccessor(PackageAccessor packageAccessor) {
+        m_packageAccessors.put(packageAccessor.getName(), packageAccessor);
+    }
+
 
     /**
      * INTERNAL:
@@ -1347,6 +1361,13 @@ public class MetadataProject {
     /**
      * INTERNAL:
      */
+    public Collection<PackageAccessor> getPackageAccessors() {
+        return m_packageAccessors.values();
+    }
+
+    /**
+     * INTERNAL:
+     */
     public AbstractSession getSession() {
         return m_session;
     }
@@ -1779,8 +1800,8 @@ public class MetadataProject {
                 sequences.put(uuidGenerator.getName(), uuidGenerator.process(m_logger));
             }
 
-            for (String key: m_tableGenerators.keySet()) {
-                sequences.put(key, m_tableGenerators.get(key).process(m_logger, key));
+            for (Map.Entry<String, TableGeneratorMetadata>entry: m_tableGenerators.entrySet()) {
+                sequences.put(entry.getKey(), entry.getValue().process(m_logger, entry.getKey()));
             }
 
             // 2 - Check if the user defined default generators, otherwise
@@ -1891,13 +1912,20 @@ public class MetadataProject {
                 embeddable.preProcess();
             }
         }
+
+        // 5 - Pre-process the package-infos.
+        for (PackageAccessor packageAccessor : getPackageAccessors()) {
+            if (! packageAccessor.isPreProcessed()) {
+                packageAccessor.preProcess();
+            }
+        }
     }
 
     /**
      * INTERNAL:
      * Stage 2 processing will perform the following tasks:
-     * - process all direct mapping accessors from entities, embeddables and
-     *   mapped superclasses.
+     * - process all direct mapping accessors from entities, embeddables,
+     *   mapped superclasses and package-info.
      * - gather a list of relationship accessors and any other special interest
      *   accessors to be processed in stage 3.
      *
@@ -1925,6 +1953,14 @@ public class MetadataProject {
             // EmbeddableAccessor is normally fast tracked if it is a reference.
             if (! embeddable.isProcessed()) {
                 embeddable.process();
+            }
+        }
+
+        for (PackageAccessor packageAccessor : getPackageAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EmbeddableAccessor is normally fast tracked if it is a reference.
+            if (! packageAccessor.isProcessed()) {
+                packageAccessor.process();
             }
         }
     }
