@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -105,7 +106,13 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(YEAR FROM date)
+
+
+    // ### Tests for LocalDate dateValue
+    // Testing extract 1. year, 2. quarter, 3. month, 4. day
+
+
+    // 1. Test JPQL EXTRACT(YEAR FROM date)
     @Test
     public void testCriteriaExtractYearFromDate() {
         final EntityManager em = emf.createEntityManager();
@@ -127,7 +134,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(QUARTER FROM date)
+    // 2. Test JPQL EXTRACT(QUARTER FROM date)
     @Test
     public void testCriteriaExtractQuarterFromDate() {
         final EntityManager em = emf.createEntityManager();
@@ -149,7 +156,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(MONTH FROM date)
+    // 3. Test JPQL EXTRACT(MONTH FROM date)
     @Test
     public void testCriteriaExtractMonthFromDate() {
         final EntityManager em = emf.createEntityManager();
@@ -171,7 +178,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(DAY FROM date)
+    // 4. Test JPQL EXTRACT(DAY FROM date)
     @Test
     public void testCriteriaExtractDayFromDate() {
         final EntityManager em = emf.createEntityManager();
@@ -193,7 +200,13 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(HOUR FROM time)
+
+
+    // ### Tests for LocalTime timeValue
+    // Testing extract 1. hour, 2. minute, 3. second
+
+
+    // Test 1. JPQL EXTRACT(HOUR FROM time)
     @Test
     public void testCriteriaExtractHourFromTime() {
         final EntityManager em = emf.createEntityManager();
@@ -215,7 +228,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(MINUTE FROM time)
+    // Test 2. JPQL EXTRACT(MINUTE FROM time)
     @Test
     public void testCriteriaExtractMinuteFromTime() {
         final EntityManager em = emf.createEntityManager();
@@ -237,7 +250,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(SECOND FROM time)
+    // Test 3. JPQL EXTRACT(SECOND FROM time)
     @Test
     public void testCriteriaExtractSecondFromTime() {
         final EntityManager em = emf.createEntityManager();
@@ -259,7 +272,14 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(YEAR FROM datetime)
+
+
+    // ### Tests for LocalDateTime datetimeValue
+    // Testing extract 1. year, 2. quarter, 3. month, 4. day, 5. hour, 6. minute, 7. second, 8. date, 9. data,
+    // 10. time, 11. time, 12. LocalDateTime in query, 13. fractional second
+
+
+    // Test 1. JPQL EXTRACT(YEAR FROM datetime)
     @Test
     public void testCriteriaExtractYearFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -281,7 +301,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(QUARTER FROM datetime)
+    // Test 2. JPQL EXTRACT(QUARTER FROM datetime)
     @Test
     public void testCriteriaExtractQuarterFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -303,7 +323,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(MONTH FROM datetime)
+    // Test 3. JPQL EXTRACT(MONTH FROM datetime)
     @Test
     public void testCriteriaExtractMonthFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -325,7 +345,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(DAY FROM datetime)
+    // Test 4. JPQL EXTRACT(DAY FROM datetime)
     @Test
     public void testCriteriaExtractDayFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -347,7 +367,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(HOUR FROM datetime)
+    // Test 5. JPQL EXTRACT(HOUR FROM datetime)
     @Test
     public void testCriteriaExtractHourFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -369,7 +389,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(MINUTE FROM datetime)
+    // Test 6. JPQL EXTRACT(MINUTE FROM datetime)
     @Test
     public void testCriteriaExtractMinuteFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -391,7 +411,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(SECOND FROM datetime)
+    // Test 7. JPQL EXTRACT(SECOND FROM datetime)
     @Test
     public void testCriteriaExtractSecondFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -413,7 +433,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(DATE FROM datetime) - default return type
+    // Test 8. JPQL EXTRACT(DATE FROM datetime) - default return type
     @Test
     public void testCriteriaExtractDateFromDateTimeDefaultReturnType() {
         final EntityManager em = emf.createEntityManager();
@@ -435,7 +455,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(DATE FROM datetime)
+    // Test 9. JPQL EXTRACT(DATE FROM datetime)
     @Test
     public void testCriteriaExtractDateFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -457,7 +477,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(TIME FROM datetime) - default return type
+    // Test 10. JPQL EXTRACT(TIME FROM datetime) - default return type
     @Test
     public void testCriteriaExtractTimeFromDateTimeDefaultReturnType() {
         final EntityManager em = emf.createEntityManager();
@@ -479,7 +499,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(TIME FROM datetime)
+    // Test 11. JPQL EXTRACT(TIME FROM datetime)
     @Test
     public void testCriteriaExtractTimeFromDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -501,7 +521,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test LocalDateTime.now() in WHERE clause
+    // Test 12. LocalDateTime.now() in WHERE clause
     // SELECT e FROM DateTimeQueryEntity e WHERE e.datetime = :dateTime
     @Test
     public void testLocalDateTime() {
@@ -524,7 +544,58 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL query from issue 1540
+    // Test 13. whether JPQL EXTRACT for SECOND returns a floating point with proper nanoseconds fraction
+    // Issue 2555
+    @Test
+    public void testLocalDateTimeSecondFraction() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+
+        // Derby does not support SECOND fractions
+        Assume.assumeFalse(platform.isDerby());
+
+        final EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            Query query = em.createQuery(
+                "SELECT EXTRACT(SECOND FROM qdte.datetimeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4");
+
+            // Fetch into generic java.lang.Object
+            Object value = query.getSingleResult();
+
+            // But the expected type must be java.lang.Number
+            assertTrue(value instanceof Number);
+
+            // 4.7.7.3. Datetime Functions -
+            // "For the SECOND field type identifier, EXTRACT returns a floating point value"
+            double actual = ((Number) value).doubleValue();
+
+            double expected = TS[3].getSecond() + TS[3].getNano() / 1_000_000_000d;
+
+            double delta = 1e-6; // default for microseconds
+
+            // Compare the actual result from the query with the calculated result
+            // within the given delta.
+            assertEquals(expected, actual, delta);
+
+            em.getTransaction().commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw t;
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
+    }
+
+
+
+    // ### Extra tests for LocalDate dateValue
+
+
+    // Test 1. JPQL query from issue 1540
     @Test
     public void testIssue1539LocalDate() {
         final EntityManager em = emf.createEntityManager();
@@ -547,7 +618,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL query from issue 1540
+    // Test 2. JPQL query from issue 1540
     @Test
     public void testIssue1539LocalDateTime() {
         final EntityManager em = emf.createEntityManager();
@@ -576,7 +647,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
+    // Test 3. JPQL EXTRACT(WEEK FROM date) to check whether ISO_WEEK is used in MS SQL - issue 1550
     @Test
     public void testIssue1550ExtractIsoWeek() {
         final EntityManager em = emf.createEntityManager();
@@ -598,7 +669,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test whether JPQL EXTRACT for YEAR/QUARTER/MONTH/WEEK/DAY returns an integer - issue 1574
+    // Test 4. whether JPQL EXTRACT for YEAR/QUARTER/MONTH/WEEK/DAY returns an integer - issue 1574
     @Test
     public void testIssue1574LocalDate() {
         final EntityManager em = emf.createEntityManager();
@@ -626,7 +697,12 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test whether JPQL EXTRACT for HOUR/MINUTE returns an integer - issue 1574
+
+    
+    // ### Extra tests for LocalTime timeValue
+
+
+    // Test 1. whether JPQL EXTRACT for HOUR/MINUTE returns an integer - issue 1574
     @Test
     public void testIssue1574LocalTime() {
         final EntityManager em = emf.createEntityManager();
@@ -652,7 +728,7 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test whether JPQL EXTRACT for SECOND returns a floating point - issue 1574
+    // Test 2. whether JPQL EXTRACT for SECOND returns a floating point - issue 1574
     @Test
     public void testIssue1574LocalTimeSecond() {
         final EntityManager em = emf.createEntityManager();
@@ -675,22 +751,43 @@ public class TestDateTimeFunctions {
         }
     }
 
-    // Test whether JPQL EXTRACT for SECOND returns a floating point with proper nanoseconds fraction
+    // Test 3. whether JPQL EXTRACT for SECOND returns a floating point with proper nanoseconds fraction
     @Test
     public void testLocalTimeSecondFraction() {
+        DatabasePlatform platform = emf.unwrap(Session.class).getPlatform();
+
         // Derby does not support SECOND fractions
-        Assume.assumeFalse(emf.unwrap(Session.class).getPlatform().isDerby());
+        Assume.assumeFalse(platform.isDerby());
+
+        // DB2 does not support SECOND fractions for the LocalTime mapped to TIME type
+        // See issue 2555
+        Assume.assumeFalse(platform.isDB2());
+
         final EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            Query query = em.createQuery("SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4");
-            //Fetch into generic java.lang.Object
+
+            Query query = em.createQuery(
+                "SELECT EXTRACT(SECOND FROM qdte.timeValue) FROM DateTimeQueryEntity qdte WHERE qdte.id = 4");
+
+            // Fetch into generic java.lang.Object
             Object value = query.getSingleResult();
-            //But the expected type must be java.lang.Double
-            assertTrue(value instanceof Double);
-            double secWithNs = (double)TS[3].getNano() / 1000000000 + TS[3].getSecond();
-            double diff = Math.abs(secWithNs - (Double) value);
-            assertTrue(diff < 0.000001);
+
+            // But the expected type must be java.lang.Number
+            assertTrue(value instanceof Number);
+
+            // 4.7.7.3. Datetime Functions -
+            // "For the SECOND field type identifier, EXTRACT returns a floating point value"
+            double actual = ((Number) value).doubleValue();
+
+            double expected = TS[3].getSecond() + TS[3].getNano() / 1_000_000_000d;
+
+            double delta = 1e-6; // default for microseconds
+
+            // Compare the actual result from the query with the calculated result
+            // within the given delta.
+            assertEquals(expected, actual, delta);
+
             em.getTransaction().commit();
         } catch (Throwable t) {
             t.printStackTrace();
