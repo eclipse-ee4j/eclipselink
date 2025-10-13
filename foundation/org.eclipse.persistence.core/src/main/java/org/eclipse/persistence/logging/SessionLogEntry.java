@@ -44,17 +44,17 @@ public class SessionLogEntry implements Serializable {
     /**
      * The session that generated the log entry.
      *
-     * @deprecated Use {@link #getConnectionId()} instead, Accessor instance won't be available
+     * @deprecated Use {@link #getSessionId()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
     protected transient Session session;
-    private final String sessionId;
+    private String sessionId;
     protected transient Thread thread;
     /**
      * The connection that generated the log entry.
      *
-     * @deprecated Use {@link #getConnectionId()} instead, Accessor instance won't be available
+     * @deprecated Use {@link #getConnectionId()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     // Only connection ID will be stored in 5.x, but 4.x must be backward compatible
@@ -340,6 +340,7 @@ public class SessionLogEntry implements Serializable {
      * Return the session that generated the log entry.
      *
      * @return the session
+     * @deprecated Use {@link #getSessionId()} instead
      */
     public Session getSession() {
         return session;
@@ -475,9 +476,21 @@ public class SessionLogEntry implements Serializable {
      * Set the session that generated the log entry.
      *
      * @param session the session
+     * @deprecated Use {@link #setSessionId(String)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         this.session = session;
+        this.sessionId = session != null ? session.getSessionId() : null;
+    }
+
+    /**
+     * Set the session identifier that generated the log entry.
+     *
+     * @param sessionId the session identifier
+     */
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     /**

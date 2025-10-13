@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -818,14 +818,32 @@ public interface SessionLog extends Cloneable {
     /**
      * PUBLIC:
      * Get the session that owns this SessionLog.
+     * @deprecated Use {@link #getSessionName()} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     Session getSession();
 
     /**
      * PUBLIC:
      * Set the session that owns this SessionLog.
+     * @deprecated Use {@link #setSessionName(String)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void setSession(Session session);
+
+    /**
+     * Return the name of the session.
+     *
+     * @return the name of the session
+     */
+    String getSessionName();
+
+    /**
+     * Set the name of the session.
+     *
+     * @param sessionName the name of the session
+     */
+    void setSessionName(String sessionName);
 
     /**
      * PUBLIC:
