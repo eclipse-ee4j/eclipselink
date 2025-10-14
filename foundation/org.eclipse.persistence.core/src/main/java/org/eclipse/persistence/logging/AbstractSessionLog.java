@@ -337,12 +337,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message) {
+        // Target method has shouldLog check, so it's skipped here.
         // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
-        if (!shouldLog(level)) {
-            return;
-        }
         //Bug#4566524  Pass in false for external use
-        log(level, message, null, false);
+        log(level, null, message, null, false);
     }
 
     /**
@@ -356,10 +354,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object param) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param }, true);
     }
 
     /**
@@ -373,9 +369,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String category, String message, Object param) {
-        if (!shouldLog(level, category)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param }, true);
     }
 
@@ -391,10 +385,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2 }, true);
     }
 
     /**
@@ -409,9 +401,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2 }, true);
     }
 
@@ -428,10 +418,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3 }, true);
     }
 
     /**
@@ -447,9 +435,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3 }, true);
     }
 
@@ -467,10 +453,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3, param4 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
     /**
@@ -487,9 +471,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
@@ -504,7 +486,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object[] params) {
-        log(level, message, params, true);
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, true);
     }
 
     /**
@@ -518,6 +501,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String category, String message, Object[] params) {
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, params, true);
     }
 
@@ -533,10 +517,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      */
     @Override
     public void log(int level, String message, Object[] params, boolean shouldTranslate) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(new SessionLogEntry(level, null, null, message, params, (Integer) null, shouldTranslate));
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, shouldTranslate);
     }
 
     /**
@@ -555,7 +537,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         if (!shouldLog(level, category)) {
             return;
         }
-        log(new SessionLogEntry(level, category, null, message, params, (Integer) null, shouldTranslate));
+        log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
     }
 
     /**
