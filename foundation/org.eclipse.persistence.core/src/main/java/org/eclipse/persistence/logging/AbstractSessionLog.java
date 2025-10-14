@@ -67,6 +67,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     @Deprecated(forRemoval=true, since="4.0.9")
     protected Session session;
 
+    private String sessionName;
+
     /**
      * Represents prefix to logged severe
      */
@@ -373,7 +375,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @return  session
-     * @deprecated {@link Session} instance will be removed
+     * @deprecated Use {@link #getSessionName()} instead
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")
@@ -388,12 +390,24 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * </p>
      *
      * @param session  a Session
-     * @deprecated {@link Session} instance will be removed
+     * @deprecated Use {@link #setSessionName(String)} instead
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")
     public void setSession(Session session) {
         this.session = session;
+        // Update sessionName too to keep those two values consistent
+        this.sessionName = session != null ? session.getName() : null;
+    }
+
+    @Override
+    public String getSessionName() {
+        return sessionName;
+    }
+
+    @Override
+    public void setSessionName(String sessionName) {
+        this.sessionName = sessionName;
     }
 
     /**
