@@ -333,7 +333,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with message content supplier.
      *
      * @param level the log request level value
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     @Override
     public void log(int level, Supplier<String> messageSupplier) {
@@ -348,7 +348,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level
      * @param category the log category
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     @Override
     public void log(int level, String category, Supplier<String> messageSupplier) {
@@ -365,7 +365,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * external use when logging messages are required within the EclipseLink output.
      *
      * @param level the log request level value
-     * @param message the string message - this should not be a bundle key
+     * @param message the message string - this should not be a bundle key
      */
     @Override
     public void log(int level, String message) {
@@ -381,7 +381,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with one parameter that needs to be translated.
      *
      * @param level  the log request level value
-     * @param message  the string message
+     * @param message  the message string
      * @param param  a parameter of the message
      */
     @Override
@@ -397,7 +397,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level  the log request level value
      * @param category the log category
-     * @param message  the string message
+     * @param message  the message string
      * @param param  a parameter of the message
      */
     @Override
@@ -412,7 +412,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with two parameters that needs to be translated.
      *
      * @param level the log request level value
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      */
@@ -429,7 +429,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level value
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      */
@@ -445,7 +445,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with three parameters that needs to be translated.
      *
      * @param level the log request level value
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
@@ -463,7 +463,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level value
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
@@ -480,7 +480,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with four parameters that needs to be translated.
      *
      * @param level the log request level value
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
@@ -499,7 +499,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level value
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
@@ -517,7 +517,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with an array of parameters that needs to be translated.
      *
      * @param level the log request level value
-     * @param message the string message
+     * @param message the message string
      * @param params array of parameters to the message
      */
     @Override
@@ -533,7 +533,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level value
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param params array of parameters to the message
      */
     @Override
@@ -548,10 +548,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message.  shouldTranslate determines if the message needs to be translated.
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param params the message parameters
      * @param shouldTranslate true if the message needs to be translated
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")
@@ -567,10 +566,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param params the message parameters
      * @param shouldTranslate true if the message needs to be translated
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
     @Deprecated(forRemoval=true, since="4.0.9")

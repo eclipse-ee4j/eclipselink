@@ -128,7 +128,7 @@ public class SessionLogEntry implements Serializable {
      * @param shouldTranslate whether the log message should be translated
      *
      * @see SessionLog
-     * @deprecated Translation will not be part of the logger, {@code params} and {@code shouldTranslate} will be removed
+     * @deprecated Translation will not be part of the logger, {@code shouldTranslate} will be removed
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     public SessionLogEntry(int level, String category, String sessionId, String message, Object[] params, Integer connectionId, boolean shouldTranslate) {
@@ -228,9 +228,7 @@ public class SessionLogEntry implements Serializable {
 
     /**
      * @return the array of parameters to the message.
-     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     public Object[] getParameters() {
         return parameters;
     }
@@ -338,9 +336,7 @@ public class SessionLogEntry implements Serializable {
      * Set the array of parameters to the message.
      *
      * @param params array of parameters
-     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     public void setParameters(Object[] params) {
         this.parameters = params;
     }

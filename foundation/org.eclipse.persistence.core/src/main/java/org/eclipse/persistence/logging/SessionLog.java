@@ -472,7 +472,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void log(int level, Supplier<String> messageSupplier);
 
@@ -496,7 +496,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void log(int level, String category, Supplier<String> messageSupplier);
 
@@ -520,7 +520,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      */
     void log(int level, String message);
 
@@ -543,7 +543,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param param the message argument
      */
     void log(int level, String message, Object param);
@@ -568,7 +568,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param the message argument
      */
     void log(int level, String category, String message, Object param);
@@ -592,7 +592,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      */
@@ -618,7 +618,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      */
@@ -643,7 +643,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
@@ -670,7 +670,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
@@ -696,7 +696,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
@@ -724,7 +724,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
@@ -752,7 +752,7 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param arguments array of the message arguments
      */
     void log(int level, String message, Object[] arguments);
@@ -778,7 +778,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param arguments array of the message arguments
      */
     void log(int level, String category, String message, Object[] arguments);
@@ -803,10 +803,9 @@ public interface SessionLog extends Cloneable {
      * </table>
      *
      * @param level the log request level
-     * @param message the string message
+     * @param message the message string
      * @param arguments array of the message arguments
      * @param shouldTranslate true if the message needs to be translated
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] arguments, boolean shouldTranslate);
@@ -832,10 +831,9 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param category the log category
-     * @param message the string message
+     * @param message the message string
      * @param arguments array of the message arguments
      * @param shouldTranslate true if the message needs to be translated
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] arguments, boolean shouldTranslate);
@@ -860,7 +858,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a severe level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void severe(Supplier<String> messageSupplier);
 
@@ -878,7 +876,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a warning level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void warning(Supplier<String> messageSupplier);
 
@@ -896,7 +894,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when an info level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void info(Supplier<String> messageSupplier);
 
@@ -914,7 +912,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a config level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void config(Supplier<String> messageSupplier);
 
@@ -932,7 +930,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a fine level message needs to be logged.
      * The message will be translated
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void fine(Supplier<String> messageSupplier);
 
@@ -950,7 +948,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a finer level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void finer(Supplier<String> messageSupplier);
 
@@ -969,7 +967,7 @@ public interface SessionLog extends Cloneable {
      * This method is called when a finest level message needs to be logged.
      * Logs a message with message content supplier.
      *
-     * @param messageSupplier the string message supplier, it is responsible for message translation
+     * @param messageSupplier the message string supplier
      */
     void finest(Supplier<String> messageSupplier);
 
