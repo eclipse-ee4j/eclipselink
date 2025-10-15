@@ -958,7 +958,6 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #finest(Supplier)} instead
      */
     void finest(String message);
 
