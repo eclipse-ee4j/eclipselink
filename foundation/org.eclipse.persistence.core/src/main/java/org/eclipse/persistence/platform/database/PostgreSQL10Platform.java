@@ -15,7 +15,7 @@
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.localization.i18n.Message;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
@@ -65,12 +65,12 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         // does not break the CORBA Extension tests.
         if (this.getJsonPlatform() instanceof PostgreSQL10JsonExtension) {
             postgreSQL10JsonExtension = (PostgreSQL10JsonExtension) this.getJsonPlatform();
-            DefaultSessionLog.getLog().log(SessionLog.FINE, Message.logging("pgsql10_platform_with_json_extension"));
+            DefaultSessionLog.getLog().log(SessionLog.FINE, () -> LoggingLocalization.buildMessage("pgsql10_platform_with_json_extension"));
         // Missing PostgreSQL10JsonPlatform from org.eclipse.persistence.pgsql module.
         // This will cause JSON related functionality to fail.
         } else {
             postgreSQL10JsonExtension = null;
-            DefaultSessionLog.getLog().log(SessionLog.FINE, Message.logging("pgsql10_platform_without_json_extension"));
+            DefaultSessionLog.getLog().log(SessionLog.FINE, () -> LoggingLocalization.buildMessage("pgsql10_platform_without_json_extension"));
         }
     }
 

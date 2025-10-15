@@ -521,9 +521,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the string message
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message);
 
     /**
@@ -547,9 +545,7 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param message the string message
      * @param param the message argument
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param);
 
     /**
@@ -574,9 +570,7 @@ public interface SessionLog extends Cloneable {
      * @param category the log category
      * @param message the string message
      * @param param the message argument
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param);
 
     /**
@@ -601,9 +595,7 @@ public interface SessionLog extends Cloneable {
      * @param message the string message
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2);
 
     /**
@@ -629,9 +621,7 @@ public interface SessionLog extends Cloneable {
      * @param message the string message
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2);
 
     /**
@@ -657,9 +647,7 @@ public interface SessionLog extends Cloneable {
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2, Object param3);
 
     /**
@@ -686,9 +674,7 @@ public interface SessionLog extends Cloneable {
      * @param param1 the 1st message argument
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
     /**
@@ -715,9 +701,7 @@ public interface SessionLog extends Cloneable {
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
      * @param param4 the 4th message argument
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
@@ -745,9 +729,7 @@ public interface SessionLog extends Cloneable {
      * @param param2 the 2nd message argument
      * @param param3 the 3rd message argument
      * @param param4 the 4th message argument
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
@@ -772,9 +754,7 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param message the string message
      * @param arguments array of the message arguments
-     * @deprecated Use {@link #log(int, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] arguments);
 
     /**
@@ -800,9 +780,7 @@ public interface SessionLog extends Cloneable {
      * @param category the log category
      * @param message the string message
      * @param arguments array of the message arguments
-     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] arguments);
 
     /**
@@ -874,9 +852,7 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #severe(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void severe(String message);
 
     /**
@@ -894,9 +870,7 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #warning(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void warning(String message);
 
     /**
@@ -914,9 +888,7 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #info(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void info(String message);
 
     /**
@@ -934,9 +906,7 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #config(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void config(String message);
 
     /**
@@ -954,9 +924,7 @@ public interface SessionLog extends Cloneable {
      * The message will be translated
      *
      * @param message the message key
-     * @deprecated Use {@link #fine(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void fine(String message);
 
     /**
@@ -974,9 +942,7 @@ public interface SessionLog extends Cloneable {
      * Logs a message with message content supplier.
      *
      * @param message the message key
-     * @deprecated Use {@link #finer(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void finer(String message);
 
     /**
@@ -996,7 +962,6 @@ public interface SessionLog extends Cloneable {
      * @param message the message key
      * @deprecated Use {@link #finest(Supplier)} instead
      */
-    @Deprecated(forRemoval=true, since="4.0.9")
     void finest(String message);
 
     /**
