@@ -35,16 +35,63 @@ public class SessionLogEntry implements Serializable {
 
     // Empty message value.
     private static final String EMPTY_MESSAGE = "";
+
     private String sessionId;
+
+    /**
+     * @deprecated Use {@link #getThread()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected transient Thread thread;
+
     private final Integer connectionId;
+
+    /**
+     * @deprecated Use {@link #getMessage()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String message;
+
+    /**
+     * @deprecated Use {@link #getException()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Throwable throwable;
+
+    /**
+     * @deprecated Use {@link #getLevel()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected int level;
+
+    /**
+     * @deprecated Use {@link #getNameSpace()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String nameSpace;
+
+    /**
+     * @deprecated Will be removed from the class, translation will not be part of the logger
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected Object[] parameters;
+
+    /**
+     * @deprecated Will be removed from the class, translation will not be part of the logger
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected boolean shouldTranslate;
+
+    /**
+     * @deprecated Use {@link #getSourceClassName()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String sourceClassName;
+
+    /**
+     * @deprecated Use {@link #getSourceMethodName()} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String sourceMethodName;
 
     private Instant timeStamp;
@@ -81,7 +128,9 @@ public class SessionLogEntry implements Serializable {
      * @param shouldTranslate whether the log message should be translated
      *
      * @see SessionLog
+     * @deprecated Translation will not be part of the logger, {@code params} and {@code shouldTranslate} will be removed
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public SessionLogEntry(int level, String category, String sessionId, String message, Object[] params, Integer connectionId, boolean shouldTranslate) {
         this(level, category, sessionId, message, params, connectionId, shouldTranslate, null);
     }
@@ -179,7 +228,9 @@ public class SessionLogEntry implements Serializable {
 
     /**
      * @return the array of parameters to the message.
+     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public Object[] getParameters() {
         return parameters;
     }
@@ -287,7 +338,9 @@ public class SessionLogEntry implements Serializable {
      * Set the array of parameters to the message.
      *
      * @param params array of parameters
+     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setParameters(Object[] params) {
         this.parameters = params;
     }
@@ -296,7 +349,9 @@ public class SessionLogEntry implements Serializable {
      * Set if the message should be translated.
      *
      * @param shouldTranslate true if the message should be translated, false otherwise
+     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void setShouldTranslate(boolean shouldTranslate) {
         this.shouldTranslate = shouldTranslate;
     }

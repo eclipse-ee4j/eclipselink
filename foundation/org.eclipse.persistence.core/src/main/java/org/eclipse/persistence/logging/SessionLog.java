@@ -15,6 +15,7 @@
 package org.eclipse.persistence.logging;
 
 import java.io.Writer;
+import java.util.function.Supplier;
 
 /**
  * SessionLog is the ever-so-simple interface used by
@@ -454,6 +455,53 @@ public interface SessionLog extends Cloneable {
 
     /**
      * PUBLIC:
+     * Log a message with message content supplier.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <caption>Logging levels</caption>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
+     * </table>
+     *
+     * @param level the log request level
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void log(int level, Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * Log a message with message content supplier.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <caption>Logging levels</caption>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
+     * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void log(int level, String category, Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * Log a message that does not need to be translated.  This method is intended for
      * external use when logging messages are wanted within the EclipseLink output.
      * <p>
@@ -470,7 +518,12 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message);
 
     /**
@@ -490,7 +543,13 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param param the message argument
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param);
 
     /**
@@ -510,7 +569,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param param the message argument
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param);
 
     /**
@@ -530,7 +596,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2);
 
     /**
@@ -550,7 +623,15 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2);
 
     /**
@@ -570,7 +651,15 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @param param3 the 3rd message argument
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2, Object param3);
 
     /**
@@ -590,7 +679,16 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @param param3 the 3rd message argument
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
     /**
@@ -610,7 +708,16 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @param param3 the 3rd message argument
+     * @param param4 the 4th message argument
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
@@ -630,7 +737,17 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param param1 the 1st message argument
+     * @param param2 the 2nd message argument
+     * @param param3 the 3rd message argument
+     * @param param4 the 4th message argument
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
@@ -651,7 +768,13 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param arguments array of the message arguments
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] arguments);
 
     /**
@@ -672,7 +795,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param arguments array of the message arguments
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] arguments);
 
     /**
@@ -693,7 +823,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the string message
+     * @param arguments array of the message arguments
+     * @param shouldTranslate true if the message needs to be translated
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] arguments, boolean shouldTranslate);
 
     /**
@@ -714,7 +851,15 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the string message
+     * @param arguments array of the message arguments
+     * @param shouldTranslate true if the message needs to be translated
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] arguments, boolean shouldTranslate);
 
     /**
@@ -727,50 +872,141 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * This method is called when a severe level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #severe(Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void severe(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when a severe level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void severe(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:
      * This method is called when a warning level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #warning(Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void warning(String message);
 
     /**
      * PUBLIC:
-     * This method is called when a info level message needs to be logged.
-     * The message will be translated
+     * This method is called when a warning level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
      */
+    void warning(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * This method is called when an info level message needs to be logged.
+     * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #info(Supplier)} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void info(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when an info level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void info(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:
      * This method is called when a config level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #config(Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void config(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when a config level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void config(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:
      * This method is called when a fine level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #fine(Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void fine(String message);
 
     /**
      * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
+     * This method is called when a fine level message needs to be logged.
      * The message will be translated
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
      */
+    void fine(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * This method is called when a finer level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param message the message key
+     * @deprecated Use {@link #finer(Supplier)} instead
+     */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void finer(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when a finer level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void finer(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:
      * This method is called when a finest level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
+     * @deprecated Use {@link #finest(Supplier)} instead
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void finest(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when a finest level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    void finest(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:

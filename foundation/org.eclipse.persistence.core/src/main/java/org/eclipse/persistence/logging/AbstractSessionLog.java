@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.function.Supplier;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
@@ -329,13 +330,46 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * <p>
+     * Log a message with message content supplier.
+     *
+     * @param level the log request level value
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    @Override
+    public void log(int level, Supplier<String> messageSupplier) {
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, messageSupplier);
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
+     * Log a message with message content supplier.
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param messageSupplier the string message supplier, it is responsible for message translation
+     */
+    @Override
+    public void log(int level, String category, Supplier<String> messageSupplier) {
+        if (!shouldLog(level, category)) {
+            return;
+        }
+        log(new SessionLogEntry(level, category, null, messageSupplier.get(), null, null, false));
+    }
+
+    /**
+     * PUBLIC:
+     * <p>
      * Log a message that does not need to be translated.  This method is intended for
      * external use when logging messages are required within the EclipseLink output.
      *
      * @param level the log request level value
      * @param message the string message - this should not be a bundle key
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message) {
         // Target method has shouldLog check, so it's skipped here.
         // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
@@ -351,8 +385,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level  the log request level value
      * @param message  the string message
      * @param param  a parameter of the message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object param) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, new Object[] { param }, true);
@@ -364,10 +400,13 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with one parameter that needs to be translated.
      *
      * @param level  the log request level value
+     * @param category the log category
      * @param message  the string message
      * @param param  a parameter of the message
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object param) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param }, true);
@@ -382,8 +421,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param message the string message
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object param1, Object param2) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, new Object[] { param1, param2 }, true);
@@ -395,11 +436,14 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with two parameters that needs to be translated.
      *
      * @param level the log request level value
+     * @param category the log category
      * @param message the string message
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object param1, Object param2) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2 }, true);
@@ -415,8 +459,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object param1, Object param2, Object param3) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, new Object[] { param1, param2, param3 }, true);
@@ -428,12 +474,15 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with three parameters that needs to be translated.
      *
      * @param level the log request level value
+     * @param category the log category
      * @param message the string message
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3 }, true);
@@ -450,8 +499,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
      * @param param4  third parameter of the message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, new Object[] { param1, param2, param3, param4 }, true);
@@ -463,13 +514,16 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with four parameters that needs to be translated.
      *
      * @param level the log request level value
+     * @param category the log category
      * @param message the string message
      * @param param1  a parameter of the message
      * @param param2  second parameter of the message
      * @param param3  third parameter of the message
      * @param param4  third parameter of the message
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
@@ -483,8 +537,10 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * @param level the log request level value
      * @param message the string message
      * @param params array of parameters to the message
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object[] params) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, params, true);
@@ -496,10 +552,13 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message with an array of parameters that needs to be translated.
      *
      * @param level the log request level value
+     * @param category the log category
      * @param message the string message
      * @param params array of parameters to the message
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object[] params) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, params, true);
@@ -512,10 +571,12 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      *
      * @param level the log request level
      * @param message the string message
-     * @param params array of parameters to the message
+     * @param params the message parameters
      * @param shouldTranslate true if the message needs to be translated
+     * @deprecated Use {@link #log(int, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object[] params, boolean shouldTranslate) {
         // Target method has shouldLog check, so it's skipped here.
         log(level, null, message, params, shouldTranslate);
@@ -527,17 +588,25 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Log a message.  shouldTranslate determines if the message needs to be translated.
      *
      * @param level the log request level
-     * @param message the string message
      * @param category the log category
-     * @param params array of parameters to the message
+     * @param message the string message
+     * @param params the message parameters
      * @param shouldTranslate true if the message needs to be translated
+     * @deprecated Use {@link #log(int, String, Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object[] params, boolean shouldTranslate) {
         if (!shouldLog(level, category)) {
             return;
         }
         log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
+    }
+
+    // Remove with deprecated API removal
+    // Internal shortcut for translated message (public API method has translation turned off)
+    private void logTranslated(int level, String message) {
+        log(level, null, message, null, true);
     }
 
     /**
@@ -882,7 +951,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Return the formatted message based on the information from the given SessionLogEntry.
      * The message will either be translated and formatted or formatted only depending
      * on if the shouldTranslate flag is set to true of false.
+     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     protected String formatMessage(SessionLogEntry entry) {
         String message = entry.getMessage();
         if (entry.shouldTranslate()) {
@@ -933,10 +1004,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #severe(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void severe(String message) {
-        log(SEVERE, message, null);
+        logTranslated(SEVERE, message);
+    }
+
+    @Override
+    public void severe(Supplier<String> messageSupplier) {
+        log(SEVERE, messageSupplier);
     }
 
     /**
@@ -946,10 +1024,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #warning(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void warning(String message) {
-        log(WARNING, message, null);
+        logTranslated(WARNING, message);
+    }
+
+    @Override
+    public void warning(Supplier<String> messageSupplier) {
+        log(WARNING, messageSupplier);
     }
 
     /**
@@ -959,10 +1044,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #info(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void info(String message) {
-        log(INFO, message, null);
+        logTranslated(INFO, message);
+    }
+
+    @Override
+    public void info(Supplier<String> messageSupplier) {
+        log(INFO, messageSupplier);
     }
 
     /**
@@ -972,10 +1064,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #config(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void config(String message) {
-        log(CONFIG, message, null);
+        logTranslated(CONFIG, message);
+    }
+
+    @Override
+    public void config(Supplier<String> messageSupplier) {
+        log(CONFIG, messageSupplier);
     }
 
     /**
@@ -985,10 +1084,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #fine(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void fine(String message) {
-        log(FINE, message, null);
+        logTranslated(FINE, message);
+    }
+
+    @Override
+    public void fine(Supplier<String> messageSupplier) {
+        log(FINE, messageSupplier);
     }
 
     /**
@@ -998,10 +1104,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #finer(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void finer(String message) {
-        log(FINER, message, null);
+        logTranslated(FINER, message);
+    }
+
+    @Override
+    public void finer(Supplier<String> messageSupplier) {
+        log(FINER, messageSupplier);
     }
 
     /**
@@ -1011,10 +1124,17 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * The message will be translated
      *
      * @param message  the message key
+     * @deprecated Use {@link #finest(Supplier)} instead
      */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void finest(String message) {
-        log(FINEST, message, null);
+        logTranslated(FINEST, message);
+    }
+
+    @Override
+    public void finest(Supplier<String> messageSupplier) {
+        log(FINEST, messageSupplier);
     }
 
     /**
