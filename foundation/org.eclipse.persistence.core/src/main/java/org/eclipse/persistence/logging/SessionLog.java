@@ -544,7 +544,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param param the message argument
+     * @param param the message parameter
      */
     void log(int level, String message, Object param);
 
@@ -569,7 +569,7 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param param the message argument
+     * @param param the message parameter
      */
     void log(int level, String category, String message, Object param);
 
@@ -593,8 +593,8 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
      */
     void log(int level, String message, Object param1, Object param2);
 
@@ -619,8 +619,8 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2);
 
@@ -644,9 +644,9 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
-     * @param param3 the 3rd message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
      */
     void log(int level, String message, Object param1, Object param2, Object param3);
 
@@ -671,9 +671,9 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
-     * @param param3 the 3rd message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
@@ -697,10 +697,10 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
-     * @param param3 the 3rd message argument
-     * @param param4 the 4th message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
+     * @param param4 the 4th message parameter
      */
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
@@ -725,10 +725,10 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param param1 the 1st message argument
-     * @param param2 the 2nd message argument
-     * @param param3 the 3rd message argument
-     * @param param4 the 4th message argument
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
+     * @param param4 the 4th message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
@@ -753,7 +753,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param arguments array of the message arguments
+     * @param arguments array of the message parameters
      */
     void log(int level, String message, Object[] arguments);
 
@@ -779,7 +779,7 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param arguments array of the message arguments
+     * @param arguments array of the message parameters
      */
     void log(int level, String category, String message, Object[] arguments);
 
@@ -804,7 +804,7 @@ public interface SessionLog extends Cloneable {
      *
      * @param level the log request level
      * @param message the message string
-     * @param arguments array of the message arguments
+     * @param arguments array of the message parameters
      * @param shouldTranslate true if the message needs to be translated
      */
     @Deprecated(forRemoval=true, since="4.0.9")
@@ -832,7 +832,7 @@ public interface SessionLog extends Cloneable {
      * @param level the log request level
      * @param category the log category
      * @param message the message string
-     * @param arguments array of the message arguments
+     * @param arguments array of the message parameters
      * @param shouldTranslate true if the message needs to be translated
      */
     @Deprecated(forRemoval=true, since="4.0.9")

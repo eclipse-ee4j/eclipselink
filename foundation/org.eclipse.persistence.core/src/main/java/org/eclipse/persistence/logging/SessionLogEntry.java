@@ -71,7 +71,7 @@ public class SessionLogEntry implements Serializable {
     protected String nameSpace;
 
     /**
-     * @deprecated Will be removed from the class, translation will not be part of the logger
+     * @deprecated Use {@link #getParameters()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected Object[] parameters;
@@ -249,7 +249,9 @@ public class SessionLogEntry implements Serializable {
 
     /**
      * @return if the message should be translated.
+     * @deprecated Will be removed from the class, translation will not be part of the logger
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     public boolean shouldTranslate() {
         return shouldTranslate;
     }
