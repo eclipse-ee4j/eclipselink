@@ -939,13 +939,5 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             throw new AssertionError(exception);
         }
     }
-    /**
-     * INTERNAL:
-     * Translate the string value of the log level to the constant value.
-     * If value is null or invalid use the default.
-     */
-    public static String translateLoggingLevelToString(final int loggingLevel) {
-        return LogLevel.toValue(loggingLevel, LogLevel.INFO).getName();
-    }
 
 }
