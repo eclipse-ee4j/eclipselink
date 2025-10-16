@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -320,12 +319,12 @@ public class IndexMetadata extends ORMetadata {
         if (hasName()) {
             return m_name;
         } else {
-            String tableName = StringHelper.nonNullString(table.getName());
+            String tableName = String.valueOf(table.getName());
             // Calculate name length to avoid StringBuilder resizing
             int length = INDEX.length() + 1 + tableName.length();
             for (String field : indexDefinition.getFields()) {
                 length += 1;
-                length += StringHelper.nonNullString(field).length();
+                length += String.valueOf(field).length();
             }
             // Build name
             StringBuilder name = new StringBuilder(length);
@@ -333,7 +332,7 @@ public class IndexMetadata extends ORMetadata {
             // Append all the field names to it.
             for (String field : indexDefinition.getFields()) {
                 name.append(FIELD_SEP);
-                name.append(StringHelper.nonNullString(field));
+                name.append(field);
             }
 
             return name.toString();
