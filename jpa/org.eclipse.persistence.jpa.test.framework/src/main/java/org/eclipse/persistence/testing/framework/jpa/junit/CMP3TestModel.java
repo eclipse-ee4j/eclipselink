@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.framework.jpa.junit;
 import jakarta.persistence.EntityManager;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -49,7 +49,8 @@ public class CMP3TestModel extends TestModel {
         currentMap.put(PersistenceUnitProperties.JDBC_PASSWORD, systemLogin.getPassword());
 // let's use platform Auto detection
 //        currentMap.put(PersistenceUnitProperties.TARGET_DATABASE, systemLogin.getPlatform().getClass().getName());
-        currentMap.put(PersistenceUnitProperties.LOGGING_LEVEL, AbstractSessionLog.translateLoggingLevelToString(originalSession.getSessionLog().getLevel()));
+        currentMap.put(PersistenceUnitProperties.LOGGING_LEVEL,
+                       LogLevel.toValue(originalSession.getSessionLog().getLevel(), LogLevel.INFO).getName());
         // this property added to test bug fix to 221226
         currentMap.put(PersistenceUnitProperties.CLASSLOADER, systemLogin.getClass().getClassLoader());
         currentMap.putAll(JUnitTestCaseHelper.persistencePropertiesTestMap);

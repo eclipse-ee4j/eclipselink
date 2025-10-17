@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.logging;
 
 import java.io.Writer;
+import java.util.function.Supplier;
 
 /**
  * SessionLog is the ever-so-simple interface used by
@@ -454,6 +455,53 @@ public interface SessionLog extends Cloneable {
 
     /**
      * PUBLIC:
+     * Log a message with message content supplier.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <caption>Logging levels</caption>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
+     * </table>
+     *
+     * @param level the log request level
+     * @param messageSupplier the message string supplier
+     */
+    void log(int level, Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * Log a message with message content supplier.
+     * <p>
+     * The EclipseLink logging levels available are:<br>
+     * <table>
+     * <caption>Logging levels</caption>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
+     * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param messageSupplier the message string supplier
+     */
+    void log(int level, String category, Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * Log a message that does not need to be translated.  This method is intended for
      * external use when logging messages are wanted within the EclipseLink output.
      * <p>
@@ -470,6 +518,9 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
      */
     void log(int level, String message);
 
@@ -490,6 +541,10 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param param the message parameter
      */
     void log(int level, String message, Object param);
 
@@ -510,6 +565,11 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param param the message parameter
      */
     void log(int level, String category, String message, Object param);
 
@@ -530,6 +590,11 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
      */
     void log(int level, String message, Object param1, Object param2);
 
@@ -550,6 +615,12 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2);
 
@@ -570,6 +641,12 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
      */
     void log(int level, String message, Object param1, Object param2, Object param3);
 
@@ -590,6 +667,13 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
@@ -610,6 +694,13 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
+     * @param param4 the 4th message parameter
      */
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
@@ -630,6 +721,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param param1 the 1st message parameter
+     * @param param2 the 2nd message parameter
+     * @param param3 the 3rd message parameter
+     * @param param4 the 4th message parameter
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
@@ -651,6 +750,10 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param arguments array of the message parameters
      */
     void log(int level, String message, Object[] arguments);
 
@@ -672,6 +775,11 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param arguments array of the message parameters
      */
     void log(int level, String category, String message, Object[] arguments);
 
@@ -693,7 +801,13 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param message the message string
+     * @param arguments array of the message parameters
+     * @param shouldTranslate true if the message needs to be translated
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] arguments, boolean shouldTranslate);
 
     /**
@@ -714,7 +828,14 @@ public interface SessionLog extends Cloneable {
      * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
      * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
+     *
+     * @param level the log request level
+     * @param category the log category
+     * @param message the message string
+     * @param arguments array of the message parameters
+     * @param shouldTranslate true if the message needs to be translated
      */
+    @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] arguments, boolean shouldTranslate);
 
     /**
@@ -727,50 +848,127 @@ public interface SessionLog extends Cloneable {
      * PUBLIC:
      * This method is called when a severe level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void severe(String message);
 
     /**
      * PUBLIC:
+     * This method is called when a severe level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void severe(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * This method is called when a warning level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void warning(String message);
 
     /**
      * PUBLIC:
-     * This method is called when a info level message needs to be logged.
+     * This method is called when a warning level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void warning(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * This method is called when an info level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void info(String message);
 
     /**
      * PUBLIC:
+     * This method is called when an info level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void info(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * This method is called when a config level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void config(String message);
 
     /**
      * PUBLIC:
+     * This method is called when a config level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void config(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * This method is called when a fine level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void fine(String message);
 
     /**
      * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
+     * This method is called when a fine level message needs to be logged.
      * The message will be translated
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void fine(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
+     * This method is called when a finer level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param message the message key
      */
     void finer(String message);
 
     /**
      * PUBLIC:
+     * This method is called when a finer level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void finer(Supplier<String> messageSupplier);
+
+    /**
+     * PUBLIC:
      * This method is called when a finest level message needs to be logged.
      * The message will be translated
+     *
+     * @param message the message key
      */
     void finest(String message);
+
+    /**
+     * PUBLIC:
+     * This method is called when a finest level message needs to be logged.
+     * Logs a message with message content supplier.
+     *
+     * @param messageSupplier the message string supplier
+     */
+    void finest(Supplier<String> messageSupplier);
 
     /**
      * PUBLIC:

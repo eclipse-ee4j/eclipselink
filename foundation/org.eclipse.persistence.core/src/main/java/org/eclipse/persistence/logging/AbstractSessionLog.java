@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.function.Supplier;
 
 /**
  * Represents the abstract log that implements all the generic logging functions.
@@ -326,236 +327,108 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         this.sessionName = sessionName;
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message that does not need to be translated.  This method is intended for
-     * external use when logging messages are required within the EclipseLink output.
-     *
-     * @param level the log request level value
-     * @param message the string message - this should not be a bundle key
-     */
     @Override
-    public void log(int level, String message) {
-        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
-        if (!shouldLog(level)) {
-            return;
-        }
-        //Bug#4566524  Pass in false for external use
-        log(level, message, null, false);
+    public void log(int level, Supplier<String> messageSupplier) {
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, messageSupplier);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with one parameter that needs to be translated.
-     *
-     * @param level  the log request level value
-     * @param message  the string message
-     * @param param  a parameter of the message
-     */
     @Override
-    public void log(int level, String message, Object param) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param });
-    }
-
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with one parameter that needs to be translated.
-     *
-     * @param level  the log request level value
-     * @param message  the string message
-     * @param param  a parameter of the message
-     */
-    @Override
-    public void log(int level, String category, String message, Object param) {
+    public void log(int level, String category, Supplier<String> messageSupplier) {
         if (!shouldLog(level, category)) {
             return;
         }
+        log(new SessionLogEntry(level, category, null, messageSupplier.get(), null, null, false));
+    }
+
+    @Override
+    public void log(int level, String message) {
+        // Target method has shouldLog check, so it's skipped here.
+        // Warning: do not use this function to pass in bundle keys as they will not get transformed into string messages
+        //Bug#4566524  Pass in false for external use
+        log(level, null, message, null, false);
+    }
+
+    @Override
+    public void log(int level, String message, Object param) {
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param }, true);
+    }
+
+    @Override
+    public void log(int level, String category, String message, Object param) {
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with two parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with two parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with three parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with three parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with four parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     * @param param4  third parameter of the message
-     */
     @Override
     public void log(int level, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(level, message, new Object[] { param1, param2, param3, param4 });
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with four parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param param1  a parameter of the message
-     * @param param2  second parameter of the message
-     * @param param3  third parameter of the message
-     * @param param4  third parameter of the message
-     */
     @Override
     public void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4) {
-        if (!shouldLog(level)) {
-            return;
-        }
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, new Object[] { param1, param2, param3, param4 }, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with an array of parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param params array of parameters to the message
-     */
     @Override
     public void log(int level, String message, Object[] params) {
-        log(level, message, params, true);
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with an array of parameters that needs to be translated.
-     *
-     * @param level the log request level value
-     * @param message the string message
-     * @param params array of parameters to the message
-     */
     @Override
     public void log(int level, String category, String message, Object[] params) {
+        // Target method has shouldLog check, so it's skipped here.
         log(level, category, message, params, true);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message.  shouldTranslate determines if the message needs to be translated.
-     *
-     * @param level the log request level
-     * @param message the string message
-     * @param params array of parameters to the message
-     * @param shouldTranslate true if the message needs to be translated
-     */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String message, Object[] params, boolean shouldTranslate) {
-        if (!shouldLog(level)) {
-            return;
-        }
-        log(new SessionLogEntry(level, null, null, message, params, (Integer) null, shouldTranslate));
+        // Target method has shouldLog check, so it's skipped here.
+        log(level, null, message, params, shouldTranslate);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message.  shouldTranslate determines if the message needs to be translated.
-     *
-     * @param level the log request level
-     * @param message the string message
-     * @param category the log category
-     * @param params array of parameters to the message
-     * @param shouldTranslate true if the message needs to be translated
-     */
     @Override
+    @Deprecated(forRemoval=true, since="4.0.9")
     public void log(int level, String category, String message, Object[] params, boolean shouldTranslate) {
         if (!shouldLog(level, category)) {
             return;
         }
-        log(new SessionLogEntry(level, category, null, message, params, (Integer) null, shouldTranslate));
+        log(new SessionLogEntry(level, category, null, message, params, null, shouldTranslate));
+    }
+
+    // Remove with deprecated API removal
+    // Internal shortcut for translated message (public API method has translation turned off)
+    private void logTranslated(int level, String message) {
+        log(level, null, message, null, true);
     }
 
     /**
@@ -944,95 +817,74 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         }
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a severe level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
     @Override
     public void severe(String message) {
-        log(SEVERE, message, null);
+        logTranslated(SEVERE, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a warning level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void severe(Supplier<String> messageSupplier) {
+        log(SEVERE, messageSupplier);
+    }
+
     @Override
     public void warning(String message) {
-        log(WARNING, message, null);
+        logTranslated(WARNING, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a info level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void warning(Supplier<String> messageSupplier) {
+        log(WARNING, messageSupplier);
+    }
+
     @Override
     public void info(String message) {
-        log(INFO, message, null);
+        logTranslated(INFO, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a config level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void info(Supplier<String> messageSupplier) {
+        log(INFO, messageSupplier);
+    }
+
     @Override
     public void config(String message) {
-        log(CONFIG, message, null);
+        logTranslated(CONFIG, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void config(Supplier<String> messageSupplier) {
+        log(CONFIG, messageSupplier);
+    }
+
     @Override
     public void fine(String message) {
-        log(FINE, message, null);
+        logTranslated(FINE, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a finer level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void fine(Supplier<String> messageSupplier) {
+        log(FINE, messageSupplier);
+    }
+
     @Override
     public void finer(String message) {
-        log(FINER, message, null);
+        logTranslated(FINER, message);
     }
 
-    /**
-     * PUBLIC:
-     * <p>
-     * This method is called when a finest level message needs to be logged.
-     * The message will be translated
-     *
-     * @param message  the message key
-     */
+    @Override
+    public void finer(Supplier<String> messageSupplier) {
+        log(FINER, messageSupplier);
+    }
+
     @Override
     public void finest(String message) {
-        log(FINEST, message, null);
+        logTranslated(FINEST, message);
+    }
+
+    @Override
+    public void finest(Supplier<String> messageSupplier) {
+        log(FINEST, messageSupplier);
     }
 
     /**
@@ -1086,14 +938,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
         } catch (Exception exception) {
             throw new AssertionError(exception);
         }
-    }
-    /**
-     * INTERNAL:
-     * Translate the string value of the log level to the constant value.
-     * If value is null or invalid use the default.
-     */
-    public static String translateLoggingLevelToString(final int loggingLevel) {
-        return LogLevel.toValue(loggingLevel, LogLevel.INFO).getName();
     }
 
 }
