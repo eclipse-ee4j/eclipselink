@@ -16,14 +16,16 @@
  * The main logging entry point is the {@linkplain org.eclipse.persistence.logging.SessionLog} interface, which is used
  * by the codebase to make logging calls.
  * <p>
- * Logging levels are defined in the {@code LogLevel} enum with corresponding constants in the {@code SessionLog} interface.
- * Logging categories (namespaces) are defined in the {@code LogCategory} enum with corresponding constants in the
- * {@code SessionLog} interface.
+ * Logging levels are defined in the {@linkplain org.eclipse.persistence.logging.LogLevel} enum with corresponding
+ * constants in the {@linkplain org.eclipse.persistence.logging.SessionLog} interface. Default logging level may be
+ * configured using {@code eclipselink.logging.level} system property.
+ * <p>
+ * Logging categories (name spaces) are defined in the {@linkplain org.eclipse.persistence.logging.LogCategory} enum
+ * with corresponding constants in the {@linkplain org.eclipse.persistence.logging.SessionLog} interface.
  * <p>
  * An abstract implementation of the {@linkplain org.eclipse.persistence.logging.SessionLog} interface is available
  * as the {@linkplain org.eclipse.persistence.logging.AbstractSessionLog} class, with log message content stored
  * in {@linkplain org.eclipse.persistence.logging.SessionLogEntry}.
- * The default implementation of the session-independent logger is available
- * as {@linkplain org.eclipse.persistence.logging.DefaultSessionLog}.
+ * {@linkplain org.eclipse.persistence.logging.DefaultSessionLog} provides the default logger implementation.
  */
 package org.eclipse.persistence.logging;

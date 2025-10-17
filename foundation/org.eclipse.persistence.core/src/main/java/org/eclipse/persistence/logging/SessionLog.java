@@ -153,7 +153,7 @@ public interface SessionLog extends Cloneable {
     String MISC = "misc";
     /** MOXY logging category. */
     String MOXY = "moxy";
-
+    /** Metamodel logging category. */
     String METAMODEL = "metamodel";
     /** Weaving logging category. */
     String WEAVER = "weaver";
@@ -172,6 +172,7 @@ public interface SessionLog extends Cloneable {
     /** Thread logging category. */
     String THREAD = "thread";
 
+    /** An array of all logging categories. */
     String[] loggerCatagories = new String[] {
         SQL,
         TRANSACTION,
@@ -289,8 +290,7 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Returns the log level.
-     * Used when session is not available. See {@linkplain SessionLog class description} for the list
-     * of available levels.
+     * Used when session is not available.
      *
      * @return the current log level
      */
@@ -298,7 +298,6 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Returns the log level name.
-     * See {@linkplain SessionLog class description} for the list of available levels.
      *
      * @return the current log level name
      */
@@ -306,7 +305,7 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Returns the log level for provided category.
-     * See {@linkplain SessionLog class description} for the list of available levels and categories.
+     * See {@linkplain SessionLog class description} for the list of available categories.
      *
      * @param category the log category
      * @return the current log level
