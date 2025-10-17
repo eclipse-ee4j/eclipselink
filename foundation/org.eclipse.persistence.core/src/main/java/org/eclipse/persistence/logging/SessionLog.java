@@ -18,27 +18,25 @@ import java.io.Writer;
 import java.util.function.Supplier;
 
 /**
- * SessionLog is the ever-so-simple interface used by
- * EclipseLink to log generated messages and SQL. An implementor of
- * this interface can be passed to the EclipseLink session
- * (via the #setSessionLog(SessionLog) method); and
- * all logging data will be passed through to the implementor
- * via an instance of SessionLogEntry. This can be used
- * to supplement debugging; or the entries could be stored
- * in a database instead of logged to System.out, etc.
+ * SessionLog is the ever-so-simple interface used by EclipseLink to log generated messages and SQL. An implementor
+ * of this interface can be passed to the EclipseLink session (via the #setSessionLog(SessionLog) method); and all
+ * logging data will be passed through to the implementor via an instance of SessionLogEntry. This can be used
+ * to supplement debugging; or the entries could be stored in a database instead of logged to {@linkplain System#out},
+ * etc.
  * <p>
- * This class defines EclipseLink logging levels (that are used throughout EclipseLink code) with the following integer values:
+ * This class defines EclipseLink logging levels (that are used throughout EclipseLink code) with the following
+ * integer values:
  * <table>
  * <caption>Logging levels</caption>
- * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
- * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
- * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
- * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
- * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
- * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
- * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
- * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
- * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
@@ -66,8 +64,6 @@ import java.util.function.Supplier;
  * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
  * </table>
  *
- * @see AbstractSessionLog
- * @see DefaultSessionLog
  * @see SessionLogEntry
  *
  * @since TOPLink/Java 3.0
@@ -75,109 +71,55 @@ import java.util.function.Supplier;
 public interface SessionLog extends Cloneable {
     // EclipseLink log levels. They are mapped to java.util.logging.Level values.
     // Numeric constants can't be replaced with LogLevel.<level>.getId();
-    /**
-     * {@code OFF} log level ID.
-     * @see LogLevel#OFF
-     */
+    /** {@code OFF} log level. */
     int OFF = 8;
-    /**
-     * {@code OFF} log level name.
-     * @see LogLevel#OFF
-     */
+    /** {@code OFF} log level name. */
     String OFF_LABEL = LogLevel.OFF.getName();
 
     //EL is not in a state to continue
-    /**
-     * {@code SEVERE} log level ID.
-     * @see LogLevel#SEVERE
-     */
+    /** {@code SEVERE} log level. */
     int SEVERE = 7;
-    /**
-     * {@code SEVERE} log level name.
-     * @see LogLevel#SEVERE
-     */
+    /** {@code SEVERE} log level name. */
     String SEVERE_LABEL = LogLevel.SEVERE.getName();
 
     //Exceptions that don't force a stop
-    /**
-     * {@code WARNING} log level ID.
-     * @see LogLevel#WARNING
-     */
+    /** {@code WARNING} log level. */
     int WARNING = 6;
-    /**
-     * {@code WARNING} log level name.
-     * @see LogLevel#WARNING
-     */
+    /** {@code WARNING} log level name. */
     String WARNING_LABEL = LogLevel.WARNING.getName();
 
     //Login and logout per server session with name
-    /**
-     * {@code INFO} log level ID.
-     * @see LogLevel#INFO
-     */
+    /** {@code INFO} log level. */
     int INFO = 5;
-    /**
-     * {@code INFO} log level name.
-     * @see LogLevel#INFO
-     */
+    /** {@code INFO} log level name. */
     String INFO_LABEL = LogLevel.INFO.getName();
 
     //Configuration info
-    /**
-     * {@code CONFIG} log level ID.
-     * @see LogLevel#CONFIG
-     */
+    /** {@code CONFIG} log level. */
     int CONFIG = 4;
-    /**
-     * {@code CONFIG} log level name.
-     * @see LogLevel#CONFIG
-     */
+    /** {@code CONFIG} log level name. */
     String CONFIG_LABEL = LogLevel.CONFIG.getName();
 
     //SQL
-    /**
-     * {@code FINE} log level ID.
-     * @see LogLevel#FINE
-     */
+    /** {@code FINE} log level. */
     int FINE = 3;
-    /**
-     * {@code FINE} log level name.
-     * @see LogLevel#FINE
-     */
+    /** {@code FINE} log level name. */
     String FINE_LABEL = LogLevel.FINE.getName();
 
     //Previously logged under logMessage and stack trace of exceptions at WARNING level
-    /**
-     * {@code FINER} log level ID.
-     * @see LogLevel#FINER
-     */
+    /** {@code FINER} log level. */
     int FINER = 2;
-    /**
-     * {@code FINER} log level name.
-     * @see LogLevel#FINER
-     */
+    /** {@code FINER} log level name. */
     String FINER_LABEL = LogLevel.FINER.getName();
 
     //Previously logged under logDebug
-    /**
-     * {@code FINEST} log level ID.
-     * @see LogLevel#FINEST
-     */
+    /** {@code FINEST} log level. */
     int FINEST = 1;
-    /**
-     * {@code FINEST} log level name.
-     * @see LogLevel#FINEST
-     */
+    /** {@code FINEST} log level name. */
     String FINEST_LABEL = LogLevel.FINEST.getName();
-    /**
-     * {@code ALL} log level ID.
-     * @see LogLevel#ALL
-     */
+    /** {@code ALL} log level. */
     int ALL = 0;
-    /**
-     * {@code ALL} log level name.
-     * @see LogLevel#ALL
-     */
+    /** {@code ALL} log level name. */
     String ALL_LABEL = LogLevel.ALL.getName();
 
     //EclipseLink categories used for logging category.
@@ -258,9 +200,8 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Log a message stored in {@link SessionLogEntry}.
-     * <p>
      * Write message content to a log writer, such as {@link System#out} or a file.
-     * EclipseLink will call this method whenever something needs to be logged.
+     * EclipseLink will call this method whenever something.
      *
      * @param entry holds all the information to be written to the log
      */
@@ -330,7 +271,6 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Returns the writer to which logged messages and SQL are written.
-     * <p>
      * If not set, this reference typically defaults to a writer on {@link System#out}.
      * To enable logging, {@code logMessages} must be turned on in the session.
      *
@@ -340,7 +280,6 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Sets the writer to which logged messages and SQL are written.
-     * <p>
      * If not set, this reference typically defaults to a writer on {@link System#out}.
      * To enable logging, {@code logMessages} must be turned on in the session.
      *
@@ -349,93 +288,86 @@ public interface SessionLog extends Cloneable {
     void setWriter(Writer log);
 
     /**
-     * Returns the log level ID.
-     * <p>
-     * Used when session is not available.
+     * Returns the log level.
+     * Used when session is not available. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @return the current log level ID
-     * @see LogLevel
+     * @return the current log level
      */
     int getLevel();
 
     /**
      * Returns the log level name.
+     * See {@linkplain SessionLog class description} for the list of available levels.
      *
-     * @return the name of the current log level
-     * @see LogLevel
+     * @return the current log level name
      */
     String getLevelString();
 
     /**
-     * Returns the log level ID for provided category.
+     * Returns the log level for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param category the log category in {@link SessionLog}
-     * @return the current log level ID
-     * @see LogLevel
-     * @see LogCategory
+     * @param category the log category
+     * @return the current log level
      */
     int getLevel(String category);
 
     /**
      * Sets the log level.
-     * <p>
-     * Used when session is not available.
+     * Used when session is not available. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @see LogLevel
+     * @param level the log level
      */
     void setLevel(int level);
 
     /**
      * Sets the log level for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
-     * @see LogLevel
-     * @see LogCategory
+     * @param level the log level
+     * @param category the log category
      */
     void setLevel(int level, String category);
 
     /**
      * Whether a message of the given level would actually be logged.
-     * <p>
-     * Used when session is not available.
+     * Used when session is not available. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @return value of {@code true} when message would be logged or {@code false} otherwise
-     * @see LogLevel
      */
     boolean shouldLog(int level);
 
     /**
      * Whether a message of the given level would actually be logged for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @return value of {@code true} when message would be logged or {@code false} otherwise
-     * @see LogLevel
-     * @see LogCategory
      */
 
     boolean shouldLog(int level, String category);
 
     /**
      * Log a message with message content supplier.
+     * See {@linkplain SessionLog class description} for the list of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param messageSupplier the message string supplier
-     * @see LogLevel
      */
     void log(int level, Supplier<String> messageSupplier);
 
     /**
      * Log a message with message content supplier for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param messageSupplier the message string supplier
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, Supplier<String> messageSupplier);
 
@@ -443,204 +375,185 @@ public interface SessionLog extends Cloneable {
      * Log a message.
      * <p>
      * The message won't be translated. This method is intended for external use when logging messages
-     * are wanted within the EclipseLink output.
+     * are wanted within the EclipseLink output. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
-     * @see LogLevel
      */
     void log(int level, String message);
 
     /**
      * Log a message with one parameter.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param param the message parameter
-     * @see LogLevel
      */
     void log(int level, String message, Object param);
 
     /**
      * Log a message with one parameter for provided category.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param param the message parameter
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, String message, Object param);
 
     /**
      * Log a message with two parameters.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
-     * @see LogLevel
      */
     void log(int level, String message, Object param1, Object param2);
 
     /**
      * Log a message with two parameters for provided category.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, String message, Object param1, Object param2);
 
      /**
      * Log a message with three parameters.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
      * @param param3 the 3rd message parameter
-     * @see LogLevel
      */
     void log(int level, String message, Object param1, Object param2, Object param3);
 
     /**
      * Log a message with three parameters for provided category.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
      * @param param3 the 3rd message parameter
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
     /**
      * Log a message with four parameters.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
      * @param param3 the 3rd message parameter
      * @param param4 the 4th message parameter
-     * @see LogLevel
      */
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
      * Log a message with four parameters for provided category.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
      * @param param3 the 3rd message parameter
      * @param param4 the 4th message parameter
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
      * Log a message with parameters array.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param parameters array of the message parameters
-     * @see LogLevel
      */
     void log(int level, String message, Object[] parameters);
 
     /**
      * Log a message with parameters array for provided category.
-     * <p>
-     * The message will be translated.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param parameters array of the message parameters
-     * @see LogLevel
-     * @see LogCategory
      */
     void log(int level, String category, String message, Object[] parameters);
 
     /**
      * Log a message with parameters array and translation flag.
-     * <p>
      * The message will be translated when {@code shouldTranslate} is set to {@code true}.
+     * See {@linkplain SessionLog class description} for the list of available levels.
      *
-     * @param level the log level ID in {@link SessionLog}
+     * @param level the log level
      * @param message the message string
      * @param parameters array of the message parameters
      * @param shouldTranslate value of {@code true} if the message needs to be translated or {@code false} otherwise
-     * @see LogLevel
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String message, Object[] parameters, boolean shouldTranslate);
 
     /**
      * Log a message with parameters array and translation flag for provided category.
-     * <p>
      * The message will be translated when {@code shouldTranslate} is set to {@code true}.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log level ID in {@link SessionLog}
-     * @param category the log category in {@link SessionLog}
+     * @param level the log level
+     * @param category the log category
      * @param message the message string
      * @param parameters array of the message parameters
      * @param shouldTranslate value of {@code true} if the message needs to be translated or {@code false} otherwise
-     * @see LogLevel
-     * @see LogCategory
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     void log(int level, String category, String message, Object[] parameters, boolean shouldTranslate);
 
     /**
-     * PUBLIC:
-     * This method is called when a throwable at finer level needs to be logged.
+     * Log a {@linkplain Throwable} at {@linkplain #FINER} level.
+     *
+     * @param throwable the {@linkplain Throwable}
      */
     void throwing(Throwable throwable);
 
     /**
-     * PUBLIC:
-     * This method is called when a severe level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #SEVERE} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void severe(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a severe level message needs to be logged.
+     * Log a {@linkplain #SEVERE} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -648,17 +561,15 @@ public interface SessionLog extends Cloneable {
     void severe(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a warning level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #WARNING} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void warning(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a warning level message needs to be logged.
+     * Log a {@linkplain #WARNING} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -666,17 +577,15 @@ public interface SessionLog extends Cloneable {
     void warning(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when an info level message needs to be logged.
-     * The message will be translated
+     * Log an {@linkplain #INFO} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void info(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when an info level message needs to be logged.
+     * Log an {@linkplain #INFO} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -684,17 +593,15 @@ public interface SessionLog extends Cloneable {
     void info(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a config level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #CONFIG} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void config(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a config level message needs to be logged.
+     * Log a {@linkplain #CONFIG} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -702,35 +609,31 @@ public interface SessionLog extends Cloneable {
     void config(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINE} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void fine(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINE} level message.
+     * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
      */
     void fine(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
-     * Logs a message with message content supplier.
+     * Log a {@linkplain #FINER} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void finer(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
+     * Log a {@linkplain #FINER} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -738,17 +641,15 @@ public interface SessionLog extends Cloneable {
     void finer(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a finest level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINEST} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void finest(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a finest level message needs to be logged.
+     * Log a {@linkplain #FINEST} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -756,22 +657,11 @@ public interface SessionLog extends Cloneable {
     void finest(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * Log a {@link Throwable} with level.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a {@link Throwable}.
+     * See {@linkplain SessionLog class description} for the list of available levels.
+     *
+     * @param level the log level
+     * @param throwable the {@linkplain Throwable}
      */
     void logThrowable(int level, Throwable throwable);
 
@@ -790,28 +680,19 @@ public interface SessionLog extends Cloneable {
     void setSessionName(String sessionName);
 
     /**
-     * PUBLIC:
-     * Log a throwable with level.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a {@link Throwable} for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
+     *
+     * @param level the log level
+     * @param category the log category
+     * @param throwable the {@linkplain Throwable}
      */
     void logThrowable(int level, String category, Throwable throwable);
 
     /**
-     * PUBLIC:
      * Clone the log.
+     *
+     * @return the cloned log
      */
     Object clone();
 }

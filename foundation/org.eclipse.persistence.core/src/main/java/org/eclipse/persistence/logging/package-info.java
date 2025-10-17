@@ -11,24 +11,19 @@
  */
 
 /**
- * Provides an API for logging messages in the EclipseLink codebase.
+ * Provides a comprehensive logging API for the EclipseLink.
  * <p>
- * The main logging entry point is the {@code SessionLog} interface, which is used by the codebase to make logging calls.
+ * The main logging entry point is the {@linkplain org.eclipse.persistence.logging.SessionLog} interface, which is used
+ * by the codebase to make logging calls.
  * <p>
  * Logging levels are defined in the {@code LogLevel} enum with corresponding constants in the {@code SessionLog} interface.
  * Logging categories (namespaces) are defined in the {@code LogCategory} enum with corresponding constants in the
  * {@code SessionLog} interface.
  * <p>
- * An abstract implementation of the {@code SessionLog} interface is available as the {@code AbstractSessionLog} class, with
- * log message content stored in {@code SessionLogEntry}.
- * The default implementation of the session-independent logger is available as {@code DefaultSessionLog} and may be used
- * when a {@code Session} instance is not available.
- *
- * @see org.eclipse.persistence.logging.SessionLog
- * @see org.eclipse.persistence.logging.LogLevel
- * @see org.eclipse.persistence.logging.LogCategory
- * @see org.eclipse.persistence.logging.AbstractSessionLog
- * @see org.eclipse.persistence.logging.SessionLogEntry
- * @see org.eclipse.persistence.logging.DefaultSessionLog
+ * An abstract implementation of the {@linkplain org.eclipse.persistence.logging.SessionLog} interface is available
+ * as the {@linkplain org.eclipse.persistence.logging.AbstractSessionLog} class, with log message content stored
+ * in {@linkplain org.eclipse.persistence.logging.SessionLogEntry}.
+ * The default implementation of the session-independent logger is available
+ * as {@linkplain org.eclipse.persistence.logging.DefaultSessionLog}.
  */
 package org.eclipse.persistence.logging;
