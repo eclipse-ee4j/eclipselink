@@ -270,7 +270,7 @@ public class ParameterExpression extends BaseExpression {
                     if (mapping != null) {
                         //Nested attribute
                         if (value.getClass() != descriptor.getJavaClass() && this.getLocalBase().isQueryKeyExpression() && ((QueryKeyExpression)this.getLocalBase()).getBaseExpression().isQueryKeyExpression()) {
-                            value = ((QueryKeyExpression)((QueryKeyExpression)this.getLocalBase()).getBaseExpression()).getMapping().getAttributeValueFromObject(value);
+                            value = getParentNodeValue(descriptor.getJavaClass(), (QueryKeyExpression)this.getLocalBase(), value);
                         }
                         if (value != null) {
                             value = mapping.getRealAttributeValueFromObject(value, session);
@@ -330,6 +330,34 @@ public class ParameterExpression extends BaseExpression {
             value = this.localBase.getFieldValue(value, session);
         }
 
+        return value;
+    }
+
+    private boolean directionUp = true;
+
+    private Object getParentNodeValue(Class<?> parentNodeClass, QueryKeyExpression queryKeyExpression, Object inputValue) {
+        Object value = null;
+        QueryKeyExpression baseExpression = queryKeyExpression;
+        DatabaseMapping mapping = baseExpression.getMapping();
+        if (directionUp) {
+            baseExpression = (QueryKeyExpression) queryKeyExpression.getBaseExpression();
+            mapping = baseExpression.getMapping();
+        }
+        if (mapping.getReferenceDescriptor().getJavaClass() == parentNodeClass &&
+                mapping.getDescriptor().getJavaClass() == inputValue.getClass()) {
+            value = mapping.getAttributeValueFromObject(inputValue);
+        } else {
+            Object tmpValue = inputValue;
+            if (mapping.getDescriptor().getJavaClass() == inputValue.getClass()) {
+                tmpValue = mapping.getAttributeValueFromObject(inputValue);
+            }
+            if (tmpValue != inputValue) {
+                directionUp = false;
+                return tmpValue;
+            }
+            tmpValue = getParentNodeValue(parentNodeClass, baseExpression, tmpValue);
+            value = mapping.getAttributeValueFromObject(tmpValue);
+        }
         return value;
     }
 
