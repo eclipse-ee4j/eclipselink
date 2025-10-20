@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -604,16 +603,19 @@ public class TableDefinition extends DatabaseObjectDefinition {
         List<String> sourceFields = new ArrayList<>();
         List<String> targetFields = new ArrayList<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
-        DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
-        DatabaseField tempSourceField = new DatabaseField(field.getName());
 
-        sourceFields.add(tempSourceField.getName());
-        targetFields.add(tempTargetField.getName());
+        String fkQualifiedName = field.getForeignKeyFieldName();
+
+        int index = fkQualifiedName.lastIndexOf('.');
+        String targetTableName = fkQualifiedName.substring(0, index);
+
+        sourceFields.add(field.getName());
+        targetFields.add(fkQualifiedName.substring(index + 1));
 
         fkConstraint.setSourceFields(sourceFields);
         fkConstraint.setTargetFields(targetFields);
-        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited(platform));
-        String tempName = buildForeignKeyConstraintName(this.getName(), tempSourceField.getName(), platform.getMaxForeignKeyNameSize(), platform);
+        fkConstraint.setTargetTable(targetTableName);
+        String tempName = buildForeignKeyConstraintName(this.getName(), field.getName(), platform.getMaxForeignKeyNameSize(), platform);
 
         fkConstraint.setName(tempName);
         return fkConstraint;

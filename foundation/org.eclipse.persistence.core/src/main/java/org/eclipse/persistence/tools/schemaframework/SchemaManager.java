@@ -37,6 +37,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 import java.io.Writer;
@@ -489,20 +491,27 @@ public class SchemaManager {
         }
         Sequence defaultSequence = getDefaultSequenceOrNull(sequence);
         if (sequence.isTable() || (defaultSequence != null && defaultSequence.isTable())) {
-            return new TableSequenceDefinition(sequence, createDatabaseSchemas);
+            TableSequenceDefinition definition = initSequenceDefinition(new TableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            TableSequence ts = sequence.isTable() ? (TableSequence) sequence : (TableSequence) defaultSequence;
+            definition.setSequenceTableName(ts.getTableName());
+            definition.setSequenceTableQualifier(ts.getQualifier());
+            definition.setSequenceNameFieldName(ts.getNameFieldName());
+            definition.setSequenceCounterFieldName(ts.getCounterFieldName());
+            definition.setSequenceTableIndexes(ts.getTableIndexes());
+            return definition;
         } else if (sequence.isUnaryTable() || (defaultSequence != null && defaultSequence.isUnaryTable())) {
-            return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
+            UnaryTableSequenceDefinition definition = initSequenceDefinition(new UnaryTableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            UnaryTableSequence ut = sequence.isTable() ? (UnaryTableSequence) sequence : (UnaryTableSequence) defaultSequence;
+            definition.setSequenceTableName(ut.getName());
+            definition.setSequenceTableQualifier(ut.getQualifier());
+            definition.setSequenceCounterFieldName(ut.getCounterFieldName());
+            return definition;
         } else if (sequence.isNative() || (defaultSequence != null && defaultSequence.isNative())) {
-            NativeSequence nativeSequence = null;
-            if (sequence.isNative()) {
-                nativeSequence = (NativeSequence)sequence;
-            } else {
-                nativeSequence = (NativeSequence)((DefaultSequence)sequence).getDefaultSequence();
-            }
+            NativeSequence nativeSequence = sequence.isNative() ? (NativeSequence) sequence : (NativeSequence) defaultSequence;
             if (nativeSequence.hasDelegateSequence()) {
                 return buildSequenceDefinition(((NativeSequence)sequence).getDelegateSequence());
             }
-            return new SequenceObjectDefinition(sequence);
+            return initSequenceDefinition(new SequenceObjectDefinition(sequence.getName()), sequence);
         } else {
             return null;
         }
@@ -1238,4 +1247,12 @@ public class SchemaManager {
     private Sequence getDefaultSequenceOrNull(Sequence s) {
         return s instanceof DefaultSequence ? ((DefaultSequence)s).getDefaultSequence() : null;
     }
+
+    private <T extends SequenceDefinition> T initSequenceDefinition(T sequenceDefinition, Sequence sequence) {
+        sequenceDefinition.setQualifier(sequence.getQualifier());
+        sequenceDefinition.setPreallocationSize(sequence.getPreallocationSize());
+        sequenceDefinition.setInitialValue(sequence.getInitialValue());
+        return sequenceDefinition;
+    }
+
 }
