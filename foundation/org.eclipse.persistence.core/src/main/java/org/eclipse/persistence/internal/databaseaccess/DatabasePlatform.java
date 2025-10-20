@@ -56,7 +56,6 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -81,6 +80,7 @@ import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.SequenceDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 import java.io.ByteArrayInputStream;
@@ -3889,18 +3889,39 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Executes and evaluates query to check whether given table exists.
      * Returned value is always {@code true}, because an exception is thrown
-     * when given table does not exists.
+     * when given table does not exist.
      * @param session current database session
      * @param table database table meta-data
      * @param suppressLogging whether to suppress logging during query execution
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
-    public boolean checkTableExists(final DatabaseSessionImpl session,
+    public boolean checkTableExists(final AbstractSession session,
             final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);
             session.executeQuery(getTableExistsQuery(table));
             return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given sequence exists.
+     * @param session current database session
+     * @param sequence database sequence meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given sequence exists or {@code false} otherwise
+     */
+    @SuppressWarnings({"removal"})
+    public boolean checkSequenceExists(final AbstractSession session,
+            final SequenceDefinition sequence, final boolean suppressLogging) {
+        //TODO: delete sequence.checkIfExist method
+        // and follow the pattern from checkTableExists
+        try {
+            session.setLoggingOff(suppressLogging);
+            return sequence.checkIfExist(session);
         } catch (Exception notFound) {
             return false;
         }

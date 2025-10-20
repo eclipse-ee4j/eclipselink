@@ -2859,7 +2859,9 @@ public class EntityManagerTLRJUnitTest extends JUnitTestCase {
     protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
         NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
         sequence.onConnect(ss.getPlatform());
-        SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
+        SequenceObjectDefinition def = new SequenceObjectDefinition(sequence.getName());
+        def.setPreallocationSize(preallocationSize);
+        def.setInitialValue(startValue);
         try {
             // create sequence
             String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();

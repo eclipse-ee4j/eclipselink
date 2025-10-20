@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,9 +43,17 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * either NativeSequence with shouldAcquireValueAfterInsert() returning false;
      * or DefaultSequence (only if case platform.getDefaultSequence() is a
      * NativeSequence with shouldAcquireValueAfterInsert() returning false).
+     * @deprecated Use {@linkplain #SequenceObjectDefinition(String)} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public SequenceObjectDefinition(Sequence sequence) {
         super(sequence);
+    }
+
+
+    public SequenceObjectDefinition(String name) {
+        super(name);
     }
 
     /**
@@ -58,8 +66,8 @@ public class SequenceObjectDefinition extends SequenceDefinition {
             // startWith value calculated using the initial value and increment.
             // The first time TopLink calls select nextval, the value equal to startWith is returned.
             // The first sequence value EclipseLink may assign is startWith - getIncrement() + 1.
-            int startWith = sequence.getInitialValue() + sequence.getPreallocationSize() - 1;
-            session.getPlatform().buildSequenceObjectCreationWriter(writer, getFullName(), sequence.getPreallocationSize(), startWith);
+            int startWith = getInitialValue() + getPreallocationSize() - 1;
+            session.getPlatform().buildSequenceObjectCreationWriter(writer, getFullName(), getPreallocationSize(), startWith);
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -86,7 +94,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      */
     public Writer buildAlterIncrementWriter(AbstractSession session, Writer writer) {
         try {
-            session.getPlatform().buildSequenceObjectAlterIncrementWriter(writer, getFullName(), sequence.getPreallocationSize());
+            session.getPlatform().buildSequenceObjectAlterIncrementWriter(writer, getFullName(), getPreallocationSize());
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -96,8 +104,11 @@ public class SequenceObjectDefinition extends SequenceDefinition {
     /**
      * INTERNAL:
      * Check if the sequence object already exists, in which case don't create it.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         boolean isConnected = sequence.isConnected();
         // temporary connect sequence if it's not connected.
@@ -161,15 +172,5 @@ public class SequenceObjectDefinition extends SequenceDefinition {
         } else {
             this.buildAlterIncrementWriter(session, schemaWriter);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Most major databases support a creator name scope.
-     * This means whenever the database object is referenced, it must be qualified.
-     */
-    @Override
-    public String getFullName() {
-        return sequence.getQualified(getName());
     }
 }
