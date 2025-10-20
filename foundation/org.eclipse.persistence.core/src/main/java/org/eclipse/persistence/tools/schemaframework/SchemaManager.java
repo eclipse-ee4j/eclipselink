@@ -484,24 +484,29 @@ public class SchemaManager {
         if (sequence.shouldAcquireValueAfterInsert()) {
             return null;
         }
-        if (sequence instanceof TableSequence ||
-            (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof TableSequence)) {
-            return new TableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof UnaryTableSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof UnaryTableSequence)) {
-            return new UnaryTableSequenceDefinition(sequence, createDatabaseSchemas);
-        } else if (sequence instanceof NativeSequence ||
-                   (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
-            NativeSequence nativeSequence = null;
-            if (sequence instanceof NativeSequence) {
-                nativeSequence = (NativeSequence)sequence;
-            } else {
-                nativeSequence = (NativeSequence)((DefaultSequence)sequence).getDefaultSequence();
-            }
+        Sequence defaultSequence = getDefaultSequenceOrNull(sequence);
+        if (sequence.isTable() || (defaultSequence != null && defaultSequence.isTable())) {
+            TableSequenceDefinition definition = initSequenceDefinition(new TableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            TableSequence ts = sequence.isTable() ? (TableSequence) sequence : (TableSequence) defaultSequence;
+            definition.setSequenceTableName(ts.getTableName());
+            definition.setSequenceTableQualifier(ts.getQualifier());
+            definition.setSequenceNameFieldName(ts.getNameFieldName());
+            definition.setSequenceCounterFieldName(ts.getCounterFieldName());
+            definition.setSequenceTableIndexes(ts.getTableIndexes());
+            return definition;
+        } else if (sequence.isUnaryTable() || (defaultSequence != null && defaultSequence.isUnaryTable())) {
+            UnaryTableSequenceDefinition definition = initSequenceDefinition(new UnaryTableSequenceDefinition(sequence.getName(), createDatabaseSchemas), sequence);
+            UnaryTableSequence ut = sequence.isTable() ? (UnaryTableSequence) sequence : (UnaryTableSequence) defaultSequence;
+            definition.setSequenceTableName(ut.getName());
+            definition.setSequenceTableQualifier(ut.getQualifier());
+            definition.setSequenceCounterFieldName(ut.getCounterFieldName());
+            return definition;
+        } else if (sequence.isNative() || (defaultSequence != null && defaultSequence.isNative())) {
+            NativeSequence nativeSequence = sequence.isNative() ? (NativeSequence) sequence : (NativeSequence) defaultSequence;
             if (nativeSequence.hasDelegateSequence()) {
                 return buildSequenceDefinition(((NativeSequence)sequence).getDelegateSequence());
             }
-            return new SequenceObjectDefinition(sequence);
+            return initSequenceDefinition(new SequenceObjectDefinition(sequence.getName()), sequence);
         } else {
             return null;
         }
@@ -1199,6 +1204,17 @@ public class SchemaManager {
             this.session.getDatabaseEventListener().remove(this.session);
             this.session.getDatabaseEventListener().register(this.session);
         }
+    }
+
+    private Sequence getDefaultSequenceOrNull(Sequence s) {
+        return s instanceof DefaultSequence ? ((DefaultSequence)s).getDefaultSequence() : null;
+    }
+
+    private <T extends SequenceDefinition> T initSequenceDefinition(T sequenceDefinition, Sequence sequence) {
+        sequenceDefinition.setQualifier(sequence.getQualifier());
+        sequenceDefinition.setPreallocationSize(sequence.getPreallocationSize());
+        sequenceDefinition.setInitialValue(sequence.getInitialValue());
+        return sequenceDefinition;
     }
 
 }

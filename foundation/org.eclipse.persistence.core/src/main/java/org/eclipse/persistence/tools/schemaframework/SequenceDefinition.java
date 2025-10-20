@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,24 +28,51 @@ import org.eclipse.persistence.sequencing.Sequence;
  * </p>
  */
 public abstract class SequenceDefinition extends DatabaseObjectDefinition {
+
+    private int initialValue;
+    private int preallocationSize;
+
+    /**
+     * @deprecated To be removed with no replacement.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Sequence sequence;
 
     protected SequenceDefinition(String name) {
         super();
-        this.name = name;
+        setName(name);
+        initialValue = 1;
+        preallocationSize = 50;
     }
 
+    /**
+     * @deprecated Use {@linkplain #SequenceDefinition(String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected SequenceDefinition(Sequence sequence) {
         super();
         this.sequence = sequence;
-        this.name = sequence.getName();
+        setName(sequence.getName());
+        setQualifier(sequence.getQualifier());
+        initialValue = sequence.getInitialValue();
+        preallocationSize = sequence.getPreallocationSize();
     }
 
     /**
      * INTERAL:
      * Verify whether the sequence exists.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public abstract boolean checkIfExist(AbstractSession session) throws DatabaseException;
+
+    public int getInitialValue() {
+        return initialValue;
+    }
+
+    public int getPreallocationSize() {
+        return preallocationSize;
+    }
 
     /**
      * INTERNAL:
@@ -87,8 +114,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
         boolean exists = false;
         final boolean loggingOff = session.isLoggingOff();
         try {
-            session.setLoggingOff(true);
-            exists = checkIfExist(session);
+            exists = session.getPlatform().checkSequenceExists(session, this, true);
         } finally {
             session.setLoggingOff(loggingOff);
         }
@@ -107,5 +133,13 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      */
     public TableDefinition buildTableDefinition() {
         return null;
+    }
+
+    public void setInitialValue(int initialValue) {
+        this.initialValue = initialValue;
+    }
+
+    public void setPreallocationSize(int preallocationSize) {
+        this.preallocationSize = preallocationSize;
     }
 }
