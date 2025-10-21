@@ -10,24 +10,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-/*
- * Provides {@link java.util.logging} specific extension of the EclipseLink logging.
- * <p>
- * {@linkplain org.eclipse.persistence.logging.jul.JavaLog} class extends {@linkplain org.eclipse.persistence.logging.AbstractSessionLog}
- * and implements JUL specific features.
- * {@linkplain org.eclipse.persistence.logging.jul.EclipseLinkLogRecord} is JUL specific alternative
- * of {@linkplain org.eclipse.persistence.logging.SessionLogEntry} to which this instance is being translated as part
- * of {@linkplain org.eclipse.persistence.logging.jul.JavaLog#log(org.eclipse.persistence.logging.SessionLogEntry)} execution.
- * <p>
- * JUL specific logging defines two logging name spaces:<ul>
- * <li><b>{@code org.eclipse.persistence.default}</b> for log output without {@code Session} context.</li>
- * <li><b>{@code org.eclipse.persistence.session.<name>}</b> for {@code Session} related log output. Value of {@code <name>}
- *     is the name of the current session.</li>
- * </ul>
- * Name of the {@linkplain org.eclipse.persistence.logging.LogCategory} may be appended to the name space as well when present.
- */
 /**
- * Provides {@link java.util.logging} specific extensions for EclipseLink logging.
+ * Provides {@linkplain java.util.logging} specific extensions for EclipseLink logging.
  * <p>
  * The {@linkplain org.eclipse.persistence.logging.jul.JavaLog} class extends {@linkplain org.eclipse.persistence.logging.AbstractSessionLog},
  * implementing features specific to Java Util Logging (JUL).

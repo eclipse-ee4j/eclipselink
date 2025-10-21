@@ -23,27 +23,27 @@ import java.util.Map;
  * The EclipseLink categories are:<br>
  * <table>
  * <caption>Logging categories</caption>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#CACHE}</td>       <td>&nbsp;</td><td>= {@value SessionLog#CACHE}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#CONNECTION}</td>  <td>&nbsp;</td><td>= {@value SessionLog#CONNECTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#DDL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DDL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#DMS}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DMS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#EJB}</td>         <td>&nbsp;</td><td>= {@value SessionLog#EJB}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#EVENT}</td>       <td>&nbsp;</td><td>= {@value SessionLog#EVENT}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#JPA}</td>         <td>&nbsp;</td><td>= {@value SessionLog#JPA}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#JPARS}</td>       <td>&nbsp;</td><td>= {@value SessionLog#JPARS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#METADATA}</td>    <td>&nbsp;</td><td>= {@value SessionLog#METADATA}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#METAMODEL}</td>   <td>&nbsp;</td><td>= {@value SessionLog#METAMODEL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#MONITORING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#MONITORING}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#MOXY}</td>        <td>&nbsp;</td><td>= {@value SessionLog#MOXY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#PROPAGATION}</td> <td>&nbsp;</td><td>= {@value SessionLog#PROPAGATION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#PROPERTIES}</td>  <td>&nbsp;</td><td>= {@value SessionLog#PROPERTIES}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#QUERY}</td>       <td>&nbsp;</td><td>= {@value SessionLog#QUERY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#SEQUENCING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#SEQUENCING}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#SERVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#SERVER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#SQL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#SQL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#THREAD}</td>      <td>&nbsp;</td><td>= {@value SessionLog#THREAD}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#TRANSACTION}</td> <td>&nbsp;</td><td>= {@value SessionLog#TRANSACTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link SessionLog#WEAVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#WEAVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#CACHE}</td>       <td>&nbsp;</td><td>= {@value SessionLog#CACHE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#CONNECTION}</td>  <td>&nbsp;</td><td>= {@value SessionLog#CONNECTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#DDL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DDL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#DMS}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DMS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#EJB}</td>         <td>&nbsp;</td><td>= {@value SessionLog#EJB}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#EVENT}</td>       <td>&nbsp;</td><td>= {@value SessionLog#EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#JPA}</td>         <td>&nbsp;</td><td>= {@value SessionLog#JPA}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#JPARS}</td>       <td>&nbsp;</td><td>= {@value SessionLog#JPARS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#METADATA}</td>    <td>&nbsp;</td><td>= {@value SessionLog#METADATA}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#METAMODEL}</td>   <td>&nbsp;</td><td>= {@value SessionLog#METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#MONITORING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#MONITORING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#MOXY}</td>        <td>&nbsp;</td><td>= {@value SessionLog#MOXY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#PROPAGATION}</td> <td>&nbsp;</td><td>= {@value SessionLog#PROPAGATION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#PROPERTIES}</td>  <td>&nbsp;</td><td>= {@value SessionLog#PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#QUERY}</td>       <td>&nbsp;</td><td>= {@value SessionLog#QUERY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SEQUENCING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#SEQUENCING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SERVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#SERVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SQL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#THREAD}</td>      <td>&nbsp;</td><td>= {@value SessionLog#THREAD}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#TRANSACTION}</td> <td>&nbsp;</td><td>= {@value SessionLog#TRANSACTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#WEAVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#WEAVER}</td></tr>
  * </table>
  */
 public enum LogCategory {
@@ -78,7 +78,7 @@ public enum LogCategory {
     /** Logger name spaces prefix. */
     private static final String NAMESPACE_PREFIX = "eclipselink.logging.";
 
-    /** {@link Map} for {@link String} to {@link LogCategory} case insensitive conversion. */
+    /** {@linkplain Map} for {@linkplain String} to {@linkplain LogCategory} case insensitive conversion. */
     private static final Map<String, LogCategory> stringValuesMap = new HashMap<>(2 * length);
 
     /** Logger name spaces lookup table. */
@@ -100,10 +100,10 @@ public enum LogCategory {
     }
 
     /**
-     * Returns {@link LogCategory} object holding the value of the specified {@link String}.
-     * @param name The {@link String} to be parsed.
-     * @return {@link LogCategory} object holding the value represented by the string argument or {@code null} when
-     *         there exists no corresponding {@link LogCategory} object to provided argument value. {@code null} value
+     * Returns {@linkplain LogCategory} object holding the value of the specified {@linkplain String}.
+     * @param name The {@linkplain String} to be parsed.
+     * @return {@linkplain LogCategory} object holding the value represented by the string argument or {@code null} when
+     *         there exists no corresponding {@linkplain LogCategory} object to provided argument value. {@code null} value
      *         of the string argument is converted to {@code ALL}.
      */
     public static final LogCategory toValue(final String name) {

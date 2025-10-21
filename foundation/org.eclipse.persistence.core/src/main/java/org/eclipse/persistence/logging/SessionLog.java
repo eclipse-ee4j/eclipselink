@@ -28,40 +28,40 @@ import java.util.function.Supplier;
  * integer values:
  * <table>
  * <caption>Logging levels</caption>
- * <tr><td>&nbsp;</td><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
  * <table>
  * <caption>Logging categories</caption>
- * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>          <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>         <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>          <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>     <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>        <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #DBWS}</td>          <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #JPARS}</td>         <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #MOXY}</td>          <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROCESSOR}</td>     <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #THREAD}</td>        <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
  * </table>
  *
  * @see SessionLogEntry
@@ -200,8 +200,8 @@ public interface SessionLog extends Cloneable {
     };
 
     /**
-     * Log a message stored in {@link SessionLogEntry}.
-     * Write message content to a log writer, such as {@link System#out} or a file.
+     * Log a message stored in {@linkplain SessionLogEntry}.
+     * Write message content to a log writer, such as {@linkplain System#out} or a file.
      * EclipseLink will call this method whenever something.
      *
      * @param entry holds all the information to be written to the log
@@ -272,7 +272,7 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Returns the writer to which logged messages and SQL are written.
-     * If not set, this reference typically defaults to a writer on {@link System#out}.
+     * If not set, this reference typically defaults to a writer on {@linkplain System#out}.
      * To enable logging, {@code logMessages} must be turned on in the session.
      *
      * @return the writer used for logging messages and SQL
@@ -281,7 +281,7 @@ public interface SessionLog extends Cloneable {
 
     /**
      * Sets the writer to which logged messages and SQL are written.
-     * If not set, this reference typically defaults to a writer on {@link System#out}.
+     * If not set, this reference typically defaults to a writer on {@linkplain System#out}.
      * To enable logging, {@code logMessages} must be turned on in the session.
      *
      * @param log the writer to be used for logging messages and SQL
@@ -656,7 +656,7 @@ public interface SessionLog extends Cloneable {
     void finest(Supplier<String> messageSupplier);
 
     /**
-     * Log a {@link Throwable}.
+     * Log a {@linkplain Throwable}.
      * See {@linkplain SessionLog class description} for the list of available levels.
      *
      * @param level the log level
@@ -679,7 +679,7 @@ public interface SessionLog extends Cloneable {
     void setSessionName(String sessionName);
 
     /**
-     * Log a {@link Throwable} for provided category.
+     * Log a {@linkplain Throwable} for provided category.
      * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
      * @param level the log level

@@ -192,7 +192,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * Creates a new instance of {@link AbstractSessionLog} class.
+     * Creates a new instance of {@linkplain AbstractSessionLog} class.
      */
     protected AbstractSessionLog() {
         this.writer = new PrintWriter(System.out);
@@ -478,11 +478,11 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * Whether the {@link Exception} stack trace should be logged.
+     * Whether the {@linkplain Exception} stack trace should be logged.
      * By default, the stack is logged for FINER or less (finest). The logging of the stack
      * can be explicitly turned on or off.
      *
-     * @return value of {@code true} when the {@link Exception} stack trace should be logged
+     * @return value of {@code true} when the {@linkplain Exception} stack trace should be logged
      * or {@code false} otherwise
      */
     @Override
@@ -493,9 +493,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * Turn {@link Exception} stack trace logging on or off explicitly.
+     * Turn {@linkplain Exception} stack trace logging on or off explicitly.
      *
-     * @param shouldLogExceptionStackTrace value of {@code true} when the {@link Exception} stack trace
+     * @param shouldLogExceptionStackTrace value of {@code true} when the {@linkplain Exception} stack trace
      *                                     should be logged or {@code false} otherwise
      */
     @Override
@@ -796,7 +796,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
      * Translate the string value of the log level to the constant value.
      * If value is {@code null} or invalid use the default.
      *
-     * @return the constant value of the provided log level {@link String}
+     * @return the constant value of the provided log level {@linkplain String}
      */
     public static int translateStringToLoggingLevel(String loggingLevel) {
         final LogLevel logLevel = LogLevel.toValue(loggingLevel);

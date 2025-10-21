@@ -39,7 +39,7 @@ public class SessionLogEntry implements Serializable {
     private String sessionId;
 
     /**
-     * @deprecated Use {@link #getThread()} instead
+     * @deprecated Use {@linkplain #getThread()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected transient Thread thread;
@@ -47,31 +47,31 @@ public class SessionLogEntry implements Serializable {
     private final Integer connectionId;
 
     /**
-     * @deprecated Use {@link #getMessage()} instead
+     * @deprecated Use {@linkplain #getMessage()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected String message;
 
     /**
-     * @deprecated Use {@link #getException()} instead
+     * @deprecated Use {@linkplain #getException()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected Throwable throwable;
 
     /**
-     * @deprecated Use {@link #getLevel()} instead
+     * @deprecated Use {@linkplain #getLevel()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected int level;
 
     /**
-     * @deprecated Use {@link #getNameSpace()} instead
+     * @deprecated Use {@linkplain #getNameSpace()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected String nameSpace;
 
     /**
-     * @deprecated Use {@link #getParameters()} instead
+     * @deprecated Use {@linkplain #getParameters()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected Object[] parameters;
@@ -83,13 +83,13 @@ public class SessionLogEntry implements Serializable {
     protected boolean shouldTranslate;
 
     /**
-     * @deprecated Use {@link #getSourceClassName()} instead
+     * @deprecated Use {@linkplain #getSourceClassName()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected String sourceClassName;
 
     /**
-     * @deprecated Use {@link #getSourceMethodName()} instead
+     * @deprecated Use {@linkplain #getSourceMethodName()} instead
      */
     @Deprecated(forRemoval=true, since="4.0.9")
     protected String sourceMethodName;
