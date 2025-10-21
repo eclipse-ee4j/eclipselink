@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,16 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sequencing.Sequence;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * <p>
@@ -39,8 +44,14 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * or DefaultSequence (only if case platform.getDefaultSequence() is a
      * NativeSequence with shouldAcquireValueAfterInsert() returning false).
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public SequenceObjectDefinition(Sequence sequence) {
         super(sequence);
+    }
+
+
+    public SequenceObjectDefinition(String name) {
+        super(name);
     }
 
     /**
@@ -48,13 +59,14 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Return the SQL required to create the Oracle sequence object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) {
         try {
             // startWith value calculated using the initial value and increment.
             // The first time TopLink calls select nextval, the value equal to startWith is returned.
             // The first sequence value EclipseLink may assign is startWith - getIncrement() + 1.
-            int startWith = sequence.getInitialValue() + sequence.getPreallocationSize() - 1;
-            session.getPlatform().buildSequenceObjectCreationWriter(writer, getFullName(), sequence.getPreallocationSize(), startWith);
+            int startWith = getInitialValue() + getPreallocationSize() - 1;
+            session.getPlatform().buildSequenceObjectCreationWriter(writer, getFullName(), getPreallocationSize(), startWith);
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -66,6 +78,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Return the SQL required to drop the Oracle sequence object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) {
         try {
             session.getPlatform().buildSequenceObjectDeletionWriter(writer, getFullName());
@@ -79,9 +92,10 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Return the SQL required to alter INCREMENT BY
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildAlterIncrementWriter(AbstractSession session, Writer writer) {
         try {
-            session.getPlatform().buildSequenceObjectAlterIncrementWriter(writer, getFullName(), sequence.getPreallocationSize());
+            session.getPlatform().buildSequenceObjectAlterIncrementWriter(writer, getFullName(), getPreallocationSize());
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -90,9 +104,10 @@ public class SequenceObjectDefinition extends SequenceDefinition {
 
     /**
      * INTERNAL:
-     * Check if the sequence object already exists, in which case dont create it.
+     * Check if the sequence object already exists, in which case don't create it.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         boolean isConnected = sequence.isConnected();
         // temporary connect sequence if it's not connected.
@@ -129,6 +144,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Indicates whether alterIncrement is supported
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean isAlterSupported(AbstractSession session) {
         return session.getPlatform().isAlterSequenceObjectSupported();
     }
@@ -139,6 +155,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Assume that the sequence exists.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
         // Bug# 242120: Let the DatabaseException propagate and do not call
         // createOnDatabase(session) which would cause an infinite loop on a JTA connection
@@ -150,21 +167,12 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Execute the SQL required to alter sequence increment.
      * Assume that the sequence exists.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterIncrement(AbstractSession session, Writer schemaWriter) throws ValidationException {
         if (schemaWriter == null) {
             this.alterOnDatabase(session);
         } else {
             this.buildAlterIncrementWriter(session, schemaWriter);
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Most major databases support a creator name scope.
-     * This means whenever the database object is referenced, it must be qualified.
-     */
-    @Override
-    public String getFullName() {
-        return sequence.getQualified(getName());
     }
 }

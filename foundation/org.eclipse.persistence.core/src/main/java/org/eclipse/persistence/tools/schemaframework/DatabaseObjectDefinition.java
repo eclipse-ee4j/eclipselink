@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,18 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.SQLCall;
 
 /**
  * <p>
@@ -42,7 +44,15 @@ import org.eclipse.persistence.queries.*;
  * </ul>
  */
 public abstract class DatabaseObjectDefinition implements Cloneable, Serializable {
+    /**
+     * @deprecated Use {@linkplain #getName()} and {@linkplain #setName(String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String name;
+    /**
+     * @deprecated Use {@linkplain #getQualifier()} and {@linkplain #setQualifier(String)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String qualifier;
 
     /**
@@ -55,6 +65,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * @return Database platform specific definition instance.
      * @throws ValidationException when provided type is not valid database type.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected static final FieldTypeDefinition getFieldTypeDefinition(
             final AbstractSession session, final Class<?> type, final String name) {
         final FieldTypeDefinition fieldType = type != null
@@ -77,6 +88,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      *                 type class is not available).
      * @throws ValidationException when provided type is not valid database type.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected static final FieldTypeDefinition getFieldTypeDefinition(
             final DatabasePlatform platform, final Class<?> type, final String name) {
         FieldTypeDefinition fieldType;
@@ -104,20 +116,30 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     protected DatabaseObjectDefinition() {
-        this.name = "";
-        this.qualifier = "";
+        this("", "");
+    }
+
+    protected DatabaseObjectDefinition(String name) {
+        this(name, "");
+    }
+
+    protected DatabaseObjectDefinition(String name, String qualifier) {
+        this.name = name;
+        this.qualifier = qualifier;
     }
 
     /**
      * INTERNAL:
      * Returns the writer used for creation of this object.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public abstract Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException;
 
     /**
      * INTERNAL:
      * Sub classes should override.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDCreationPolicyWriter(AbstractSession session, Writer writer) {
         // Does nothing .. subclasses should override
         return null;
@@ -127,6 +149,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Sub classes should override.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDCreationFunctionWriter(AbstractSession session, Writer writer) {
         // Does nothing .. subclasses should override
         return null;
@@ -136,6 +159,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Sub classes should override.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDDeletionWriter(AbstractSession session, Writer writer) {
         // Does nothing .. subclasses should override
         return null;
@@ -145,6 +169,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Returns the writer used for deletion of this object.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public abstract Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException;
 
     /**
@@ -167,6 +192,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      *
      * @see TableDefinition
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createDatabaseSchema(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
 
     /**
@@ -177,6 +203,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      *
      * @see TableDefinition
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createDatabaseSchemaOnDatabase(AbstractSession session, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
 
     /**
@@ -184,6 +211,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Either drop from the database directly or write the statement to a file.
      * Database objects are root level entities such as tables, views, procs, sequences...
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createObject(AbstractSession session, Writer schemaWriter) throws EclipseLinkException {
         if (schemaWriter == null) {
             this.createOnDatabase(session);
@@ -201,6 +229,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Execute the DDL to create this object.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
 
@@ -222,6 +251,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Subclasses who care should override this method.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean shouldCreateVPDCalls(AbstractSession session) {
         return false;
     }
@@ -234,6 +264,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      *
      * @see TableDefinition
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {}
 
     /**
@@ -244,12 +275,14 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      *
      * @see TableDefinition
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {}
 
     /**
      * INTERNAL:
      * Execute the DDL to drop the object.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropFromDatabase(AbstractSession session) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDeletionWriter(session, new StringWriter()).toString()));
 
@@ -263,6 +296,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Execute the DDL to drop the object.  Either directly from the database
      * of write out the statement to a file.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropObject(AbstractSession session, Writer schemaWriter, boolean createSQLFiles) throws EclipseLinkException {
         if (schemaWriter == null) {
             this.dropFromDatabase(session);
@@ -291,7 +325,7 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * This means whenever the database object is referenced, it must be qualified.
      */
     public String getFullName() {
-        if (getQualifier().equals("")) {
+        if (getQualifier().isEmpty()) {
             return getName();
         } else {
             return getQualifier() + "." + getName();
@@ -321,18 +355,20 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * Return true is this database object definition has a schema definition.
      */
     protected boolean hasDatabaseSchema() {
-        return getDatabaseSchema() != null && ! getDatabaseSchema().equals("");
+        return getDatabaseSchema() != null && !getDatabaseSchema().isEmpty();
     }
 
     /**
      * Execute any statements required after the creation of the object
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
     }
 
     /**
      * Execute any statements required before the deletion of the object
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles){
     }
 
@@ -356,6 +392,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getFullName() + ")";
+        return getClass().getSimpleName() + "(" + getFullName() + ")";
     }
 }

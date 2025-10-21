@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,10 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.Writer;
-import org.eclipse.persistence.exceptions.*;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
 
@@ -28,29 +31,47 @@ import org.eclipse.persistence.sequencing.Sequence;
  * </p>
  */
 public abstract class SequenceDefinition extends DatabaseObjectDefinition {
+
+    protected int initialValue;
+    protected int preallocationSize;
+
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Sequence sequence;
 
     protected SequenceDefinition(String name) {
-        super();
-        this.name = name;
+        super(name);
+        initialValue = 1;
+        preallocationSize = 50;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected SequenceDefinition(Sequence sequence) {
-        super();
+        super(sequence.getName(), sequence.getQualifier());
         this.sequence = sequence;
-        this.name = sequence.getName();
+        initialValue = sequence.getInitialValue();
+        preallocationSize = sequence.getPreallocationSize();
     }
 
     /**
-     * INTERAL:
+     * INTERNAL:
      * Verify whether the sequence exists.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public abstract boolean checkIfExist(AbstractSession session) throws DatabaseException;
+
+    public int getInitialValue() {
+        return initialValue;
+    }
+
+    public int getPreallocationSize() {
+        return preallocationSize;
+    }
 
     /**
      * INTERNAL:
      * Indicates whether alter is supported
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean isAlterSupported(AbstractSession session) {
         return false;
     }
@@ -64,16 +85,18 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
 
     /**
      * INTERNAL:
-     * By default does nothing.
+     * By default, does nothing.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
     }
 
     /**
      * INTERNAL:
      * Execute the SQL required to alter sequence.
-     * By default does nothing.
+     * By default, does nothing.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alter(AbstractSession session, Writer writer) throws ValidationException {
     }
 
@@ -83,6 +106,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * to alter it based on what the platform supports.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         boolean exists = false;
         final boolean loggingOff = session.isLoggingOff();
@@ -107,5 +131,13 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      */
     public TableDefinition buildTableDefinition() {
         return null;
+    }
+
+    public void setInitialValue(int initialValue) {
+        this.initialValue = initialValue;
+    }
+
+    public void setPreallocationSize(int preallocationSize) {
+        this.preallocationSize = preallocationSize;
     }
 }

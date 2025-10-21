@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2015 Sei Syvalta. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2024 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -74,8 +73,6 @@ import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -86,32 +83,32 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * DefaultTableGenerator is a utility class used to generate a default table schema for a EclipseLink project object.
- *
+ * <p>
  * The utility can be used in EclipseLink CMP for OC4J to perform the table auto creation process, which can be triggered
  * at deployment time when EclipseLink project descriptor is absent (default mapping) or present.
- *
+ * <p>
  * The utility can also be used to any EclipseLink application to perform the table drop/creation at runtime.
- *
+ * <p>
  * The utility handles all direct/relational mappings, inheritance, multiple tables, interface with/without tables,
  * optimistic version/timestamp lockings, nested relationships, BLOB/CLOB generation.
- *
+ * <p>
  * The utility is platform-agnostic.
- *
+ * <p>
  * Usage:
  * - CMP
  *  1. set "autocreate-tables=true|false, autodelete-tables=true|false" in oc4j application deployment
  *     descriptor files (config/system-application.xml, config/application.xml, or orion-application.xml in an .ear)
- *
+ * <p>
  *  2. Default Mapping: the same as CMP, plus system properties setting -Declipselink.defaultmapping.autocreate-tables='true|false'
  *     and  -Declipselink.defaultmapping.autodelete-tables='true|false'
- *
+ * <p>
  * - Non-CMP:
  *  1.  Configuration: through sessions.xml
  *  2.  Directly runtime call through schema framework:
  *      SchemaManager mgr = new SchemaManager(session);
  *      mgr.replaceDefaultTables(); //drop and create
  *        mgr.createDefaultTables(); //create only
- *
+ * <p>
  * The utility currently only supports relational project.
  *
  * @author King Wang
@@ -174,7 +171,7 @@ public class DefaultTableGenerator {
         //go through each descriptor and build the table/field definitions out of mappings
         for (ClassDescriptor descriptor : this.project.getOrderedDescriptors()) {
 
-            if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
+            if ((descriptor.isXMLDescriptor()) || (descriptor.isEISDescriptor()) || (descriptor.isObjectRelationalDataTypeDescriptor())) {
                 //default table generator does not support ox, eis and object-relational descriptor
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.DDL, "relational_descriptor_support_only", null, true);
 
@@ -220,7 +217,7 @@ public class DefaultTableGenerator {
         TableCreator tblCreator = generateDefaultTableCreator();
 
         try {
-            //table exisitence check.
+            //table existence check.
             java.sql.Connection conn = null;
             if (session.isServerSession()) {
                 //acquire a connection from the pool
@@ -276,14 +273,14 @@ public class DefaultTableGenerator {
      * collection/map mappings, which must be down in postInit method.
      */
     protected void initTableSchema(ClassDescriptor descriptor) {
-        TableDefinition tableDefintion = null;
+        TableDefinition tableDefinition = null;
         if (descriptor.hasTablePerClassPolicy() && descriptor.isAbstract()) {
             return;
         }
 
         //create a table definition for each mapped database table
         for (DatabaseTable table : descriptor.getTables()) {
-            tableDefintion = getTableDefFromDBTable(table);
+            tableDefinition = getTableDefFromDBTable(table);
         }
 
         //build each field definition and figure out which table it goes
@@ -301,7 +298,7 @@ public class DefaultTableGenerator {
                     isPKField = isPKField || secondaryKeyMap.containsValue(dbField);
                 }
 
-                // Now check if it is a tenant discriminat column primary key field.
+                // Now check if it is a tenant discriminator column primary key field.
                 isPKField = isPKField || dbField.isPrimaryKey();
 
                 //build or retrieve the field definition.
@@ -321,10 +318,10 @@ public class DefaultTableGenerator {
                 }
 
                 //find the table the field belongs to, and add it to the table, only if not already added.
-                tableDefintion = this.tableMap.get(dbField.getTableName());
+                tableDefinition = this.tableMap.get(dbField.getTableName());
 
-                if ((tableDefintion != null) && !tableDefintion.getFields().contains(fieldDef)) {
-                    tableDefintion.addField(fieldDef);
+                if ((tableDefinition != null) && !tableDefinition.getFields().contains(fieldDef)) {
+                    tableDefinition.addField(fieldDef);
                 }
             }
         }
@@ -444,7 +441,7 @@ public class DefaultTableGenerator {
      * Build field definitions and foreign key constraints for all many-to-many relation table.
      */
     protected void buildRelationTableFields(ForeignReferenceMapping mapping, TableDefinition table, List<DatabaseField> fkFields, List<DatabaseField> targetFields) {
-        assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
+        assert !fkFields.isEmpty() && fkFields.size() == targetFields.size();
 
         DatabaseField fkField = null;
         DatabaseField targetField = null;
@@ -543,11 +540,11 @@ public class DefaultTableGenerator {
     protected void resetFieldTypeForLOB(DirectToFieldMapping mapping) {
         if (mapping.getFieldClassification().getName().equals("java.sql.Blob")) {
             //allow the platform to figure out what database field type gonna be used.
-            //For example, Oracle9 will generate BLOB type, SQL Server generats IMAGE.
+            //For example, Oracle9 will generate BLOB type, SQL Server generates IMAGE.
             getFieldDefFromDBField(mapping.getField()).setType(Byte[].class);
         } else if (mapping.getFieldClassification().getName().equals("java.sql.Clob")) {
             //allow the platform to figure out what database field type gonna be used.
-            //For example, Oracle9 will generate CLOB type. SQL Server generats TEXT.
+            //For example, Oracle9 will generate CLOB type. SQL Server generates TEXT.
             getFieldDefFromDBField(mapping.getField()).setType(Character[].class);
         }
     }
@@ -705,7 +702,7 @@ public class DefaultTableGenerator {
     protected void addForeignMappingFkConstraint(final Map<DatabaseField, DatabaseField> srcFields, boolean cascadeOnDelete) {
         // srcFields map from the foreign key field to the target key field
 
-        if(srcFields.size() == 0) {
+        if(srcFields.isEmpty()) {
             return;
         }
 
@@ -786,7 +783,7 @@ public class DefaultTableGenerator {
         resolvedDatabaseField.setNameForComparisons(childField.getNameForComparisons());
 
         String columnDef = childField.getColumnDefinition();
-        if(columnDef == null || columnDef.trim().equals("")) {
+        if(columnDef == null || columnDef.trim().isEmpty()) {
             // if childField has no column definition, follow the definition of the parent field
             if(resolvedParentField != null) {
                 resolvedDatabaseField.setColumnDefinition(resolvedParentField.getColumnDefinition());
@@ -811,7 +808,7 @@ public class DefaultTableGenerator {
             //added for extending tables where the field needs to be looked up
             fieldDef.setDatabaseField(dbField);
 
-            if (dbField.getColumnDefinition() != null && dbField.getColumnDefinition().length() > 0) {
+            if (dbField.getColumnDefinition() != null && !dbField.getColumnDefinition().isEmpty()) {
                 // This column definition would include the complete definition of the
                 // column like type, size,  "NULL/NOT NULL" clause, unique key clause
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
@@ -878,7 +875,7 @@ public class DefaultTableGenerator {
         while (dbTblIter.hasNext()) {
             databaseTable = dbTblIter.next();
             Map<DatabaseField, DatabaseField> srcFields = descriptor.getAdditionalTablePrimaryKeyFields().get(databaseTable);
-            if ((null != srcFields) && srcFields.size() > 0) {
+            if ((null != srcFields) && !srcFields.isEmpty()) {
                 // srcFields is from the secondary field to the primary key field
                 // Let's make fk constraint from the secondary field to the primary key field
                 List<DatabaseField> fkFields = new ArrayList<>();
@@ -896,7 +893,7 @@ public class DefaultTableGenerator {
     protected void addJoinColumnsFkConstraint(List<DatabaseField> fkFields, List<DatabaseField> targetFields, boolean cascadeOnDelete) {
         assert fkFields.size() == targetFields.size();
 
-        if (fkFields.size() == 0) {
+        if (fkFields.isEmpty()) {
             return;
         }
 
@@ -927,7 +924,7 @@ public class DefaultTableGenerator {
                 }
 
                 // Set the fkFieldDef type definition to the that of the target if one is not set.
-                if (fkFieldDef.getTypeDefinition() == null || fkFieldDef.getTypeDefinition().trim().equals("")) {
+                if (fkFieldDef.getTypeDefinition() == null || fkFieldDef.getTypeDefinition().trim().isEmpty()) {
                     fkFieldDef.setTypeDefinition(targetFieldDef.getTypeDefinition());
                 }
 
@@ -956,7 +953,7 @@ public class DefaultTableGenerator {
         if (! this.generateFKConstraints){
             return;
         }
-        assert fkFields.size() > 0 && fkFields.size() == targetFields.size();
+        assert !fkFields.isEmpty() && fkFields.size() == targetFields.size();
 
         // target keys could be primary keys or candidate(unique) keys of the target table
 
@@ -1053,7 +1050,7 @@ public class DefaultTableGenerator {
                 if (uniqueConstraint != null) {
                     // To keep the serialNumber consecutive, increment it only
                     // if the name is not specified.
-                    if (name == null || name.equals("")) {
+                    if (name == null || name.isEmpty()) {
                         serialNumber++;
                     }
 
