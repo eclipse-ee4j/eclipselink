@@ -61,7 +61,6 @@ import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
@@ -364,8 +363,8 @@ public class MetadataProcessor {
             }
             if (iterator.hasNext()) {
                 String className = iterator.next();
-                int dot = className.lastIndexOf(StringHelper.DOT);
-                String packageName = (dot != -1) ? className.substring(0, dot) : StringHelper.EMPTY_STRING;
+                int dot = className.lastIndexOf('.');
+                String packageName = (dot != -1) ? className.substring(0, dot) : "";
                 packageNames.add(packageName);
                 MetadataClass candidateClass = m_factory.getMetadataClass(className, unlisted);
                 // JBoss Bug 227630: Do not process a null class whether it was from a
