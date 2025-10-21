@@ -28,11 +28,8 @@ import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 /**
- * PUBLIC:
- * <p>
- * This is a wrapper class for java.util.logging.  It is used when messages need to
- * be logged through java.util.logging.
- * </p>
+ * Provides {@linkplain java.util.logging} specific logging functions.
+ *
  *  @see org.eclipse.persistence.logging.SessionLog
  *  @see org.eclipse.persistence.logging.AbstractSessionLog
  *  @see org.eclipse.persistence.logging.SessionLogEntry
