@@ -77,6 +77,35 @@ public class DBPlatformHelper {
         return detectedDbPlatform;
     }
 
+    //Placeholder method for compatibility
+    /** Get Database Platform from vendor name.
+     * @param vendorName Input vendor name. Typically this is obtained by querying
+     * <code>DatabaseMetaData</code>.
+     * @param logger The logger.
+     * @return Database platform that corresponds to <code>vendorName</code>.
+     * If vendorName does not match any of predefined vendor names, <code>
+     * DEFAULTPLATFORM </code> is returned.
+     */
+    public static String getDBPlatform(String vendorName, SessionLog logger) {
+
+        initializeNameToVendorPlatform(logger);
+
+        String detectedDbPlatform = null;
+        if(vendorName != null) {
+            detectedDbPlatform = matchVendorNameInProperties(vendorName, _nameToVendorPlatform, logger);
+        }
+        if (logger.shouldLog(SessionLog.FINE) ) {
+            logger.log(SessionLog.FINE, SessionLog.CONNECTION, "dbPlatformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
+        }
+        if (detectedDbPlatform == null) {
+            if(logger.shouldLog(SessionLog.INFO)) {
+                logger.log(SessionLog.INFO, SessionLog.CONNECTION, "dbPlatformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
+            }
+            detectedDbPlatform = DEFAULTPLATFORM;
+        }
+        return detectedDbPlatform;
+    }
+
     /**
      * Allocate and initialize nameToVendorPlatform if not already done.
      */
