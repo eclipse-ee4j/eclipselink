@@ -18,33 +18,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * EclipseLink categories used for logging name space.
- * The EclipseLink categories for the logging name space are:<br>
+ * EclipseLink categories used for logging name spaces.
+ * <p>
+ * The EclipseLink categories are:<br>
  * <table>
  * <caption>Logging categories</caption>
- * <tr><td>&nbsp;</td><td>ALL</td>            <td>&nbsp;</td><td>= "all"</td></tr>
- * <tr><td>&nbsp;</td><td>CACHE</td>          <td>&nbsp;</td><td>= "cache"</td></tr>
- * <tr><td>&nbsp;</td><td>CONNECTION</td>     <td>&nbsp;</td><td>= "connection"</td></tr>
- * <tr><td>&nbsp;</td><td>DDL</td>            <td>&nbsp;</td><td>= "ddl"</td></tr>
- * <tr><td>&nbsp;</td><td>DMS</td>            <td>&nbsp;</td><td>= "dms"</td></tr>
- * <tr><td>&nbsp;</td><td>EJB</td>            <td>&nbsp;</td><td>= "ejb"</td></tr>
- * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
- * <tr><td>&nbsp;</td><td>EVENT</td>          <td>&nbsp;</td><td>= "event"</td></tr>
- * <tr><td>&nbsp;</td><td>JPA</td>            <td>&nbsp;</td><td>= "jpa"</td></tr>
- * <tr><td>&nbsp;</td><td>JPARS</td>          <td>&nbsp;</td><td>= "jpars"</td></tr>
- * <tr><td>&nbsp;</td><td>METADATA</td>       <td>&nbsp;</td><td>= "metadata"</td></tr>
- * <tr><td>&nbsp;</td><td>METAMODEL</td>      <td>&nbsp;</td><td>= "metamodel"</td></tr>
- * <tr><td>&nbsp;</td><td>MONITORING</td>     <td>&nbsp;</td><td>= "monitoring"</td></tr>
- * <tr><td>&nbsp;</td><td>MOXY</td>           <td>&nbsp;</td><td>= "moxy"</td></tr>
- * <tr><td>&nbsp;</td><td>PROPAGATION</td>    <td>&nbsp;</td><td>= "propagation"</td></tr>
- * <tr><td>&nbsp;</td><td>PROPERTIES</td>     <td>&nbsp;</td><td>= "properties"</td></tr>
- * <tr><td>&nbsp;</td><td>QUERY</td>          <td>&nbsp;</td><td>= "query"</td></tr>
- * <tr><td>&nbsp;</td><td>SEQUENCING</td>     <td>&nbsp;</td><td>= "sequencing"</td></tr>
- * <tr><td>&nbsp;</td><td>SERVER</td>         <td>&nbsp;</td><td>= "server"</td></tr>
- * <tr><td>&nbsp;</td><td>SQL</td>            <td>&nbsp;</td><td>= "sql"</td></tr>
- * <tr><td>&nbsp;</td><td>THREAD</td>         <td>&nbsp;</td><td>= "thread"</td></tr>
- * <tr><td>&nbsp;</td><td>TRANSACTION</td>    <td>&nbsp;</td><td>= "transaction"</td></tr>
- * <tr><td>&nbsp;</td><td>WEAVER</td>         <td>&nbsp;</td><td>= "weaver"</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#CACHE}</td>       <td>&nbsp;</td><td>= {@value SessionLog#CACHE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#CONNECTION}</td>  <td>&nbsp;</td><td>= {@value SessionLog#CONNECTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#DDL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DDL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#DMS}</td>         <td>&nbsp;</td><td>= {@value SessionLog#DMS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#EJB}</td>         <td>&nbsp;</td><td>= {@value SessionLog#EJB}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#EVENT}</td>       <td>&nbsp;</td><td>= {@value SessionLog#EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#JPA}</td>         <td>&nbsp;</td><td>= {@value SessionLog#JPA}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#JPARS}</td>       <td>&nbsp;</td><td>= {@value SessionLog#JPARS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#METADATA}</td>    <td>&nbsp;</td><td>= {@value SessionLog#METADATA}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#METAMODEL}</td>   <td>&nbsp;</td><td>= {@value SessionLog#METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#MONITORING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#MONITORING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#MOXY}</td>        <td>&nbsp;</td><td>= {@value SessionLog#MOXY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#PROPAGATION}</td> <td>&nbsp;</td><td>= {@value SessionLog#PROPAGATION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#PROPERTIES}</td>  <td>&nbsp;</td><td>= {@value SessionLog#PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#QUERY}</td>       <td>&nbsp;</td><td>= {@value SessionLog#QUERY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SEQUENCING}</td>  <td>&nbsp;</td><td>= {@value SessionLog#SEQUENCING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SERVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#SERVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#SQL}</td>         <td>&nbsp;</td><td>= {@value SessionLog#SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#THREAD}</td>      <td>&nbsp;</td><td>= {@value SessionLog#THREAD}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#TRANSACTION}</td> <td>&nbsp;</td><td>= {@value SessionLog#TRANSACTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain SessionLog#WEAVER}</td>      <td>&nbsp;</td><td>= {@value SessionLog#WEAVER}</td></tr>
  * </table>
  */
 public enum LogCategory {
@@ -79,7 +78,7 @@ public enum LogCategory {
     /** Logger name spaces prefix. */
     private static final String NAMESPACE_PREFIX = "eclipselink.logging.";
 
-    /** {@link Map} for {@link String} to {@link LogCategory} case insensitive conversion. */
+    /** {@linkplain Map} for {@linkplain String} to {@linkplain LogCategory} case insensitive conversion. */
     private static final Map<String, LogCategory> stringValuesMap = new HashMap<>(2 * length);
 
     /** Logger name spaces lookup table. */
@@ -101,10 +100,10 @@ public enum LogCategory {
     }
 
     /**
-     * Returns {@link LogCategory} object holding the value of the specified {@link String}.
-     * @param name The {@link String} to be parsed.
-     * @return {@link LogCategory} object holding the value represented by the string argument or {@code null} when
-     *         there exists no corresponding {@link LogCategory} object to provided argument value. {@code null} value
+     * Returns {@linkplain LogCategory} object holding the value of the specified {@linkplain String}.
+     * @param name The {@linkplain String} to be parsed.
+     * @return {@linkplain LogCategory} object holding the value represented by the string argument or {@code null} when
+     *         there exists no corresponding {@linkplain LogCategory} object to provided argument value. {@code null} value
      *         of the string argument is converted to {@code ALL}.
      */
     public static final LogCategory toValue(final String name) {

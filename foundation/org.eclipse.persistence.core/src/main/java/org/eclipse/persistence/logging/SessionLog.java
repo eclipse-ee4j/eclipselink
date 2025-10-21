@@ -18,55 +18,52 @@ import java.io.Writer;
 import java.util.function.Supplier;
 
 /**
- * SessionLog is the ever-so-simple interface used by
- * EclipseLink to log generated messages and SQL. An implementor of
- * this interface can be passed to the EclipseLink session
- * (via the #setSessionLog(SessionLog) method); and
- * all logging data will be passed through to the implementor
- * via an instance of SessionLogEntry. This can be used
- * to supplement debugging; or the entries could be stored
- * in a database instead of logged to System.out, etc.
+ * SessionLog is the ever-so-simple interface used by EclipseLink to log generated messages and SQL. An implementor
+ * of this interface can be passed to the EclipseLink session (via the #setSessionLog(SessionLog) method); and all
+ * logging data will be passed through to the implementor via an instance of SessionLogEntry. This can be used
+ * to supplement debugging; or the entries could be stored in a database instead of logged to {@linkplain System#out},
+ * etc.
  * <p>
- * This class defines EclipseLink logging levels (that are used throughout EclipseLink code) with the following integer values:
+ * This class defines EclipseLink logging levels (that are used throughout EclipseLink code) with the following
+ * integer values:
  * <table>
  * <caption>Logging levels</caption>
- * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
- * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
- * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
- * <tr><td>&nbsp;</td><td>FINE</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
- * <tr><td>&nbsp;</td><td>CONFIG</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
- * <tr><td>&nbsp;</td><td>INFO</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
- * <tr><td>&nbsp;</td><td>WARNING</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
- * <tr><td>&nbsp;</td><td>SEVERE</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
- * <tr><td>&nbsp;</td><td>OFF</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td></tr>
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
  * <table>
  * <caption>Logging categories</caption>
- * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>          <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>         <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
- * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>          <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>     <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>        <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
- * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #DBWS}</td>          <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #JPARS}</td>         <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #METADATA}</td>      <td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #METAMODEL}</td>     <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #MOXY}</td>          <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROCESSOR}</td>     <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #PROPERTIES}</td>    <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #THREAD}</td>        <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@linkplain #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
  * </table>
  *
- * @see AbstractSessionLog
  * @see SessionLogEntry
  *
  * @since TOPLink/Java 3.0
@@ -74,67 +71,108 @@ import java.util.function.Supplier;
 public interface SessionLog extends Cloneable {
     // EclipseLink log levels. They are mapped to java.util.logging.Level values.
     // Numeric constants can't be replaced with LogLevel.<level>.getId();
+    /** {@code OFF} log level. */
     int OFF = 8;
+    /** {@code OFF} log level name. */
     String OFF_LABEL = LogLevel.OFF.getName();
 
     //EL is not in a state to continue
+    /** {@code SEVERE} log level. */
     int SEVERE = 7;
+    /** {@code SEVERE} log level name. */
     String SEVERE_LABEL = LogLevel.SEVERE.getName();
 
     //Exceptions that don't force a stop
+    /** {@code WARNING} log level. */
     int WARNING = 6;
+    /** {@code WARNING} log level name. */
     String WARNING_LABEL = LogLevel.WARNING.getName();
 
     //Login and logout per server session with name
+    /** {@code INFO} log level. */
     int INFO = 5;
+    /** {@code INFO} log level name. */
     String INFO_LABEL = LogLevel.INFO.getName();
 
     //Configuration info
+    /** {@code CONFIG} log level. */
     int CONFIG = 4;
+    /** {@code CONFIG} log level name. */
     String CONFIG_LABEL = LogLevel.CONFIG.getName();
 
     //SQL
+    /** {@code FINE} log level. */
     int FINE = 3;
+    /** {@code FINE} log level name. */
     String FINE_LABEL = LogLevel.FINE.getName();
 
     //Previously logged under logMessage and stack trace of exceptions at WARNING level
+    /** {@code FINER} log level. */
     int FINER = 2;
+    /** {@code FINER} log level name. */
     String FINER_LABEL = LogLevel.FINER.getName();
 
     //Previously logged under logDebug
+    /** {@code FINEST} log level. */
     int FINEST = 1;
+    /** {@code FINEST} log level name. */
     String FINEST_LABEL = LogLevel.FINEST.getName();
+    /** {@code ALL} log level. */
     int ALL = 0;
+    /** {@code ALL} log level name. */
     String ALL_LABEL = LogLevel.ALL.getName();
 
-    //EclipseLink categories used for logging name space.
+    //EclipseLink categories used for logging category.
+    /** SQL logging category. */
     String SQL = "sql";
+    /** Transaction logging category. */
     String TRANSACTION = "transaction";
+    /** Event logging category. */
     String EVENT = "event";
+    /** Connection logging category. */
     String CONNECTION = "connection";
+    /** Query logging category. */
     String QUERY = "query";
+    /** Cache logging category. */
     String CACHE = "cache";
+    /** Propagation logging category. */
     String PROPAGATION = "propagation";
+    /** Sequencing logging category. */
     String SEQUENCING = "sequencing";
+    /** JPA logging category. */
     String JPA = "jpa";
+    /** EJB logging category. */
     String EJB = "ejb";
+    /** DMS profiler name space. */
     String DMS = "dms";
+    /** Metadata logging category. */
     String METADATA = "metadata";
+    /** Monitoring logging category. */
     String MONITORING = "monitoring";
+    /** Miscellaneous logging category. */
     String MISC = "misc";
+    /** MOXY logging category. */
     String MOXY = "moxy";
-
+    /** Metamodel logging category. */
     String METAMODEL = "metamodel";
+    /** Weaving logging category. */
     String WEAVER = "weaver";
+    /** Properties logging category. */
     String PROPERTIES = "properties";
+    /** Server logging category. */
     String SERVER = "server";
+    /** DDL logging category. */
     String DDL = "ddl";
+    /** DBWS logging category. */
     String DBWS = "dbws";
+    /** JPA RS logging category. */
     String JPARS = "jpars";
-    /** ModelGen logging name space. */
+    /** ModelGen logging category. */
     String PROCESSOR = "processor";
+    /** Thread logging category. */
     String THREAD = "thread";
 
+    /** An array of all logging categories. */
     String[] loggerCatagories = new String[] {
         SQL,
         TRANSACTION,
@@ -162,13 +200,11 @@ public interface SessionLog extends Cloneable {
     };
 
     /**
-     * PUBLIC:
-     * EclipseLink will call this method whenever something
-     * needs to be logged (messages, SQL, etc.).
-     * All the pertinent information will be contained in
-     * the specified entry.
+     * Log a message stored in {@linkplain SessionLogEntry}.
+     * Write message content to a log writer, such as {@linkplain System#out} or a file.
+     * EclipseLink will call this method whenever something.
      *
-     * @param entry SessionLogEntry that holds all the information for an EclipseLink logging event
+     * @param entry holds all the information to be written to the log
      */
     void log(SessionLogEntry entry);
 
@@ -235,338 +271,134 @@ public interface SessionLog extends Cloneable {
     void setShouldPrintSession(boolean flag);
 
     /**
-     * PUBLIC:
-     * Return the writer to which an accessor writes logged messages and SQL.
-     * If not set, this reference usually defaults to a writer on System.out.
-     * To enable logging, logMessages must be turned on in the session.
+     * Returns the writer to which logged messages and SQL are written.
+     * If not set, this reference typically defaults to a writer on {@linkplain System#out}.
+     * To enable logging, {@code logMessages} must be turned on in the session.
+     *
+     * @return the writer used for logging messages and SQL
      */
     Writer getWriter();
 
     /**
-     * PUBLIC:
-     * Set the writer to which an accessor writes logged messages and SQL.
-     * If not set, this reference usually defaults to a writer on System.out.
-     * To enable logging, logMessages() is used on the session.
+     * Sets the writer to which logged messages and SQL are written.
+     * If not set, this reference typically defaults to a writer on {@linkplain System#out}.
+     * To enable logging, {@code logMessages} must be turned on in the session.
+     *
+     * @param log the writer to be used for logging messages and SQL
      */
     void setWriter(Writer log);
 
     /**
-     * PUBLIC:
-     * Return the log level.  Used when session is not available.
-     * <p>
-     * The EclipseLink logging levels returned correspond to:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Returns the log level.
+     * Used when session is not available.
+     *
+     * @return the current log level
      */
     int getLevel();
 
     /**
-     * PUBLIC:
-     * <p>
-     * Return the log level as a string value.
+     * Returns the log level name.
+     *
+     * @return the current log level name
      */
     String getLevelString();
 
     /**
-     * PUBLIC:
-     * Return the log level; category is only needed where name space
-     * is available.
-     * <p>
-     * The EclipseLink logging levels returned correspond to:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
-     * <p>
-     * The EclipseLink categories for the logging name space are:<br>
-     * <table>
-     * <caption>Logging categories</caption>
-     * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
-     * </table>
+     * Returns the log level for provided category.
+     * See {@linkplain SessionLog class description} for the list of available categories.
+     *
+     * @param category the log category
+     * @return the current log level
      */
     int getLevel(String category);
 
     /**
-     * PUBLIC:
-     * Set the log level.  Used when session is not available.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Sets the log level.
+     * Used when session is not available. See {@linkplain SessionLog class description} for the list
+     * of available levels.
+     *
+     * @param level the log level
      */
     void setLevel(int level);
 
     /**
-     * PUBLIC:
-     * Set the log level.  Category is only needed where name space
-     * is available.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
-     * <p>
-     * The EclipseLink categories for the logging name space are:<br>
-     * <table>
-     * <caption>Logging categories</caption>
-     * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
-     * </table>
+     * Sets the log level for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
+     *
+     * @param level the log level
+     * @param category the log category
      */
     void setLevel(int level, String category);
 
     /**
-     * PUBLIC:
-     * Check if a message of the given level would actually be logged.
-     * Used when session is not available.
-     * <p>
-     * The EclipseLink logging levels available are:
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Whether a message of the given level would actually be logged.
+     * Used when session is not available. See {@linkplain SessionLog class description} for the list
+     * of available levels.
+     *
+     * @param level the log level
+     * @return value of {@code true} when message would be logged or {@code false} otherwise
      */
     boolean shouldLog(int level);
 
     /**
-     * PUBLIC:
-     * Check if a message of the given level would actually be logged.
-     * Category is only needed where name space is available.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
-     * <p>
-     * The EclipseLink categories for the logging name space are:<br>
-     * <table>
-     * <caption>Logging categories</caption>
-     * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td>       <td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #MOXY}</td>            <td>&nbsp;</td><td>= {@value #MOXY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROCESSOR}</td>       <td>&nbsp;</td><td>= {@value #PROCESSOR}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>     <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>      <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>           <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
-     * </table>
+     * Whether a message of the given level would actually be logged for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
+     *
+     * @param level the log level
+     * @param category the log category
+     * @return value of {@code true} when message would be logged or {@code false} otherwise
      */
+
     boolean shouldLog(int level, String category);
 
     /**
-     * PUBLIC:
      * Log a message with message content supplier.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * See {@linkplain SessionLog class description} for the list of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param messageSupplier the message string supplier
      */
     void log(int level, Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * Log a message with message content supplier.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with message content supplier for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param messageSupplier the message string supplier
      */
     void log(int level, String category, Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * Log a message that does not need to be translated.  This method is intended for
-     * external use when logging messages are wanted within the EclipseLink output.
+     * Log a message.
      * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * The message won't be translated. This method is intended for external use when logging messages
+     * are wanted within the EclipseLink output. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
      */
     void log(int level, String message);
 
     /**
-     * PUBLIC:
-     * Log a message with one parameter that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with one parameter.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
      * @param param the message parameter
      */
     void log(int level, String message, Object param);
 
     /**
-     * PUBLIC:
-     * Log a message with one parameter that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with one parameter for provided category.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
      * @param param the message parameter
@@ -574,24 +406,11 @@ public interface SessionLog extends Cloneable {
     void log(int level, String category, String message, Object param);
 
     /**
-     * PUBLIC:
-     * Log a message with two parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with two parameters.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
@@ -599,24 +418,11 @@ public interface SessionLog extends Cloneable {
     void log(int level, String message, Object param1, Object param2);
 
     /**
-     * PUBLIC:
-     * Log a message with two parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with two parameters for provided category.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
@@ -624,25 +430,12 @@ public interface SessionLog extends Cloneable {
      */
     void log(int level, String category, String message, Object param1, Object param2);
 
-    /**
-     * PUBLIC:
-     * Log a message with three parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     /**
+     * Log a message with three parameters.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
@@ -651,24 +444,11 @@ public interface SessionLog extends Cloneable {
     void log(int level, String message, Object param1, Object param2, Object param3);
 
     /**
-     * PUBLIC:
-     * Log a message with three parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with three parameters for provided category.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
@@ -678,24 +458,11 @@ public interface SessionLog extends Cloneable {
     void log(int level, String category, String message, Object param1, Object param2, Object param3);
 
     /**
-     * PUBLIC:
-     * Log a message with four parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with four parameters.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
      * @param param1 the 1st message parameter
      * @param param2 the 2nd message parameter
@@ -705,24 +472,11 @@ public interface SessionLog extends Cloneable {
     void log(int level, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
-     * PUBLIC:
-     * Log a message with four parameters that needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with four parameters for provided category.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
      * @param param1 the 1st message parameter
@@ -733,129 +487,72 @@ public interface SessionLog extends Cloneable {
     void log(int level, String category, String message, Object param1, Object param2, Object param3, Object param4);
 
     /**
-     * PUBLIC:
-     * This method is called when the log request is from somewhere session is not available.
-     * The message needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with parameters array.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
-     * @param arguments array of the message parameters
+     * @param parameters array of the message parameters
      */
-    void log(int level, String message, Object[] arguments);
+    void log(int level, String message, Object[] parameters);
 
     /**
-     * PUBLIC:
-     * This method is called when the log request is from somewhere session is not available.
-     * The message needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with parameters array for provided category.
+     * The message will be translated. See {@linkplain SessionLog class description} for the list
+     * of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
-     * @param arguments array of the message parameters
+     * @param parameters array of the message parameters
      */
-    void log(int level, String category, String message, Object[] arguments);
+    void log(int level, String category, String message, Object[] parameters);
 
     /**
-     * PUBLIC:
-     * This method is called when the log request is from somewhere session is not available.
-     * shouldTranslate flag determines if the message needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with parameters array and translation flag.
+     * The message will be translated when {@code shouldTranslate} is set to {@code true}.
+     * See {@linkplain SessionLog class description} for the list of available levels.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param message the message string
-     * @param arguments array of the message parameters
-     * @param shouldTranslate true if the message needs to be translated
+     * @param parameters array of the message parameters
+     * @param shouldTranslate value of {@code true} if the message needs to be translated or {@code false} otherwise
      */
     @Deprecated(forRemoval=true, since="4.0.9")
-    void log(int level, String message, Object[] arguments, boolean shouldTranslate);
+    void log(int level, String message, Object[] parameters, boolean shouldTranslate);
 
     /**
-     * PUBLIC:
-     * This method is called when the log request is from somewhere session is not available.
-     * shouldTranslate flag determines if the message needs to be translated.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a message with parameters array and translation flag for provided category.
+     * The message will be translated when {@code shouldTranslate} is set to {@code true}.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
      *
-     * @param level the log request level
+     * @param level the log level
      * @param category the log category
      * @param message the message string
-     * @param arguments array of the message parameters
-     * @param shouldTranslate true if the message needs to be translated
+     * @param parameters array of the message parameters
+     * @param shouldTranslate value of {@code true} if the message needs to be translated or {@code false} otherwise
      */
     @Deprecated(forRemoval=true, since="4.0.9")
-    void log(int level, String category, String message, Object[] arguments, boolean shouldTranslate);
+    void log(int level, String category, String message, Object[] parameters, boolean shouldTranslate);
 
     /**
-     * PUBLIC:
-     * This method is called when a throwable at finer level needs to be logged.
+     * Log a {@linkplain Throwable} at {@linkplain #FINER} level.
+     *
+     * @param throwable the {@linkplain Throwable}
      */
     void throwing(Throwable throwable);
 
     /**
-     * PUBLIC:
-     * This method is called when a severe level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #SEVERE} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void severe(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a severe level message needs to be logged.
+     * Log a {@linkplain #SEVERE} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -863,17 +560,15 @@ public interface SessionLog extends Cloneable {
     void severe(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a warning level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #WARNING} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void warning(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a warning level message needs to be logged.
+     * Log a {@linkplain #WARNING} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -881,17 +576,15 @@ public interface SessionLog extends Cloneable {
     void warning(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when an info level message needs to be logged.
-     * The message will be translated
+     * Log an {@linkplain #INFO} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void info(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when an info level message needs to be logged.
+     * Log an {@linkplain #INFO} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -899,17 +592,15 @@ public interface SessionLog extends Cloneable {
     void info(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a config level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #CONFIG} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void config(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a config level message needs to be logged.
+     * Log a {@linkplain #CONFIG} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -917,35 +608,31 @@ public interface SessionLog extends Cloneable {
     void config(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINE} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void fine(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a fine level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINE} level message.
+     * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
      */
     void fine(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
-     * Logs a message with message content supplier.
+     * Log a {@linkplain #FINER} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void finer(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a finer level message needs to be logged.
+     * Log a {@linkplain #FINER} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -953,17 +640,15 @@ public interface SessionLog extends Cloneable {
     void finer(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * This method is called when a finest level message needs to be logged.
-     * The message will be translated
+     * Log a {@linkplain #FINEST} level message.
+     * The message will be translated.
      *
      * @param message the message key
      */
     void finest(String message);
 
     /**
-     * PUBLIC:
-     * This method is called when a finest level message needs to be logged.
+     * Log a {@linkplain #FINEST} level message.
      * Logs a message with message content supplier.
      *
      * @param messageSupplier the message string supplier
@@ -971,22 +656,11 @@ public interface SessionLog extends Cloneable {
     void finest(Supplier<String> messageSupplier);
 
     /**
-     * PUBLIC:
-     * Log a {@link Throwable} with level.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a {@linkplain Throwable}.
+     * See {@linkplain SessionLog class description} for the list of available levels.
+     *
+     * @param level the log level
+     * @param throwable the {@linkplain Throwable}
      */
     void logThrowable(int level, Throwable throwable);
 
@@ -1005,28 +679,19 @@ public interface SessionLog extends Cloneable {
     void setSessionName(String sessionName);
 
     /**
-     * PUBLIC:
-     * Log a throwable with level.
-     * <p>
-     * The EclipseLink logging levels available are:<br>
-     * <table>
-     * <caption>Logging levels</caption>
-     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
-     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
-     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
-     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
-     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
-     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
-     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
-     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td>
-     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
-     * </table>
+     * Log a {@linkplain Throwable} for provided category.
+     * See {@linkplain SessionLog class description} for the list of available levels and categories.
+     *
+     * @param level the log level
+     * @param category the log category
+     * @param throwable the {@linkplain Throwable}
      */
     void logThrowable(int level, String category, Throwable throwable);
 
     /**
-     * PUBLIC:
      * Clone the log.
+     *
+     * @return the cloned log
      */
     Object clone();
 }
