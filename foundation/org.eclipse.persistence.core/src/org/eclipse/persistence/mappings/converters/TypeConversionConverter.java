@@ -1,18 +1,20 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+/*
+ * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     06/03/2013-2.5.1 Guy Pelletier    
- *       - 402380: 3 jpa21/advanced tests failed on server with 
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"  
- ******************************************************************************/  
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
 package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
@@ -67,7 +69,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      * settings. This method is used when converting a project that has been built
      * with class names to a project with classes.
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Class dataClass = null;
@@ -81,7 +83,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
                         throw ValidationException.classNotFoundWhileConvertingClassNames(dataClassName, exception.getException());
                     }
                 } else {
-                    dataClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(dataClassName, true, classLoader);
+                    dataClass = PrivilegedAccessHelper.getClassForName(dataClassName, true, classLoader);
                 }
                 setDataClass(dataClass);
             }
@@ -97,7 +99,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
                         throw ValidationException.classNotFoundWhileConvertingClassNames(objectClassName, exception.getException());
                     }
                 } else {
-                    objectClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(objectClassName, true, classLoader);
+                    objectClass = PrivilegedAccessHelper.getClassForName(objectClassName, true, classLoader);
                 }
                 setObjectClass(objectClass);
             }
@@ -205,7 +207,12 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
      */
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
         try {
-            return ((AbstractSession)session).getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            if (session.isConnected()) {
+                //Should handle conversions where DB connection is needed like String -> java.sql.Clob
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass(), (AbstractSession)session);
+            } else {
+                return session.getDatasourcePlatform().convertObject(attributeValue, getDataClass());
+            }
         } catch (ConversionException e) {
             throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
         }
@@ -225,7 +232,7 @@ public class TypeConversionConverter implements Converter, ClassNameConversionRe
             if (directMapping.getFieldClassification() == null) {
                 directMapping.setFieldClassification(getDataClass());
             }
-            
+
             // Set the object class from the attribute, if null.
             if (getObjectClass() == null) {
                 setObjectClass(directMapping.getAttributeClassification());
