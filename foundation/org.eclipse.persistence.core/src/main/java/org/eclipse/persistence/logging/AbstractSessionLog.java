@@ -200,9 +200,8 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
-     * Return the log level.  It is used when session is not available.
+     * Return the log level.
+     * It is used when session is not available.
      *
      * @return the log level
      */
@@ -212,8 +211,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the log level as a string value.
      */
     @Override
@@ -222,8 +219,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the log level for the category name space.
      *
      * @return the log level
@@ -235,8 +230,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the log level.  It is used when session is not available.
      *
      * @param level     the new log level
@@ -247,8 +240,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the log level for the category name space.
      *
      * @param level     the new log level
@@ -260,8 +251,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Check if a message of the given level would actually be logged.
      * It is used when session is not available.
      *
@@ -274,8 +263,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Check if a message of the given level would actually be logged for the category name space.
      * !isOff() is checked to screen out the possibility when both
      * log level and log request level are set to OFF.
@@ -290,8 +277,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the singleton SessionLog.  If the singleton SessionLog does not exist,
      * a new one is created based on the version of JDK being used from the Version class.
      *
@@ -305,10 +290,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the singleton SessionLog.
-     * </p>
      *
      * @param sessionLog  a SessionLog
      */
@@ -579,8 +561,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the writer that will receive the formatted log entries.
      *
      * @return the log writer
@@ -591,8 +571,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the writer that will receive the formatted log entries.
      *
      * @param writer  the log writer
@@ -604,8 +582,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
 
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the writer that will receive the formatted log entries.
      *
      * @param outputstream  the log writer
@@ -760,7 +736,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
      * Set the date-time format to be used when printing a log entry date.
      *
      * @param timeStampFormatter Formatter for printing time stamp in the log entry.
@@ -804,8 +779,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable at FINER level.
      *
      * @param throwable a Throwable
@@ -888,8 +861,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable with level.
      *
      * @param level  the log request level value
@@ -904,8 +875,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable with level.
      *
      * @param level  the log request level value

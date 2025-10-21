@@ -96,12 +96,9 @@ public class JavaLog extends AbstractSessionLog {
      }
 
     /**
-     * PUBLIC:
-     * <p>
      * Return the effective log level for the name space extracted from session and category.
      * If a Logger's level is set to be null then the Logger will use an effective Level that will
      * be obtained by walking up the parent tree and using the first non-null Level.
-     * </p>
      *
      * @return the effective log level.
      */
@@ -127,10 +124,7 @@ public class JavaLog extends AbstractSessionLog {
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the log level to a logger with name space extracted from the given category.
-     * </p>
      */
     @Override
     public void setLevel(final int level, String category) {
@@ -149,10 +143,7 @@ public class JavaLog extends AbstractSessionLog {
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Set the output stream  that will receive the formatted log entries.
-     * </p>
      *
      * @param fileOutputStream the file output stream will receive the formatted log entries.
      */
@@ -231,12 +222,9 @@ public class JavaLog extends AbstractSessionLog {
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Check if a message of the given level would actually be logged by the logger
      * with name space built from the given session and category.
-     * Return the shouldLog for the given category from
-     * </p>
+     *
      * @return true if the given message level will be logged
      */
     @Override
@@ -250,10 +238,8 @@ public class JavaLog extends AbstractSessionLog {
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a SessionLogEntry
-     * </p>
+     *
      * @param entry SessionLogEntry that holds all the information for a TopLink logging event
      */
     @Override
@@ -297,10 +283,8 @@ public class JavaLog extends AbstractSessionLog {
     }
 
     /**
-     * PUBLIC:
-     * <p>
      * Log a throwable.
-     * </p>
+     *
      * @param throwable a throwable
      */
     @Override
