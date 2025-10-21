@@ -64,7 +64,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -1311,7 +1310,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     @Override
-    public boolean checkTableExists(final DatabaseSessionImpl session,
+    public boolean checkTableExists(final AbstractSession session,
                                     final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);

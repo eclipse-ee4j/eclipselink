@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.returning;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
@@ -128,7 +127,8 @@ public class SubstituteSequencingWithReturningPolicyAdapter implements ProjectAn
             String tableName = (String)tableNames.nextElement();
             String sequenceName = getSequenceNameFromTableName(tableName);
             if (!sequenceNameToDefinition.containsKey(sequenceName)) {
-                SequenceObjectDefinition definition = new SequenceObjectDefinition(new NativeSequence(sequenceName, 1, false));
+                SequenceObjectDefinition definition = new SequenceObjectDefinition(sequenceName);
+                definition.setPreallocationSize(1);
                 sequenceNameToDefinition.put(sequenceName, definition);
                 schemaManager.createObject(definition);
             }

@@ -141,8 +141,10 @@ public class OracleNativeSeqInitTest extends AutoVerifyTestCase {
 
         getDatabaseSession().getSequencingControl().initializePreallocated();
 
-        sequenceDefinition = new SequenceObjectDefinition(sequence);
+        sequenceDefinition = new SequenceObjectDefinition(sequence.getName());
         sequenceDefinition.setQualifier(getSession().getLogin().getTableQualifier());
+        sequenceDefinition.setPreallocationSize(sequence.getPreallocationSize());
+        sequenceDefinition.setInitialValue(sequence.getInitialValue());
         if (shouldUseSchemaManager) {
             schemaManager = new SchemaManager(getDatabaseSession());
 
