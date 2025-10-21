@@ -215,7 +215,7 @@
         <!-- included artifacts -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.parent</artifactId>
+            <artifactId>org.eclipse.persistence.project</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <classifier>common-license</classifier>
