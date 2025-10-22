@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.exceptions.*;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -32,6 +35,11 @@ public class IndexDefinition extends DatabaseObjectDefinition {
     protected boolean isUnique;
 
     public IndexDefinition() {
+        this("");
+    }
+
+    public IndexDefinition(String name) {
+        super(name);
         this.fields = new ArrayList<>();
     }
 
@@ -68,6 +76,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      * Return the create type statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(session.getPlatform().buildCreateIndex(getTargetTable(), getName(), getQualifier(), isUnique(), this.fields.toArray(new String[0])));
@@ -82,6 +91,7 @@ public class IndexDefinition extends DatabaseObjectDefinition {
      * Return the drop type statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(session.getPlatform().buildDropIndex(getTargetTable(), getName(), getQualifier()));

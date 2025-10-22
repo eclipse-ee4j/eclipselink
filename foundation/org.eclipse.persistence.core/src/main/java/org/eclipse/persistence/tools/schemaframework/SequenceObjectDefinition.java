@@ -19,11 +19,16 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.queries.SQLCall;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sequencing.Sequence;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sequencing.Sequence;
 
 /**
  * <p>
@@ -56,6 +61,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Return the SQL required to create the Oracle sequence object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) {
         try {
             // startWith value calculated using the initial value and increment.
@@ -74,6 +80,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Return the SQL required to drop the Oracle sequence object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) {
         try {
             session.getPlatform().buildSequenceObjectDeletionWriter(writer, getFullName());
@@ -87,6 +94,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * INTERNAL:
      * Return the SQL required to alter INCREMENT BY
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildAlterIncrementWriter(AbstractSession session, Writer writer) {
         try {
             session.getPlatform().buildSequenceObjectAlterIncrementWriter(writer, getFullName(), getPreallocationSize());
@@ -140,6 +148,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Indicates whether alterIncrement is supported
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean isAlterSupported(AbstractSession session) {
         return session.getPlatform().isAlterSequenceObjectSupported();
     }
@@ -150,6 +159,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Assume that the sequence exists.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
         // Bug# 242120: Let the DatabaseException propagate and do not call
         // createOnDatabase(session) which would cause an infinite loop on a JTA connection
@@ -161,6 +171,7 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * Execute the SQL required to alter sequence increment.
      * Assume that the sequence exists.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterIncrement(AbstractSession session, Writer schemaWriter) throws ValidationException {
         if (schemaWriter == null) {
             this.alterOnDatabase(session);

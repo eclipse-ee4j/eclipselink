@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,6 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -35,7 +33,6 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 
@@ -417,7 +414,7 @@ public class TableCreator {
         String sequenceTableName = null;
         if (session.getProject().usesSequencing()) {
             Sequence sequence = session.getLogin().getDefaultSequence();
-            if (sequence instanceof TableSequence) {
+            if (sequence.isTable()) {
                 sequenceTableName = ((TableSequence)sequence).getQualifiedTableName();
             }
         }
@@ -447,6 +444,7 @@ public class TableCreator {
 
     /**
      * This creates/extends the tables on the database.
+     *
      * @param session Active database session.
      * @param schemaManager Database schema manipulation manager.
      * @param build Whether to build constraints.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,9 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -38,11 +39,13 @@ import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * <p>
@@ -69,16 +72,16 @@ public class SchemaManager {
 
     /** Flag to determine if database schemas should be created during DDL generation */
     protected boolean createDatabaseSchemas = false;
-    protected HashSet<String> createdDatabaseSchemas = new HashSet<>();
-    protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
-    protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
+    protected Set<String> createdDatabaseSchemas = new HashSet<>();
+    protected Set<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
+    protected Map<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
 
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;
     }
 
-    public SchemaManager(org.eclipse.persistence.sessions.DatabaseSession session) {
-        this.session = ((DatabaseSessionImpl)session);
+    public SchemaManager(DatabaseSession session) {
+        this((DatabaseSessionImpl)session);
     }
 
     protected Writer getDropSchemaWriter() {
@@ -90,7 +93,7 @@ public class SchemaManager {
      * to that writer.
      */
     public void appendToDDLWriter(String stringToWrite) {
-        // If this method is called, we know that it is the old case and
+        // If this method is called, we know that it is the old case, and
         // it would not matter which schemaWriter we use as both the
         // create and drop schemaWriters are essentially the same.
         // So just pick one.
@@ -247,7 +250,7 @@ public class SchemaManager {
     }
 
     /**
-     * Create all the receiver's sequences on the database for all of the loaded descriptors.
+     * Create all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void createSequences() throws EclipseLinkException {
         createOrReplaceSequences(true);
@@ -266,7 +269,7 @@ public class SchemaManager {
     }
 
     /**
-     * Drop and recreate all the receiver's sequences on the database for all of the loaded descriptors.
+     * Drop and recreate all the receiver's sequences on the database for all the loaded descriptors.
      */
     public void replaceSequences() throws EclipseLinkException {
         createOrReplaceSequences(false);
@@ -602,7 +605,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -613,7 +616,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as s maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -624,7 +627,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -640,7 +643,7 @@ public class SchemaManager {
     /**
      * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
-     * for your mappings and descriptors.  This should be used with caution as it maintenance
+     * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
      * or to a file.
      */
@@ -712,9 +715,9 @@ public class SchemaManager {
      *  </OL>
      *
      * @param tableName a table name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, null, tableName, null, getSession());
     }
 
@@ -755,11 +758,11 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @param tableName a table name pattern
-     * @return a Vector of Records.
+     *                    without a schema
+     * @param tableName   a table name pattern
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
+    public List<AbstractRecord> getAllColumnNames(String creatorName, String tableName) throws DatabaseException {
         return getAccessor().getColumnInfo(null, creatorName, tableName, null, getSession());
     }
 
@@ -780,9 +783,9 @@ public class SchemaManager {
      * <P><B>Note:</B> Some databases may not return information for
      * all tables.
      *
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames() throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames() throws DatabaseException {
         return getAccessor().getTableInfo(null, null, null, null, getSession());
     }
 
@@ -823,10 +826,10 @@ public class SchemaManager {
      *  </OL>
      *
      * @param creatorName a schema name pattern; "" retrieves those
-     * without a schema
-     * @return a Vector of Records.
+     *                    without a schema
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
+    public List<AbstractRecord> getAllTableNames(String creatorName) throws DatabaseException {
         return getAccessor().getTableInfo(null, creatorName, null, null, getSession());
     }
 
@@ -876,13 +879,13 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param columnName a column name pattern
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String catalog, String schema, String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(catalog, schema, tableName, columnName, getSession());
     }
 
-    public Vector<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
+    public List<AbstractRecord> getColumnInfo(String tableName, String columnName) throws DatabaseException {
         return getAccessor().getColumnInfo(tableName, columnName, getSession());
     }
 
@@ -917,9 +920,9 @@ public class SchemaManager {
      * without a schema
      * @param tableName a table name pattern
      * @param types a list of table types to include; null returns all types
-     * @return a Vector of Records.
+     * @return a List of Records.
      */
-    public Vector<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
+    public List<AbstractRecord> getTableInfo(String catalog, String schema, String tableName, String[] types) throws DatabaseException {
         return getAccessor().getTableInfo(catalog, schema, tableName, types, getSession());
     }
 
@@ -1001,7 +1004,7 @@ public class SchemaManager {
             try {
                 dropObject(databaseDefinition);
             } catch (DatabaseException exception) {
-                // Ignore error
+                session.log(SessionLog.FINEST, SessionLog.DDL, "schema_drop_object_failed", exception.getLocalizedMessage());
             } finally {
                 if (shouldLogExceptionStackTrace) {
                     getSession().getSessionLog().setShouldLogExceptionStackTrace(true);
@@ -1037,8 +1040,8 @@ public class SchemaManager {
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.createTables(this.session, this);
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_create_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1083,8 +1086,8 @@ public class SchemaManager {
             // Drop all the database schemas now if set to do so. This must be
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
-        } catch (DatabaseException ex) {
-            // Ignore error
+        } catch (DatabaseException exception) {
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_drop_tables_failed", exception.getLocalizedMessage());
         } finally {
             getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1124,7 +1127,7 @@ public class SchemaManager {
             // called after all the constraints, tables etc. are dropped.
             dropDatabaseSchemas();
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_replace_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }
@@ -1195,7 +1198,7 @@ public class SchemaManager {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.extendTables(this.session, this);
         } catch (DatabaseException exception) {
-            // Ignore error
+            session.log(SessionLog.FINEST, SessionLog.DDL, "schema_default_extend_tables_failed", exception.getLocalizedMessage());
         } finally {
             this.session.getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
         }

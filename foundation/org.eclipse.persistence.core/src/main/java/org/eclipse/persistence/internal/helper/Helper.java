@@ -1077,9 +1077,11 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      *    Answers the unqualified class name for the provided class.
+     * @deprecated Use {@linkplain Class#getSimpleName()} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String getShortClassName(Class<?> javaClass) {
-        return getShortClassName(javaClass.getName());
+        return javaClass.getSimpleName();
     }
 
     /**
@@ -1091,17 +1093,19 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      *    Answers the unqualified class name for the specified object.
+     * @deprecated Use {@code object.getClass().getSimpleName()} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String getShortClassName(Object object) {
         return getShortClassName(object.getClass());
     }
 
     /**
      *    return a package name for the specified class.
+     * @deprecated Use {@linkplain Class#getPackageName()} instead.
      */
     public static String getPackageName(Class<?> javaClass) {
-        String className = Helper.getShortClassName(javaClass);
-        return javaClass.getName().substring(0, (javaClass.getName().length() - (className.length() + 1)));
+        return javaClass.getPackageName();
     }
 
     /**
@@ -1116,7 +1120,7 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-     * Returns the index of the the first <code>null</code> element found in the specified
+     * Returns the index of the first <code>null</code> element found in the specified
      * <code>Vector</code> starting the search at the starting index specified.
      * Return  an int &gt;= 0 and less than size if a <code>null</code> element was found.
      * Return -1 if a <code>null</code> element was not found.
@@ -1161,6 +1165,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Returns true if the character given is a vowel. I.e. one of a,e,i,o,u,A,E,I,O,U.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean isVowel(char c) {
         return (c == 'A') || (c == 'a') || (c == 'e') || (c == 'E') || (c == 'i') || (c == 'I') || (c == 'o') || (c == 'O') || (c == 'u') || (c == 'U');
     }
@@ -1347,6 +1352,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Returns a String which has had enough non-alphanumeric characters removed to be equal to
      * the maximumStringLength.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String removeAllButAlphaNumericToFit(String s1, int maximumStringLength) {
         int s1Size = s1.length();
         if (s1Size <= maximumStringLength) {
@@ -1417,6 +1423,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Returns a String which has had enough of the specified character removed to be equal to
      * the maximumStringLength.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String removeVowels(String s1) {
         // Remove the vowels
         StringBuilder buf = new StringBuilder();
@@ -1477,6 +1484,7 @@ public class Helper extends CoreHelper implements Serializable {
      * vowels removed from them so that the sum of the sized of the two strings is less than
      * or equal to the specified size.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String shortenStringsByRemovingVowelsToFit(String s1, String s2, int maximumStringLength) {
         int size = s1.length() + s2.length();
         if (size <= maximumStringLength) {
@@ -2122,6 +2130,7 @@ public class Helper extends CoreHelper implements Serializable {
      * If the resulting string is still larger than the passed in size after
      * removing all vowels, the end of the resulting string will be truncated.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String truncate(String originalString, int size) {
         if (originalString.length() <= size) {
             //no removal and truncation needed

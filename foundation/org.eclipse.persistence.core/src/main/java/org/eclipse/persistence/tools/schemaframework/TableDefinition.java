@@ -22,6 +22,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 //     02/04/2013-2.5 Guy Pelletier
 //       - 389090: JPA 2.1 DDL Generation Support
+//     12/05/2023: Tomas Kraus
+//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.IOException;
@@ -39,9 +41,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.SQLCall;
 
@@ -54,25 +54,36 @@ public class TableDefinition extends DatabaseObjectDefinition {
     protected List<FieldDefinition> fields; //FieldDefinitions
     protected Map<String, ForeignKeyConstraint> foreignKeyMap; //key is the name of ForeignKeyConstraint
     protected List<UniqueKeyConstraint> uniqueKeys;
+    protected List<CheckConstraint> checkConstraints;
     protected List<IndexDefinition> indexes;
     protected String creationPrefix;
     protected String creationSuffix;
+    protected String comment;
     private boolean createSQLFiles;
     private boolean createVPDCalls;
     private String tenantFieldName;
+
+    @Deprecated(forRemoval = true, since = "4.0.9")
     //holds onto the name and delimiting info.
     protected DatabaseTable table;
     protected boolean hasUserDefinedForeignKeyConstraints;
 
     public TableDefinition() {
+        this("");
+    }
+
+    public TableDefinition(String name) {
+        super(name);
         createVPDCalls = false;
         hasUserDefinedForeignKeyConstraints = false;
-        this.fields = new ArrayList<>();
-        this.indexes = new ArrayList<>();
-        this.foreignKeyMap = new HashMap<>();
-        this.uniqueKeys = new ArrayList<>();
-        this.creationPrefix = "CREATE TABLE ";
-        this.creationSuffix = "";
+        fields = new ArrayList<>();
+        indexes = new ArrayList<>();
+        foreignKeyMap = new HashMap<>();
+        uniqueKeys = new ArrayList<>();
+        checkConstraints = new ArrayList<>();
+        creationPrefix = "CREATE TABLE ";
+        creationSuffix = "";
+        comment = "";
     }
 
     /**
@@ -123,6 +134,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Execute the SQL alter table to add the field to the table.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void addFieldOnDatabase(final AbstractSession session, FieldDefinition field){
         session.priviledgedExecuteNonSelectingCall(
                 new SQLCall( buildAddFieldWriter(session, field, new StringWriter()).toString() ) );
@@ -132,6 +144,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the alter table statement to add a field to the table.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildAddFieldWriter(AbstractSession session, FieldDefinition field, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName() + " ");
@@ -190,6 +203,14 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void addUniqueKeyConstraint(UniqueKeyConstraint uniqueKey) {
         getUniqueKeys().add(uniqueKey);
+    }
+
+    public void addCheckConstraint(CheckConstraint checkConstraint) {
+        getCheckConstraints().add(checkConstraint);
+    }
+
+    public List<CheckConstraint> getCheckConstraints() {
+        return checkConstraints;
     }
 
     /**
@@ -257,6 +278,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Return the alter table statement to add the constraints.
      * This is done separately from the create because of dependencies.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildConstraintCreationWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName());
@@ -280,6 +302,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Return the alter table statement to drop the constraints.
      * This is done separately to allow constraints to be dropped before the tables.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildConstraintDeletionWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName());
@@ -295,6 +318,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Return the alter table statement to add the constraints.
      * This is done separately from the create because of dependencies.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildUniqueConstraintCreationWriter(AbstractSession session, UniqueKeyConstraint uniqueKey, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName());
@@ -317,6 +341,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Return the alter table statement to drop the constraints.
      * This is done separately to allow constraints to be dropped before the tables.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildUniqueConstraintDeletionWriter(AbstractSession session, UniqueKeyConstraint uniqueKey, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName());
@@ -331,6 +356,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the index creation statement.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public IndexDefinition buildIndex(AbstractSession session, String key, List<String> columnNames, boolean isUniqueSetOnField) {
         String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField), session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
         IndexDefinition index = new IndexDefinition();
@@ -344,6 +370,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the index drop statement.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer, boolean isUniqueSetOnField) {
             String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField),
                     session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
@@ -399,13 +426,21 @@ public class TableDefinition extends DatabaseObjectDefinition {
         this.creationSuffix = creationSuffix;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
     /**
      * INTERNAL:
      * Return the create table statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
+            if (comment != null && !comment.isEmpty()) {
+                writer.write(" /* "+ comment + " */ ");
+            }
             writer.write(getCreationPrefix() + getFullName() + " (");
             for (Iterator<FieldDefinition> itetrator = getFields().iterator(); itetrator.hasNext();) {
                 FieldDefinition field = itetrator.next();
@@ -435,6 +470,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
                     constraint.appendDBString(writer, session);
                 }
             }
+            for (CheckConstraint constraint : getCheckConstraints()) {
+                writer.write(", ");
+                constraint.appendDBString(writer, session);
+            }
             writer.write(")");
             //let the platform write out the CreationSuffix and the platform's default tableCreationSuffix
             session.getPlatform().writeTableCreationSuffix(writer, getCreationSuffix());
@@ -449,6 +488,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Return the drop table statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TABLE " + getFullName() + session.getPlatform().getDropCascadeString());
@@ -462,6 +502,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDCreationPolicyWriter(AbstractSession session, Writer writer) {
         try {
             writer.write(session.getPlatform().getVPDCreationPolicyString(getName(), session));
@@ -475,6 +516,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDCreationFunctionWriter(AbstractSession session, Writer writer) {
         try {
             writer.write(session.getPlatform().getVPDCreationFunctionString(getName(), tenantFieldName));
@@ -489,6 +531,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Build the create schema DDL.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Writer buildDatabaseSchemaCreationWriter(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) {
         try {
             writer.write(session.getPlatform().getCreateDatabaseSchemaString(getDatabaseSchema()));
@@ -505,6 +548,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Build the drop schema DDL.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Writer buildDatabaseSchemaDeletionWriter(AbstractSession session, Writer writer) {
         try {
             writer.write(session.getPlatform().getDropDatabaseSchemaString(getDatabaseSchema()));
@@ -519,6 +563,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildVPDDeletionWriter(AbstractSession session, Writer writer) {
         try {
             writer.write(session.getPlatform().getVPDDeletionString(getName(), session));
@@ -547,7 +592,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * Build a foreign key constraint using FieldDefinition.getForeignKeyFieldName().
      */
-    protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    protected ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DDLPlatform platform) {
         List<String> sourceFields = new ArrayList<>();
         List<String> targetFields = new ArrayList<>();
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
@@ -572,8 +618,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
     /**
      * Build a foreign key constraint.
      */
-    protected ForeignKeyConstraint buildForeignKeyConstraint(List<String> fkFieldNames, List<String> pkFieldNames, TableDefinition targetTable, DatabasePlatform platform) {
-        assert fkFieldNames.size() > 0 && fkFieldNames.size() == pkFieldNames.size();
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    protected ForeignKeyConstraint buildForeignKeyConstraint(List<String> fkFieldNames, List<String> pkFieldNames, TableDefinition targetTable, DDLPlatform platform) {
+        assert !fkFieldNames.isEmpty() && fkFieldNames.size() == pkFieldNames.size();
 
         ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
         for(int i=0; i<fkFieldNames.size(); i++) {
@@ -597,10 +644,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * 3. Drop the vowels from the table and field name.
      * 4. Truncate the table name to zero length if necessary.
      */
-    protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength, DatabasePlatform platform) {
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength, DDLPlatform platform) {
         String startDelimiter = "";
         String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
+        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
         // we will only delimit our generated constraints if either of the names that composes them is already delimited
         if (useDelimiters){
             startDelimiter = platform.getStartDelimiter();
@@ -632,21 +680,21 @@ public class TableDefinition extends DatabaseObjectDefinition {
             foreignKeyName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
             if (foreignKeyName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
-                foreignKeyName = startDelimiter + Helper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
+                foreignKeyName = startDelimiter + FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
                 if (foreignKeyName.length() > maximumNameLength) {
                     // Still too long: remove vowels from the table name and field name.
-                    String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
-                    String onlyAlphaNumericFieldName = Helper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
-                    foreignKeyName = startDelimiter + Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
+                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
+                    String onlyAlphaNumericFieldName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
+                    foreignKeyName = startDelimiter + FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
                     if (foreignKeyName.length() > maximumNameLength) {
                         // Still too long: remove vowels from the table name and field name and truncate the table name.
-                        String shortenedFieldName = Helper.removeVowels(onlyAlphaNumericFieldName);
-                        String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
+                        String shortenedFieldName = FrameworkHelper.removeVowels(onlyAlphaNumericFieldName);
+                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
                         int delimiterLength = startDelimiter.length() + endDelimiter.length();
                         if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
-                            foreignKeyName = startDelimiter + Helper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
+                            foreignKeyName = startDelimiter + FrameworkHelper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
                         } else {
-                            foreignKeyName = startDelimiter + Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
+                            foreignKeyName = startDelimiter + FrameworkHelper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
                         }
                     }
                 }
@@ -655,8 +703,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
         return foreignKeyName;
     }
 
-    protected UniqueKeyConstraint buildUniqueKeyConstraint(String name, List<String> fieldNames, int serialNumber, DatabasePlatform platform) {
-        assert fieldNames.size() > 0;
+    protected UniqueKeyConstraint buildUniqueKeyConstraint(String name, List<String> fieldNames, int serialNumber, DDLPlatform platform) {
+        assert !fieldNames.isEmpty();
 
         UniqueKeyConstraint unqConstraint = new UniqueKeyConstraint();
 
@@ -665,7 +713,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         // If the name was not provided, default one, otherwise use the name provided.
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             unqConstraint.setName(buildUniqueKeyConstraintName(getName(), serialNumber, platform.getMaxUniqueKeyNameSize()));
         } else {
             // Hack if off if it exceeds the max size.
@@ -687,6 +735,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * 3. Drop the vowels from the table name.
      * 4. Truncate the table name to zero length if necessary.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected String buildUniqueKeyConstraintName(String tableName, int serialNumber, int maximumNameLength) {
         String uniqueKeyName = "UNQ_" + tableName + "_" + serialNumber;
         if (uniqueKeyName.length() > maximumNameLength) {
@@ -694,16 +743,16 @@ public class TableDefinition extends DatabaseObjectDefinition {
             uniqueKeyName = tableName + serialNumber;
             if (uniqueKeyName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
-                uniqueKeyName = Helper.removeAllButAlphaNumericToFit(tableName + serialNumber, maximumNameLength);
+                uniqueKeyName = FrameworkHelper.removeAllButAlphaNumericToFit(tableName + serialNumber, maximumNameLength);
                 if (uniqueKeyName.length() > maximumNameLength) {
                     // Still too long: remove vowels from the table name
-                    String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(tableName, 0);
+                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(tableName, 0);
                     String serialName = String.valueOf(serialNumber);
-                    uniqueKeyName = Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, serialName, maximumNameLength);
+                    uniqueKeyName = FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, serialName, maximumNameLength);
                     if (uniqueKeyName.length() > maximumNameLength) {
                         // Still too long: remove vowels from the table name and truncate the table name.
-                        String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
-                        uniqueKeyName = Helper.truncate(shortenedTableName, maximumNameLength - serialName.length()) + serialName;
+                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
+                        uniqueKeyName = FrameworkHelper.truncate(shortenedTableName, maximumNameLength - serialName.length()) + serialName;
                     }
                 }
             }
@@ -723,10 +772,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * 4. Truncate the table name to zero length if necessary.
      * </pre>
      */
-    protected String buildIndexName(String tableName, String key, String indexPrefix, int maximumNameLength, DatabasePlatform platform) {
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    protected String buildIndexName(String tableName, String key, String indexPrefix, int maximumNameLength, DDLPlatform platform) {
         String startDelimiter = "";
         String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().equals("") && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
+        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
         // we will only delimit our generated indices if either of the names that composes them is already delimited
         if (useDelimiters){
             startDelimiter = platform.getStartDelimiter();
@@ -761,21 +811,21 @@ public class TableDefinition extends DatabaseObjectDefinition {
             indexName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
             if (indexName.length() > maximumNameLength) {
                 // Still too long: remove the underscore characters
-                indexName = startDelimiter + Helper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
+                indexName = startDelimiter + FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
                 if (indexName.length() > maximumNameLength) {
                     // Still too long: remove vowels from the table name and field name.
-                    String onlyAlphaNumericTableName = Helper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
-                    String onlyAlphaNumericFieldName = Helper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
-                    indexName = startDelimiter + Helper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
+                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
+                    String onlyAlphaNumericFieldName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
+                    indexName = startDelimiter + FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
                     if (indexName.length() > maximumNameLength) {
                         // Still too long: remove vowels from the table name and field name and truncate the table name.
-                        String shortenedFieldName = Helper.removeVowels(onlyAlphaNumericFieldName);
-                        String shortenedTableName = Helper.removeVowels(onlyAlphaNumericTableName);
+                        String shortenedFieldName = FrameworkHelper.removeVowels(onlyAlphaNumericFieldName);
+                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
                         int delimiterLength = startDelimiter.length() + endDelimiter.length();
                         if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
-                            indexName = startDelimiter + Helper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
+                            indexName = startDelimiter + FrameworkHelper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
                         } else {
-                            indexName = startDelimiter + Helper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
+                            indexName = startDelimiter + FrameworkHelper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
                         }
                     }
                 }
@@ -810,11 +860,13 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Execute the SQL alter table constraint creation string.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createConstraints(AbstractSession session, Writer schemaWriter) throws EclipseLinkException {
         createUniqueConstraints(session, schemaWriter);
         createForeignConstraints(session, schemaWriter);
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     void createUniqueConstraints(final AbstractSession session, final Writer schemaWriter) throws ValidationException {
         if (schemaWriter == null) {
             createUniqueConstraintsOnDatabase(session);
@@ -832,6 +884,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     void createForeignConstraints(final AbstractSession session, final Writer schemaWriter) throws ValidationException {
         if (schemaWriter == null) {
             createForeignConstraintsOnDatabase(session);
@@ -852,6 +905,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Execute the SQL alter table constraint creation string.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createConstraintsOnDatabase(AbstractSession session) throws EclipseLinkException {
         createUniqueConstraintsOnDatabase(session);
         createForeignConstraintsOnDatabase(session);
@@ -862,6 +916,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute the DDL to create the database schema for this object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createDatabaseSchema(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) throws EclipseLinkException {
         buildDatabaseSchemaCreationWriter(session, writer, createdDatabaseSchemas);
     }
@@ -871,10 +926,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute the DDL to create the database schema for this object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createDatabaseSchemaOnDatabase(AbstractSession session, Set<String> createdDatabaseSchemas) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDatabaseSchemaCreationWriter(session, new StringWriter(), createdDatabaseSchemas).toString()));
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     void createUniqueConstraintsOnDatabase(final AbstractSession session) throws ValidationException, DatabaseException {
         if ((!session.getPlatform().supportsUniqueKeyConstraints())
                 || getUniqueKeys().isEmpty()
@@ -887,6 +944,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     void createForeignConstraintsOnDatabase(final AbstractSession session) throws ValidationException, DatabaseException {
         if ((!session.getPlatform().supportsForeignKeyConstraints()) || getForeignKeyMap().isEmpty()) {
             return;
@@ -907,6 +965,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      *
      * @throws ValidationException wraps any IOException from the writer
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createIndexes(AbstractSession session, Writer writer) {
         if (!session.getPlatform().supportsIndexes()) {
             return;
@@ -975,6 +1034,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
                                 && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
                             alreadyIndexed = true;
+                            break;
                         }
                     }
                     if (!alreadyIndexed) {
@@ -1004,6 +1064,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void writeLineSeperator(AbstractSession session, Writer writer) {
         try {
             if (this.createSQLFiles) {
@@ -1019,6 +1080,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Return the delete SQL string.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String deletionStringFor(DatabaseAccessor accessor) {
         return "DROP TABLE " + this.getName();
     }
@@ -1028,6 +1090,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute the DDL to drop the database schema for this object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {
         buildDatabaseSchemaDeletionWriter(session, writer);
     }
@@ -1037,6 +1100,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute the DDL to drop the database schema for this object.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDatabaseSchemaDeletionWriter(session, new StringWriter()).toString()));
     }
@@ -1045,6 +1109,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Execute the SQL alter table constraint creation string.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropConstraints(AbstractSession session, Writer schemaWriter) throws EclipseLinkException {
         if (schemaWriter == null) {
             dropConstraintsOnDatabase(session);
@@ -1070,6 +1135,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute the SQL alter table constraint creation string. Exceptions are caught and masked so that all
      * the foreign keys are dropped (even if they don't exist).
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropConstraintsOnDatabase(AbstractSession session) throws EclipseLinkException {
         dropForeignConstraintsOnDatabase(session);
         dropUniqueConstraintsOnDatabase(session);
@@ -1109,6 +1175,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * else delegate to a method that executes the string on the database.
      * @throws ValidationException wraps any IOException from the writer
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropIndexes(AbstractSession session, Writer writer) {
         if (!session.getPlatform().supportsIndexes()) {
             return;
@@ -1189,6 +1256,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         if ((uniqueConstraint.getSourceFields().size() == foreignKey.getSourceFields().size())
                                 && uniqueConstraint.getSourceFields().containsAll(foreignKey.getSourceFields())) {
                             alreadyIndexed = true;
+                            break;
                         }
                     }
                     if (!alreadyIndexed) {
@@ -1312,6 +1380,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute any statements required after the creation of the object
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void postCreateObject(AbstractSession session, Writer createSchemaWriter, boolean createSQLFiles){
         // create indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
@@ -1322,6 +1391,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Execute any statements required before the deletion of the object
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         // drop indices on table's primary and unique keys (if required)
         setCreateSQLFiles(createSQLFiles);
@@ -1379,6 +1449,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * Subclasses who care should override this method.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean shouldCreateVPDCalls(AbstractSession session) {
         if (createVPDCalls) {
             if (! session.getPlatform().supportsVPD()) {
@@ -1396,11 +1467,17 @@ public class TableDefinition extends DatabaseObjectDefinition {
         this.createSQLFiles = genFlag;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public DatabaseTable getTable() {
         return table;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void setTable(DatabaseTable table) {
         this.table = table;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

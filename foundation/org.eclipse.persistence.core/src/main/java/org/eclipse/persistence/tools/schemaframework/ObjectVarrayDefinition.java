@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.io.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import java.io.IOException;
+import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
 
 /**
  * <p>
@@ -37,6 +39,7 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
      * Append the type.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
         try {
             FieldTypeDefinition fieldType;

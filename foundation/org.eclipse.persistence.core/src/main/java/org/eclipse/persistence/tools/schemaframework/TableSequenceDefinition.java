@@ -20,15 +20,18 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.List;
-import java.util.Vector;
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
-import org.eclipse.persistence.exceptions.*;
+import java.util.List;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 
 import java.io.IOException;
@@ -61,7 +64,6 @@ public class TableSequenceDefinition extends SequenceDefinition {
     @SuppressWarnings({"removal"})
     public TableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
         super(sequence);
-
         this.deleteSchema = deleteSchema;
     }
 
@@ -82,6 +84,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Assume that the sequence table exists.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("INSERT INTO ");
@@ -103,6 +106,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * dropped outright since we will delete the schema.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         if (shouldDropTableDefinition()) {
             return tableDefinition.buildDeletionWriter(session, writer);
@@ -120,7 +124,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * INTERAL:
+     * INTERNAL:
      * Execute the SQL required to insert the sequence row into the sequence table.
      * Assume that the sequence table exists.
      * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
@@ -137,7 +141,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
         buffer.append(" = '");
         buffer.append(getName());
         buffer.append("'");
-        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
+        List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
         return !results.isEmpty();
     }
 
@@ -150,6 +154,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * @see TableDefinition
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {
         tableDefinition.dropDatabaseSchema(session, writer);
     }
@@ -163,6 +168,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * @see TableDefinition
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {
         tableDefinition.dropDatabaseSchemaOnDatabase(session);
     }
@@ -261,7 +267,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     protected TableSequence getTableSequence() {
-        if(sequence instanceof TableSequence) {
+        if(sequence.isTable()) {
             return (TableSequence)sequence;
         } else {
             return (TableSequence)((DefaultSequence)sequence).getDefaultSequence();
@@ -280,6 +286,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * Execute any statements required before the deletion of the object
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
         if ((session.getPlatform().shouldCreateIndicesForPrimaryKeys()) || (session.getPlatform().shouldCreateIndicesOnUniqueKeys())) {
             // Do not drop index when database is Symfoware. Index is required for primary keys or unique keys.

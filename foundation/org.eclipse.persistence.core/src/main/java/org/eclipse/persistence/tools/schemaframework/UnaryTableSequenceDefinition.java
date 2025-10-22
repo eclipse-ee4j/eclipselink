@@ -16,13 +16,16 @@
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.tools.schemaframework;
 
-import java.util.Vector;
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
-import org.eclipse.persistence.exceptions.*;
+import java.util.List;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.DefaultSequence;
+import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 
 /**
@@ -68,6 +71,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * Return the SQL required to create the unary sequence table.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("INSERT INTO ");
@@ -85,6 +89,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * Return the SQL to delete the unary sequence table.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DELETE FROM ");
@@ -96,7 +101,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
     }
 
     /**
-     * INTERAL:
+     * INTERNAL:
      * Verify whether the sequence exists.
      * Assume that the unary sequence table exists.
      * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
@@ -105,7 +110,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
     @Deprecated(forRemoval = true, since = "4.0.9")
     @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
-        Vector results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getName()));
+        List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getName()));
         return !results.isEmpty();
     }
 
@@ -126,7 +131,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     protected UnaryTableSequence getUnaryTableSequence() {
-        if(sequence instanceof UnaryTableSequence) {
+        if(sequence.isUnaryTable()) {
             return (UnaryTableSequence)sequence;
         } else {
             return (UnaryTableSequence)((DefaultSequence)sequence).getDefaultSequence();

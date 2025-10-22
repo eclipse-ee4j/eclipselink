@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import java.io.Serializable;
 
-import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * INTERNAL:
@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  *    <li> Maintain maximum precision and optionall min &amp; max Scale.</li>
  *    </ul>
  */
+@Deprecated(forRemoval = true, since = "4.0.9")
 public class FieldTypeDefinition implements Serializable {
 
     protected String name;
@@ -310,6 +311,11 @@ public class FieldTypeDefinition implements Serializable {
 
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + "(" + getName() + ")";
+        return getClass().getSimpleName() + "(" + getName() + ")";
+    }
+
+    public FieldDefinition.DatabaseType toDatabaseType() {
+        return new FieldDefinition.DatabaseType(getName(), shouldAllowNull(), isSizeAllowed(), isSizeRequired(),
+                getDefaultSize(), getDefaultSubSize(), getMaxPrecision(), getMinScale(), getMaxScale());
     }
 }
