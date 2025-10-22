@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -36,17 +46,6 @@ import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <b>Purpose</b>: To generate StoredProcedures from EclipseLink Projects <p>
@@ -492,7 +491,7 @@ public class StoredProcedureGenerator {
             if (!getSession().getPlatform().isOracle()) {
                 // CR#3934352, updated to support new sequencing and use a single procedure.
                 StoredProcedureDefinition definition = new StoredProcedureDefinition();
-                definition.setName(Helper.truncate(project.getName() + "SEQ_SEL", MAX_NAME_SIZE));
+                definition.setName(FrameworkHelper.truncate(project.getName() + "SEQ_SEL", MAX_NAME_SIZE));
                 definition.addArgument("SEQ_NAME", String.class, 100);
                 definition.addArgument("PREALLOC_SIZE", java.math.BigDecimal.class, 10);
                 definition.addStatement("UPDATE " + ((TableSequence)login.getDefaultSequence()).getTableName() + " SET "
@@ -552,7 +551,7 @@ public class StoredProcedureGenerator {
             fieldNames.put(databaseField.getName(), this.schemaManager.getColumnInfo(databaseField.getTableName(), databaseField.getName()).get(0));
         }
 
-        definition.setName(Helper.truncate(name, MAX_NAME_SIZE));
+        definition.setName(FrameworkHelper.truncate(name, MAX_NAME_SIZE));
         Iterator<String> iterator = fieldNames.keySet().iterator();
         String prefixArgToken;
         if (getSession().getPlatform().isOracle()) {

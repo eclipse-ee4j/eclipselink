@@ -22,14 +22,6 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.internal.helper;
 
-import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -66,6 +58,14 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -952,10 +952,36 @@ public class Helper implements Serializable {
     }
 
     /**
+     *    Answers the unqualified class name for the provided class.
+     * @deprecated Use {@linkplain Class#getSimpleName()} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public static String getShortClassName(Class<?> javaClass) {
+        return javaClass.getSimpleName();
+    }
+
+    /**
      *    Answers the unqualified class name from the specified String.
      */
     public static String getShortClassName(String javaClassName) {
         return javaClassName.substring(javaClassName.lastIndexOf('.') + 1);
+    }
+
+    /**
+     *    Answers the unqualified class name for the specified object.
+     * @deprecated Use {@code object.getClass().getSimpleName()} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public static String getShortClassName(Object object) {
+        return getShortClassName(object.getClass());
+    }
+
+    /**
+     *    return a package name for the specified class.
+     * @deprecated Use {@linkplain Class#getPackageName()} instead.
+     */
+    public static String getPackageName(Class<?> javaClass) {
+        return javaClass.getPackageName();
     }
 
     /**
@@ -970,7 +996,7 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Returns the index of the the first <code>null</code> element found in the specified
+     * Returns the index of the first <code>null</code> element found in the specified
      * <code>Vector</code> starting the search at the starting index specified.
      * Return  an int &gt;= 0 and less than size if a <code>null</code> element was found.
      * Return -1 if a <code>null</code> element was not found.
@@ -1015,6 +1041,7 @@ public class Helper implements Serializable {
     /**
      * Returns true if the character given is a vowel. I.e. one of a,e,i,o,u,A,E,I,O,U.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean isVowel(char c) {
         return (c == 'A') || (c == 'a') || (c == 'e') || (c == 'E') || (c == 'i') || (c == 'I') || (c == 'o') || (c == 'O') || (c == 'u') || (c == 'U');
     }
@@ -1189,6 +1216,7 @@ public class Helper implements Serializable {
      * Returns a String which has had enough non-alphanumeric characters removed to be equal to
      * the maximumStringLength.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String removeAllButAlphaNumericToFit(String s1, int maximumStringLength) {
         int s1Size = s1.length();
         if (s1Size <= maximumStringLength) {
@@ -1259,6 +1287,7 @@ public class Helper implements Serializable {
      * Returns a String which has had enough of the specified character removed to be equal to
      * the maximumStringLength.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String removeVowels(String s1) {
         // Remove the vowels
         StringBuilder buf = new StringBuilder();
@@ -1319,6 +1348,7 @@ public class Helper implements Serializable {
      * vowels removed from them so that the sum of the sized of the two strings is less than
      * or equal to the specified size.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String shortenStringsByRemovingVowelsToFit(String s1, String s2, int maximumStringLength) {
         int size = s1.length() + s2.length();
         if (size <= maximumStringLength) {
@@ -1964,6 +1994,7 @@ public class Helper implements Serializable {
      * If the resulting string is still larger than the passed in size after
      * removing all vowels, the end of the resulting string will be truncated.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String truncate(String originalString, int size) {
         if (originalString.length() <= size) {
             //no removal and truncation needed

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,22 +15,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     02/04/2013-2.5 Guy Pelletier
 //       - 389090: JPA 2.1 DDL Generation Support
-//     12/05/2023: Tomas Kraus
-//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
-
-import org.eclipse.persistence.exceptions.CommunicationException;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sequencing.TableSequence;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,6 +29,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import org.eclipse.persistence.exceptions.CommunicationException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <b>Purpose</b>: This class is responsible for creating the tables defined in the project.
@@ -456,7 +454,7 @@ public class TableCreator {
         String sequenceTableName = null;
         if (session.getProject().usesSequencing()) {
             Sequence sequence = session.getLogin().getDefaultSequence();
-            if (sequence.isTable()) {
+            if (sequence instanceof TableSequence) {
                 sequenceTableName = ((TableSequence)sequence).getQualifiedTableName();
             }
         }
@@ -554,7 +552,6 @@ public class TableCreator {
 
     /**
      * This creates/extends the tables on the database.
-     *
      * @param session Active database session.
      * @param schemaManager Database schema manipulation manager.
      * @param build Whether to build constraints.
@@ -586,25 +583,72 @@ public class TableCreator {
                 if (alreadyExists) {
                     //Assume the table exists, so lookup the column info
 
-                    //While SQL is case-insensitive, getColumnInfo is and will not return the table info unless the name is passed in
+                    //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
                     //as it is stored internally.
+                    String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
+                    final boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
+                    List<AbstractRecord> columnInfo = null;
 
-                    List<AbstractRecord> columnInfo = readColumnInfo(abstractSession, table);
+                    columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
 
+                    if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
+                        tableName = tableName.toUpperCase();
+                        columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
+                        if (( columnInfo == null || columnInfo.isEmpty()) ){
+                            tableName = tableName.toLowerCase();
+                            columnInfo = abstractSession.getAccessor().getColumnInfo(tableName, null, abstractSession);
+                        }
+                    }
                     if (columnInfo != null && !columnInfo.isEmpty()) {
-                        // Table exists, parse read columns
-                        final Map<DatabaseField, AbstractRecord> columns = parseColumnInfo(abstractSession, table, columnInfo);
-                        // Add missing fields to the database
-                        processMissingColumns(table, columns, (fieldDef, dbField) -> {
-                            try {
-                                table.addFieldOnDatabase(abstractSession, fieldDef);
-                            } catch (final DatabaseException addFieldEx) {
-                                session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "cannot_add_field_to_table", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
-                                if (!shouldIgnoreDatabaseException()) {
-                                    throw addFieldEx;
+                        //Table exists, add individual fields as necessary
+
+                        //hash the table's existing columns by name
+                        final Map<DatabaseField, AbstractRecord> columns = new HashMap<>(columnInfo.size());
+                        final DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
+                        final DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
+                        boolean schemaMatchFound = false;
+                        // Determine the probably schema for the table, this is a heuristic, so should not cause issues if wrong.
+                        String qualifier = table.getQualifier();
+                        if ((qualifier == null) || (qualifier.length() == 0)) {
+                            qualifier = session.getDatasourcePlatform().getTableQualifier();
+                            if ((qualifier == null) || (qualifier.length() == 0)) {
+                                qualifier = session.getLogin().getUserName();
+                                // Oracle DB DS defined in WLS does not contain user name so it's stored in platform.
+                                if ((qualifier == null) || (qualifier.length() == 0)) {
+                                    final DatabasePlatform platform = session.getPlatform();
+                                    if (platform.supportsConnectionUserName()) {
+                                        qualifier = platform.getConnectionUserName();
+                                    }
                                 }
                             }
-                        });
+                        }
+                        final boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
+                        for (final AbstractRecord record : columnInfo) {
+                            final String fieldName = (String)record.get(columnNameLookupField);
+                            if (fieldName != null && fieldName.length() > 0) {
+                                final DatabaseField column = new DatabaseField(fieldName);
+                                if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                                    column.useUpperCaseForComparisons(true);
+                                }
+                                final String schema = (String)record.get(schemaLookupField);
+                                // Check the schema as well.  Ignore columns for other schema if a schema match is found.
+                                if (schemaMatchFound) {
+                                    if (qualifier.equalsIgnoreCase(schema)) {
+                                        columns.put(column,  record);
+                                    }
+                                } else {
+                                    if (checkSchema) {
+                                        if (qualifier.equalsIgnoreCase(schema)) {
+                                            schemaMatchFound = true;
+                                            // Remove unmatched columns from other schemas.
+                                            columns.clear();
+                                        }
+                                    }
+                                    // If none of the schemas match what is expected, assume what is expected is wrong, and use all columns.
+                                    columns.put(column,  record);
+                                }
+                            }
+                        }
 
                         //Go through each field we need to have in the table to see if it already exists
                         for (final FieldDefinition fieldDef : table.getFields()){
@@ -656,6 +700,7 @@ public class TableCreator {
         }
         return columnInfo;
     }
+
 
     // Parse column information read from the database.
     private static Map<DatabaseField, AbstractRecord> parseColumnInfo(AbstractSession session,
@@ -738,7 +783,7 @@ public class TableCreator {
             AbstractRecord dbColumn = columns.get(dbField);
             if (dbColumn == null && missingAction != null) {
                 missingAction.accept(fieldDef, dbField);
-            // Handle existing column
+                // Handle existing column
             } else {
                 // Run action for existing column
                 if (existingAction != null) {
@@ -788,16 +833,16 @@ public class TableCreator {
             // Existing columns validation only in full mode
             if (full) {
                 FieldTypeDefinition expectedDbType = DatabaseObjectDefinition.getFieldTypeDefinition(session.getPlatform(),
-                                                                                                     fieldDefinition.getType(),
-                                                                                                     fieldDefinition.getTypeName());
+                        fieldDefinition.getType(),
+                        fieldDefinition.getTypeName());
                 String dbTypeName = (String) dbRecord.get("TYPE_NAME");
                 if (dbTypeName != null) {
                     // Type mismatch. DB typeName may be an alias, e.g. INT/INTEGER!
                     if (!expectedDbType.isTypeName(dbTypeName, false)) {
                         existingColumnsDiff.add(
                                 new TableValidationException.DifferentColumns.TypeDifference(databaseField.getName(),
-                                                                                             expectedDbType.getName(),
-                                                                                             dbTypeName));
+                                        expectedDbType.getName(),
+                                        dbTypeName));
                     }
                     // Nullable mismatch
                     Nullable dbNullable = dbColumnNullable(dbRecord);
@@ -806,22 +851,22 @@ public class TableCreator {
                         // Based on identical check in FieldDefinition#appendDBString(Writer, AbstractSession, TableDefinition, String)
                         boolean modelIsNullable = fieldDefinition.shouldPrintFieldNullClause(expectedDbType);
                         switch (dbNullable) {
-                        case NO:
-                            if (modelIsNullable) {
-                                existingColumnsDiff.add(
-                                        new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                                                                         true,
-                                                                                                         false));
-                            }
-                            break;
-                        case YES:
-                            if (!modelIsNullable) {
-                                existingColumnsDiff.add(
-                                        new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                                                                         false,
-                                                                                                         true));
-                            }
-                            break;
+                            case NO:
+                                if (modelIsNullable) {
+                                    existingColumnsDiff.add(
+                                            new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
+                                                    true,
+                                                    false));
+                                }
+                                break;
+                            case YES:
+                                if (!modelIsNullable) {
+                                    existingColumnsDiff.add(
+                                            new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
+                                                    false,
+                                                    true));
+                                }
+                                break;
                         }
                     }
                 }
@@ -907,9 +952,6 @@ public class TableCreator {
                     default -> UNKNOWN;
                 };
             }
-
         }
-
     }
-
 }

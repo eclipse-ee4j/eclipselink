@@ -16,13 +16,13 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.Writer;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
-
-import java.io.Writer;
 
 /**
  * <p>
@@ -81,6 +81,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * Indicates whether alter is supported
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean isAlterSupported(AbstractSession session) {
         return false;
     }
@@ -96,6 +97,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * INTERNAL:
      * By default, does nothing.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alterOnDatabase(AbstractSession session) throws EclipseLinkException {
     }
 
@@ -104,6 +106,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * Execute the SQL required to alter sequence.
      * By default, does nothing.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void alter(AbstractSession session, Writer writer) throws ValidationException {
     }
 
@@ -113,6 +116,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * to alter it based on what the platform supports.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
         boolean exists = false;
         final boolean loggingOff = session.isLoggingOff();
