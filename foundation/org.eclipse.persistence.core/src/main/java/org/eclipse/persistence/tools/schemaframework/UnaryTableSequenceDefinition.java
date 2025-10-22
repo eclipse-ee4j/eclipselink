@@ -40,13 +40,30 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * Should be a sequence defining unary table sequence in the db:
      * either UnaryTableSequence
      * DefaultSequence (only if case platform.getDefaultSequence() is an UnaryTableSequence).
+     * @deprecated Use {@linkplain #UnaryTableSequenceDefinition(String, boolean)} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public UnaryTableSequenceDefinition(Sequence sequence) {
         this(sequence, false);
     }
 
+    /**
+     * @deprecated Use {@linkplain #UnaryTableSequenceDefinition(String, boolean)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public UnaryTableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
         super(sequence, deleteSchema);
+    }
+
+    /**
+     * INTERNAL:
+     * Should be a sequence defining unary table sequence in the db:
+     * either UnaryTableSequence
+     * DefaultSequence (only if case platform.getDefaultSequence() is an UnaryTableSequence).
+     */
+    public UnaryTableSequenceDefinition(String name, boolean deleteSchema) {
+        super(name, deleteSchema);
     }
 
     /**
@@ -87,20 +104,14 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
      * INTERNAL:
      * Verify whether the sequence exists.
      * Assume that the unary sequence table exists.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getName()));
         return !results.isEmpty();
-    }
-
-    /**
-     * PUBLIC:
-     * Return the name of the only field of this table
-     */
-    @Override
-    public String getSequenceCounterFieldName() {
-        return getUnaryTableSequence().getCounterFieldName();
     }
 
     /**
@@ -115,6 +126,10 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
         return definition;
     }
 
+    /**
+     * @deprecated To be removed with no replacement.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected UnaryTableSequence getUnaryTableSequence() {
         if(sequence.isUnaryTable()) {
             return (UnaryTableSequence)sequence;

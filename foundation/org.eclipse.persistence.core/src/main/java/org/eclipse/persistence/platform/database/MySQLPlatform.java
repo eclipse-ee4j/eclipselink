@@ -59,7 +59,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -947,7 +946,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     @Override
-    public boolean checkTableExists(final DatabaseSessionImpl session,
+    public boolean checkTableExists(final AbstractSession session,
             final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);

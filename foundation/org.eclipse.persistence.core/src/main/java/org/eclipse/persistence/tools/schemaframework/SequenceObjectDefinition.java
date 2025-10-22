@@ -43,8 +43,10 @@ public class SequenceObjectDefinition extends SequenceDefinition {
      * either NativeSequence with shouldAcquireValueAfterInsert() returning false;
      * or DefaultSequence (only if case platform.getDefaultSequence() is a
      * NativeSequence with shouldAcquireValueAfterInsert() returning false).
+     * @deprecated Use {@linkplain #SequenceObjectDefinition(String)} instead.
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public SequenceObjectDefinition(Sequence sequence) {
         super(sequence);
     }
@@ -105,9 +107,11 @@ public class SequenceObjectDefinition extends SequenceDefinition {
     /**
      * INTERNAL:
      * Check if the sequence object already exists, in which case don't create it.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
     @Override
     @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         boolean isConnected = sequence.isConnected();
         // temporary connect sequence if it's not connected.

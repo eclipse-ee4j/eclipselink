@@ -34,6 +34,10 @@ import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+
 /**
  * <p>
  * <b>Purpose</b>: Allow a generic way of creating sequences on the different platforms,
@@ -43,6 +47,25 @@ import org.eclipse.persistence.sequencing.TableSequence;
 public class TableSequenceDefinition extends SequenceDefinition {
     protected TableDefinition tableDefinition;
     protected boolean deleteSchema;
+    private String sequenceCounterFieldName;
+    private String sequenceNameFieldName;
+    private List<IndexDefinition> sequenceTableIndexes;
+    private String sequenceTableName;
+    private String sequenceTableQualifier;
+
+    /**
+     * INTERNAL:
+     * Should be a sequence defining table sequence in the db:
+     * either TableSequence
+     * DefaultSequence (only if case platform.getDefaultSequence() is a TableSequence).
+     * @deprecated Use {@linkplain #TableSequenceDefinition(String, boolean)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
+    public TableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
+        super(sequence);
+        this.deleteSchema = deleteSchema;
+    }
 
     /**
      * INTERNAL:
@@ -50,9 +73,8 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * either TableSequence
      * DefaultSequence (only if case platform.getDefaultSequence() is a TableSequence).
      */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public TableSequenceDefinition(Sequence sequence, boolean deleteSchema) {
-        super(sequence);
+    public TableSequenceDefinition(String name, boolean deleteSchema) {
+        super(name);
         this.deleteSchema = deleteSchema;
     }
 
@@ -105,9 +127,11 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * INTERNAL:
      * Execute the SQL required to insert the sequence row into the sequence table.
      * Assume that the sequence table exists.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
     @Override
     @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
         StringBuilder buffer = new StringBuilder();
         buffer.append("SELECT * FROM ");
@@ -155,25 +179,26 @@ public class TableSequenceDefinition extends SequenceDefinition {
      */
     @Override
     public String getDatabaseSchema() {
-        return getSequenceTable().getTableQualifier();
+        return sequenceTableQualifier;
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceCounterFieldName() {
-        return getTableSequence().getCounterFieldName();
+        return sequenceCounterFieldName;
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceNameFieldName() {
-        return getTableSequence().getNameFieldName();
+        return sequenceNameFieldName;
     }
 
     /**
      * Return the database table for the sequence.
+     * @deprecated To be removed with no replacement.
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     public DatabaseTable getSequenceTable() {
@@ -184,28 +209,31 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * PUBLIC:
      */
     public List<IndexDefinition> getSequenceTableIndexes() {
-        return getTableSequence().getTableIndexes();
+        if  (sequenceTableIndexes == null) {
+            sequenceTableIndexes = new ArrayList<>();
+        }
+        return sequenceTableIndexes;
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceTableName() {
-        return getSequenceTable().getName();
+        return sequenceTableName;
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceTableQualifier() {
-        return getSequenceTable().getTableQualifier();
+        return sequenceTableQualifier;
     }
 
     /**
      * PUBLIC:
      */
     public String getSequenceTableQualifiedName() {
-        return getSequenceTable().getQualifiedName();
+        return getSequenceTableQualifier().isBlank() ? getSequenceTableName() : getSequenceTableQualifier() + '.' + getSequenceTableName();
     }
 
     /**
@@ -216,8 +244,14 @@ public class TableSequenceDefinition extends SequenceDefinition {
     @Override
     public TableDefinition buildTableDefinition() {
         if (tableDefinition == null) {
-            tableDefinition = new TableDefinition();
-            tableDefinition.setTable(getSequenceTable());
+            tableDefinition = new TableDefinition() {
+                // default implementation gets the schema from the DatabaseTable
+                // which we do not want to have here to avoid cyclic references
+                @Override
+                public String getDatabaseSchema() {
+                    return getQualifier();
+                }
+            };
             tableDefinition.setName(getSequenceTableName());
             tableDefinition.setQualifier(getSequenceTableQualifier());
             tableDefinition.addPrimaryKeyField(getSequenceNameFieldName(), String.class, 50);
@@ -228,6 +262,9 @@ public class TableSequenceDefinition extends SequenceDefinition {
         return tableDefinition;
     }
 
+    /**
+     * @deprecated To be removed with no replacement.
+     */
     @Deprecated(forRemoval = true, since = "4.0.9")
     protected TableSequence getTableSequence() {
         if(sequence.isTable()) {
@@ -256,6 +293,26 @@ public class TableSequenceDefinition extends SequenceDefinition {
             return;
         }
         buildTableDefinition().preDropObject(session, dropSchemaWriter, createSQLFiles);
+    }
+
+    public void setSequenceCounterFieldName(String sequenceCounterFieldName) {
+        this.sequenceCounterFieldName = sequenceCounterFieldName;
+    }
+
+    public void setSequenceNameFieldName(String sequenceNameFieldName) {
+        this.sequenceNameFieldName = sequenceNameFieldName;
+    }
+
+    public void setSequenceTableIndexes(List<IndexDefinition> sequenceTableIndexes) {
+        this.sequenceTableIndexes = sequenceTableIndexes;
+    }
+
+    public void setSequenceTableName(String sequenceTableName) {
+        this.sequenceTableName = sequenceTableName;
+    }
+
+    public void setSequenceTableQualifier(String sequenceTableQualifier) {
+        this.sequenceTableQualifier = sequenceTableQualifier;
     }
 
     /**

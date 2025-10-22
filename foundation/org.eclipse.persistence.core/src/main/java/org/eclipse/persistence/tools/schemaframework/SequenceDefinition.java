@@ -32,22 +32,31 @@ import org.eclipse.persistence.sequencing.Sequence;
  */
 public abstract class SequenceDefinition extends DatabaseObjectDefinition {
 
-    protected int initialValue;
-    protected int preallocationSize;
+    private int initialValue;
+    private int preallocationSize;
 
+    /**
+     * @deprecated To be removed with no replacement.
+     */
     @Deprecated(forRemoval = true, since = "4.0.9")
     protected Sequence sequence;
 
     protected SequenceDefinition(String name) {
-        super(name);
+        super();
+        setName(name);
         initialValue = 1;
         preallocationSize = 50;
     }
 
+    /**
+     * @deprecated Use {@linkplain #SequenceDefinition(String)} instead.
+     */
     @Deprecated(forRemoval = true, since = "4.0.9")
     protected SequenceDefinition(Sequence sequence) {
-        super(sequence.getName(), sequence.getQualifier());
+        super();
         this.sequence = sequence;
+        setName(sequence.getName());
+        setQualifier(sequence.getQualifier());
         initialValue = sequence.getInitialValue();
         preallocationSize = sequence.getPreallocationSize();
     }
@@ -55,6 +64,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
     /**
      * INTERNAL:
      * Verify whether the sequence exists.
+     * @deprecated Implement {@code DatabasePlatform.checkSequenceExists(...)} instead.
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     public abstract boolean checkIfExist(AbstractSession session) throws DatabaseException;
@@ -111,8 +121,7 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
         boolean exists = false;
         final boolean loggingOff = session.isLoggingOff();
         try {
-            session.setLoggingOff(true);
-            exists = checkIfExist(session);
+            exists = session.getPlatform().checkSequenceExists(session, this, true);
         } finally {
             session.setLoggingOff(loggingOff);
         }

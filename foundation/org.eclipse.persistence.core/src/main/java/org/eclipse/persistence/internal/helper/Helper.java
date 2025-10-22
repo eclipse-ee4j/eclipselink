@@ -40,8 +40,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -109,7 +111,11 @@ public class Helper extends CoreHelper implements Serializable {
     /** Prime the platform-dependent current working directory */
     protected static String CURRENT_WORKING_DIRECTORY = null;
 
-    /** Prime the platform-dependent temporary directory */
+    /**
+     *  Prime the platform-dependent temporary directory
+     * @deprecated Unused.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected static String TEMP_DIRECTORY = null;
 
     /** Backdoor to allow 0 to be used in primary keys.
@@ -232,10 +238,12 @@ public class Helper extends CoreHelper implements Serializable {
         getCalendarCache().offer(calendar);
     }
 
+    /**
+     * @deprecated Use {@linkplain Collection#addAll(Collection)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
-        for (Enumeration<? extends E> stream = elementsToAdd.elements(); stream.hasMoreElements();) {
-            theVector.addElement(stream.nextElement());
-        }
+        theVector.addAll(elementsToAdd);
     }
 
     public static <T> Vector<T> addAllUniqueToVector(Vector<T> objects, List<T> objectsToAdd) {
@@ -267,14 +275,12 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-    * Convert the specified vector into an array.
-    */
+     * Convert the specified vector into an array.
+     * @deprecated Use {@linkplain Collection#toArray(Object[])} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static Object[] arrayFromVector(Vector<?> vector) {
-        Object[] result = new Object[vector.size()];
-        for (int i = 0; i < vector.size(); i++) {
-            result[i] = vector.elementAt(i);
-        }
-        return result;
+        return vector.toArray(new Object[0]);
     }
 
     /**
@@ -290,7 +296,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Convert the HEX string to a byte array.
      * HEX allows for binary data to be printed.
+     * @deprecated Use {@code HexFormat.parseHex(CharSequence)} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static byte[] buildBytesFromHexString(String hex) {
         String tmpString = hex;
         if ((tmpString.length() % 2) != 0) {
@@ -302,7 +310,7 @@ public class Helper extends CoreHelper implements Serializable {
         byte digit1;
         byte digit2;
         for (byteIndex = bytes.length - 1, strIndex = tmpString.length() - 2; byteIndex >= 0;
-                 byteIndex--, strIndex -= 2) {
+             byteIndex--, strIndex -= 2) {
             digit1 = (byte)Character.digit(tmpString.charAt(strIndex), 16);
             digit2 = (byte)Character.digit(tmpString.charAt(strIndex + 1), 16);
             if ((digit1 == -1) || (digit2 == -1)) {
@@ -316,7 +324,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Convert the byte array to a HEX string.
      * HEX allows for binary data to be printed.
+     * @deprecated Use {@code HexFormat.formatHex(byte[])} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String buildHexStringFromBytes(byte[] bytes) {
         char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
         StringBuilder stringBuilder = new StringBuilder();
@@ -347,16 +357,11 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
       * Create a new Vector containing all of the map elements.
-      */
+     * @deprecated Use {@linkplain Vector#Vector(Collection)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <T> Vector<T> buildVectorFromMapElements(Map<?, T> map) {
-        Vector<T> vector = new Vector<>(map.size());
-        Iterator<T> iterator = map.values().iterator();
-
-        while (iterator.hasNext()) {
-            vector.addElement(iterator.next());
-        }
-
-        return vector;
+        return new Vector<>(map.values());
     }
 
     /**
@@ -515,7 +520,15 @@ public class Helper extends CoreHelper implements Serializable {
         return res;
     }
 
+    /**
+     * @deprecated Use (@linkplain {@link #getClassFromClassName(String, ClassLoader)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <T> Class<T> getClassFromClasseName(final String className, final ClassLoader classLoader) {
+        return getClassFromClassName(className, classLoader);
+    }
+
+    public static <T> Class<T> getClassFromClassName(final String className, final ClassLoader classLoader) {
         if (className == null) {
             return null;
         }
@@ -583,28 +596,20 @@ public class Helper extends CoreHelper implements Serializable {
         return one.equals(two);
     }
 
+    /**
+     * @deprecated Use {@linkplain Arrays#compare(byte[], byte[])} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean compareByteArrays(byte[] array1, byte[] array2) {
-        if (array1.length != array2.length) {
-            return false;
-        }
-        for (int index = 0; index < array1.length; index++) {
-            if (array1[index] != array2[index]) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.compare(array1, array2) == 0;
     }
 
+    /**
+     * @deprecated Use {@linkplain Arrays#compare(char[], char[])} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean compareCharArrays(char[] array1, char[] array2) {
-        if (array1.length != array2.length) {
-            return false;
-        }
-        for (int index = 0; index < array1.length; index++) {
-            if (array1[index] != array2[index]) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.compare(array1, array2) == 0;
     }
 
     /**
@@ -642,7 +647,9 @@ public class Helper extends CoreHelper implements Serializable {
       * Compare the elements in 2 hashtables to see if they are equal
       *
       * Added Nov 9, 2000 JED Patch 2.5.1.8
+     * @deprecated Unused.
       */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
         Enumeration<?> enumtr;
         Object element;
@@ -701,8 +708,10 @@ public class Helper extends CoreHelper implements Serializable {
     }
 
     /**
-      * Return a new vector with no duplicated values.
-      */
+     * Return a new vector with no duplicated values.
+     * @deprecated Unused.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <E> Vector<E> concatenateUniqueVectors(Vector<? extends E> first, Vector<? extends E> second) {
         Vector<E> concatenation;
         E element;
@@ -741,21 +750,15 @@ public class Helper extends CoreHelper implements Serializable {
 
     }
 
+    /**
+     * @deprecated Use {@linkplain Vector#Vector(Collection)} followed by {@linkplain Vector#addAll(Collection)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <E> Vector<E> concatenateVectors(Vector<? extends E> first, Vector<? extends E> second) {
-        Vector<E> concatenation;
-
-        concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-
-        for (Enumeration<? extends E> stream = first.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
-        }
-
-        for (Enumeration<? extends E> stream = second.elements(); stream.hasMoreElements();) {
-            concatenation.addElement(stream.nextElement());
-        }
-
+        Vector<E> concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        concatenation.addAll(first);
+        concatenation.addAll(second);
         return concatenation;
-
     }
 
     /** Return a copy of the vector containing a subset starting at startIndex
@@ -846,7 +849,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Return the name of the "temporary directory".
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String tempDirectory() {
         // Bug 2756643
         if (TEMP_DIRECTORY == null) {
@@ -936,7 +941,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Returns true if the file of this name does indeed exist
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean doesFileExist(String fileName) {
         FileReader reader = null;
         try {
@@ -968,7 +975,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Extracts the actual path to the jar file.
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String extractJarNameFromURL(java.net.URL url) {
         String tempName = url.getFile();
         int start = tempName.indexOf("file:") + 5;
@@ -1045,7 +1054,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return the class instance from the class
      */
-    public static Object getInstanceFromClass(final Class<?> classFullName) {
+    public static <T> T getInstanceFromClass(final Class<T> classFullName) {
         if (classFullName == null) {
             return null;
         }
@@ -1117,7 +1126,9 @@ public class Helper extends CoreHelper implements Serializable {
      * Return -1 if a <code>null</code> element was not found.
      * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
      * for a <code>null</code> element will result in a <code>NullPointerException</code>....
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static int indexOfNullElement(Vector<?> v, int index) {
         int size = v.size();
         for (int i = index; i < size; i++) {
@@ -1138,7 +1149,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Returns true if the string given is an all upper case string
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static boolean isUpperCaseString(String s) {
         char[] c = s.toCharArray();
         for (int i = 0; i < s.length(); i++) {
@@ -1160,7 +1173,9 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Return an array of the files in the specified directory.
      * This allows us to simplify jdk1.1 code a bit.
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static File[] listFilesIn(File directory) {
         if (directory.isDirectory()) {
             return directory.listFiles();
@@ -1285,7 +1300,10 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Given a Vector, print it, even if there is a null in it
+     /**
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static String printVector(Vector<?> vector) {
         StringWriter stringWriter = new StringWriter();
         stringWriter.write("[");
@@ -1300,6 +1318,10 @@ public class Helper extends CoreHelper implements Serializable {
 
     }
 
+    /**
+     * @deprecated Unused.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static <K, V> Hashtable<K, V> rehashHashtable(Hashtable<K, V> table) {
         Hashtable<K, V> rehashedTable = new Hashtable<>(table.size() + 2);
 
@@ -1856,7 +1878,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Can be used to mark code if a workaround is added for a JDBC driver or other bug.
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static void systemBug(String description) {
         // Use sender to find what is needy.
     }
@@ -2075,7 +2099,9 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Can be used to mark code as need if something strange is seen.
+     * @deprecated Unused.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static void toDo(String description) {
         // Use sender to find what is needy.
     }
@@ -2194,19 +2220,21 @@ public class Helper extends CoreHelper implements Serializable {
 
     /**
      * Convert the specified array into a vector.
+     * @deprecated Use {@linkplain Collections#addAll(Collection, Object[])} instead.
      */
     public static <T> Vector<T> vectorFromArray(T[] array) {
         Vector<T> result = new Vector<>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            result.addElement(array[i]);
-        }
+        Collections.addAll(result, array);
         return result;
     }
 
     /**
      * Convert the byte array to a HEX string.
      * HEX allows for binary data to be printed.
+     * @deprecated Use {@code HexFormat.formatHex(byte[])} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    @SuppressWarnings({"removal"})
     public static void writeHexString(byte[] bytes, Writer writer) throws IOException {
         writer.write(buildHexStringFromBytes(bytes));
     }
@@ -2418,6 +2446,10 @@ public class Helper extends CoreHelper implements Serializable {
         return false;
     }
 
+    /**
+     * @deprecated Unused.
+     */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public static long timeWithRoundMiliseconds() {
         return new Date().getTime() / 1000 * 1000;
     }

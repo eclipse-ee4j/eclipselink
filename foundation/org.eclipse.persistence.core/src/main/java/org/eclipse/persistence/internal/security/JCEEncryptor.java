@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +25,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
@@ -104,8 +105,8 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             System.arraycopy(input, IV_GCM_LENGTH, bytePassword, 0, input.length - IV_GCM_LENGTH);
             decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
-            password = new String(decryptCipherAES_GCM.doFinal(bytePassword), "UTF-8");
-        } catch (ArrayIndexOutOfBoundsException | ConversionException | IllegalBlockSizeException ce) {
+            password = new String(decryptCipherAES_GCM.doFinal(bytePassword), StandardCharsets.UTF_8);
+        } catch (ArrayIndexOutOfBoundsException | ConversionException | IllegalBlockSizeException | NumberFormatException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
