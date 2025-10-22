@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,24 +16,20 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.tools.schemaframework;
 
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
  * <b>Purpose</b>: Define a foreign key from one table to another.
  * This support composite foreign keys can constraint options.
  */
-public class ForeignKeyConstraint implements Serializable {
-    protected String name;
-    protected List<String> sourceFields;
+public class ForeignKeyConstraint extends KeyConstraintObjectDefinition {
     protected List<String> targetFields;
     protected String targetTable;
     protected boolean shouldCascadeOnDelete;
@@ -42,23 +38,17 @@ public class ForeignKeyConstraint implements Serializable {
     protected boolean disableForeignKey;
 
     public ForeignKeyConstraint() {
-        this.name = "";
-        this.sourceFields = new ArrayList<>();
+        super();
         this.targetFields = new ArrayList<>();
         this.targetTable = "";
         this.shouldCascadeOnDelete = false;
     }
 
     public ForeignKeyConstraint(String name, String sourceField, String targetField, String targetTable) {
-        this();
-        this.name = name;
-        sourceFields.add(sourceField);
+        super(name, sourceField);
+        targetFields = new ArrayList<>();
         targetFields.add(targetField);
         this.targetTable = targetTable;
-    }
-
-    public void addSourceField(String sourceField) {
-        getSourceFields().add(sourceField);
     }
 
     public void addTargetField(String targetField) {
@@ -69,32 +59,29 @@ public class ForeignKeyConstraint implements Serializable {
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
      */
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
             if (hasForeignKeyDefinition()) {
                 writer.write(getForeignKeyDefinition());
             } else {
-                writer.write("FOREIGN KEY (");
-                for (Iterator<String> iterator = getSourceFields().iterator(); iterator.hasNext();) {
-                    writer.write(iterator.next());
-                    if (iterator.hasNext()) {
-                        writer.write(", ");
-                    }
-                }
-                writer.write(") REFERENCES ");
+                writer.write("FOREIGN KEY ");
+                appendKeys(writer, getSourceFields());
+                writer.write(" REFERENCES ");
                 writer.write(getTargetTable());
-                writer.write(" (");
-                for (Iterator<String> iterator = getTargetFields().iterator(); iterator.hasNext();) {
-                    writer.write(iterator.next());
-                    if (iterator.hasNext()) {
-                        writer.write(", ");
-                    }
-                }
-                writer.write(")");
+                writer.write(" ");
+                appendKeys(writer, getTargetFields());
                 if (shouldCascadeOnDelete() && session.getPlatform().supportsDeleteOnCascade()) {
                     writer.write(" ON DELETE CASCADE");
                 }
+                super.appendDBString(writer, session);
             }
+        } catch (RuntimeException ex) {
+            if (ex.getCause() instanceof IOException) {
+                throw ValidationException.fileError((IOException) ex.getCause());
+            }
+            throw ValidationException.fileError((new IOException(ex.getCause())));
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -125,14 +112,6 @@ public class ForeignKeyConstraint implements Serializable {
         return foreignKeyDefinition;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getSourceFields() {
-        return sourceFields;
-    }
-
     public List<String> getTargetFields() {
         return targetFields;
     }
@@ -157,10 +136,6 @@ public class ForeignKeyConstraint implements Serializable {
         this.foreignKeyDefinition = foreignKeyDefinition;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * PUBLIC:
      * Enables delete cascading on the database.
@@ -168,10 +143,6 @@ public class ForeignKeyConstraint implements Serializable {
      */
     public void setShouldCascadeOnDelete(boolean shouldCascadeOnDelete) {
         this.shouldCascadeOnDelete = shouldCascadeOnDelete;
-    }
-
-    public void setSourceFields(List<String> sourceFields) {
-        this.sourceFields = sourceFields;
     }
 
     public void setTargetFields(List<String> targetFields) {

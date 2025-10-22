@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     12/05/2023: Tomas Kraus
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.databaseaccess;
+
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -34,6 +36,7 @@ import java.util.Set;
  *    <li> Maintain maximum precision and optionall min &amp; max Scale.</li>
  *    </ul>
  */
+@Deprecated(forRemoval = true, since = "4.0.9")
 public class FieldTypeDefinition implements Serializable {
 
     protected String name;
@@ -429,6 +432,11 @@ public class FieldTypeDefinition implements Serializable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + getName() + ")";
+    }
+
+    public FieldDefinition.DatabaseType toDatabaseType() {
+        return new FieldDefinition.DatabaseType(getName(), shouldAllowNull(), isSizeAllowed(), isSizeRequired(),
+                getDefaultSize(), getDefaultSubSize(), getMaxPrecision(), getMinScale(), getMaxScale());
     }
 
     // Constructor helper to build database type name aliases set

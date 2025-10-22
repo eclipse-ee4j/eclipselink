@@ -17,19 +17,15 @@ import java.io.Writer;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
-/**
- * <b>Purpose</b>: Define a check constraint.
- */
-public class CheckConstraint extends ConstraintObjectDefinition {
-    protected String constraint;
+public abstract class ConstraintObjectDefinition extends DatabaseObjectDefinition {
+    private String options;
 
-    public CheckConstraint() {
-        this("", "");
+    protected ConstraintObjectDefinition() {
+        this("");
     }
 
-    public CheckConstraint(String name, String constraint) {
+    protected ConstraintObjectDefinition(String name) {
         super(name);
-        this.constraint = constraint;
     }
 
     /**
@@ -39,37 +35,35 @@ public class CheckConstraint extends ConstraintObjectDefinition {
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
-            writer.write("CONSTRAINT " + getName() + " CHECK (");
-            writer.write(getConstraint());
             if (getOptions() != null && !getOptions().isEmpty()) {
                 writer.write(" ");
                 writer.write(getOptions());
                 writer.write(" ");
             }
-            writer.write(")");
-            super.appendDBString(writer, session);
-        } catch (RuntimeException ex) {
-            if (ex.getCause() instanceof IOException) {
-                throw ValidationException.fileError((IOException) ex.getCause());
-            }
-            throw ValidationException.fileError((new IOException(ex.getCause())));
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * PUBLIC:
-     */
-    public String getConstraint() {
-        return constraint;
+    public String getOptions() {
+        return options;
     }
 
-    /**
-     * PUBLIC:
-     */
-    public void setConstraint(String constraint) {
-        this.constraint = constraint;
+    public void setOptions(String options) {
+        this.options = options;
+    }
+
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
+        //noop
+        return writer;
+    }
+
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
+        //noop
+        return writer;
     }
 }
-
