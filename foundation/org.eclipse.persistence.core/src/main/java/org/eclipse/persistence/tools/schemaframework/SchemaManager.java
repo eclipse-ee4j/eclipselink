@@ -43,6 +43,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sequencing.TableSequence;
+import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
