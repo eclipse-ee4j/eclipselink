@@ -1742,6 +1742,18 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             verifyMutexThreadIntegrityBeforeRelease();
             // exception occurred during the commit.
             this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(this.lastUsedMergeManager);
+
+            // Fix for GitHub issue #2376: Release DeferredLockManager locks
+            Thread currentThread = Thread.currentThread();
+            org.eclipse.persistence.internal.helper.DeferredLockManager deferredLockManager =
+                    org.eclipse.persistence.internal.helper.ConcurrencyManager.getDeferredLockManager(currentThread);
+            if (deferredLockManager != null) {
+                if (!deferredLockManager.getActiveLocks().isEmpty()) {
+                    deferredLockManager.releaseActiveLocksOnThread();
+                }
+                org.eclipse.persistence.internal.helper.ConcurrencyManager.removeDeferredLockManager(currentThread);
+            }
+
             this.lastUsedMergeManager = null;
         }
     }
