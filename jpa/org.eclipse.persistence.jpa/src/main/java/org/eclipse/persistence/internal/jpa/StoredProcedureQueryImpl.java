@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
+import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
@@ -105,6 +106,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public StoredProcedureQueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         super(query, entityManager);
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -113,6 +116,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public StoredProcedureQueryImpl(String name, EntityManagerImpl entityManager) {
         super(entityManager);
         this.queryName = name;
+        // Inherit applicable hints from EntityManager
+        inheritEntityManagerHints();
     }
 
     /**
@@ -878,6 +883,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
         FindOptionUtils.setCacheRetrieveMode(getDatabaseQuery().getProperties(), cacheRetrieveMode);
+        setHint(QueryHints.CACHE_RETRIEVE_MODE, cacheRetrieveMode);
         return this;
     }
 
@@ -889,6 +895,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setCacheStoreMode(CacheStoreMode cacheStoreMode) {
         FindOptionUtils.setCacheStoreMode(getDatabaseQuery().getProperties(), cacheStoreMode);
+        setHint(QueryHints.CACHE_STORE_MODE, cacheStoreMode);
         return this;
     }
 
@@ -900,7 +907,37 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public StoredProcedureQueryImpl setTimeout(Integer timeout) {
         FindOptionUtils.setTimeout(getDatabaseQuery().getProperties(), timeout);
+        setHint(QueryHints.QUERY_TIMEOUT, timeout);
         return this;
+    }
+
+    /**
+     * Inherit applicable query hints from the EntityManager.
+     * EntityManager-level settings to newly created queries.
+     */
+    protected void inheritEntityManagerHints() {
+        if (entityManager == null || entityManager.properties == null) {
+            return;
+        }
+
+        DatabaseQuery dbQuery = getDatabaseQuery();
+        if (dbQuery == null) {
+            return;
+        }
+
+        Map<String, Object> emProperties = entityManager.properties;
+
+        // CACHE_RETRIEVE_MODE only applies to ObjectLevelReadQuery (SELECT queries)
+        if (dbQuery.isObjectLevelReadQuery() && emProperties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
+            setHint(QueryHints.CACHE_RETRIEVE_MODE, emProperties.get(QueryHints.CACHE_RETRIEVE_MODE));
+        }
+
+        // CACHE_STORE_MODE applies to all query types:
+        // - For ObjectLevelReadQuery: controls whether results are stored in cache after reading
+        // - For ModifyQuery: controls whether cache is invalidated after UPDATE/DELETE
+        if (emProperties.containsKey(QueryHints.CACHE_STORE_MODE)) {
+            setHint(QueryHints.CACHE_STORE_MODE, emProperties.get(QueryHints.CACHE_STORE_MODE));
+        }
     }
 
     /**

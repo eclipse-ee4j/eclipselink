@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -578,10 +578,10 @@ public class QueryHintsHandler {
             if (query.isObjectLevelReadQuery()) {
                 if (valueToApply.equals(CacheRetrieveMode.BYPASS) || valueToApply.equals(CacheRetrieveMode.BYPASS.name())) {
                     query.retrieveBypassCache();
+                } else if (valueToApply.equals(CacheRetrieveMode.USE) || valueToApply.equals(CacheRetrieveMode.USE.name())) {
+                    // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
+                    query.setShouldRetrieveBypassCache(false);
                 }
-
-                // CacheRetrieveMode.USE will use the EclipseLink default of
-                // shouldCheckDescriptorForCacheUsage which in most cases is CheckCacheByPrimaryKey.
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -621,12 +621,15 @@ public class QueryHintsHandler {
             } else if (valueToApply.equals(CacheStoreMode.REFRESH) || valueToApply.equals(CacheStoreMode.REFRESH.name())) {
                 if (query.isObjectLevelReadQuery()) {
                     ((ObjectLevelReadQuery) query).refreshIdentityMapResult();
+                    // Explicitly clear the bypass cache flag to allow Query-level REFRESH to override EntityManager-level BYPASS
+                    query.setShouldStoreBypassCache(false);
                 } else {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
                 }
+            } else if (valueToApply.equals(CacheStoreMode.USE) || valueToApply.equals(CacheStoreMode.USE.name())) {
+                // Explicitly clear the bypass cache flag to allow Query-level USE to override EntityManager-level BYPASS
+                query.setShouldStoreBypassCache(false);
             }
-
-            // CacheStoreMode.USE will use the EclipseLink default maintainCache.
 
             return query;
         }

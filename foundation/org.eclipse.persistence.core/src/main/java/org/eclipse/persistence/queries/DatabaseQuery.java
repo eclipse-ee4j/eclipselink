@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -740,6 +740,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                 cloneQuery.queryMechanism = this.queryMechanism.clone(cloneQuery);
             }
             cloneQuery.isPrepared = this.isPrepared; // Setting some things may trigger unprepare.
+            // JPA 3.2 cache bypass flags must be preserved in clones
+            cloneQuery.shouldRetrieveBypassCache = this.shouldRetrieveBypassCache;
+            cloneQuery.shouldStoreBypassCache = this.shouldStoreBypassCache;
             return cloneQuery;
         } catch (CloneNotSupportedException e) {
             return null;
