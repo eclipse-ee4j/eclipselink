@@ -12,16 +12,18 @@
 
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
+import jakarta.persistence.EntityManager;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import jakarta.persistence.EntityManager;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.testing.framework.jpa.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.DateTimeEntity;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class FractionalSecondsPrecisionTest extends JUnitTestCase {
 
@@ -69,56 +71,68 @@ public class FractionalSecondsPrecisionTest extends JUnitTestCase {
     // Test that LocalDateTime returned from the database has precision set in @Column annotation.
     // Event column timestamp has secondPrecision set to 5.
     public void testLocalDateTimeCustomPrecision() {
-        // This test makes sense only when platform supports seconds precision in time SQL types
-        if (supportsFractionalTime()) {
-            try (EntityManager em = createEntityManager()) {
-                beginTransaction(em);
-                try {
-                    em.persist(DATE_TIME_ENTITIES[1]);
-                    commitTransaction(em);
-                } catch (Exception e) {
-                    if (isTransactionActive(em)) {
-                        rollbackTransaction(em);
-                    }
-                    throw e;
+        // This test makes sense only when platform supports seconds precision in time SQL type TIMESTAMP
+        if (!supportsFractionalTime()) {
+            return;
+        }
+
+        try (EntityManager em = createEntityManager()) {
+            beginTransaction(em);
+            try {
+                em.persist(DATE_TIME_ENTITIES[1]);
+                commitTransaction(em);
+            } catch (Exception e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
                 }
-            }
-            getEntityManagerFactory().getCache().evictAll();
-            try (EntityManager em = createEntityManager()) {
-                DateTimeEntity dateTimeEntity = em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id",
-                                                               DateTimeEntity.class)
-                        .setParameter("id", 1L)
-                        .getSingleResult();
-                assertEquals(12345_0000, dateTimeEntity.getLocalDateTime().getNano());
+                throw e;
             }
         }
+
+        getEntityManagerFactory().getCache().evictAll();
+
+        try (EntityManager em = createEntityManager()) {
+            DateTimeEntity dateTimeEntity =
+                em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id", DateTimeEntity.class)
+                  .setParameter("id", 1L)
+                  .getSingleResult();
+
+            assertEquals(12345_0000, dateTimeEntity.getLocalDateTime().getNano());
+        }
+
     }
 
     // Test that LocalTime returned from the database has precision set in @Column annotation.
     // Event column timestamp has secondPrecision set to 5.
     public void testLocalTimeCustomPrecision() {
-        // This test makes sense only when platform supports seconds precision in time SQL types
-        if (supportsFractionalTime()) {
-            try (EntityManager em = createEntityManager()) {
-                beginTransaction(em);
-                try {
-                    em.persist(DATE_TIME_ENTITIES[2]);
-                    commitTransaction(em);
-                } catch (Exception e) {
-                    if (isTransactionActive(em)) {
-                        rollbackTransaction(em);
-                    }
-                    throw e;
+        // This test makes sense only when platform supports seconds precision in time SQL type TIME
+        if (!supportsFractionalTime() || getPlatform().isDB2()) {
+            // DB2 is a special case. It supports FractionalTime, but only for TIMESTAMP, not for TIME
+            return;
+        }
+
+        try (EntityManager em = createEntityManager()) {
+            beginTransaction(em);
+            try {
+                em.persist(DATE_TIME_ENTITIES[2]);
+                commitTransaction(em);
+            } catch (Exception e) {
+                if (isTransactionActive(em)) {
+                    rollbackTransaction(em);
                 }
+                throw e;
             }
-            getEntityManagerFactory().getCache().evictAll();
-            try (EntityManager em = createEntityManager()) {
-                DateTimeEntity dateTimeEntity = em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id",
-                                                               DateTimeEntity.class)
-                        .setParameter("id", 2L)
-                        .getSingleResult();
-                assertEquals(1234_00000, dateTimeEntity.getLocalTime().getNano());
-            }
+        }
+
+        getEntityManagerFactory().getCache().evictAll();
+
+        try (EntityManager em = createEntityManager()) {
+            DateTimeEntity dateTimeEntity =
+                em.createQuery("SELECT e FROM DateTimeEntity e WHERE e.id = :id", DateTimeEntity.class)
+                  .setParameter("id", 2L)
+                  .getSingleResult();
+
+            assertEquals(1234_00000, dateTimeEntity.getLocalTime().getNano());
         }
     }
 
