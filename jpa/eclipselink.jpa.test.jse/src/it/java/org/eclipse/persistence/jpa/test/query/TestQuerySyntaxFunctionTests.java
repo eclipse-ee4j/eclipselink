@@ -565,7 +565,7 @@ public class TestQuerySyntaxFunctionTests {
             } else if(platform.isDB2()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = VARCHAR(VARCHAR(? || ?) || STRVAL2))", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = CONCAT(CONCAT(?, ?), ?))", _sql.remove(0));
+                Assert.assertEquals("SELECT STRVAL1 FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = CONCAT(CONCAT(?, ?), STRVAL2))", _sql.remove(0));
             }
 
             // -----------------------
