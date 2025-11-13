@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -48,6 +49,9 @@ import jakarta.persistence.spi.ProviderUtil;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import static org.eclipse.persistence.exceptions.QueryException.SOP_OBJECT_IS_NOT_FOUND;
+
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
@@ -75,6 +79,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -7787,100 +7792,143 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testUpdateUsingTempStorageWithParameter() {
         internalUpdateUsingTempStorage(true);
     }
+
     protected void internalUpdateUsingTempStorage(boolean useParameter) {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        } else if ((JUnitTestCase.getServerSession()).getPlatform().isPervasive()) {
-            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform. "
-                                          + "Pervasive does not support dynamic parameters in the Select list.");
+        DatabasePlatform platform = JUnitTestCase.getServerSession().getPlatform();
+
+        if (platform.isSymfoware()) {
+            getServerSession().logMessage(
+                "Test testUpdateUsingTempStorage* skipped for this platform, " +
+                "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
 
-        String firstName = "testUpdateUsingTempStorage";
-        int n = 3;
+        if (platform.isPervasive()) {
+            getServerSession().logMessage(
+                "Test testUpdateUsingTempStorage* skipped for this platform. " +
+                "Pervasive does not support dynamic parameters in the Select list.");
+            return;
+        }
 
-        // setup
+        final String firstName = "testUpdateUsingTempStorage";
+        final int expectedNumberOfEmployees = 3;
+
+
+        // ### Setup
+
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            // make sure there are no pre-existing objects with this name
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Address a WHERE a.country = '"+firstName+"'").executeUpdate();
-            // populate Employees
-            for(int i=1; i<=n; i++) {
-                Employee emp = new Employee();
-                emp.setFirstName(firstName);
-                emp.setLastName(Integer.toString(i));
-                emp.setSalary(i*100);
-                emp.setRoomNumber(i);
+
+            // Make sure there are no pre-existing objects with this name
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '" + firstName + "'").executeUpdate();
+            em.createQuery("DELETE FROM Address a WHERE a.country = '" + firstName + "'").executeUpdate();
+
+            // Populate Employees
+            for (int i = 1; i <= expectedNumberOfEmployees; i++) {
+                Employee employee = new Employee();
+                employee.setFirstName(firstName);
+                employee.setLastName(Integer.toString(i));
+                employee.setSalary(i * 100);
+                employee.setRoomNumber(i);
 
                 Address address = new Address();
                 address.setCountry(firstName);
                 address.setCity(Integer.toString(i));
 
-                emp.setAddress(address);
+                employee.setAddress(address);
 
-                em.persist(emp);
+                em.persist(employee);
             }
+
             commitTransaction(em);
-        } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
             closeEntityManager(em);
         }
 
-        // test
+
+        // ### Test
+        // ---> Swap the roomNumber and salary in bulk for the Employee entity
+
         em = createEntityManager();
         beginTransaction(em);
-        int nUpdated = 0;
+        int numberOfEmployeesUpdated = 0;
         try {
-            if(useParameter) {
-                nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = :address where e.firstName = '" + firstName + "'").setParameter("address", null).executeUpdate();
+            if (useParameter) {
+                numberOfEmployeesUpdated =
+                    em.createQuery(
+                        """
+                          UPDATE
+                              Employee e
+                          SET
+                              e.salary = e.roomNumber,
+                              e.roomNumber = e.salary,
+                              e.address = :address
+                          WHERE
+                              e.firstName = '""" + firstName + "'")
+                      .setParameter("address", null)
+                      .executeUpdate();
             } else {
-                nUpdated = em.createQuery("UPDATE Employee e set e.salary = e.roomNumber, e.roomNumber = e.salary, e.address = null where e.firstName = '" + firstName + "'").executeUpdate();
+                numberOfEmployeesUpdated =
+                    em.createQuery(
+                        """
+                        UPDATE
+                            Employee e
+                        SET
+                            e.salary = e.roomNumber,
+                            e.roomNumber = e.salary,
+                            e.address = null
+                        WHERE
+                            e.firstName = '""" + firstName + "'")
+                      .executeUpdate();
             }
+
             commitTransaction(em);
         } finally {
-            if (isTransactionActive(em)){
+            if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
         }
 
-        // verify
+
+        // ### Verify
+
         String error = null;
         em = createEntityManager();
         try {
-            List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '"+firstName+"'").getResultList();
-            int nReadBack = result.size();
-            if(n != nUpdated) {
-                error = "n = "+n+", but nUpdated ="+nUpdated+";";
+            List result = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = '" + firstName + "'").getResultList();
+
+            int numberOfEmployeesReadBack = result.size();
+            if (expectedNumberOfEmployees != numberOfEmployeesUpdated) {
+                error = "n = " + expectedNumberOfEmployees + ", but nUpdated =" + numberOfEmployeesUpdated + ";";
             }
-            if(n != nReadBack) {
-                error = " n = "+n+", but nReadBack ="+nReadBack+";";
+            if (expectedNumberOfEmployees != numberOfEmployeesReadBack) {
+                error = " n = " + expectedNumberOfEmployees + ", but nReadBack =" + numberOfEmployeesReadBack + ";";
             }
+
             for (Object o : result) {
-                Employee emp = (Employee) o;
-                if (emp.getAddress() != null) {
-                    error = " Employee " + emp.getLastName() + " still has address;";
+                Employee employee = (Employee) o;
+                if (employee.getAddress() != null) {
+                    error = " Employee " + employee.getLastName() + " still has address;";
                 }
-                int ind = Integer.parseInt(emp.getLastName());
-                if (emp.getSalary() != ind) {
-                    error = " Employee " + emp.getLastName() + " has wrong salary " + emp.getSalary() + ";";
+                int ind = Integer.parseInt(employee.getLastName());
+                if (employee.getSalary() != ind) {
+                    error = " Employee " + employee.getLastName() + " has wrong salary " + employee.getSalary() + ";";
                 }
-                if (emp.getRoomNumber() != ind * 100) {
-                    error = " Employee " + emp.getLastName() + " has wrong roomNumber " + emp.getRoomNumber() + ";";
+                if (employee.getRoomNumber() != ind * 100) {
+                    error = " Employee " + employee.getLastName() + " has wrong roomNumber " + employee.getRoomNumber() + ";";
                 }
             }
         } catch (RuntimeException ex) {
             if (usesSOP() && !isSOPRecoverable()) {
                 if (ex instanceof PersistenceException) {
-                    if (ex.getCause() instanceof QueryException && ((QueryException)ex.getCause()).getErrorCode() == QueryException.SOP_OBJECT_IS_NOT_FOUND) {
+                    if (ex.getCause() instanceof QueryException qex &&  qex.getErrorCode() == SOP_OBJECT_IS_NOT_FOUND) {
                         // getResultList is expected to fail because SOP field is set to null after bulk update
                     } else {
                         fail("Wrong cause of PersistenceException: " + ex.getCause());
@@ -7895,24 +7943,26 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        // clean up
+
+        // ### Clean up
+
         em = createEntityManager();
         try {
             beginTransaction(em);
-            // make sure there are no objects left with this name
-            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '"+firstName+"'").executeUpdate();
-            em.createQuery("DELETE FROM Address a WHERE a.country = '"+firstName+"'").executeUpdate();
+            // Make sure there are no objects left with this name
+            em.createQuery("DELETE FROM Employee e WHERE e.firstName = '" + firstName + "'").executeUpdate();
+            em.createQuery("DELETE FROM Address a WHERE a.country = '" + firstName + "'").executeUpdate();
             commitTransaction(em);
-        } catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                 rollbackTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
             throw ex;
         } finally {
             closeEntityManager(em);
         }
 
-        if(error != null) {
+        if (error != null) {
             fail(error);
         }
     }
@@ -13091,28 +13141,28 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testDetachChildObjects() {
-    	EntityManager em = createEntityManager();
-    	beginTransaction(em);
-		InitTestDetachChildObjects1(em);
-		UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        InitTestDetachChildObjects1(em);
+        UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
 
-		Material mat = em.find(Material.class, 1L);
-		mat.setWert("WERT3");
-		MaterialEreignis matEreignis1 = new MaterialEreignis();
-		matEreignis1.setChangedObject(mat);
-		matEreignis1.setBeforeChange(mat.getLastHist());
-		MaterialHist afterMat1 = makeHistCopy(mat);
-		matEreignis1.setAfterChange(afterMat1);
+        Material mat = em.find(Material.class, 1L);
+        mat.setWert("WERT3");
+        MaterialEreignis matEreignis1 = new MaterialEreignis();
+        matEreignis1.setChangedObject(mat);
+        matEreignis1.setBeforeChange(mat.getLastHist());
+        MaterialHist afterMat1 = makeHistCopy(mat);
+        matEreignis1.setAfterChange(afterMat1);
 
-		em.persist(matEreignis1);
-		em.flush();
-		em.detach(matEreignis1);
+        em.persist(matEreignis1);
+        em.flush();
+        em.detach(matEreignis1);
 
-		List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
-		assertTrue(pagList.isEmpty());
-		for (PlanArbeitsgangHist pag : pagList) {
-			assertTrue(em.contains(pag));
-		}
+        List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
+        assertTrue(pagList.isEmpty());
+        for (PlanArbeitsgangHist pag : pagList) {
+            assertTrue(em.contains(pag));
+        }
         assertTrue(em.contains(matEreignis1.getChangedObject()));
         assertFalse(em.contains(matEreignis1));
         assertFalse(em.contains(matEreignis1.getBeforeChange()));
@@ -13124,8 +13174,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse(em.contains(planArbeitsgangHist));
         }
 
-		rollbackTransaction(em);
-		closeEntityManager(em);
+        rollbackTransaction(em);
+        closeEntityManager(em);
     }
 
     public void testDetachLazyLoadedCollection() {
@@ -13165,18 +13215,18 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // test data - manual creation
         try {
             em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (1, 1, 'MAT', 'WERT2')").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (1, 1, 'MAT', 'WERT1', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (2, 1, 'MAT', 'WERT2', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (1, 1, 'PAG1', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (2, 1, 'PAG2', 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (1, 1, 'PAG1', 1, 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (2, 1, 'PAG2', 1, 2)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (3, 1, 'PAG1', 2, 1)").executeUpdate();
-			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (4, 1, 'PAG2', 2, 2)").executeUpdate();
-			em.createNativeQuery("UPDATE MATERIAL SET LASTHIST_ID = 2 WHERE ID = 1").executeUpdate();
-			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 3 WHERE ID = 1").executeUpdate();
-			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 4 WHERE ID = 2").executeUpdate();
-			em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (1, 1, 'MAT', 'WERT1', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (2, 1, 'MAT', 'WERT2', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (1, 1, 'PAG1', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (2, 1, 'PAG2', 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (1, 1, 'PAG1', 1, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (2, 1, 'PAG2', 1, 2)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (3, 1, 'PAG1', 2, 1)").executeUpdate();
+            em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (4, 1, 'PAG2', 2, 2)").executeUpdate();
+            em.createNativeQuery("UPDATE MATERIAL SET LASTHIST_ID = 2 WHERE ID = 1").executeUpdate();
+            em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 3 WHERE ID = 1").executeUpdate();
+            em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 4 WHERE ID = 2").executeUpdate();
+            em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
         } catch (Exception e) {
             fail("Error creating test data: " + e.getMessage());
         }
@@ -13194,33 +13244,33 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     private MaterialHist makeHistCopy(Material mat) {
-		MaterialHist histCopy = new MaterialHist();
-		mat.setLastHist(histCopy);
-		histCopy.setOriginal(mat);
-		histCopy.setIdent(mat.getIdent());
-		histCopy.setWert(mat.getWert());
-		for (PlanArbeitsgang pag : mat.getRestproduktionsweg()) {
-			PlanArbeitsgangHist pagHistCopy = new PlanArbeitsgangHist();
-			pagHistCopy.setName(pag.getName());
-			pagHistCopy.setOriginal(pag);
-			pag.setLastHist(pagHistCopy);
-			histCopy.getRestproduktionsweg().add(pagHistCopy);
-			pagHistCopy.setMaterial(histCopy);
-		}
-		return histCopy;
-	}
+        MaterialHist histCopy = new MaterialHist();
+        mat.setLastHist(histCopy);
+        histCopy.setOriginal(mat);
+        histCopy.setIdent(mat.getIdent());
+        histCopy.setWert(mat.getWert());
+        for (PlanArbeitsgang pag : mat.getRestproduktionsweg()) {
+            PlanArbeitsgangHist pagHistCopy = new PlanArbeitsgangHist();
+            pagHistCopy.setName(pag.getName());
+            pagHistCopy.setOriginal(pag);
+            pag.setLastHist(pagHistCopy);
+            histCopy.getRestproduktionsweg().add(pagHistCopy);
+            pagHistCopy.setMaterial(histCopy);
+        }
+        return histCopy;
+    }
 
-	@SuppressWarnings("unchecked")
-	private <T> List<T> getInstancesFromPC(Class<T> type, UnitOfWorkImpl uow) {
-		Set<Object> pc = uow.getCloneMapping().keySet();
-		List<T> result = new ArrayList<>();
-		for (Object o : pc) {
-			if (type.isInstance(o)) {
-				result.add((T) o);
-			}
-		}
-		return result;
-	}
+    @SuppressWarnings("unchecked")
+    private <T> List<T> getInstancesFromPC(Class<T> type, UnitOfWorkImpl uow) {
+        Set<Object> pc = uow.getCloneMapping().keySet();
+        List<T> result = new ArrayList<>();
+        for (Object o : pc) {
+            if (type.isInstance(o)) {
+                result.add((T) o);
+            }
+        }
+        return result;
+    }
 
     public static final class Platform extends ServerPlatformBase {
 

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -90,7 +91,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(1, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
@@ -99,7 +100,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
@@ -117,7 +118,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam1, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
@@ -131,7 +132,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
@@ -299,7 +300,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -308,7 +309,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s HAVING 0 < AVG(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -319,7 +320,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -342,7 +343,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0.0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -357,7 +358,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0.0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -376,7 +377,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0.0 < AVG(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(?))", _sql.remove(0));
@@ -842,8 +843,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(?)))", _sql.remove(0));
             }
@@ -851,8 +854,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT AVG(1) FROM QuerySyntaxEntity s HAVING 0 < AVG(DISTINCT 1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(?)))", _sql.remove(0));
             }
@@ -862,8 +867,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT AVG(1) FROM QUERYSYNTAXENTITY HAVING (0 < AVG(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT AVG(?) FROM QUERYSYNTAXENTITY HAVING (? < AVG(DISTINCT(?)))", _sql.remove(0));
             }
@@ -1397,8 +1404,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1406,8 +1415,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT COUNT(1) FROM QuerySyntaxEntity s HAVING 0 < COUNT(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1417,8 +1428,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1440,8 +1453,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1455,8 +1470,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1474,8 +1491,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(?))", _sql.remove(0));
             }
@@ -1925,8 +1944,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -1934,8 +1955,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT COUNT(1) FROM QuerySyntaxEntity s HAVING 0 < COUNT(DISTINCT 1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -1945,8 +1968,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -1968,8 +1993,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -1983,8 +2010,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -2002,8 +2031,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (0 < COUNT(DISTINCT(1)))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT COUNT(1) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(1)))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT COUNT(?) FROM QUERYSYNTAXENTITY HAVING (? < COUNT(DISTINCT(?)))", _sql.remove(0));
             }
@@ -2244,8 +2275,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(1, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
@@ -2253,8 +2286,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT SUM(1) FROM QuerySyntaxEntity s");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
@@ -2271,8 +2306,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam1, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
@@ -2285,8 +2322,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY", _sql.remove(0));
             }
@@ -2453,7 +2492,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2462,7 +2501,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT SUM(1) FROM QuerySyntaxEntity s HAVING 0 < SUM(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2473,7 +2512,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2496,7 +2535,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2511,7 +2550,7 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2530,7 +2569,7 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT SUM(1) FROM QUERYSYNTAXENTITY HAVING (0 < SUM(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT SUM(?) FROM QUERYSYNTAXENTITY HAVING (? < SUM(?))", _sql.remove(0));
@@ -2774,8 +2813,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -2783,8 +2824,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT MAX(1) FROM QuerySyntaxEntity s HAVING 0 < MAX(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -2794,8 +2837,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -2817,8 +2862,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -2832,8 +2879,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -2851,8 +2900,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (0 < MAX(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MAX(1) FROM QUERYSYNTAXENTITY HAVING (? < MAX(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MAX(?) FROM QUERYSYNTAXENTITY HAVING (? < MAX(?))", _sql.remove(0));
             }
@@ -3263,8 +3314,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3272,8 +3325,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT MIN(1) FROM QuerySyntaxEntity s HAVING 0 < MIN(1)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3283,8 +3338,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3306,8 +3363,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam3, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3321,8 +3380,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3340,8 +3401,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(intParam5, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (0 < MIN(1))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT MIN(1) FROM QUERYSYNTAXENTITY HAVING (? < MIN(1))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT MIN(?) FROM QUERYSYNTAXENTITY HAVING (? < MIN(?))", _sql.remove(0));
             }
@@ -3751,8 +3814,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             }
@@ -3760,8 +3825,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery("SELECT DISTINCT('HELLO') FROM QuerySyntaxEntity s WHERE s.strVal1 = 'WORLD'");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             }
@@ -3781,8 +3848,10 @@ public class TestQuerySyntaxAggregateTests {
             query.setParameter(strParam2, "WORLD");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             }
@@ -3796,8 +3865,10 @@ public class TestQuerySyntaxAggregateTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() ||  platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = 'WORLD')", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT DISTINCT 'HELLO' FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT DISTINCT ? FROM QUERYSYNTAXENTITY WHERE (STRVAL1 = ?)", _sql.remove(0));
             }

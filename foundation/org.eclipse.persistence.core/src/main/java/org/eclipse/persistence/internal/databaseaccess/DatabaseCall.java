@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
@@ -1082,10 +1083,13 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (!isPrepared()) {
             throw ValidationException.cannotTranslateUnpreparedCall(toString());
         }
+        
+        boolean bindParameters = usesBinding(session) && parameters != null;
+        boolean bindPartial = session.getPlatform().shouldBindPartialParameters();
 
-        if(session.getPlatform().shouldBindPartialParameters() && (this.parameters != null)) {
+        if (bindParameters && bindPartial) {
             translateQueryStringAndBindParameters(translationRow, modifyRow, session);
-        } else if (usesBinding(session) && (this.parameters != null)) {
+        } else if (bindParameters) {
             boolean hasParameterizedIN = false;
             List<Object> parameters = getParameters();
             int size = parameters.size();

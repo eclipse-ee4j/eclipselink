@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -89,7 +90,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(1, -36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(-36) = INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(?) = INTVAL1)", _sql.remove(0));
@@ -98,7 +99,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE ABS(-36) = s.intVal1");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(-36) = INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(?) = INTVAL1)", _sql.remove(0));
@@ -117,7 +118,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam1, -36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(-36) = INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(?) = INTVAL1)", _sql.remove(0));
@@ -132,7 +133,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(-36) = INTVAL1)", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (ABS(?) = INTVAL1)", _sql.remove(0));
@@ -303,7 +304,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(1, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(36))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(?))", _sql.remove(0));
@@ -312,7 +313,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.intVal1 = SQRT(36)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(36))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(?))", _sql.remove(0));
@@ -331,7 +332,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam1, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(36))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(?))", _sql.remove(0));
@@ -347,7 +348,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(36))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = SQRT(?))", _sql.remove(0));
@@ -521,7 +522,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(2, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(36, 10))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(?, ?))", _sql.remove(0));
@@ -530,7 +531,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery("SELECT s.intVal1 FROM QuerySyntaxEntity s WHERE s.intVal1 = MOD(36, 10)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(36, 10))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(?, ?))", _sql.remove(0));
@@ -551,7 +552,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam2, 10);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(36, 10))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(?, ?))", _sql.remove(0));
@@ -566,7 +567,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(36, 10))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = MOD(?, ?))", _sql.remove(0));
@@ -759,7 +760,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(2, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + 2) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (4 + 2))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -768,7 +769,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery("SELECT s.intVal1, (4 + 2) FROM QuerySyntaxEntity s WHERE s.intVal1 = (4 + 2)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + 2) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (4 + 2))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -778,7 +779,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(1, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + 2) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (2 + 4))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -799,7 +800,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam2, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + 2) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (4 + 2))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -815,7 +816,7 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (4 + 2) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (4 + 2))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -833,7 +834,7 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam3, 4);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, (2 + 4) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (4 + 2))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, (? + ?) FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = (? + ?))", _sql.remove(0));
@@ -1064,8 +1065,10 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(2, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
@@ -1073,8 +1076,10 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery("SELECT s.strVal1, 2 FROM QuerySyntaxEntity s WHERE s.intVal1 != (4 - 2)");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
@@ -1083,8 +1088,10 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(2, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
@@ -1104,8 +1111,10 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam2, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
@@ -1119,8 +1128,10 @@ public class TestQuerySyntaxArithmeticTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
@@ -1136,8 +1147,10 @@ public class TestQuerySyntaxArithmeticTests {
             query.setParameter(intParam6, 2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (4 - 2))", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                Assert.assertEquals("SELECT STRVAL1, 2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT STRVAL1, ? FROM QUERYSYNTAXENTITY WHERE (INTVAL1 <> (? - ?))", _sql.remove(0));
             }
