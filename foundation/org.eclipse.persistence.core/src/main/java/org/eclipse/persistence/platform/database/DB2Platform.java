@@ -44,6 +44,8 @@ import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -52,11 +54,15 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
+import static java.sql.Types.TIMESTAMP;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -338,13 +344,34 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
         fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
         fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
-        
+
         return fieldTypeMapping;
     }
+
+    @Override
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+
+        Class<?> javaType = ConversionManager.getObjectClass(field.getType());
+
+        // Mirror the mappings for OffsetDateTime and OffsetTime
+        // as set above for fieldTypeMapping. These differ from the
+        // usual mapping to TIMESTAMP_WITH_TIMEZONE / TIME_WITH_TIMEZONE
+
+        if (javaType == OffsetDateTime.class) {
+            return TIMESTAMP;
+        }
+
+        if (javaType == OffsetTime.class) {
+            return TIMESTAMP;
+        }
+
+        return super.getJDBCTypeForSetNull(field);
+    }
+
 
     /**
      * INTERNAL: returns the maximum number of characters that can be used in a
