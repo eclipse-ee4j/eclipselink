@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.schemaframework;
 
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import java.io.IOException;
 import java.io.Writer;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p>
@@ -42,15 +41,16 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
      * @param session Current session context.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
-        final FieldTypeDefinition fieldType = getFieldTypeDefinition(session, type, typeName);
+        final FieldDefinition.DatabaseType fieldType = getFieldTypeDefinition(session, type, typeName).toDatabaseType();
         try {
-            writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((typeSize != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(fieldType.name());
+            if ((fieldType.allowSize()) && ((typeSize != 0) || (fieldType.requireSize()))) {
                 writer.write("(");
                 if (typeSize == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()     ));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(typeSize));
                 }
@@ -66,6 +66,7 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
      * Return the DDL to create the varray.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("CREATE TYPE ");
@@ -83,6 +84,7 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
      * Return the DDL to drop the varray.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write("DROP TYPE " + getFullName());

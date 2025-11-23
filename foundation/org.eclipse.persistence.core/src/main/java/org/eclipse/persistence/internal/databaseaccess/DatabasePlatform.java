@@ -38,6 +38,38 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.internal.databaseaccess;
 
+// javase imports
+
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Array;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Ref;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Struct;
+import java.sql.Types;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Vector;
+import javax.xml.transform.dom.DOMResult;
+import org.w3c.dom.Document;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -79,37 +111,10 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.tools.schemaframework.DDLPlatform;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.SequenceDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
-
-import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Array;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Struct;
-import java.sql.Types;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Vector;
 
 /**
  * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform
@@ -126,13 +131,14 @@ import java.util.Vector;
  *
  * @since TOPLink/Java 1.0
  */
-public class DatabasePlatform extends DatasourcePlatform {
+public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform {
 
     /** Holds a map of values used to map JAVA types to database types for table creation */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected transient Map<Class<?>, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
-    Only used with Oracle, Sybase &amp; DB2 */
+     Only used with Oracle, Sybase and DB2 */
     protected boolean usesNativeSQL;
 
     /** Indicates that binding will be used for BLOB data. NOTE: does not work well with ODBC. */
@@ -376,6 +382,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
      * stored on the DatabaseTable or TableDefinition.
      */
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String getTableCreationSuffix(){
         return this.tableCreationSuffix;
     }
@@ -422,13 +430,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     public int addBatch(PreparedStatement statement) throws java.sql.SQLException {
         statement.addBatch();
         return 0;
-    }
-
-    /**
-     * Used for stored procedure definitions.
-     */
-    public boolean allowsSizeInProcedureArguments() {
-        return true;
     }
 
     /**
@@ -481,59 +482,16 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Return the mapping of class types to database types for the schema framework.
+     * @deprecated Use {@linkplain #getJavaTypes()} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = new HashMap<>();
-        // Key the Map the other way for table creation.
-        classTypeMapping.put("NUMBER", java.math.BigInteger.class);
-        classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
-        classTypeMapping.put("INTEGER", Integer.class);
-        classTypeMapping.put("INT", Integer.class);
-        classTypeMapping.put("NUMERIC", java.math.BigInteger.class);
-        classTypeMapping.put("FLOAT(16)", Float.class);
-        classTypeMapping.put("FLOAT(32)", Double.class);
-        classTypeMapping.put("NUMBER(1) default 0", Boolean.class);
-        classTypeMapping.put("SHORT", Short.class);
-        classTypeMapping.put("BYTE", Byte.class);
-        classTypeMapping.put("DOUBLE", Double.class);
-        classTypeMapping.put("FLOAT", Float.class);
-        classTypeMapping.put("SMALLINT", Short.class);
-
-        classTypeMapping.put("BIT", Boolean.class);
-        classTypeMapping.put("SMALLINT DEFAULT 0", Boolean.class);
-
-        classTypeMapping.put("VARCHAR", String.class);
-        classTypeMapping.put("CHAR", Character.class);
-        classTypeMapping.put("LONGVARBINARY", Byte[].class);
-        classTypeMapping.put("TEXT", Character[].class);
-        classTypeMapping.put("LONGTEXT", Character[].class);
-        //    classTypeMapping.put("BINARY", Byte[].class);
-        classTypeMapping.put("MEMO", Character[].class);
-        classTypeMapping.put("VARCHAR2", String.class);
-        classTypeMapping.put("LONG RAW", Byte[].class);
-        classTypeMapping.put("LONG", Character[].class);
-
-        classTypeMapping.put("DATE", java.sql.Date.class);
-        classTypeMapping.put("TIMESTAMP", java.sql.Timestamp.class);
-        classTypeMapping.put("TIME", java.sql.Time.class);
-        classTypeMapping.put("DATETIME", java.sql.Timestamp.class);
-
-        classTypeMapping.put("BIGINT", java.math.BigInteger.class);
-        classTypeMapping.put("DOUBLE PRECIS", Double.class);
-        classTypeMapping.put("IMAGE", Byte[].class);
-        classTypeMapping.put("LONGVARCHAR", Character[].class);
-        classTypeMapping.put("REAL", Float.class);
-        classTypeMapping.put("TINYINT", Short.class);
-        //    classTypeMapping.put("VARBINARY", Byte[].class);
-
-        classTypeMapping.put("BLOB", Byte[].class);
-        classTypeMapping.put("CLOB", Character[].class);
-
-        return classTypeMapping;
+        return classTypes != null ? classTypes : getJavaTypes();
     }
     /**
      * Return the mapping of class types to database types for the schema framework.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
         Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
@@ -811,13 +769,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for batch writing and sp defs.
-     */
-    public String getBatchBeginString() {
-        return "";
-    }
-
-    /**
      * Return if the platform does not maintain the row count on batch executes
      * and requires an output parameter to maintain the row count.
      */
@@ -847,20 +798,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for batch writing and sp defs.
-     */
-    public String getBatchDelimiterString() {
-        return "; ";
-    }
-
-    /**
-     * Used for batch writing and sp defs.
-     */
-    public String getBatchEndString() {
-        return "";
-    }
-
-    /**
      * INTERNAL:
      * This method is used to unwrap the oracle connection wrapped by
      * the application server.  EclipseLink needs this unwrapped connection for certain
@@ -883,22 +820,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getUniqueConstraintDeletionString() {
         return getConstraintDeletionString();
-    }
-
-    /**
-
-    /**
-     * Used for view creation.
-     */
-    public String getCreateViewString() {
-        return "CREATE VIEW ";
-    }
-
-    /**
-     * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
-     */
-    public String getDropCascadeString() {
-        return "";
     }
 
     /**
@@ -927,39 +848,10 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for stored procedure defs.
-     */
-    public String getProcedureEndString() {
-        return getBatchEndString();
-    }
-
-    /**
-     * Used for stored procedure defs.
-     */
-    public String getProcedureBeginString() {
-        return getBatchBeginString();
-    }
-
-    /**
-     * Used for stored procedure defs.
-     */
-    public String getProcedureAsString() {
-        return " AS";
-    }
-
-    /**
-     * Some platforms have an option list
-     * Only to be used for stored procedure creation.
-     *
-     * @see org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition
-     */
-    public String getProcedureOptionList() {
-        return "";
-    }
-
-    /**
      * Return the class type to database type mapping for the schema framework.
+     * @deprecated Use {@linkplain #getJavaTypes()} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Map<String, Class<?>> getClassTypes() {
         if (classTypes == null) {
             classTypes = buildClassTypes();
@@ -986,22 +878,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * This method is used to print the required output parameter token for the
-     * specific platform.  Used when stored procedures are created.
-     */
-    public String getCreationInOutputProcedureToken() {
-        return getInOutputProcedureToken();
-    }
-
-    /**
-     * This method is used to print the required output parameter token for the
-     * specific platform.  Used when stored procedures are created.
-     */
-    public String getCreationOutputProcedureToken() {
-        return getOutputProcedureToken();
-    }
-
-    /**
      * ADVANCED:
      * Return the code for preparing cursored output
      * parameters in a stored procedure
@@ -1018,30 +894,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Return the create schema SQL syntax. Subclasses should override as needed.
-     */
-    public String getCreateDatabaseSchemaString(String schema) {
-        return "CREATE SCHEMA " + schema;
-    }
-
-    /**
-     * Return the drop schema SQL syntax. Subclasses should override as needed.
-     */
-    public String getDropDatabaseSchemaString(String schema) {
-        return "DROP SCHEMA " + schema;
-    }
-
-    /**
      * Return the field type object describing this databases platform specific representation
      * of the Java primitive class name.
+     * @deprecated Use {@linkplain #getDatabaseType(Class)} instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public FieldTypeDefinition getFieldTypeDefinition(Class<?> javaClass) {
         return getFieldTypes().get(javaClass);
     }
 
     /**
      * Return the class type to database type mappings for the schema framework.
+     * @deprecated Use {@linkplain #getDatabaseTypes()}  instead.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Map<Class<?>, FieldTypeDefinition> getFieldTypes() {
         if (this.fieldTypes == null) {
             this.fieldTypes = buildFieldTypes();
@@ -1054,14 +920,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getFunctionCallHeader() {
         return getProcedureCallHeader() + "? " + getAssignmentString();
-    }
-
-    /**
-     * This method is used to print the output parameter token when stored
-     * procedures are called
-     */
-    public String getInOutputProcedureToken() {
-        return "IN OUT";
     }
 
     /**
@@ -1191,42 +1049,6 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * returns the maximum number of characters that can be used in a field
-     * name on this platform.
-     */
-    public int getMaxFieldNameSize() {
-        return 50;
-    }
-
-    /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in a foreign key
-     * name on this platform.
-     */
-    public int getMaxForeignKeyNameSize() {
-        return getMaxFieldNameSize();
-    }
-
-    /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in an index
-     * name on this platform.
-     */
-    public int getMaxIndexNameSize() {
-        return getMaxFieldNameSize();
-    }
-
-    /**
-     * INTERNAL:
-     * returns the maximum number of characters that can be used in a unique key
-     * name on this platform.
-     */
-    public int getMaxUniqueKeyNameSize() {
-        return getMaxFieldNameSize();
-    }
-
-    /**
-     * INTERNAL:
      * Get the object from the JDBC Result set.  Added to allow other platforms to
      * override.
      * @see "org.eclipse.persistence.platform.database.oracle.Oracle9Plaform"
@@ -1247,41 +1069,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for stored procedure creation: Prefix for INPUT parameters.
-     * Not required on most platforms.
-     */
-    public String getInputProcedureToken() {
-        return "";
-    }
-
-    /**
-     * Used to allow platforms to define their own index prefixes
-     */
-    public String getIndexNamePrefix(boolean isUniqueSetOnField){
-        return "IX_";
-    }
-
-    /**
-     * This method is used to print the output parameter token when stored
-     * procedures are called
-     */
-    public String getOutputProcedureToken() {
-        return "OUT";
-    }
-
-    /**
      * Used for determining if an SQL exception was communication based. This SQL should be
      * as efficient as possible and ensure a round trip to the database.
      */
     public String getPingSQL(){
         return pingSQL;
-    }
-
-    /**
-     * Used for sp defs.
-     */
-    public String getProcedureArgumentString() {
-        return "";
     }
 
     /**
@@ -1414,6 +1206,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Returns the delimiter between stored procedures in multiple stored
      * procedure calls.
      */
+    @Override
     public String getStoredProcedureTerminationToken() {
         return storedProcedureTerminationToken;
     }
@@ -1544,31 +1337,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Append the receiver's field 'identity' constraint clause to a writer.
-     */
-    public void printFieldIdentityClause(Writer writer) throws ValidationException {
-        //The default is to do nothing.
-    }
-
-    /**
-     * Append the receiver's field 'NOT NULL' constraint clause to a writer.
-     */
-    public void printFieldNotNullClause(Writer writer) throws ValidationException {
-        try {
-            writer.write(" NOT NULL");
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
-    }
-
-    /**
-     * Append the receiver's field 'NULL' constraint clause to a writer.
-     */
-    public void printFieldNullClause(Writer writer) throws ValidationException {
-        // The default is to do nothing
-    }
-
-    /**
      * Print the int array on the writer. Added to handle int[] passed as parameters to named queries
      * Returns the number of  objects using binding.
      */
@@ -1640,20 +1408,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * This is used as some databases create the primary key constraint differently, i.e. Access.
-     */
-    public boolean requiresNamedPrimaryKeyConstraints() {
-        return false;
-    }
-
-    /**
-     * Used for stored procedure creation: Some platforms need brackets around arguments declaration even if no arguments exist. Those platform will override this and return true. All other platforms will omit the brackets in this case.
-     */
-    public boolean requiresProcedureBrackets() {
-        return false;
-    }
-
-    /**
      * USed for sp calls.
      */
     public boolean requiresProcedureCallBrackets() {
@@ -1673,25 +1427,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * that takes type name should be used.
      */
     public boolean requiresTypeNameToRegisterOutputParameter() {
-        return false;
-    }
-
-    /**
-     * Used for table creation. If a database platform does not support ALTER
-     * TABLE syntax to add/drop unique constraints (like Symfoware), overriding
-     * this method will allow the constraint to be specified in the CREATE TABLE
-     * statement.
-     * <p>
-     * This only affects unique constraints specified using the UniqueConstraint
-     * annotation or equivalent method. Columns for which the 'unique' attribute
-     * is set to true will be declared 'UNIQUE' in the CREATE TABLE statement
-     * regardless of the return value of this method.
-     *
-     * @return whether unique constraints should be declared as part of the
-     *         CREATE TABLE statement instead of in separate ALTER TABLE
-     *         ADD/DROP statements.
-     */
-    public boolean requiresUniqueConstraintCreationOnTableCreate() {
         return false;
     }
 
@@ -1727,6 +1462,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         castSizeForVarcharParameter = maxLength;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void setClassTypes(Map<String, Class<?>> classTypes) {
         this.classTypes = classTypes;
     }
@@ -1747,6 +1483,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.driverName = driverName;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void setFieldTypes(Map<Class<?>, FieldTypeDefinition> theFieldTypes) {
         fieldTypes = theFieldTypes;
     }
@@ -2008,34 +1745,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         return shouldCacheAllStatements;
     }
 
-    /**
-     * Used for table creation. Most databases create an index automatically
-     * when a primary key is created. Symfoware does not.
-     *
-     * @return whether an index should be created explicitly for primary keys
-     */
-     public boolean shouldCreateIndicesForPrimaryKeys() {
-         return false;
-    }
-
-    /**
-     * Used for table creation. Most databases create an index automatically for
-     * columns with a unique constraint. Symfoware does not.
-     *
-     * @return whether an index should be created explicitly for unique
-     *         constraints
-     */
-    public boolean shouldCreateIndicesOnUniqueKeys() {
-        return false;
-    }
-
-    /**
-     * Used for table creation. Most databases do not create an index automatically for
-     * foreign key columns.  Normally it is recommended to index foreign key columns.
-     * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
-     *
-     * @return whether an index should be created explicitly for foreign key constraints
-     */
+    @Override
     public boolean shouldCreateIndicesOnForeignKeys() {
         return shouldCreateIndicesOnForeignKeys;
     }
@@ -2088,20 +1798,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for stored procedure creation: Some platforms declare variables AFTER the procedure body's BEGIN string. These need to override and return true. All others will print the variable declaration BEFORE the body's BEGIN string.
-     */
-    public boolean shouldPrintStoredProcedureVariablesAfterBeginString() {
-        return false;
-    }
-
-    /**
-    * Some Platforms want the constraint name after the constraint definition.
-    */
-    public boolean shouldPrintConstraintNameAfter() {
-        return false;
-    }
-
-    /**
      * This is required in the construction of the stored procedures with
      * output parameters
      */
@@ -2135,30 +1831,6 @@ public class DatabasePlatform extends DatasourcePlatform {
             return this.printInnerJoinInWhereClause;
         }
     }
-
-    /**
-     * Used for stored procedure creation: Some platforms want to print prefix for INPUT arguments BEFORE NAME. If wanted, override and return true.
-     */
-    public boolean shouldPrintInputTokenAtStart() {
-        return false;
-    }
-
-    /**
-     * This is required in the construction of the stored procedures with
-     * output parameters
-     */
-    public boolean shouldPrintOutputTokenBeforeType() {
-        return true;
-    }
-
-    /**
-     * This is required in the construction of the stored procedures with
-     * output parameters
-     */
-    public boolean shouldPrintOutputTokenAtStart() {
-        return false;
-    }
-
 
     /**
      * INTERNAL:
@@ -2228,14 +1900,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
-    public boolean supportsForeignKeyConstraints() {
-        return true;
-    }
-
-    public boolean supportsUniqueKeyConstraints() {
-        return true;
-    }
-
     /**
      * By default, platforms do not support VPD. Those that do need to override
      * this method.
@@ -2254,14 +1918,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
-    public boolean supportsPrimaryKeyConstraint() {
-        return true;
-    }
-
-    public boolean supportsStoredFunctions() {
-        return false;
-    }
-
     /**
      * Used to determine if the platform supports untyped parameters, as ordinal variables, within the Order By clause
      * <p>
@@ -2269,10 +1925,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean supportsOrderByParameters() {
         return true;
-    }
-
-    public boolean supportsDeleteOnCascade() {
-        return supportsForeignKeyConstraints();
     }
 
     /**
@@ -2383,7 +2035,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setParameterValueInDatabaseCall(Object parameter,
                 PreparedStatement statement, int index, AbstractSession session)
                 throws SQLException {
-
         // Process common types first.
         if (parameter instanceof String) {
             // Check for stream binding of large strings.
@@ -2472,6 +2123,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(index, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(index, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
@@ -2580,6 +2235,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(name, (SQLXML) parameter);
+        } else if (parameter instanceof Document) {
+            SQLXML sqlxml = statement.getConnection().createSQLXML();
+            sqlxml.setResult(DOMResult.class).setNode((Document)parameter);
+            statement.setSQLXML(name, sqlxml);
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
@@ -2909,22 +2568,6 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * Return if this database support index creation.
-     */
-    public boolean supportsIndexes() {
-        return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Return if this database requires the table name when dropping an index.
-     */
-    public boolean requiresTableInIndexDropDDL() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
      * Create platform-default Sequence
      */
     @Override
@@ -3007,9 +2650,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * " ON COMMIT DELETE ROWS"
      * Don't forget to begin it with a space.
      */
-     protected String getCreateTempTableSqlSuffix() {
-         return "";
-     }
+    protected String getCreateTempTableSqlSuffix() {
+        return "";
+    }
 
     /**
      * INTERNAL:
@@ -3026,9 +2669,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param table is original table for which temp table is created.
      * @return String
      */
-     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
-         return null;
-     }
+    protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
+        return null;
+    }
 
     /**
      * INTERNAL:
@@ -3137,22 +2780,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean isOutputAllowWithResultSet() {
         return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Write used on all table creation statements generated from the DefaultTableGenerator
-     * with a session using this project (DDL generation).  This writes the passed in string argument as
-     * well as the value returned from the DatabasePlatform's getTableCreationSuffix()
-     */
-    public void writeTableCreationSuffix(Writer writer, String tableCreationSuffix) throws IOException {
-        if(tableCreationSuffix!=null && !tableCreationSuffix.isEmpty()) {
-            writer.write(" " + tableCreationSuffix);
-        }
-        String defaultTableCreationSuffix = getTableCreationSuffix();
-        if (defaultTableCreationSuffix !=null && !defaultTableCreationSuffix.isEmpty()) {
-            writer.write(" " + defaultTableCreationSuffix);
-        }
     }
 
     /**
@@ -3386,6 +3013,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public boolean shouldPrintFieldIdentityClause(AbstractSession session, String qualifiedFieldName) {
         if (!supportsIdentity()) {
             return false;
@@ -3412,11 +3040,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         return shouldAcquireSequenceValueAfterInsert;
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void printFieldTypeSize(Writer writer, FieldDefinition field,
             FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         printFieldTypeSize(writer, field, fieldType);
     }
 
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printFieldTypeSize(Writer writer, FieldDefinition field,
             FieldTypeDefinition fieldType) throws IOException {
         writer.write(fieldType.getName());
@@ -3438,17 +3068,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
-    /**
-     * Allows unique columns to be defined as constraint if the UNIQUE keyword is not support on a column defintion.
-     */
-    public boolean supportsUniqueColumns() {
-        return true;
-    }
-
-    public void printFieldUnique(Writer writer,  boolean shouldPrintFieldIdentityClause) throws IOException {
-        printFieldUnique(writer);
-    }
-
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printFieldUnique(Writer writer) throws IOException {
         if (supportsUniqueKeyConstraints()) {
             writer.write(" UNIQUE");
@@ -3657,40 +3277,6 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * Override this method with the platform's CREATE INDEX statement.
-     *
-     * @param fullTableName
-     *            qualified name of the table the index is to be created on
-     * @param indexName
-     *            name of the index
-     * @param qualifier
-     *            qualifier to construct qualified name of index if needed
-     * @param isUnique
-     *            Indicates whether unique index is created
-     * @param columnNames
-     *            one or more columns the index is created for
-     */
-    public String buildCreateIndex(String fullTableName, String indexName, String qualifier, boolean isUnique, String... columnNames) {
-        StringBuilder queryString = new StringBuilder();
-        if (isUnique) {
-            queryString.append("CREATE UNIQUE INDEX ");
-        } else {
-            queryString.append("CREATE INDEX ");
-        }
-        if (!qualifier.isEmpty()) {
-            queryString.append(qualifier).append(".");
-        }
-        queryString.append(indexName).append(" ON ").append(fullTableName).append(" (");
-        queryString.append(columnNames[0]);
-        for (int i = 1; i < columnNames.length; i++) {
-            queryString.append(", ").append(columnNames[i]);
-        }
-        queryString.append(")");
-        return queryString.toString();
-    }
-
-    /**
-     * INTERNAL:
      * Don't override this method.
      *
      * @param fullTableName
@@ -3700,74 +3286,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String buildDropIndex(String fullTableName, String indexName) {
         return buildDropIndex(fullTableName, indexName, "");
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method with the platform's DROP INDEX statement.
-     *
-     * @param fullTableName
-     *            qualified name of the table the index is to be removed from
-     * @param indexName
-     *            name of the index
-     * @param qualifier
-     *            qualifier to construct qualified name of index if needed
-     */
-    public String buildDropIndex(String fullTableName, String indexName, String qualifier) {
-        StringBuilder queryString = new StringBuilder();
-        queryString.append("DROP INDEX ");
-        if (!qualifier.isEmpty()) {
-            queryString.append(qualifier).append(".");
-        }
-        queryString.append(indexName);
-        if (requiresTableInIndexDropDDL()) {
-            queryString.append(" ON ").append(fullTableName);
-        }
-        return queryString.toString();
-    }
-
-    /**
-     * INTERNAL:
-     * Returns sql used to create sequence object in the database.
-     */
-    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
-        writer.write("CREATE SEQUENCE ");
-        writer.write(fullSeqName);
-        if (increment != 1) {
-            writer.write(" INCREMENT BY " + increment);
-        }
-        writer.write(" START WITH " + start);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Returns sql used to delete sequence object from the database.
-     */
-    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
-        writer.write("DROP SEQUENCE ");
-        writer.write(fullSeqName);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Returns sql used to alter sequence object's increment in the database.
-     */
-    public Writer buildSequenceObjectAlterIncrementWriter(Writer writer, String fullSeqName, int increment) throws IOException {
-        writer.write("ALTER SEQUENCE ");
-        writer.write(fullSeqName);
-        writer.write(" INCREMENT BY " + increment);
-        return writer;
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports sequence objects
-     * and it's possible to alter sequence object's increment in the database.
-     */
-    public boolean isAlterSequenceObjectSupported() {
-        return false;
     }
 
     /**
@@ -3809,7 +3327,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
      public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD ");
-        field.appendDBCreateString(writer, session, table);
+        field.appendDBString(writer, session, table);
     }
 
     /**
@@ -3946,4 +3464,26 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    @Override
+    public FieldDefinition.DatabaseType getDatabaseType(Class<?> type) {
+        FieldTypeDefinition fieldType = getFieldTypeDefinition(type);
+        if (fieldType == null) {
+            throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
+        }
+        return fieldType.toDatabaseType();
+    }
+
+    @Override
+    public FieldDefinition.DatabaseType getDatabaseType(String typeName) {
+        final Map<String, Class<?>> fieldTypes = getClassTypes();
+        final Class<?> typeFromName = fieldTypes.get(typeName);
+        if (typeFromName == null) { // if unknown type name, use as it is
+            return new FieldDefinition.DatabaseType(typeName);
+        }
+        FieldTypeDefinition fieldType = getFieldTypeDefinition(typeFromName);
+        if (fieldType == null) {
+            throw ValidationException.javaTypeIsNotAValidDatabaseType(typeFromName);
+        }
+        return fieldType.toDatabaseType();
+    }
 }
