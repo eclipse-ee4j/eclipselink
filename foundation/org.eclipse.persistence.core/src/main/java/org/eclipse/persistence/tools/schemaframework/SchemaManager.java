@@ -23,6 +23,15 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.Writer;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -40,14 +49,6 @@ import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
-
-import java.io.Writer;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * <p>
@@ -74,9 +75,9 @@ public class SchemaManager {
 
     /** Flag to determine if database schemas should be created during DDL generation */
     protected boolean createDatabaseSchemas = false;
-    protected HashSet<String> createdDatabaseSchemas = new HashSet<>();
-    protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
-    protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
+    protected Set<String> createdDatabaseSchemas = new HashSet<>();
+    protected Set<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
+    protected Map<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
 
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;

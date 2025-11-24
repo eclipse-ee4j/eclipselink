@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,19 +14,15 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 //     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
-//     12/14/2023: Tomas Kraus
-//       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
-
-import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <b>Purpose</b>: Allow a semi-generic way of creating stored procedures.
@@ -43,11 +39,11 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     protected static final Integer INOUT = 3;
 
     public StoredProcedureDefinition() {
-        this.statements = new LinkedList<>();
-        this.variables = new LinkedList<>();
-        this.characteristics = new LinkedList<>();
-        this.arguments = new LinkedList<>();
-        this.argumentTypes = new LinkedList<>();
+        this.statements = new ArrayList<>();
+        this.variables = new ArrayList<>();
+        this.characteristics = new ArrayList<>();
+        this.arguments = new ArrayList<>();
+        this.argumentTypes = new ArrayList<>();
     }
 
     /**
@@ -157,9 +153,10 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * INTERNAL: Return the create table statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildCreationWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
-            DatabasePlatform platform = session.getPlatform();
+            DDLPlatform platform = session.getPlatform();
             writer.write(getCreationHeader() + getFullName());
             if (getArguments().size() > getFirstArgumentIndex() || platform.requiresProcedureBrackets()) {
                 writer.write(" (");
@@ -237,6 +234,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * INTERNAL: Return the drop table statement.
      */
     @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
             writer.write(getDeletionHeader() + getFullName());
@@ -256,6 +254,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
          *
          */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String getCreationHeader() {
         return "CREATE PROCEDURE ";
     }
@@ -263,6 +262,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
          *
          */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public String getDeletionHeader() {
         return "DROP PROCEDURE ";
     }
@@ -310,11 +310,12 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * @param session  Current session context.
      * @throws IOException When any IO problem occurs.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printArgument(final FieldDefinition argument, final Writer writer,
             final AbstractSession session) throws IOException {
-        final DatabasePlatform platform = session.getPlatform();
-        final FieldTypeDefinition fieldType
-                = getFieldTypeDefinition(session, argument.type, argument.typeName);
+        final DDLPlatform platform = session.getPlatform();
+        final FieldDefinition.DatabaseType fieldType
+                = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
 
         writer.write(platform.getProcedureArgumentString());
 
@@ -326,22 +327,22 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
 
         writer.write(argument.name);
         writer.write(" ");
-        writer.write(fieldType.getName());
+        writer.write(fieldType.name());
 
-        if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
-                && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
+        if (fieldType.allowSize() && platform.allowsSizeInProcedureArguments()
+                && ((argument.size != 0) || (fieldType.requireSize()))) {
             writer.write("(");
             if (argument.size == 0) {
-                writer.write(Integer.toString(fieldType.getDefaultSize()));
+                writer.write(Integer.toString(fieldType.defaultSize()));
             } else {
                 writer.write(Integer.toString(argument.size));
             }
             if (argument.subSize != 0) {
                 writer.write(",");
                 writer.write(Integer.toString(argument.subSize));
-            } else if (fieldType.getDefaultSubSize() != 0) {
+            } else if (fieldType.defaultSubSize() != 0) {
                 writer.write(",");
-                writer.write(Integer.toString(fieldType.getDefaultSubSize()));
+                writer.write(Integer.toString(fieldType.defaultSubSize()));
             }
             writer.write(")");
         }
@@ -354,12 +355,13 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * @param session  Current session context.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printInOutputArgument(final FieldDefinition argument, final Writer writer,
             final AbstractSession session) throws ValidationException {
         try {
-            final DatabasePlatform platform = session.getPlatform();
-            final FieldTypeDefinition fieldType
-                    = getFieldTypeDefinition(session, argument.type, argument.typeName);
+            final DDLPlatform platform = session.getPlatform();
+            final FieldDefinition.DatabaseType fieldType
+                    = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
 
             writer.write(platform.getProcedureArgumentString());
 
@@ -374,21 +376,21 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write(platform.getCreationInOutputProcedureToken());
             }
             writer.write(" ");
-            writer.write(fieldType.getName());
-            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
-                    && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(fieldType.name());
+            if (fieldType.allowSize() && platform.allowsSizeInProcedureArguments()
+                    && ((argument.size != 0) || (fieldType.requireSize()))) {
                 writer.write("(");
                 if (argument.size == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(argument.size));
                 }
                 if (argument.subSize != 0) {
                     writer.write(",");
                     writer.write(Integer.toString(argument.subSize));
-                } else if (fieldType.getDefaultSubSize() != 0) {
+                } else if (fieldType.defaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
+                    writer.write(Integer.toString(fieldType.defaultSubSize()));
                 }
                 writer.write(")");
             }
@@ -408,12 +410,13 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
      * @param session  Current session context.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printOutputArgument(final FieldDefinition argument, final Writer writer,
             final AbstractSession session) throws ValidationException {
         try {
-            final DatabasePlatform platform = session.getPlatform();
-            final FieldTypeDefinition fieldType
-                    = getFieldTypeDefinition(session, argument.type, argument.typeName);
+            final DDLPlatform platform = session.getPlatform();
+            final FieldDefinition.DatabaseType fieldType
+                    = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
 
             writer.write(platform.getProcedureArgumentString());
 
@@ -428,21 +431,21 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
                 writer.write(platform.getCreationOutputProcedureToken());
             }
             writer.write(" ");
-            writer.write(fieldType.getName());
-            if (fieldType.isSizeAllowed() && platform.allowsSizeInProcedureArguments()
-                    && ((argument.size != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(fieldType.name());
+            if (fieldType.allowSize() && platform.allowsSizeInProcedureArguments()
+                    && ((argument.size != 0) || (fieldType.requireSize()))) {
                 writer.write("(");
                 if (argument.size == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(argument.size));
                 }
                 if (argument.subSize != 0) {
                     writer.write(",");
                     writer.write(Integer.toString(argument.subSize));
-                } else if (fieldType.getDefaultSubSize() != 0) {
+                } else if (fieldType.defaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
+                    writer.write(Integer.toString(fieldType.defaultSubSize()));
                 }
                 writer.write(")");
             }
@@ -458,6 +461,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
     /**
      * Prints return for stored function, nothing to do for stored procedure
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
     }
 

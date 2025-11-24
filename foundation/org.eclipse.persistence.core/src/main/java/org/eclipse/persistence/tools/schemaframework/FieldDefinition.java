@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,17 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Objects;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.Writer;
 
 /**
  * <p>
@@ -73,13 +74,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     protected String comment;
 
     public FieldDefinition() {
-        this.name = "";
-        this.size = 0;
-        this.subSize = 0;
-        this.shouldAllowNull = true;
-        this.isIdentity = false;
-        this.isPrimaryKey = false;
-        this.isUnique = false;
+        this("", (Class<?>) null);
     }
 
     public FieldDefinition(String name, Class<?> type) {
@@ -113,6 +108,7 @@ public class FieldDefinition implements Serializable, Cloneable {
         this.name = name;
         this.typeName = typeName;
     }
+
     /**
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
@@ -122,8 +118,9 @@ public class FieldDefinition implements Serializable, Cloneable {
      * @param table   Database table being processed.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
-    public void appendDBCreateString(final Writer writer, final AbstractSession session,
-                                     final TableDefinition table) {
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public void appendDBString(final Writer writer, final AbstractSession session,
+            final TableDefinition table) throws ValidationException {
         appendDBString(writer, session, table, null);
     }
 
@@ -154,8 +151,8 @@ public class FieldDefinition implements Serializable, Cloneable {
     private void appendDBString(final Writer writer, final AbstractSession session,
                                       final TableDefinition table, String alterKeyword) throws ValidationException {
         try {
-                writer.write(name);
-                writer.write(" ");
+            writer.write(name);
+            writer.write(" ");
 
             // e.g. "ALTER TABLE assets ALTER COLUMN location TYPE VARCHAR" to add "TYPE" keyword
             if (alterKeyword != null) {
@@ -169,8 +166,8 @@ public class FieldDefinition implements Serializable, Cloneable {
             } else {
                 final DatabasePlatform platform = session.getPlatform();
                 // compose type definition - type name, size, unique, identity, constraints...
-                final FieldTypeDefinition fieldType
-                        = DatabaseObjectDefinition.getFieldTypeDefinition(platform, type, typeName);
+                final DatabaseType fieldType
+                        = DatabaseObjectDefinition.getFieldTypeDefinition(platform, type, typeName).toDatabaseType();
 
                 String qualifiedName = table.getFullName() + '.' + name;
                 boolean shouldPrintFieldIdentityClause = isIdentity && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
@@ -179,7 +176,7 @@ public class FieldDefinition implements Serializable, Cloneable {
                 if (shouldPrintFieldIdentityClause) {
                     platform.printFieldIdentityClause(writer);
                 }
-                if (shouldPrintFieldNullClause(fieldType)) {
+                if (shouldAllowNull && fieldType.allowNull()) {
                     platform.printFieldNullClause(writer);
                 } else {
                     platform.printFieldNotNullClause(writer);
@@ -225,27 +222,28 @@ public class FieldDefinition implements Serializable, Cloneable {
      * @param session Current session context.
      * @throws ValidationException When invalid or inconsistent data were found.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
-        final FieldTypeDefinition fieldType
-                = DatabaseObjectDefinition.getFieldTypeDefinition(session, type, typeName);
+        final DatabaseType fieldType
+                = DatabaseObjectDefinition.getFieldTypeDefinition(session, type, typeName).toDatabaseType();
         try {
             writer.write(name);
             writer.write(" ");
-            writer.write(fieldType.getName());
-            if ((fieldType.isSizeAllowed()) && ((size != 0) || (fieldType.isSizeRequired()))) {
+            writer.write(fieldType.name());
+            if ((fieldType.allowSize()) && ((size != 0) || (fieldType.requireSize()))) {
                 writer.write("(");
                 if (size == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(size));
                 }
                 if (subSize != 0) {
                     writer.write(",");
                     writer.write(Integer.toString(subSize));
-                } else if (fieldType.getDefaultSubSize() != 0) {
+                } else if (fieldType.defaultSubSize() != 0) {
                     writer.write(",");
-                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
+                    writer.write(Integer.toString(fieldType.defaultSubSize()));
                 }
                 writer.write(")");
             }
@@ -311,6 +309,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * INTERNAL:
      * Return the DatabaseField.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public DatabaseField getDatabaseField() {
         return field;
     }
@@ -451,6 +450,7 @@ public class FieldDefinition implements Serializable, Cloneable {
      * Set the DatabaseField that is associated to this FieldDefinition object.
      * The DatabaseField is used when extending tables to see if this field already exists.
      */
+    @Deprecated(forRemoval = true, since = "4.0.9")
     public void setDatabaseField(DatabaseField field) {
         this.field = field;
     }
@@ -528,5 +528,189 @@ public class FieldDefinition implements Serializable, Cloneable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + getName() + "(" + getType() + "))";
+    }
+
+    /**
+     * PUBLIC:
+     *  <b>Purpose</b>: Define a database-platform-specific definition for a platform independent Java class type.
+     *  This is used for the field creation within a table creation statement.
+     *  <p><b>Responsibilities</b>:
+     *  <ul>
+     *    <li> Store a default size and know if the size option is required or optional.</li>
+     *    <li> Store the name of the real database type.</li>
+     *    <li> Maintain maximum precision and optional min &amp; max Scale.</li>
+     *  </ul>
+     */
+    public static final class DatabaseType {
+        //TODO: switch to 'record'?
+        private final String name;
+        private final boolean allowNull;
+        private final boolean allowSize;
+        private final boolean requireSize;
+        private final int defaultSize;
+        private final int defaultSubSize;
+        private final int maxPrecision;
+        private final int minScale;
+        private final int maxScale;
+
+        public DatabaseType(String name) {
+            this(name, true, true, false,
+                    10, 0, 10, 0, 0);
+        }
+
+        public DatabaseType(String name, int defaultSize) {
+            this(name, true, true, true,
+                    defaultSize, 0, defaultSize, 0, 0);
+        }
+
+        public DatabaseType(String name, int defaultSize, int defaultSubSize) {
+            this(name, true, true, true,
+                    defaultSize, defaultSubSize, defaultSize, 0, defaultSubSize);
+        }
+
+        public DatabaseType(String name, int defaultSize, int defaultSubSize,
+                            int maxPrecision, int minScale, int maxScale) {
+            this(name, true, true, true,
+                    defaultSize, defaultSubSize, maxPrecision, minScale, maxScale);
+        }
+
+        public DatabaseType(String name, boolean allowSize) {
+            this(name, true, allowSize, false,
+                    10, 0, 10, 0, 0);
+        }
+
+        public DatabaseType(String name, boolean allowSize, boolean allowNull) {
+            this(name, allowNull, allowSize, false,
+                    10, 0, 10, 0, 0);
+        }
+
+        public DatabaseType(String name, boolean allowNull, boolean allowSize, boolean requireSize,
+                            int defaultSize, int defaultSubSize, int maxPrecision, int minScale, int maxScale) {
+            this.name = name;
+            this.allowNull = allowNull;
+            this.allowSize = allowSize;
+            this.requireSize = requireSize;
+            this.defaultSize = defaultSize;
+            this.defaultSubSize = defaultSubSize;
+            this.maxPrecision = maxPrecision;
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+
+        /**
+         * Return the name. Can be any database primitive type name,
+         * this name will then be mapped to the Java primitive type,
+         * the database type varies by platform, and the mappings can be found
+         * in the subclasses of {@linkplain DDLPlatform}.
+         * <p>
+         * <table>
+         *     <caption>Java names and their ODBC mappings include</caption>
+         *     <tr><th>Java name</th><th>ODBC mapping</th></tr>
+         *     <tr><td>Integer</td><td>SQL_INT</td></tr>
+         *     <tr><td>Float</td><td>SQL_FLOAT</td></tr>
+         *     <tr><td>Double</td><td>SQL_DOUBLE</td></tr>
+         *     <tr><td>Long</td><td>SQL_LONG</td></tr>
+         *     <tr><td>Short</td><td>SQL_INT</td></tr>
+         *     <tr><td>BigDecimal</td><td>SQL_NUMERIC</td></tr>
+         *     <tr><td>BigInteger</td><td>SQL_NUMERIC</td></tr>
+         *     <tr><td>String</td><td>SQL_VARCHAR</td></tr>
+         *     <tr><td>Array</td><td>BLOB</td></tr>
+         *     <tr><td>Character[]</td><td>SQL_CHAR</td></tr>
+         *     <tr><td>Boolean</td><td>SQL_BOOL</td></tr>
+         *     <tr><td>Text</td><td>CLOB</td></tr>
+         *     <tr><td>Date</td><td>SQL_DATE</td></tr>
+         *     <tr><td>Time</td><td>SQL_TIME</td></tr>
+         *     <tr><td>Timestamp</td><td>SQL_TIMESTAMP</td></tr>
+         * </table>
+         */
+        public String name() {
+            return name;
+        }
+
+        /**
+         * Return if this type is allowed to be null for this platform
+         */
+        public boolean allowNull() {
+            return allowNull;
+        }
+
+        /**
+         * Return if this type can support a size specification.
+         */
+        public boolean allowSize() {
+            return allowSize;
+        }
+
+        /**
+         * Return if this type must have a size specification.
+         */
+        public boolean requireSize() {
+            return requireSize;
+        }
+
+        /**
+         * Return the default size for this type.
+         * This default size will be used if the database requires specification of a size,
+         * and the table definition did not provide one.
+         */
+        public int defaultSize() {
+            return defaultSize;
+        }
+
+        /**
+         * Return the default sub-size for this type.
+         * This default size will be used if the database requires specification of a size,
+         * and the table definition did not provide one.
+         */
+        public int defaultSubSize() {
+            return defaultSubSize;
+        }
+
+        public int maxPrecision() {
+            return maxPrecision;
+        }
+
+        public int maxScale() {
+            return maxScale;
+        }
+
+        public int minScale() {
+            return minScale;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (DatabaseType) obj;
+            return Objects.equals(this.name, that.name) &&
+                    this.allowNull == that.allowNull &&
+                    this.allowSize == that.allowSize &&
+                    this.requireSize == that.requireSize &&
+                    this.defaultSize == that.defaultSize &&
+                    this.defaultSubSize == that.defaultSubSize &&
+                    this.maxPrecision == that.maxPrecision &&
+                    this.minScale == that.minScale &&
+                    this.maxScale == that.maxScale;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, allowNull, allowSize, requireSize, defaultSize, defaultSubSize, maxPrecision, minScale, maxScale);
+        }
+
+        @Override
+        public String toString() {
+            return "DatabaseType[" +
+                    "name=" + name + ", " +
+                    "allowNull=" + allowNull + ", " +
+                    "allowSize=" + allowSize + ", " +
+                    "requireSize=" + requireSize + ", " +
+                    "defaultSize=" + defaultSize + ", " +
+                    "defaultSubSize=" + defaultSubSize + ", " +
+                    "maxPrecision=" + maxPrecision + ", " +
+                    "maxScale=" + maxScale + ", " +
+                    "minScale=" + minScale + ']';
+        }
     }
 }
