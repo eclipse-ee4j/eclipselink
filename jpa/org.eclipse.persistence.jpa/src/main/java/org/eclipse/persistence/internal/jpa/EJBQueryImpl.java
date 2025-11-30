@@ -46,8 +46,8 @@ import jakarta.persistence.TypedQuery;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -460,8 +460,8 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         try {
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) getDatabaseQueryInternal()).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, ClassConstants.Collection_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, ClassConstants.Collection_Class);
+                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.Collection_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.Collection_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();

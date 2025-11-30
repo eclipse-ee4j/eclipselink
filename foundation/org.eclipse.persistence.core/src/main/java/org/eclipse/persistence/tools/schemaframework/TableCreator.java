@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -384,7 +384,7 @@ public class TableCreator {
                     }
                 // stmtWriter is StringWriter so this is not expected to happen
                 } catch (IOException ex) {
-                    throw CommunicationException.tablesTruncationFailed(ex);
+                    throw ValidationException.tablesTruncationFailed(ex);
                 }
             }
         }

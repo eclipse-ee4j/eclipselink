@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
-import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.sessions.factories.SessionLoaderException;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.testing.framework.TestCase;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,10 +21,10 @@ import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -307,7 +307,7 @@ public class EISPlatform extends DatasourcePlatform {
     public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
         Object recordValue = value;
         if (shouldConvertDataToStrings() && !(value instanceof jakarta.resource.cci.Record) && !(value instanceof Collection)) {
-            recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
+            recordValue = getConversionManager().convertObject(value, CoreClassConstants.STRING);
         }
         record.put(key, recordValue);
     }

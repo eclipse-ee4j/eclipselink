@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.xdb;
 
+import java.sql.SQLXML;
 import java.util.List;
 
 import oracle.jdbc.OracleTypes;
 import oracle.sql.OPAQUE;
 
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.platform.database.oracle.XMLTypeFactory;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.StoredFunctionCall;
@@ -51,7 +51,8 @@ public class StoredFunctionXMLTypeTest extends TestCase {
             if (xmlResult instanceof OPAQUE) {
                 str = ((XMLTypeFactory)Class.forName("org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl").getConstructor().newInstance()).getString((OPAQUE)xmlResult);
             } else {
-                str = JavaPlatform.getStringAndFreeSQLXML(xmlResult);
+                str = ((SQLXML)xmlResult).getString();
+                ((SQLXML)xmlResult).free();
             }
             StringBuilder strBuffer = new StringBuilder();
             for (int i=0; i<str.length(); i++) {

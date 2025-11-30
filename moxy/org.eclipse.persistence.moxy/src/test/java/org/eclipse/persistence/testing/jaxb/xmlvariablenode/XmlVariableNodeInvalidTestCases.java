@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,8 +32,8 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
             Throwable nested = e.getLinkedException();
-            assertTrue(nested instanceof org.eclipse.persistence.exceptions.JAXBException);
-            if(((org.eclipse.persistence.exceptions.JAXBException)nested).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.UNKNOWN_TYPE_FOR_VARIABLE_MAPPING){
+            assertTrue(nested instanceof org.eclipse.persistence.jaxb.JAXBException);
+            if(((org.eclipse.persistence.jaxb.JAXBException)nested).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.UNKNOWN_TYPE_FOR_VARIABLE_MAPPING){
                 return;
             }
         }
@@ -46,8 +46,8 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
             Throwable nested = e.getLinkedException();
-            assertTrue(nested instanceof org.eclipse.persistence.exceptions.JAXBException);
-            if(((org.eclipse.persistence.exceptions.JAXBException)nested).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.UNKNOWN_PROPERTY_FOR_VARIABLE_MAPPING){
+            assertTrue(nested instanceof org.eclipse.persistence.jaxb.JAXBException);
+            if(((org.eclipse.persistence.jaxb.JAXBException)nested).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.UNKNOWN_PROPERTY_FOR_VARIABLE_MAPPING){
                 return;
             }
         }
@@ -61,8 +61,8 @@ public class XmlVariableNodeInvalidTestCases extends OXTestCase {//extends JAXBW
             JAXBContext ctx = JAXBContextFactory.createContext(classes, null);
         } catch (JAXBException e) {
             Throwable nested = e.getLinkedException();
-            assertTrue(nested instanceof org.eclipse.persistence.exceptions.JAXBException);
-            if(((org.eclipse.persistence.exceptions.JAXBException)nested).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.INVALID_TYPE_FOR_VARIABLE_MAPPING){
+            assertTrue(nested instanceof org.eclipse.persistence.jaxb.JAXBException);
+            if(((org.eclipse.persistence.jaxb.JAXBException)nested).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.INVALID_TYPE_FOR_VARIABLE_MAPPING){
                 return;
             }
         }

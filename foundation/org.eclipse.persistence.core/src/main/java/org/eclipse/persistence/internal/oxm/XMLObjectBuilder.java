@@ -36,8 +36,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.XMLNamespaceAware;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -480,13 +480,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
     public NamespaceResolver getNamespaceResolver() {
-        NamespaceResolver namespaceResolver = null;
-        if (isXmlDescriptor()) {
-            namespaceResolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
-        } else if (getDescriptor().isEISDescriptor()) {
-            namespaceResolver = ((org.eclipse.persistence.eis.EISDescriptor)getDescriptor()).getNamespaceResolver();
+        if (getDescriptor() instanceof XMLNamespaceAware d) {
+            return d.getNamespaceResolver();
         }
-        return namespaceResolver;
+        return null;
     }
     /**
      * Indicates if the object builder's descriptor is an XMLDescriptor.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     James Sutherland - initial API and implementation
 package org.eclipse.persistence.internal.identitymaps;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.Helper;
-
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -29,6 +26,8 @@ import java.util.Arrays;
 public class CacheId implements Serializable, Comparable<CacheId> {
     public static final CacheId EMPTY = new CacheId(new Object[0]);
     private static final CacheIdComparator COMPARATOR = new CacheIdComparator();
+    static final Class<?> APBYTE = byte[].class;
+    static final Class<?> APCHAR = char[].class;
 
     /** The primary key values. */
     protected Object[] primaryKey;
@@ -60,8 +59,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
      * Append the value to the end of the primary key values.
      */
     public void add(Object value) {
-        Object[] array = new Object[this.primaryKey.length + 1];
-        System.arraycopy(this.primaryKey, 0, array, 0, this.primaryKey.length);
+        final Object[] array = Arrays.copyOf(primaryKey, primaryKey.length + 1);
         array[this.primaryKey.length] = value;
         setPrimaryKey(array);
     }
@@ -99,11 +97,11 @@ public class CacheId implements Serializable, Comparable<CacheId> {
      * Compute the hashcode for supported array types.
      */
     private int computeArrayHashCode(int result, Object obj) {
-        if (obj.getClass() == ClassConstants.APBYTE) {
+        if (obj.getClass() == APBYTE) {
             for (byte element : (byte[])obj) {
                 result = 31 * result + element;
             }
-        } else if (obj.getClass() == ClassConstants.APCHAR) {
+        } else if (obj.getClass() == APCHAR) {
             for (char element : (char[])obj) {
                 result = 31 * result + element;
             }
@@ -130,11 +128,10 @@ public class CacheId implements Serializable, Comparable<CacheId> {
      */
     @Override
     public boolean equals(Object object) {
-        try {
-            return equals((CacheId)object);
-        } catch (ClassCastException incorrectType) {
+        if (!(object instanceof CacheId)) {
             return false;
         }
+        return equals((CacheId)object);
     }
 
     /**
@@ -151,54 +148,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         if (this.hasArray != id.hasArray) {
             return false;
         }
-        // PERF: Using direct variable access.
-        int size = this.primaryKey.length;
-        Object[] otherKey = id.primaryKey;
-        if (size == otherKey.length) {
-            for (int index = 0; index < size; index++) {
-                Object value = this.primaryKey[index];
-                Object otherValue = otherKey[index];
-                if (value == null) {
-                    if (otherValue != null) {
-                        return false;
-                    } else {
-                        continue;
-                    }
-                } else if (otherValue == null) {
-                    return false;
-                }
-                if (this.hasArray) {
-                    Class<?> valueClass = value.getClass();
-                    if (valueClass.isArray()) {
-                        Class<?> otherClass = otherValue.getClass();
-                        //gf bug 1193: fix array comparison logic to exit if they don't match, and continue the loop if they do
-                        if (((valueClass == ClassConstants.APBYTE) && (otherClass == ClassConstants.APBYTE)) ) {
-                            if (!Helper.compareByteArrays((byte[])value, (byte[])otherValue)){
-                                return false;
-                            }
-                        } else if (((valueClass == ClassConstants.APCHAR) && (otherClass == ClassConstants.APCHAR)) ) {
-                            if (!Helper.compareCharArrays((char[])value, (char[])otherValue)){
-                                return false;
-                            }
-                        } else {
-                            if (!Helper.compareArrays((Object[])value, (Object[])otherValue)) {
-                                return false;
-                            }
-                        }
-                    } else {
-                        if (!(value.equals(otherValue))) {
-                            return false;
-                        }
-                    }
-                } else {
-                    if (!(value.equals(otherValue))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        return false;
+        return compareTo(id) == 0;
     }
 
     /**

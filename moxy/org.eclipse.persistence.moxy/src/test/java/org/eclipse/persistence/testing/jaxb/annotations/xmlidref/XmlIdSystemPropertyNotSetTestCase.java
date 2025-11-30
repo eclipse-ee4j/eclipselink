@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public class XmlIdSystemPropertyNotSetTestCase{
             JAXBContextFactory.createContext(DOMAIN_CLASSES, null);
             fail("Expected JAXBException.");
         } catch (JAXBException expected) {
-            assertEquals(50016, ((org.eclipse.persistence.exceptions.JAXBException)expected.getLinkedException()).getErrorCode());
+            assertEquals(50016, ((org.eclipse.persistence.jaxb.JAXBException)expected.getLinkedException()).getErrorCode());
         }
     }
 }

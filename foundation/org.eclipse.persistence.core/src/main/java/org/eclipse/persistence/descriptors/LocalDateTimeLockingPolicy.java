@@ -14,8 +14,8 @@ package org.eclipse.persistence.descriptors;
 import java.time.LocalDateTime;
 
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -52,7 +52,7 @@ public class LocalDateTimeLockingPolicy extends JavaTimeLockingPolicy<LocalDateT
 
     @Override
     Class<LocalDateTime> getDefaultJavaTimeLockFieldType() {
-        return ClassConstants.LOCAL_DATETIME;
+        return CoreClassConstants.LOCAL_DATETIME;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class LocalDateTimeLockingPolicy extends JavaTimeLockingPolicy<LocalDateT
                             .getSessionForClass(getDescriptor().getJavaClass());
                 }
                 return platform.convertObject(
-                        session.executeQuery(platform.getTimestampQuery()), ClassConstants.LOCAL_DATETIME);
+                        session.executeQuery(platform.getTimestampQuery()), CoreClassConstants.LOCAL_DATETIME);
             default:
                 return null;
         }
@@ -89,7 +89,7 @@ public class LocalDateTimeLockingPolicy extends JavaTimeLockingPolicy<LocalDateT
     LocalDateTime getJavaTimeValueToPutInCache(AbstractRecord row, AbstractSession session) {
         if (isStoredInCache()) {
             return session.getDatasourcePlatform()
-                    .convertObject(row.get(getWriteLockField()), ClassConstants.LOCAL_DATETIME);
+                    .convertObject(row.get(getWriteLockField()), CoreClassConstants.LOCAL_DATETIME);
         } else {
             return null;
         }
@@ -133,7 +133,7 @@ public class LocalDateTimeLockingPolicy extends JavaTimeLockingPolicy<LocalDateT
     boolean isNewerJavaTimeVersion(AbstractRecord row, Object domainObject, Object primaryKey, AbstractSession session) {
         LocalDateTime writeLockFieldValue;
         LocalDateTime newWriteLockFieldValue = session.getDatasourcePlatform()
-                .convertObject(row.get(getWriteLockField()), ClassConstants.LOCAL_DATETIME);
+                .convertObject(row.get(getWriteLockField()), CoreClassConstants.LOCAL_DATETIME);
         if (isStoredInCache()) {
             writeLockFieldValue = (LocalDateTime) session.getIdentityMapAccessorInstance()
                     .getWriteLockValue(primaryKey, domainObject.getClass(), getDescriptor());

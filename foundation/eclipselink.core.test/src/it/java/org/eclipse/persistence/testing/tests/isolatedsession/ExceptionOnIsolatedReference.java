@@ -27,6 +27,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
+import java.util.List;
 import java.util.Vector;
 
 public class ExceptionOnIsolatedReference extends TestCase {
@@ -58,7 +59,7 @@ public class ExceptionOnIsolatedReference extends TestCase {
                 throw new TestErrorException("Shared Cache Descriptor was not switched to Protected when referencing Isolated data");
             }
         } catch (IntegrityException ex) {
-            Vector exceptions = ex.getIntegrityChecker().getCaughtExceptions();
+            List<Exception> exceptions = ex.getIntegrityChecker().getCaughtExceptions();
             for (Object exception : exceptions) {
                 if (((EclipseLinkException) exception).getErrorCode() == DescriptorException.ISOLATED_DESCRIPTOR_REFERENCED_BY_SHARED_DESCRIPTOR) {
                     throw new TestErrorException("Validation Exception error  thrown.  Non-isolated data was not allowed to reference isolated Data");

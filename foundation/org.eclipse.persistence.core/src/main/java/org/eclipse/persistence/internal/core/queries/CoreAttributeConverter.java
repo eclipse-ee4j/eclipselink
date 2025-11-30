@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,7 @@
 //     Tomas Kraus - Initial API and implementation
 package org.eclipse.persistence.internal.core.queries;
 
-import org.eclipse.persistence.internal.helper.StringHelper;
-
 import java.util.ArrayDeque;
-
-import static org.eclipse.persistence.internal.helper.StringHelper.CR;
-import static org.eclipse.persistence.internal.helper.StringHelper.FF;
-import static org.eclipse.persistence.internal.helper.StringHelper.LF;
-import static org.eclipse.persistence.internal.helper.StringHelper.SPACE;
-import static org.eclipse.persistence.internal.helper.StringHelper.TAB;
 
 // This class have huge performance impact because convert method is used very often.
 /**
@@ -34,7 +26,17 @@ public class CoreAttributeConverter {
     /**
      * String containing '.'.
      */
-    private static final String DOT = Character.toString(StringHelper.DOT);
+    private static final char DOT = '.';
+    /** Horizontal tab. */
+    private static final char TAB = '\t';
+    /** Line feed. */
+    private static final char LF = '\n';
+    /** Form feed */
+    private static final char FF = '\f';
+    /** Carriage return */
+    private static final char CR = '\r';
+    /** Space. */
+    private static final char SPACE = ' ';
 
 
     // Path convert state machine
@@ -97,7 +99,7 @@ public class CoreAttributeConverter {
                 throw new IllegalArgumentException("Name or path value is null");
             }
             final int len = str.length();
-            if (!str.contains(DOT)) {
+            if (str.indexOf(DOT) < 0) {
                 switch(len) {
                 case 0:
                     throw new IllegalArgumentException("Empty name or path value");
@@ -137,7 +139,7 @@ public class CoreAttributeConverter {
                     s = switch (c) {
                         // Path elements separator at the beginning or two path element separators
                         // next to each other results in zero length path.
-                        case StringHelper.DOT -> throw new IllegalArgumentException("Name or path value contains empty path element");
+                        case DOT -> throw new IllegalArgumentException("Name or path value contains empty path element");
 
                         // Whitespace at the beginning.
                         case TAB, LF, FF, CR, SPACE -> throw new IllegalArgumentException("Path element starts with whitespace.");
@@ -150,7 +152,7 @@ public class CoreAttributeConverter {
                 case SP:
                     switch (c) {
                     // Path elements separator after whitespace.
-                    case StringHelper.DOT:
+                    case DOT:
                         throw new IllegalArgumentException("Path element ends with whitespace.");
                     // Whitespace after whitespace.
                     case TAB: case LF: case FF: case CR: case SPACE:
@@ -164,7 +166,7 @@ public class CoreAttributeConverter {
                 case CH:
                     switch (c) {
                     // Path element separator after regular path character.
-                    case StringHelper.DOT:
+                    case DOT:
                         // Lazy initialization of elements storage.
                         if (elements == null) {
                             elements = new ArrayDeque<>(4);

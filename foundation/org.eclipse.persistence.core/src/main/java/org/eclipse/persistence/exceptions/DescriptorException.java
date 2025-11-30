@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -958,7 +957,7 @@ public class DescriptorException extends ValidationException {
     /**
      * @since EclipseLink 2.5.0
      */
-    public static DescriptorException missingClassIndicatorField(XMLRecord row, ClassDescriptor descriptor) {
+    public static DescriptorException missingClassIndicatorField(String row, ClassDescriptor descriptor) {
         Object[] args = { row };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_CLASS_INDICATOR_FIELD, args), descriptor);

@@ -43,6 +43,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
@@ -51,7 +52,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.platform.database.XMLTypePlaceholder;
@@ -437,7 +437,7 @@ public class Oracle9Platform extends Oracle8Platform {
         } else if (sourceObject instanceof TIMESTAMPTZWrapper) {
             //Bug#4364359 Used when database type is TIMESTAMPTZ.  Timestamp and session timezone are wrapped
             //in TIMESTAMPTZWrapper.  Separate Calendar from any other types.
-            if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
+            if (((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR))) {
                 return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPTZWrapper) sourceObject);
             } else {
                 try {
@@ -450,7 +450,7 @@ public class Oracle9Platform extends Oracle8Platform {
         } else if (sourceObject instanceof TIMESTAMPLTZWrapper) {
             //Bug#4364359 Used when database type is TIMESTAMPLTZ.  Timestamp and session timezone id are wrapped
             //in TIMESTAMPLTZWrapper.  Separate Calendar from any other types.
-            if (((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR))) {
+            if (((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR))) {
                 return (T) TIMESTAMPHelper.buildCalendar((TIMESTAMPLTZWrapper) sourceObject);
             } else {
                 try {

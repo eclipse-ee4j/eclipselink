@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -557,7 +557,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         // on the mapping -  make sure it is non-abstract
                         if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                             // need to throw an exception here
-                            throw DescriptorException.missingClassIndicatorField(unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                            throw DescriptorException.missingClassIndicatorField(unmarshalRecord.toString(), (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.internal.xr;
 
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.ALL_QUERYNAME;
@@ -65,8 +65,8 @@ import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.dbws.DBWSException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;

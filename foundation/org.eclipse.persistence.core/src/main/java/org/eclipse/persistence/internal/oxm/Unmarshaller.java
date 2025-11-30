@@ -125,7 +125,7 @@ public abstract class Unmarshaller<
      * INTERNAL:
      * This is the text handler during unmarshal operations.
      */
-    public abstract StrBuffer getStringBuffer();
+    public abstract StringBuilder getStringBuffer();
 
     /**
      * Get the class that will be instantiated to handled unmapped content

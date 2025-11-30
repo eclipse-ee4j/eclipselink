@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,12 +63,12 @@ public class Order {
     public long version;
     public String orderedBy;
     @Temporal(TemporalType.TIMESTAMP)
-    public Date orderDate = new Date(Helper.timeWithRoundMiliseconds());
+    public Date orderDate = new Date(timeWithRoundMiliseconds());
     public java.sql.Time orderTime = Helper.timeFromDate(new Date());
-    public java.sql.Timestamp orderTimestamp = new Timestamp(Helper.timeWithRoundMiliseconds());
+    public java.sql.Timestamp orderTimestamp = new Timestamp(timeWithRoundMiliseconds());
     public java.sql.Date orderDateDate = Helper.dateFromCalendar(Calendar.getInstance());
     @Temporal(TemporalType.TIMESTAMP)
-    public Calendar orderCal = Helper.calendarFromUtilDate(new Date(Helper.timeWithRoundMiliseconds()));
+    public Calendar orderCal = Helper.calendarFromUtilDate(new Date(timeWithRoundMiliseconds()));
     public byte[] image = "bytes".getBytes();
     public BigDecimal amount = BigDecimal.valueOf(0);
     public BigInteger amountBigInt = BigInteger.valueOf(0);
@@ -112,5 +112,9 @@ public class Order {
 
     public String toString() {
         return "Order(" + id + ", " + orderedBy + ", " + address + ", " + lineItems + ", " + comments + ")";
+    }
+
+    private static long timeWithRoundMiliseconds() {
+        return new Date().getTime() / 1000 * 1000;
     }
 }

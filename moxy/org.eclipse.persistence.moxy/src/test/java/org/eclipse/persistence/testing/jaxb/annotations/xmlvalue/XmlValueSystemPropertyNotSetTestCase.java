@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,7 @@ public class XmlValueSystemPropertyNotSetTestCase {
             JAXBContextFactory.createContext(DOMAIN_CLASSES, null);
             fail("Expected JAXBException.");
         } catch (jakarta.xml.bind.JAXBException expected) {
-            assertEquals(50011, ((org.eclipse.persistence.exceptions.JAXBException)expected.getLinkedException()).getErrorCode());
+            assertEquals(50011, ((JAXBException)expected.getLinkedException()).getErrorCode());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.jaxb.javamodel.*;
 
@@ -452,28 +452,28 @@ public class XJCJavaClassImpl implements JavaClass {
     private String getPrimitiveArrayNameFor(String fullName) {
         Class<?> componentClass = ConversionManager.getPrimitiveClass(fullName);
         if(componentClass != null) {
-            if(componentClass == ClassConstants.PBYTE) {
-                return ClassConstants.APBYTE.getName();
+            if(componentClass == CoreClassConstants.PBYTE) {
+                return CoreClassConstants.APBYTE.getName();
             }
-            if(componentClass == ClassConstants.PCHAR) {
-                return ClassConstants.APCHAR.getName();
+            if(componentClass == CoreClassConstants.PCHAR) {
+                return CoreClassConstants.APCHAR.getName();
             }
-            if(componentClass == ClassConstants.PBOOLEAN) {
+            if(componentClass == CoreClassConstants.PBOOLEAN) {
                 return boolean[].class.getName();
             }
-            if(componentClass == ClassConstants.PDOUBLE) {
+            if(componentClass == CoreClassConstants.PDOUBLE) {
                 return double[].class.getName();
             }
-            if(componentClass == ClassConstants.PFLOAT) {
+            if(componentClass == CoreClassConstants.PFLOAT) {
                 return float[].class.getName();
             }
-            if(componentClass == ClassConstants.PINT) {
+            if(componentClass == CoreClassConstants.PINT) {
                 return int[].class.getName();
             }
-            if(componentClass == ClassConstants.PLONG) {
+            if(componentClass == CoreClassConstants.PLONG) {
                 return long[].class.getName();
             }
-            if(componentClass == ClassConstants.PSHORT) {
+            if(componentClass == CoreClassConstants.PSHORT) {
                 return short[].class.getName();
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -130,8 +130,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
-import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
-import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
@@ -361,13 +359,13 @@ public final class AnnotationsProcessor {
                         } else {
                             qname = getUserDefinedSchemaTypes().get(nextClassName);
                             if (qname == null) {
-                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(AWT_IMAGE) || nextClassName.equals(Source.class.getName()) || nextClassName.equals(JAVAX_ACTIVATION_DATAHANDLER)) {
+                                if (nextClassName.equals(CoreClassConstants.APBYTE.getName()) || nextClassName.equals(AWT_IMAGE) || nextClassName.equals(Source.class.getName()) || nextClassName.equals(JAVAX_ACTIVATION_DATAHANDLER)) {
                                     if (xmlAttachmentRef) {
                                         qname = Constants.SWA_REF_QNAME;
                                     } else {
                                         qname = Constants.BASE_64_BINARY_QNAME;
                                     }
-                                } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
+                                } else if (nextClassName.equals(CoreClassConstants.OBJECT.getName())) {
                                     qname = Constants.ANY_TYPE_QNAME;
                                 } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
                                     qname = Constants.ANY_SIMPLE_TYPE_QNAME;
@@ -958,7 +956,7 @@ public final class AnnotationsProcessor {
                             tInfo.setTransient(true);
                         } else {
                             if(!referencedByTransformer.contains(jClass.getName())){
-                                throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
+                                throw org.eclipse.persistence.jaxb.JAXBException.factoryMethodOrConstructorRequired(jClass.getName());
                             }
                         }
                     }
@@ -1536,13 +1534,13 @@ public final class AnnotationsProcessor {
                 // exists
                 JavaMethod method = javaClass.getDeclaredMethod(factoryMethodName, new JavaClass[] {});
                 if (method == null) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
+                    throw org.eclipse.persistence.jaxb.JAXBException.factoryMethodNotDeclared(factoryMethodName, javaClass.getName());
                 }
                 info.setFactoryMethodName(factoryMethodName);
             }
         } else {
             if (factoryMethodName == null || factoryMethodName.equals(EMPTY_STRING)) {
-                throw org.eclipse.persistence.exceptions.JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
+                throw JAXBException.factoryClassWithoutFactoryMethod(javaClass.getName());
             }
             info.setObjectFactoryClassName(factoryClassName);
             info.setFactoryMethodName(factoryMethodName);
@@ -1554,7 +1552,7 @@ public final class AnnotationsProcessor {
             try {
                 typeName = info.getXmlNameTransformer().transformTypeName(javaClass.getName());
             } catch (Exception ex) {
-                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
             }
         }
         info.setSchemaTypeName(typeName);
@@ -2552,7 +2550,7 @@ public final class AnnotationsProcessor {
                 if (referencedElement != null) {
                     addReferencedElement(property, referencedElement);
                 } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
+                    throw org.eclipse.persistence.jaxb.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
                 }
             }
         }
@@ -2647,10 +2645,10 @@ public final class AnnotationsProcessor {
 
         if (helper.isAnnotationPresent(propertyElement, XmlAnyAttribute.class)) {
             if (info.isSetAnyAttributePropertyName() && !info.getAnyAttributePropertyName().equals(property.getPropertyName())) {
-                throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
+                throw org.eclipse.persistence.jaxb.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
             if (!helper.isMapType(property.getType())) {
-                throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
+                throw org.eclipse.persistence.jaxb.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
             property.setIsAnyAttribute(true);
             info.setAnyAttributePropertyName(property.getPropertyName());
@@ -3453,7 +3451,7 @@ public final class AnnotationsProcessor {
                 try {
                     name = info.getXmlNameTransformer().transformAttributeName(name);
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
 
@@ -3486,7 +3484,7 @@ public final class AnnotationsProcessor {
                 try {
                     name = info.getXmlNameTransformer().transformElementName(name);
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw JAXBException.exceptionDuringNameTransformation(name, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
 
@@ -3945,7 +3943,7 @@ public final class AnnotationsProcessor {
                     try {
                         elementName = transformer.transformRootElementName(javaClass.getName());
                     } catch (Exception ex) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                        throw JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
                     }
 
                 }
@@ -4109,7 +4107,7 @@ public final class AnnotationsProcessor {
                     String propName = property.getPropertyName();
                     String typeName = tInfo.getJavaClassName();
                     String refTypeName = refInfo.getJavaClassName();
-                    throw org.eclipse.persistence.exceptions.JAXBException.mustMapToText(propName, typeName, refTypeName);
+                    throw org.eclipse.persistence.jaxb.JAXBException.mustMapToText(propName, typeName, refTypeName);
                 }
             }
         }
@@ -4853,7 +4851,7 @@ public final class AnnotationsProcessor {
                 try {
                     elementName = info.getXmlNameTransformer().transformRootElementName(javaClass.getName());
                 } catch (Exception ex) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw org.eclipse.persistence.jaxb.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
             String rootNamespace = xmlRE.getNamespace();

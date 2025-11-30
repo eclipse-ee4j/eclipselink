@@ -14,8 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.internal.sessions.cdi;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import javax.naming.NamingException;
 
 /**
@@ -29,5 +27,5 @@ public interface InjectionManager<T> {
 
     T createManagedBeanAndInjectDependencies(Class<T> managedBeanClass) throws NamingException;
 
-    void cleanUp(AbstractSession session);
+    void cleanUp();
 }

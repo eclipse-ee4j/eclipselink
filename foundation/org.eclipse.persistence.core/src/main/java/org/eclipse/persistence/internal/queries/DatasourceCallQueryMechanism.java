@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -346,7 +345,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             Vector results = new Vector();
             for (Iterator iterator = getCalls().iterator(); iterator.hasNext();) {
                 DatasourceCall databseCall = (DatasourceCall) iterator.next();
-                Helper.addAllToVector(results, (Vector)executeCall(databseCall));
+                results.addAll((Vector)executeCall(databseCall));
             }
 
             return results;

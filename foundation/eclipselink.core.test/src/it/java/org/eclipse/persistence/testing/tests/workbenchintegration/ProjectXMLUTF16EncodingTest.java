@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;

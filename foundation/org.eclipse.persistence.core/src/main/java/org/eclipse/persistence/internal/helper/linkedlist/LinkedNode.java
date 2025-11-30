@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper.linkedlist;
 
-
 /**
  * INTERNAL:
  * A custom implementation of a linked list node for use in the ExposedNodeLinkedList.
@@ -22,22 +21,22 @@ package org.eclipse.persistence.internal.helper.linkedlist;
  * @since 10.0.3
  * @see ExposedNodeLinkedList
  */
-public class LinkedNode {
-    Object contents;
-    LinkedNode next;
-    LinkedNode previous;
+public class LinkedNode<E> {
+    E contents;
+    LinkedNode<E> next;
+    LinkedNode<E> previous;
 
-    LinkedNode(Object object, LinkedNode next, LinkedNode previous) {
+    LinkedNode(E object, LinkedNode<E> next, LinkedNode<E> previous) {
         this.contents = object;
         this.next = next;
         this.previous = previous;
     }
 
-    public Object getContents() {
+    public E getContents() {
         return contents;
     }
 
-    public void setContents(Object contents) {
+    public void setContents(E contents) {
         this.contents = contents;
     }
 }

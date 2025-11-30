@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,11 @@ package org.eclipse.persistence.testing.oxm.mappings.compositecollection.errorte
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
-import java.util.Vector;
+import java.util.List;
 
 public class CompositeCollectionErrorTestCases extends OXTestCase {
     public CompositeCollectionErrorTestCases(String name) throws Exception {
@@ -32,9 +32,9 @@ public class CompositeCollectionErrorTestCases extends OXTestCase {
             XMLContext xmlContext = getXMLContext(new CompositeCollectionErrorProject());
         } catch (IntegrityException e) {
             boolean foundException = false;
-            Vector caughtExceptions = e.getIntegrityChecker().getCaughtExceptions();
+            List<Exception> caughtExceptions = e.getIntegrityChecker().getCaughtExceptions();
             for (int i = 0; i < caughtExceptions.size(); i++) {
-                Exception nextException = (Exception)caughtExceptions.elementAt(i);
+                Exception nextException = caughtExceptions.get(i);
                 if (nextException instanceof DescriptorException) {
                     assertEquals("An incorrect Descriptor exception occurred.", DescriptorException.FIELD_NAME_NOT_SET_IN_MAPPING, ((DescriptorException) nextException).getErrorCode());
                     foundException = true;

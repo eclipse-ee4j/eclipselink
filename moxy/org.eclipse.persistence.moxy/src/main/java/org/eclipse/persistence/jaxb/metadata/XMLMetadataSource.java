@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,7 +107,7 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         try {
             xmlBindingsSource = new StAXSource(xmlBindings);
         } catch (XMLStreamException e) {
-            org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+            org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(e);
         }
     }
 
@@ -182,12 +182,12 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
                 URL url = classLoader.getResource(xmlBindingsLocation);
                 if(url == null) {
                     // throw exception
-                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation(xmlBindingsLocation);
+                    throw org.eclipse.persistence.jaxb.JAXBException.unableToLoadMetadataFromLocation(xmlBindingsLocation);
                 }
                 return (XmlBindings) unmarshaller.unmarshal(url);
             }
         } catch(JAXBException e) {
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+            throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(e);
         }
         return null;
     }

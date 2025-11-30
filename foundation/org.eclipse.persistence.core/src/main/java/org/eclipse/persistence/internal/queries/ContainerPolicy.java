@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -340,23 +341,23 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * concrete container class.
      */
     public static ContainerPolicy buildPolicyFor(Class<?> concreteContainerClass, boolean hasOrdering) {
-        if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.List_Class)) {
+        if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.List_Class)) {
             if (hasOrdering) {
                 return new OrderedListContainerPolicy(concreteContainerClass);
             } else if (concreteContainerClass == ClassConstants.Vector_class) {
                 return new VectorContainerPolicy(concreteContainerClass);
             }  else if (concreteContainerClass == ClassConstants.IndirectList_Class) {
                 return new IndirectListContainerPolicy(concreteContainerClass);
-            }   else if (concreteContainerClass == ClassConstants.ArrayList_class) {
+            }   else if (concreteContainerClass == CoreClassConstants.ArrayList_class) {
                 return new ArrayListContainerPolicy(concreteContainerClass);
             } else {
                 return new ListContainerPolicy(concreteContainerClass);
             }
         } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.SortedSet_Class)) {
             return new SortedCollectionContainerPolicy(concreteContainerClass);
-        } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.Collection_Class)) {
+        } else if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.Collection_Class)) {
             return new CollectionContainerPolicy(concreteContainerClass);
-        } else if (Helper.classImplementsInterface(concreteContainerClass, ClassConstants.Map_Class)) {
+        } else if (Helper.classImplementsInterface(concreteContainerClass, CoreClassConstants.Map_Class)) {
             return new MapContainerPolicy(concreteContainerClass);
         } else if (concreteContainerClass.equals(ClassConstants.CursoredStream_Class)) {
             return new CursoredStreamPolicy();
@@ -616,7 +617,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             return IndirectCollectionsFactory.createIndirectList();
         } else if (containerClass == ClassConstants.IndirectSet_Class) {
             return IndirectCollectionsFactory.createIndirectSet();
-        } else if (containerClass == ClassConstants.ArrayList_class) {
+        } else if (containerClass == CoreClassConstants.ArrayList_class) {
             return new ArrayList();
         } else if (containerClass == ClassConstants.Vector_class) {
             return new Vector();
@@ -656,7 +657,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
                 return IndirectCollectionsFactory.createIndirectList(initialCapacity);
             } else if (containerClass == ClassConstants.IndirectSet_Class) {
                 return IndirectCollectionsFactory.createIndirectSet(initialCapacity);
-            } else if (containerClass == ClassConstants.ArrayList_class) {
+            } else if (containerClass == CoreClassConstants.ArrayList_class) {
                 return new ArrayList(initialCapacity);
             } else if (containerClass == ClassConstants.Vector_class) {
                 return new Vector(initialCapacity);
@@ -910,13 +911,13 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             Constructor<?> constructor = null;
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false));
+                    constructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor<>(getContainerClass(), new Class<?>[] { CoreClassConstants.PINT }, false));
                 } catch (PrivilegedActionException exception) {
                     // If there is no constructor then the default will be used.
                     return;
                 }
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { ClassConstants.PINT }, false);
+                constructor = PrivilegedAccessHelper.getConstructorFor(getContainerClass(), new Class<?>[] { CoreClassConstants.PINT }, false);
             }
             setConstructor(constructor);
         } catch (Exception exception) {

@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class ReflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected void writeArguments(CodeGenerator generator) {
+    protected void writeArguments(CodeGenerator generator) throws IOException {
         boolean isFirst = true;
         for (int index = 0; index < argumentTypes.size(); ++index) {
             Class<?> argument = argumentTypes.get(index);

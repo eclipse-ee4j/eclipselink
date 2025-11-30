@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,13 +27,14 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.helper.AttributeMimeTypePolicy;
 import org.eclipse.persistence.sdo.helper.InstanceClassConverter;
 import org.eclipse.persistence.sdo.helper.ListWrapper;
 import org.eclipse.persistence.sdo.helper.SDOMethodAttributeAccessor;
 import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -479,7 +480,7 @@ public class SDOProperty implements Property, Serializable {
         // Set fields even though defaults are set
         //aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
         // Parameter type is always String
-        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class<?>[] { ClassConstants.STRING });
+        ((IsSetNullPolicy)aNullPolicy).setIsSetParameterTypes(new Class<?>[] { CoreClassConstants.STRING });
         ((IsSetNullPolicy)aNullPolicy).setIsSetParameters(new Object[] { propertyName });
         aMapping.setNullPolicy(aNullPolicy);
         return aNullPolicy;
@@ -968,27 +969,27 @@ public class SDOProperty implements Property, Serializable {
             Class<?> instanceClass = getType().getInstanceClass();
             String instanceClassName = getType().getInstanceClassName();
             if (((instanceClassName != null) && instanceClassName.equals("jakarta.activation.DataHandler")) ||//
-                    (instanceClass == ClassConstants.ABYTE) ||//
-                    (instanceClass == ClassConstants.APBYTE) ||//
-                    (instanceClass == ClassConstants.BYTE) ||//
-                    (instanceClass == ClassConstants.PBYTE) ||//
-                    (instanceClass == ClassConstants.CHAR) ||//
-                    (instanceClass == ClassConstants.PCHAR) ||//
-                    (instanceClass == ClassConstants.DOUBLE) ||//
-                    (instanceClass == ClassConstants.PDOUBLE) ||//
-                    (instanceClass == ClassConstants.FLOAT) ||//
-                    (instanceClass == ClassConstants.PFLOAT) ||//
-                    (instanceClass == ClassConstants.LONG) ||//
-                    (instanceClass == ClassConstants.PLONG) ||//
-                    (instanceClass == ClassConstants.SHORT) ||//
-                    (instanceClass == ClassConstants.PSHORT) ||//
-                    (instanceClass == ClassConstants.INTEGER) ||//
-                    (instanceClass == ClassConstants.PINT) ||//
-                    (instanceClass == ClassConstants.BIGDECIMAL) ||//
-                    (instanceClass == ClassConstants.BIGINTEGER) ||//
-                    (instanceClass == ClassConstants.STRING) ||//
-                    (instanceClass == ClassConstants.UTILDATE) ||//
-                    (instanceClass == ClassConstants.CALENDAR) ||//
+                    (instanceClass == CoreClassConstants.ABYTE) ||//
+                    (instanceClass == CoreClassConstants.APBYTE) ||//
+                    (instanceClass == CoreClassConstants.BYTE) ||//
+                    (instanceClass == CoreClassConstants.PBYTE) ||//
+                    (instanceClass == CoreClassConstants.CHAR) ||//
+                    (instanceClass == CoreClassConstants.PCHAR) ||//
+                    (instanceClass == CoreClassConstants.DOUBLE) ||//
+                    (instanceClass == CoreClassConstants.PDOUBLE) ||//
+                    (instanceClass == CoreClassConstants.FLOAT) ||//
+                    (instanceClass == CoreClassConstants.PFLOAT) ||//
+                    (instanceClass == CoreClassConstants.LONG) ||//
+                    (instanceClass == CoreClassConstants.PLONG) ||//
+                    (instanceClass == CoreClassConstants.SHORT) ||//
+                    (instanceClass == CoreClassConstants.PSHORT) ||//
+                    (instanceClass == CoreClassConstants.INTEGER) ||//
+                    (instanceClass == CoreClassConstants.PINT) ||//
+                    (instanceClass == CoreClassConstants.BIGDECIMAL) ||//
+                    (instanceClass == CoreClassConstants.BIGINTEGER) ||//
+                    (instanceClass == CoreClassConstants.STRING) ||//
+                    (instanceClass == CoreClassConstants.UTILDATE) ||//
+                    (instanceClass == CoreClassConstants.CALENDAR) ||//
                     (instanceClass == ClassConstants.TIME) ||//
                     (instanceClass == ClassConstants.SQLDATE) ||//
                     (instanceClass == ClassConstants.TIMESTAMP)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -209,7 +209,6 @@ import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateItemStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.UpperExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.ValueExpressionStateObject;
-import org.eclipse.persistence.jpa.jpql.tools.model.query.VersionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhenClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedTypeProvider;

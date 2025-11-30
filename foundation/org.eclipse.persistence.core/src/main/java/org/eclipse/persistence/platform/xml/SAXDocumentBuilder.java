@@ -15,7 +15,6 @@
 package org.eclipse.persistence.platform.xml;
 
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -44,7 +43,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
     protected List<Node> nodes;
     protected XMLPlatform xmlPlatform;
     protected Map namespaceDeclarations;
-    protected StrBuffer stringBuffer;
+    protected StringBuilder stringBuffer;
 
     protected Locator locator;
 
@@ -52,7 +51,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
         super();
         nodes = new ArrayList<>();
         xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        stringBuffer = new StrBuffer();
+        stringBuffer = new StringBuilder();
         namespaceDeclarations = new HashMap();
     }
 
@@ -121,7 +120,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
         if ((!stringBuffer.isEmpty()) && !(nodes.size() == 1)) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             parentNode.appendChild(text);
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
         appendChildNode(parentNode, element);
         nodes.add(element);
@@ -175,7 +174,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
         if (!stringBuffer.isEmpty()) {
             Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
             endedElement.appendChild(text);
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
     }
 
@@ -243,7 +242,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandle
         CDATASection cdata = (CDATASection)nodes.get(nodes.size()-1).getFirstChild();
         if (!stringBuffer.isEmpty()) {
             cdata.setData(stringBuffer.toString());
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
     }
 

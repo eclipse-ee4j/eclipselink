@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.junit.security;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
@@ -26,7 +27,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.JCEEncryptor;
 import org.eclipse.persistence.internal.security.Securable;
 import org.eclipse.persistence.tools.security.JCEEncryptorCmd;
@@ -187,7 +187,7 @@ public class SecurableBackwardsCompatibilityTest {
      * Return a DES ECB encrypted version of the String parameter, using the legacy encryption code.
      */
     private String encryptString_DES_ECB(String aString) throws Exception {
-        final byte[] bytes = Helper.buildBytesFromHexString("E60B80C7AEC78038");
+        final byte[] bytes = HexFormat.of().parseHex("E60B80C7AEC78038");
 
         Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, SecretKeyFactory.getInstance("DES").generateSecret(new DESKeySpec(bytes)));
@@ -199,7 +199,7 @@ public class SecurableBackwardsCompatibilityTest {
         oos.flush();
         oos.close();
 
-        return Helper.buildHexStringFromBytes(baos.toByteArray());
+        return HexFormat.of().formatHex(baos.toByteArray());
     }
 
     /*
@@ -207,13 +207,13 @@ public class SecurableBackwardsCompatibilityTest {
      * Return an AES CBC encrypted version of the String parameter, using the legacy encryption code.
      */
     private String encryptString_AES_CBC(String aString) throws Exception {
-        final byte[] bytes = Helper.buildBytesFromHexString("2DB7354A48F1CA7B48ACA247540FC923");
+        final byte[] bytes = HexFormat.of().parseHex("2DB7354A48F1CA7B48ACA247540FC923");
 
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         IvParameterSpec iv = getIvSpec();
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(bytes, "AES"), iv);
 
-        return Helper.buildHexStringFromBytes(cipher.doFinal(aString.getBytes(StandardCharsets.UTF_8)));
+        return HexFormat.of().formatHex(cipher.doFinal(aString.getBytes(StandardCharsets.UTF_8)));
     }
 
     /*
@@ -221,7 +221,7 @@ public class SecurableBackwardsCompatibilityTest {
      * Return an AES ECB encrypted version of the String parameter, using the legacy encryption code.
      */
     private String encryptString_AES_ECB(String aString) throws Exception {
-        final byte[] bytes = Helper.buildBytesFromHexString("3E7CFEF156E712906E1F603B59463C67");
+        final byte[] bytes = HexFormat.of().parseHex("3E7CFEF156E712906E1F603B59463C67");
 
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(bytes, "AES"));
@@ -233,7 +233,7 @@ public class SecurableBackwardsCompatibilityTest {
         oos.flush();
         oos.close();
 
-        return Helper.buildHexStringFromBytes(baos.toByteArray());
+        return HexFormat.of().formatHex(baos.toByteArray());
     }
 
     private static IvParameterSpec getIvSpec() {

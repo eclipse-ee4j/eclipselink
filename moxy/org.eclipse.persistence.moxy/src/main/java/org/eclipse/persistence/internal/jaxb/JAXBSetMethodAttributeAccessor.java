@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
         try {
             if (!isWriteOnly()) {
                 Class<?>[] parameterTypes = new Class<?>[1];
-                parameterTypes[0] = Helper.getClassFromClasseName(parameterTypeAsString, loader);
+                parameterTypes[0] = Helper.getClassFromClassName(parameterTypeAsString, loader);
                 attributeClassification = parameterTypes[0];
                 setSetMethod(Helper.getDeclaredMethod(theJavaClass, setMethodName, parameterTypes));
             }

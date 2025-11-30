@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -171,7 +171,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
         if (valueToReturn != null) {
             return valueToReturn;
         } else {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.enumConstantNotFound(enumName + "." + constantName));
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.enumConstantNotFound(enumName + "." + constantName));
         }
     }
 
@@ -266,7 +266,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 }
                 dp = DynamicTypeBuilder.loadDynamicProject((Project)p, null, (DynamicClassLoader) classLoader);
             } catch (Exception e) {
-                throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+                throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
 
             XMLContext ctx = new XMLContext(dp, classLoader, sessionEventListeners());
@@ -317,12 +317,12 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 Throwable cause = e.getCause();
                 if (cause instanceof JAXBException) {
                     throw (JAXBException) cause;
-                } else if (cause instanceof org.eclipse.persistence.exceptions.JAXBException) {
-                    throw (org.eclipse.persistence.exceptions.JAXBException) cause;
+                } else if (cause instanceof org.eclipse.persistence.jaxb.JAXBException) {
+                    throw (org.eclipse.persistence.jaxb.JAXBException) cause;
                 } else {
                     throw new JAXBException(e);
                 }
-            } catch (org.eclipse.persistence.exceptions.JAXBException e) {
+            } catch (org.eclipse.persistence.jaxb.JAXBException e) {
                 throw e;
             } catch (Exception e) {
                 throw new JAXBException(e);
@@ -341,7 +341,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 }
                 dp = DynamicTypeBuilder.loadDynamicProject(p, null, (DynamicClassLoader) classLoader);
             } catch (Exception e) {
-                throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+                throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
 
             XMLContext ctx = new XMLContext(dp, classLoader, sessionEventListeners());

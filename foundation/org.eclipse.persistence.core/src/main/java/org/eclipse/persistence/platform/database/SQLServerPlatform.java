@@ -59,6 +59,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -133,7 +134,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL() && (!usesByteArrayBinding())) {
             writer.write("0x");
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
         } else {
             super.appendByteArray(bytes, writer);
         }

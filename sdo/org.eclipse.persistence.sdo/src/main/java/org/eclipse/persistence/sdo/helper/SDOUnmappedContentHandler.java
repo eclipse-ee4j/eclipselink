@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,8 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.SDOXMLDocument;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -56,7 +54,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     private UnmarshalRecord parentRecord;
     private SDOXMLDocument xmlDocument;
     private QName currentSchemaType;
-    private StrBuffer currentBuffer;
+    private StringBuilder currentBuffer;
     private Stack currentDataObjects;
     private Stack currentProperties;
     private boolean rootProcessed;
@@ -73,7 +71,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
         isInCharacterBlock = false;
         currentDataObjects = new Stack();
         currentProperties = new Stack();
-        currentBuffer = new StrBuffer();
+        currentBuffer = new StringBuilder();
     }
 
     @Override
@@ -106,7 +104,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 dObj.getSequence().addText(currentBuffer.toString());
 
             }
-            currentBuffer.reset();
+            currentBuffer.setLength(0);
         }
         if (!rootProcessed) {
             processRoot(namespaceURI, localName, qName, atts);
@@ -209,7 +207,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (!isInCharacterBlock) {
-            currentBuffer.reset();
+            currentBuffer.setLength(0);
             isInCharacterBlock = true;
         }
         currentBuffer.append(ch, start, length);
@@ -294,7 +292,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                     currentDataObject.set(currentProperty, value);
                 }
             }
-            currentBuffer.reset();
+            currentBuffer.setLength(0);
         }
     }
 
@@ -454,7 +452,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
                 // sure it is non-abstract
                 if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                     // need to throw an exception here
-                    throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                    throw DescriptorException.missingClassIndicatorField(unmarshalRecord.toString(), xmlDescriptor.getInheritancePolicy().getDescriptor());
                 }
             }
         }

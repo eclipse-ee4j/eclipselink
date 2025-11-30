@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,11 +26,12 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -512,7 +513,7 @@ public class SDOClassGenerator {
 
                 classBuffer.getMethodBuffer().append(")");
             } else {
-                if (!returnType.equals(ClassConstants.OBJECT.getName())) {
+                if (!returnType.equals(CoreClassConstants.OBJECT.getName())) {
                     classBuffer.getMethodBuffer().append("(");
                     classBuffer.getMethodBuffer().append(returnType).append(")");
                 }

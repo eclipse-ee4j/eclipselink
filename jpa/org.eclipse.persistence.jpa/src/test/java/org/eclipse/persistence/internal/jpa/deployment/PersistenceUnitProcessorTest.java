@@ -16,7 +16,7 @@ import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.jpa.Archive;

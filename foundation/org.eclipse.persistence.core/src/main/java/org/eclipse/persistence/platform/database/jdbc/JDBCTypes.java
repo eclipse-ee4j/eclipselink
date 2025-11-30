@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,11 +65,11 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.OBJECT;
 import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.SQLDATE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.SHORT;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Void_Class;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
@@ -350,14 +350,14 @@ public enum JDBCTypes implements JDBCType {
                 case DECIMAL, BIGINT, NUMERIC -> BIGDECIMAL;
                 case BLOB, BINARY, LONGVARBINARY, VARBINARY -> ClassConstants.BLOB;
                 case CLOB -> ClassConstants.CLOB;
-                case BOOLEAN -> ClassConstants.BOOLEAN;
+                case BOOLEAN -> CoreClassConstants.BOOLEAN;
                 case DISTINCT, DATALINK, JAVA_OBJECT, OTHER, REF -> OBJECT;
                 case NULL -> Void_Class;
                 case DATE -> SQLDATE;
                 case TIMESTAMP -> CoreClassConstants.TIMESTAMP;
-                case DOUBLE -> ClassConstants.DOUBLE;
-                case REAL, FLOAT -> ClassConstants.FLOAT;
-                case INTEGER -> ClassConstants.INTEGER;
+                case DOUBLE -> CoreClassConstants.DOUBLE;
+                case REAL, FLOAT -> CoreClassConstants.FLOAT;
+                case INTEGER -> CoreClassConstants.INTEGER;
                 case BIT, SMALLINT, TINYINT -> SHORT;
                 case STRUCT -> Struct.class;
                 case TIME -> CoreClassConstants.TIME;

@@ -59,6 +59,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.descriptors.partitioning;
     exports org.eclipse.persistence.dynamic;
     exports org.eclipse.persistence.eis;
+    exports org.eclipse.persistence.eis.i18n;
     exports org.eclipse.persistence.eis.interactions;
     exports org.eclipse.persistence.eis.mappings;
     exports org.eclipse.persistence.exceptions;
@@ -79,6 +80,8 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.oxm.annotations;
     exports org.eclipse.persistence.oxm.attachment;
     exports org.eclipse.persistence.oxm.documentpreservation;
+    exports org.eclipse.persistence.oxm.exceptions;
+    exports org.eclipse.persistence.oxm.exceptions.i18n;
     exports org.eclipse.persistence.oxm.json;
     exports org.eclipse.persistence.oxm.mappings;
     exports org.eclipse.persistence.oxm.mappings.converters;
@@ -98,9 +101,11 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.platform.database.partitioning;
     exports org.eclipse.persistence.platform.server;
     exports org.eclipse.persistence.platform.server.glassfish;
+    exports org.eclipse.persistence.platform.server.i18n;
     exports org.eclipse.persistence.platform.server.was;
     exports org.eclipse.persistence.platform.server.wls;
     exports org.eclipse.persistence.platform.xml;
+    exports org.eclipse.persistence.platform.xml.i18n;
     exports org.eclipse.persistence.queries;
     exports org.eclipse.persistence.security;
     exports org.eclipse.persistence.sequencing;
@@ -115,9 +120,11 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.sessions.changesets;
     exports org.eclipse.persistence.sessions.coordination;
     exports org.eclipse.persistence.sessions.coordination.broadcast;
+    exports org.eclipse.persistence.sessions.coordination.i18n;
     exports org.eclipse.persistence.sessions.coordination.jms;
     exports org.eclipse.persistence.sessions.coordination.rmi;
     exports org.eclipse.persistence.sessions.factories;
+    exports org.eclipse.persistence.sessions.factories.i18n;
     exports org.eclipse.persistence.sessions.interceptors;
     exports org.eclipse.persistence.sessions.remote;
     exports org.eclipse.persistence.sessions.remote.rmi;
@@ -129,6 +136,7 @@ module org.eclipse.persistence.core {
     exports org.eclipse.persistence.tools.tuning;
     exports org.eclipse.persistence.transaction;
     exports org.eclipse.persistence.transaction.glassfish;
+    exports org.eclipse.persistence.transaction.i18n;
     exports org.eclipse.persistence.transaction.jboss;
     exports org.eclipse.persistence.transaction.sap;
     exports org.eclipse.persistence.transaction.was;
@@ -196,7 +204,6 @@ module org.eclipse.persistence.core {
             org.eclipse.persistence.pgsql;
     exports org.eclipse.persistence.internal.mappings.converters to org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.internal.weaving;
-    exports org.eclipse.persistence.internal.cache to org.eclipse.persistence.moxy;
     exports org.eclipse.persistence.internal.oxm.schema to
             org.eclipse.persistence.dbws,
             org.eclipse.persistence.dbws.builder,

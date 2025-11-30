@@ -1872,8 +1872,8 @@ public class ProjectClassGenerator {
 
         CodeGenerator generator = new CodeGenerator(useUnicode);
         generator.setOutput(getOutputWriter());
-        generateProjectClass().write(generator);
         try {
+            generateProjectClass().write(generator);
             getOutputWriter().flush();
             getOutputWriter().close();
         } catch (IOException exception) {

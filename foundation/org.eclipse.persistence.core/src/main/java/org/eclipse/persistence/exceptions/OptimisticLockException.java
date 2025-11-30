@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,6 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>:  This exception is used when TopLink's optimistic locking feature is used.
@@ -167,7 +166,7 @@ public class OptimisticLockException extends EclipseLinkException {
         return optimisticLockException;
     }
 
-    public static OptimisticLockException unwrappingObjectDeletedSinceLastRead(Vector pkVector, String className) {
+    public static OptimisticLockException unwrappingObjectDeletedSinceLastRead(List<?> pkVector, String className) {
         Object[] args = { pkVector, className };
 
         OptimisticLockException optimisticLockException = new OptimisticLockException(ExceptionMessageGenerator.buildMessage(OptimisticLockException.class, UNWRAPPING_OBJECT_DELETED_SINCE_LAST_READ, args));

@@ -27,7 +27,7 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.dynamic.DynamicException;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;

@@ -18,7 +18,7 @@ import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.mappings.transformers.CoreFieldTransformer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;

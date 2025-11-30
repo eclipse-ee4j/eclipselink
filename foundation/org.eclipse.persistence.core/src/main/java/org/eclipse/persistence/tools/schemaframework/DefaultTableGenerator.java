@@ -35,12 +35,12 @@ package org.eclipse.persistence.tools.schemaframework;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -842,7 +842,7 @@ public class DefaultTableGenerator {
 
                     //set the default type (lang.String) to all un-resolved java type, like null, Number, util.Date, NChar/NType, Calendar
                     //sql.Blob/Clob, Object, or unknown type). Please refer to bug 4352820.
-                    fieldDef.setType(ClassConstants.STRING);
+                    fieldDef.setType(CoreClassConstants.STRING);
                 } else {
                     //need to convert the primitive type if applied.
                     fieldDef.setType(ConversionManager.getObjectClass(fieldType));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2013, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,9 +18,9 @@
 package org.eclipse.persistence.internal.sessions;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
 import java.sql.ResultSet;
@@ -131,16 +131,16 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                     if (this.shouldUseOptimization) {
                         try {
                             Class<?> fieldType = field.getType();
-                            if (fieldType == ClassConstants.STRING) {
+                            if (fieldType == CoreClassConstants.STRING) {
                                 if(platform.shouldUseGetSetNString()){
                                     value = resultSet.getNString(index + 1);
                                 }else {
                                     value = resultSet.getString(index + 1);
                                 }
 
-                            } else if (fieldType == ClassConstants.LONG) {
+                            } else if (fieldType == CoreClassConstants.LONG) {
                                 value = resultSet.getLong(index + 1);
-                            } else if (fieldType == ClassConstants.INTEGER) {
+                            } else if (fieldType == CoreClassConstants.INTEGER) {
                                 value = resultSet.getInt(index + 1);
                             } else {
                                 value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
@@ -211,15 +211,15 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                     if (this.shouldUseOptimization) {
                         try {
                             Class<?> fieldType = field.getType();
-                            if (fieldType == ClassConstants.STRING) {
+                            if (fieldType == CoreClassConstants.STRING) {
                                 if(platform.shouldUseGetSetNString()){
                                     value = resultSet.getNString(index + 1);
                                 }else {
                                     value = resultSet.getString(index + 1);
                                 }
-                            } else if (fieldType == ClassConstants.LONG) {
+                            } else if (fieldType == CoreClassConstants.LONG) {
                                 value = resultSet.getLong(index + 1);
-                            } else if (fieldType == ClassConstants.INTEGER) {
+                            } else if (fieldType == CoreClassConstants.INTEGER) {
                                 value = resultSet.getInt(index + 1);
                             } else {
                                 value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
@@ -250,15 +250,15 @@ public class SimpleResultSetRecord extends ResultSetRecord {
         if (this.shouldUseOptimization) {
             try {
                 Class<?> fieldType = field.getType();
-                if (fieldType == ClassConstants.STRING) {
+                if (fieldType == CoreClassConstants.STRING) {
                     if(platform.shouldUseGetSetNString()){
                         return resultSet.getNString(index + 1);
                     }else {
                         return resultSet.getString(index + 1);
                     }
-                } else if (fieldType == ClassConstants.LONG) {
+                } else if (fieldType == CoreClassConstants.LONG) {
                     return resultSet.getLong(index + 1);
-                } else if (fieldType == ClassConstants.INTEGER) {
+                } else if (fieldType == CoreClassConstants.INTEGER) {
                     return resultSet.getInt(index + 1);
                 }
             } catch (SQLException exception) {

@@ -28,9 +28,9 @@ import jakarta.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
@@ -300,7 +300,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                     returnQuery.getReturnTypes().add(((ConstantExpression) item.getAttributeExpression()).getValue().getClass().getSimpleName());
                 } else {
                     // Use Object.class by default.
-                    returnQuery.getReturnTypes().add(ClassConstants.OBJECT.getSimpleName());
+                    returnQuery.getReturnTypes().add(CoreClassConstants.OBJECT.getSimpleName());
                 }
             }
         } else {

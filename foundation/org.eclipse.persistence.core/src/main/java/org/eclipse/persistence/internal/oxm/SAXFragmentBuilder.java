@@ -48,7 +48,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
         if (!mixedContent) {
             boolean bufferContainsOnlyWhitespace = stringBuffer.toString().trim().isEmpty();
             if (bufferContainsOnlyWhitespace) {
-                stringBuffer.reset();
+                stringBuffer.setLength(0);
             }
         }
 
@@ -57,7 +57,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             Node parent = this.nodes.get(nodes.size() - 1);
             parent.appendChild(text);
             processNamespacesForText(text.getTextContent(), (Element)parent);
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
         if (null != namespaceURI && namespaceURI.isEmpty()) {
             namespaceURI = null;
@@ -137,7 +137,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if (!stringBuffer.isEmpty()) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
-                stringBuffer.reset();
+                stringBuffer.setLength(0);
                 processNamespacesForText(text.getTextContent(), endedElement);
             }
 
@@ -163,7 +163,7 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             if (!stringBuffer.isEmpty()) {
                 Text text = getInitializedDocument().createTextNode(stringBuffer.toString());
                 endedElement.appendChild(text);
-                stringBuffer.reset();
+                stringBuffer.setLength(0);
             }
         } else {
             super.endElement(namespaceURI, localName, qName);

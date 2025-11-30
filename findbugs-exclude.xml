@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -200,12 +200,7 @@
                 <Class name="org.eclipse.persistence.internal.helper.Helper"/>
                 <Or>
                     <Field name="CURRENT_WORKING_DIRECTORY"/>
-                    <Field name="TEMP_DIRECTORY"/>
                 </Or>
-            </And>
-            <And>
-                <Class name="org.eclipse.persistence.internal.helper.JavaPlatform"/>
-                <Field name="platform"/>
             </And>
             <And>
                 <Class name="org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class MergeManager {
     protected Object writeLockQueued;
 
     /** Stores the node that holds this mergemanager within the WriteLocksManager queue */
-    protected LinkedNode queueNode;
+    protected LinkedNode<MergeManager> queueNode;
 
     /** Policy that determines merge type (i.e. merge is used for several usages). */
     protected int mergePolicy;
@@ -178,7 +178,7 @@ public class MergeManager {
      * INTENRAL:
      * Used to get the node that this merge manager is stored in, within the WriteLocksManager write lockers queue
      */
-    public LinkedNode getQueueNode() {
+    public LinkedNode<MergeManager> getQueueNode() {
         return this.queueNode;
     }
 
@@ -1170,7 +1170,7 @@ public class MergeManager {
      * INTENRAL:
      * Used to set the node that this merge manager is stored in, within the WriteLocksManager write lockers queue
      */
-    public void setQueueNode(LinkedNode node) {
+    public void setQueueNode(LinkedNode<MergeManager> node) {
         this.queueNode = node;
     }
 

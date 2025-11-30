@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,7 +86,7 @@ public abstract class AttributeDefinition extends CodeDefinition {
     }
 
     @Override
-    public void writeBody(CodeGenerator generator) {
+    public void writeBody(CodeGenerator generator) throws IOException {
         generator.writeType(getTypeName());
         generator.writeType(" ");
         generator.write(getName());

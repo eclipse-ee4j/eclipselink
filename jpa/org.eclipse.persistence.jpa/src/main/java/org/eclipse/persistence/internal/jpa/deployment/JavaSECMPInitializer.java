@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,7 +37,7 @@ import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.TransformerException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;

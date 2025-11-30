@@ -23,7 +23,7 @@ import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.sessions.factories.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -46,8 +46,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         try {
             JAXBContext context = JAXBContextFactory.createContext("org.eclipse.persistence.testing.jaxb.jaxbcontext.fake", Thread.currentThread().getContextClassLoader());
         } catch(JAXBException ex) {
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getInternalException() instanceof ValidationException);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getInternalException() instanceof ValidationException);
         }
     }
 
@@ -75,8 +75,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
                 }
             });
         } catch(JAXBException ex) {
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.exceptions.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
-            assertTrue(((org.eclipse.persistence.exceptions.JAXBException)ex.getLinkedException()).getInternalException() instanceof SessionLoaderException);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getErrorCode() == org.eclipse.persistence.jaxb.JAXBException.NO_OBJECT_FACTORY_OR_JAXB_INDEX_IN_PATH);
+            assertTrue(((org.eclipse.persistence.jaxb.JAXBException)ex.getLinkedException()).getInternalException() instanceof SessionLoaderException);
         }
     }
 
@@ -142,8 +142,8 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
             classes[0] = ConcreteClassWithMultiArgConstructor.class;
             JAXBContextFactory.createContext(classes, null);
         } catch(JAXBException e) {
-            org.eclipse.persistence.exceptions.JAXBException je = (org.eclipse.persistence.exceptions.JAXBException) e.getLinkedException();
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, je.getErrorCode());
+            org.eclipse.persistence.jaxb.JAXBException je = (org.eclipse.persistence.jaxb.JAXBException) e.getLinkedException();
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.FACTORY_METHOD_OR_ZERO_ARG_CONST_REQ, je.getErrorCode());
             return;
         }
         fail();

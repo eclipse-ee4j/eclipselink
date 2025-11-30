@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
 /**
@@ -495,7 +495,7 @@ public class SDOUtil {
      */
     public static String getMethodName(String s, String returnType) {
         StringBuilder stringBuffer = new StringBuilder();
-        if (returnType.equals(ClassConstants.PBOOLEAN.getName()) || returnType.equals(ClassConstants.BOOLEAN.getName())) {
+        if (returnType.equals(CoreClassConstants.PBOOLEAN.getName()) || returnType.equals(CoreClassConstants.BOOLEAN.getName())) {
             stringBuffer.append(IS);
         } else {
             stringBuffer.append(GET);
@@ -683,9 +683,9 @@ public class SDOUtil {
             SDOType propertyType = property.getType();
             if(propertyType.isDataType()) {
                 Class<?> instanceClass = propertyType.getInstanceClass();
-                if (ClassConstants.ABYTE.equals(instanceClass)) {
+                if (CoreClassConstants.ABYTE.equals(instanceClass)) {
                     return "Byte[]";
-                } else if (ClassConstants.APBYTE.equals(instanceClass)) {
+                } else if (CoreClassConstants.APBYTE.equals(instanceClass)) {
                     return "byte[]";
                 }
             }
@@ -694,31 +694,31 @@ public class SDOUtil {
     }
 
     public static String getBuiltInType(String typeName) {
-        if ((typeName.equals(ClassConstants.PBOOLEAN.getName())) || (typeName.equals(ClassConstants.BOOLEAN.getName()))) {
+        if ((typeName.equals(CoreClassConstants.PBOOLEAN.getName())) || (typeName.equals(CoreClassConstants.BOOLEAN.getName()))) {
             return "Boolean";
-        } else if ((typeName.equals(ClassConstants.PBYTE.getName())) || (typeName.equals(ClassConstants.BYTE.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PBYTE.getName())) || (typeName.equals(CoreClassConstants.BYTE.getName()))) {
             return "Byte";
-        } else if (typeName.equals("byte[]") || typeName.equals("Byte[]") ||  (typeName.equals(ClassConstants.APBYTE.getName())) || (typeName.equals(ClassConstants.ABYTE.getName()))) {
+        } else if (typeName.equals("byte[]") || typeName.equals("Byte[]") ||  (typeName.equals(CoreClassConstants.APBYTE.getName())) || (typeName.equals(CoreClassConstants.ABYTE.getName()))) {
             return "Bytes";
-        } else if ((typeName.equals(ClassConstants.PCHAR.getName())) || (typeName.equals(ClassConstants.CHAR.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PCHAR.getName())) || (typeName.equals(CoreClassConstants.CHAR.getName()))) {
             return "Char";
-        } else if ((typeName.equals(ClassConstants.PDOUBLE.getName())) || (typeName.equals(ClassConstants.DOUBLE.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PDOUBLE.getName())) || (typeName.equals(CoreClassConstants.DOUBLE.getName()))) {
             return "Double";
-        } else if ((typeName.equals(ClassConstants.PFLOAT.getName())) || (typeName.equals(ClassConstants.FLOAT.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PFLOAT.getName())) || (typeName.equals(CoreClassConstants.FLOAT.getName()))) {
             return "Float";
-        } else if ((typeName.equals(ClassConstants.PLONG.getName())) || (typeName.equals(ClassConstants.LONG.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PLONG.getName())) || (typeName.equals(CoreClassConstants.LONG.getName()))) {
             return "Long";
-        } else if ((typeName.equals(ClassConstants.PSHORT.getName())) || (typeName.equals(ClassConstants.SHORT.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PSHORT.getName())) || (typeName.equals(CoreClassConstants.SHORT.getName()))) {
             return "Short";
-        } else if ((typeName.equals(ClassConstants.PINT.getName())) || (typeName.equals(ClassConstants.INTEGER.getName()))) {
+        } else if ((typeName.equals(CoreClassConstants.PINT.getName())) || (typeName.equals(CoreClassConstants.INTEGER.getName()))) {
             return "Int";
-        } else if (typeName.equals(ClassConstants.STRING.getName())) {
+        } else if (typeName.equals(CoreClassConstants.STRING.getName())) {
             return "String";
-        } else if (typeName.equals(ClassConstants.BIGINTEGER.getName())) {
+        } else if (typeName.equals(CoreClassConstants.BIGINTEGER.getName())) {
             return "BigInteger";
-        } else if (typeName.equals(ClassConstants.BIGDECIMAL.getName())) {
+        } else if (typeName.equals(CoreClassConstants.BIGDECIMAL.getName())) {
             return "BigDecimal";
-        } else if (typeName.equals(ClassConstants.UTILDATE.getName())) {
+        } else if (typeName.equals(CoreClassConstants.UTILDATE.getName())) {
             return "Date";
         } else if (typeName.equals("java.util.List")) {
             return "List";

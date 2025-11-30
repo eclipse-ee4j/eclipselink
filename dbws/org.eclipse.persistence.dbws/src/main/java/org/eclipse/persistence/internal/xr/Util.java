@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,18 +16,18 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGINTEGER;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BYTE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.CALENDAR;
-import static org.eclipse.persistence.internal.helper.ClassConstants.DOUBLE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.FLOAT;
-import static org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
-import static org.eclipse.persistence.internal.helper.ClassConstants.LONG;
-import static org.eclipse.persistence.internal.helper.ClassConstants.SHORT;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BIGINTEGER;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BYTE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.CALENDAR;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.DOUBLE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.FLOAT;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.INTEGER;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.LONG;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.SHORT;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.ANY_SIMPLE_TYPE_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.BOOLEAN_QNAME;

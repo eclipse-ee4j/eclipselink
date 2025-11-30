@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,9 @@ public class InvalidEnumValueTestCases extends TestCase {
         {
            JAXBContextFactory.createContext(new Class<?>[] {InvalidEnum.class}, null);
         }catch(JAXBException jException){
-             org.eclipse.persistence.exceptions.JAXBException linkedException  = ( org.eclipse.persistence.exceptions.JAXBException)jException.getLinkedException();
+             org.eclipse.persistence.jaxb.JAXBException linkedException  = (org.eclipse.persistence.jaxb.JAXBException)jException.getLinkedException();
 
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.INVALID_ENUM_VALUE ,linkedException.getErrorCode());
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.INVALID_ENUM_VALUE ,linkedException.getErrorCode());
             return;
         }
         fail("A JAXBException should have been thrown");

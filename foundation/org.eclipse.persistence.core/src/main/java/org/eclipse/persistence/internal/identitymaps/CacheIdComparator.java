@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,8 +11,6 @@
  */
 
 package org.eclipse.persistence.internal.identitymaps;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
 
 import java.util.Comparator;
 
@@ -26,7 +24,6 @@ class CacheIdComparator implements Comparator<CacheId> {
         if (id1 == id2) {
             return 0;
         }
-
         return compareObjectArrays(id1.primaryKey, id2.primaryKey);
     }
 
@@ -48,12 +45,12 @@ class CacheIdComparator implements Comparator<CacheId> {
                 Class<?> value1Class = value1.getClass();
                 if (value1Class.isArray()) {
                     Class<?> value2Class = value2.getClass();
-                    if (value1Class == ClassConstants.APBYTE && value2Class == ClassConstants.APBYTE) {
+                    if (value1Class == CacheId.APBYTE && value2Class == CacheId.APBYTE) {
                         int result = compareByteArrays((byte[])value1, (byte[])value2);
                         if (result != 0) {
                             return result;
                         }
-                    } else if (value1Class == ClassConstants.APCHAR && value2Class == ClassConstants.APCHAR) {
+                    } else if (value1Class == CacheId.APCHAR && value2Class == CacheId.APCHAR) {
                         int result = compareCharArrays((char[])value1, (char[])value2);
                         if (result != 0) {
                             return result;
@@ -65,12 +62,17 @@ class CacheIdComparator implements Comparator<CacheId> {
                         }
                     }
                 } else {
-                    try {
-                        int compareTo = ((Comparable)value1).compareTo(value2);
-                        if (compareTo != 0) {
-                            return compareTo;
+                    if (value1.getClass().isInstance(value2) && value1 instanceof Comparable<?>) {
+                        int result = compareComparable((Comparable<?>)value1, (Comparable<?>) value2);
+                        if (result != 0) {
+                            return result;
                         }
-                    } catch (Exception exception) {
+                    } else if (value2.getClass().isInstance(value1) && value1 instanceof Comparable<?>) {
+                        int result = compareComparable((Comparable<?>)value2, (Comparable<?>) value1);
+                        if (result != 0) {
+                            return result;
+                        }
+                    } else {
                         int result = value1.hashCode() - value2.hashCode();
                         if (result != 0) {
                             return result > 0 ? 1 : -1;
@@ -79,10 +81,8 @@ class CacheIdComparator implements Comparator<CacheId> {
                 }
             }
             return 0;
-        } else {
-            return array1.length > array2.length ? 1 : -1;
         }
-
+        return array1.length > array2.length ? 1 : -1;
     }
 
     private int compareCharArrays(char[] array1, char[] array2) {
@@ -93,9 +93,8 @@ class CacheIdComparator implements Comparator<CacheId> {
                 }
             }
             return 0;
-        } else {
-            return array1.length > array2.length ? 1 : -1;
         }
+        return array1.length > array2.length ? 1 : -1;
     }
 
     private int compareByteArrays(byte[] array1, byte[] array2) {
@@ -106,8 +105,12 @@ class CacheIdComparator implements Comparator<CacheId> {
                 }
             }
             return 0;
-        } else {
-            return array1.length > array2.length ? 1 : -1;
         }
+        return array1.length > array2.length ? 1 : -1;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private int compareComparable(Comparable value1, Comparable value2) {
+        return value1.compareTo(value2);
     }
 }

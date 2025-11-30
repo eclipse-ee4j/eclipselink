@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.SessionLoaderException;
+import org.eclipse.persistence.sessions.factories.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;

@@ -66,6 +66,7 @@ import java.time.OffsetTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Vector;
 
@@ -115,7 +116,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("BLOB(x'");
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
             writer.write("')");
         } else {
             super.appendByteArray(bytes, writer);

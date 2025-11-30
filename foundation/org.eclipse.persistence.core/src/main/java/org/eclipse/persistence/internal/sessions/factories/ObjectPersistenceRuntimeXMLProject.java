@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.history.HistoryPolicy;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.FieldTranslation;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -77,7 +78,6 @@ import org.eclipse.persistence.internal.expressions.LogicalExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
@@ -754,7 +754,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 }
 
                 Object attributeValue;
-                Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
@@ -806,7 +806,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
 
                     // Allow user to specify field type to override computed value. (i.e. blob, nchar)
                     if (directMapping.getFieldClassification() == null) {
-                        directMapping.setFieldClassification(ClassConstants.STRING);
+                        directMapping.setFieldClassification(CoreClassConstants.STRING);
                     }
                 }
             }

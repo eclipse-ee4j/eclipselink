@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,9 @@ package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * <P><B>Purpose</B>: EJBQL parsing and resolution problems will raise this exception
@@ -69,7 +69,7 @@ public class JPQLException extends EclipseLinkException {
     public static final int nonExistantOrderByAlias = 8040;
     public static final int indexOnlyAllowedOnVariable = 8041;
 
-    public Collection internalExceptions = null;
+    private Collection<Throwable> internalExceptions = null;
 
     /**
     * INTERNAL
@@ -534,7 +534,7 @@ public class JPQLException extends EclipseLinkException {
      * Add an internal Exception to the collection of
      * internal Exceptions
      */
-    public Object addInternalException(Object theException) {
+    public Throwable addInternalException(Throwable theException) {
         getInternalExceptions().add(theException);
         return theException;
     }
@@ -552,9 +552,9 @@ public class JPQLException extends EclipseLinkException {
      * Return the collection of internal Exceptions.
      * Intialize if there are no exceptions
      */
-    public Collection getInternalExceptions() {
+    public Collection<Throwable> getInternalExceptions() {
         if (internalExceptions == null) {
-            setInternalExceptions(new Vector());
+            setInternalExceptions(new ArrayList<>());
         }
         return internalExceptions;
     }
@@ -563,7 +563,7 @@ public class JPQLException extends EclipseLinkException {
      * INTERNAL
      * Store the exceptions related to this exception
      */
-    public void setInternalExceptions(Collection theExceptions) {
+    public void setInternalExceptions(Collection<Throwable> theExceptions) {
         internalExceptions = theExceptions;
     }
 

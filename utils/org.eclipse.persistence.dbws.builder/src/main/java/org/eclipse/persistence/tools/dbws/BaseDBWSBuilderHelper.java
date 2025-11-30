@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ package org.eclipse.persistence.tools.dbws;
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
-import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.EMPTY_STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.XML_MIME_URL;
@@ -107,7 +107,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;

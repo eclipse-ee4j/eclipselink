@@ -16,7 +16,7 @@ package org.eclipse.persistence.transaction.wildfly;
 
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
-import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.transaction.TransactionException;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 /**

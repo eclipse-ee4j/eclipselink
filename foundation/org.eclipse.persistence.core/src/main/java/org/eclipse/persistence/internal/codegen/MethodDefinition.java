@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -273,7 +274,7 @@ public abstract class MethodDefinition extends CodeDefinition {
      * Write the code out to the generator's stream.
      */
     @Override
-    public void writeBody(CodeGenerator generator) {
+    public void writeBody(CodeGenerator generator) throws IOException {
         if (!isConstructor()) {
             generator.writeType(getReturnType());
             generator.write(" ");
@@ -305,9 +306,9 @@ public abstract class MethodDefinition extends CodeDefinition {
         }
     }
 
-    protected abstract void writeArguments(CodeGenerator generator);
+    protected abstract void writeArguments(CodeGenerator generator) throws IOException;
 
-    protected void writeThrowsClause(CodeGenerator generator) {
+    protected void writeThrowsClause(CodeGenerator generator) throws IOException {
         generator.write(" throws ");
 
         for (Iterator<String> exceptionIterator = this.exceptions.iterator(); exceptionIterator.hasNext();) {

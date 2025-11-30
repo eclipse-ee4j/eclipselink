@@ -31,7 +31,6 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * <p>

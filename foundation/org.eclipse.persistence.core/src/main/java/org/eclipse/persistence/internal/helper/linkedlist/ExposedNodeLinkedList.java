@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper.linkedlist;
-
-import org.eclipse.persistence.exceptions.ValidationException;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,8 +33,8 @@ import java.util.NoSuchElementException;
  * @since 10.0.3
  * @see org.eclipse.persistence.internal.helper.linkedlist.LinkedNode
  */
-public class ExposedNodeLinkedList implements List {
-    private transient LinkedNode header;
+public class ExposedNodeLinkedList<E> implements List<E> {
+    private transient LinkedNode<E> header;
     private transient int size;
 
     /**
@@ -44,101 +42,101 @@ public class ExposedNodeLinkedList implements List {
      */
     public ExposedNodeLinkedList() {
         this.size = 0;
-        this.header = new LinkedNode(null, null, null);
+        this.header = new LinkedNode<>(null, null, null);
         header.next = header;
         header.previous = header;
     }
 
     // Bunch of List methods not currently implemented.
     @Override
-    public Object[] toArray(Object[] array) {
-        throw ValidationException.operationNotSupported("toArray");
+    public <E> E[] toArray(E[] array) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList toArray");
     }
 
     @Override
-    public Object[] toArray() {
-        throw ValidationException.operationNotSupported("toArray");
+    public E[] toArray() {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList toArray");
     }
 
     @Override
-    public Object set(int index, Object value) {
-        throw ValidationException.operationNotSupported("set");
+    public E set(int index, E value) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList set");
     }
 
     @Override
-    public ListIterator listIterator(int index) {
-        throw ValidationException.operationNotSupported("listIterator");
+    public ListIterator<E> listIterator(int index) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList listIterator");
     }
 
     @Override
-    public ListIterator listIterator() {
-        throw ValidationException.operationNotSupported("listIterator");
+    public ListIterator<E> listIterator() {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList listIterator");
     }
 
     @Override
-    public Iterator iterator() {
-        throw ValidationException.operationNotSupported("iterator");
+    public Iterator<E> iterator() {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList iterator");
     }
 
     @Override
-    public List subList(int start, int end) {
-        throw ValidationException.operationNotSupported("subList");
+    public List<E> subList(int start, int end) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList subList");
     }
 
     @Override
-    public boolean retainAll(Collection collection) {
-        throw ValidationException.operationNotSupported("retainAll");
+    public boolean retainAll(Collection<?> collection) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList retainAll");
     }
 
     @Override
-    public boolean removeAll(Collection collection) {
-        throw ValidationException.operationNotSupported("removeAll");
+    public boolean removeAll(Collection<?> collection) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList removeAll");
     }
 
     @Override
-    public boolean containsAll(Collection collection) {
-        throw ValidationException.operationNotSupported("containsAll");
+    public boolean containsAll(Collection<?> collection) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList containsAll");
     }
 
     @Override
-    public boolean addAll(Collection collection) {
-        throw ValidationException.operationNotSupported("addAll");
+    public boolean addAll(Collection<? extends E> collection) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList addAll");
     }
 
     @Override
-    public boolean addAll(int index, Collection collection) {
-        throw ValidationException.operationNotSupported("addAll");
+    public boolean addAll(int index, Collection<? extends E> collection) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList addAll");
     }
 
     @Override
     public boolean remove(Object object) {
-        throw ValidationException.operationNotSupported("remove");
+        throw new UnsupportedOperationException("ExposedNodeLinkedList remove");
     }
 
     @Override
-    public boolean add(Object object) {
+    public boolean add(E object) {
         addLast(object);
         return true;
     }
 
     @Override
     public int lastIndexOf(Object object) {
-        throw ValidationException.operationNotSupported("lastIndexOf");
+        throw new UnsupportedOperationException("ExposedNodeLinkedList lastIndexOf");
     }
 
     @Override
-    public void add(int index, Object object) {
-        throw ValidationException.operationNotSupported("add");
+    public void add(int index, E object) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList add");
     }
 
     @Override
-    public Object remove(int index) {
-        throw ValidationException.operationNotSupported("remove");
+    public E remove(int index) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList remove");
     }
 
     @Override
-    public Object get(int index) {
-        throw ValidationException.operationNotSupported("get");
+    public E get(int index) {
+        throw new UnsupportedOperationException("ExposedNodeLinkedList get");
     }
 
     @Override
@@ -151,7 +149,7 @@ public class ExposedNodeLinkedList implements List {
      *
      * @return the first contents in this list. Null if this list is empty.
      */
-    public Object getFirst() {
+    public E getFirst() {
         if (size == 0) {
             return null;
         }
@@ -163,7 +161,7 @@ public class ExposedNodeLinkedList implements List {
      *
      * @return the last contents in this list. Null if this list is empty.
      */
-    public Object getLast() {
+    public E getLast() {
         if (size == 0) {
             return null;
         }
@@ -176,9 +174,9 @@ public class ExposedNodeLinkedList implements List {
      * @return the first contents from this list.
      * @throws    NoSuchElementException if this list is empty.
      */
-    public Object removeFirst() {
+    public E removeFirst() {
         if (size != 0) {
-            Object first = header.next.contents;
+            E first = header.next.contents;
             remove(header.next);
             return first;
         }
@@ -191,9 +189,9 @@ public class ExposedNodeLinkedList implements List {
      * @return the last contents from this list.
      * @throws    NoSuchElementException if this list is empty.
      */
-    public Object removeLast() {
+    public E removeLast() {
         if (size != 0) {
-            Object last = header.previous.contents;
+            E last = header.previous.contents;
             remove(header.previous);
             return last;
         }
@@ -205,7 +203,7 @@ public class ExposedNodeLinkedList implements List {
      *
      * @param o the contents to be inserted at the beginning of this list.
      */
-    public void addFirst(Object o) {
+    public void addFirst(E o) {
         addAfter(o, header);
     }
 
@@ -215,7 +213,7 @@ public class ExposedNodeLinkedList implements List {
      * @param o the contents to be inserted at the beginning of this list.
      * @return <code>LinkedNode</code> with the specified content.
      */
-    public LinkedNode addFirstElement(Object o) {
+    public LinkedNode<E> addFirstElement(E o) {
         return addAfter(o, header);
     }
 
@@ -225,7 +223,7 @@ public class ExposedNodeLinkedList implements List {
      *
      * @param o the contents to be inserted at the end of this list.
      */
-    public void addLast(Object o) {
+    public void addLast(E o) {
         addAfter(o, header.previous);
     }
 
@@ -236,7 +234,7 @@ public class ExposedNodeLinkedList implements List {
      * @param o the contents to be inserted at the end of this list.
      * @return <code>LinkedNode</code> with the specified content.
      */
-    public LinkedNode addLastElement(Object o) {
+    public LinkedNode<E> addLastElement(E o) {
         return addAfter(o, header.previous);
     }
 
@@ -290,14 +288,14 @@ public class ExposedNodeLinkedList implements List {
     public int indexOf(Object o) {
         int index = 0;
         if (o == null) {
-            for (LinkedNode n = header.next; n != header; n = n.next) {
+            for (LinkedNode<E> n = header.next; n != header; n = n.next) {
                 if (n.contents == null) {
                     return index;
                 }
                 index++;
             }
         } else {
-            for (LinkedNode n = header.next; n != header; n = n.next) {
+            for (LinkedNode<E> n = header.next; n != header; n = n.next) {
                 if (o.equals(n.contents)) {
                     return index;
                 }
@@ -307,8 +305,8 @@ public class ExposedNodeLinkedList implements List {
         return -1;
     }
 
-    private LinkedNode addAfter(Object o, LinkedNode n) {
-        LinkedNode newNode = new LinkedNode(o, n.next, n);
+    private LinkedNode<E> addAfter(E o, LinkedNode<E> n) {
+        LinkedNode<E> newNode = new LinkedNode<>(o, n.next, n);
         newNode.previous.next = newNode;
         newNode.next.previous = newNode;
         size++;
@@ -318,7 +316,7 @@ public class ExposedNodeLinkedList implements List {
     /**
      * Allows a node to be efficiently removed.
      */
-    public void remove(LinkedNode n) {
+    public void remove(LinkedNode<E> n) {
         if (n == header) {
             throw new NoSuchElementException();
         } else if ((n.previous == null) || (n.next == null)) {
@@ -337,7 +335,7 @@ public class ExposedNodeLinkedList implements List {
     /**
      * Allows a node to be efficiently moved first.
      */
-    public void moveFirst(LinkedNode node) {
+    public void moveFirst(LinkedNode<E> node) {
         if (node == header) {
             throw new NoSuchElementException();
         } else if ((node.previous == null) || (node.next == null)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,11 +25,13 @@
 //       - Issue 1885: Implement new JPQLGrammar for upcoming Jakarta Persistence 3.2
 package org.eclipse.persistence.internal.databaseaccess;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -166,7 +168,7 @@ public class DatasourcePlatform implements Platform {
      */
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
-        String parameterValue = getConversionManager().convertObject(parameter, ClassConstants.STRING);
+        String parameterValue = getConversionManager().convertObject(parameter, CoreClassConstants.STRING);
         if (parameterValue == null) {
             parameterValue = "";
         }
@@ -262,7 +264,7 @@ public class DatasourcePlatform implements Platform {
      * @return the newly converted object
      */
     @Override
-    public <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException {
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ? ,?, ?> session) throws ConversionException {
         return convertObject(sourceObject, javaClass);
     }
 

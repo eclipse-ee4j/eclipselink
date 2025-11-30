@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAcc
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -1065,7 +1065,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
 
         // PERF: Also auto-set mutable to false is the attribute type is a primitive.
         // This means it is not necessary to clone the value (through double transformation).
-        if ((getAttributeClassification() != null) && (getAttributeClassification().isPrimitive() || Helper.isPrimitiveWrapper(getAttributeClassification()) || getAttributeClassification().equals(ClassConstants.STRING) || getAttributeClassification().equals(ClassConstants.BIGDECIMAL) || getAttributeClassification().equals(ClassConstants.NUMBER))) {
+        if ((getAttributeClassification() != null) && (getAttributeClassification().isPrimitive() || Helper.isPrimitiveWrapper(getAttributeClassification()) || getAttributeClassification().equals(CoreClassConstants.STRING) || getAttributeClassification().equals(CoreClassConstants.BIGDECIMAL) || getAttributeClassification().equals(CoreClassConstants.NUMBER))) {
             setIsMutable(false);
         }
     }

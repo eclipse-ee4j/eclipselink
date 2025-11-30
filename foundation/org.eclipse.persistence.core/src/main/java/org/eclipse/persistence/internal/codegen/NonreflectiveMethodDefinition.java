@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class NonreflectiveMethodDefinition extends MethodDefinition {
     }
 
     @Override
-    protected void writeArguments(CodeGenerator generator) {
+    protected void writeArguments(CodeGenerator generator) throws IOException {
         boolean isFirst = true;
         for (int index = 0; index < getArgumentTypes().size(); ++index) {
             String argument = getArgumentTypes().get(index);

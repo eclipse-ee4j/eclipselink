@@ -25,6 +25,7 @@ package org.eclipse.persistence.platform.database;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
@@ -93,7 +94,7 @@ public class DerbyPlatform extends DB2Platform {
      */
     @Override
     public Object convertToDatabaseType(Object value) {
-        if (value != null && value.getClass() == ClassConstants.UTILDATE) {
+        if (value != null && value.getClass() == CoreClassConstants.UTILDATE) {
             return Helper.sqlDateFromUtilDate((java.util.Date)value);
         }
         return super.convertToDatabaseType(value);

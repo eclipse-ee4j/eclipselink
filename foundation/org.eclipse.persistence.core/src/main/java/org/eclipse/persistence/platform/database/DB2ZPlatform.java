@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,6 +18,7 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
@@ -27,7 +28,6 @@ import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -1103,7 +1103,7 @@ public class DB2ZPlatform extends DB2Platform {
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate(((Calendar)parameter).getTime())};
-        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+        } else if (parameter.getClass() == CoreClassConstants.UTILDATE) {
             methodName = "setJccTimestampAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, Helper.timestampFromDate((java.util.Date) parameter)};
@@ -1118,11 +1118,11 @@ public class DB2ZPlatform extends DB2Platform {
         } else if (parameter instanceof Character[]) {
             methodName = "setJccStringAtName";
             methodArgs = new Class<?>[] {String.class, String.class};
-            parameters = new Object[] {name, convertObject(parameter, ClassConstants.STRING)};
+            parameters = new Object[] {name, convertObject(parameter, CoreClassConstants.STRING)};
         } else if (parameter instanceof Byte[]) {
             methodName = "setJccBytesAtName";
             methodArgs = new Class<?>[] {String.class, byte[].class};
-            parameters = new Object[] {name, convertObject(parameter, ClassConstants.APBYTE)};
+            parameters = new Object[] {name, convertObject(parameter, CoreClassConstants.APBYTE)};
         } else if (parameter instanceof java.sql.SQLXML) {
             methodName = "setJccSQLXMLAtName";
             methodArgs = new Class<?>[] {String.class, java.sql.SQLXML.class};

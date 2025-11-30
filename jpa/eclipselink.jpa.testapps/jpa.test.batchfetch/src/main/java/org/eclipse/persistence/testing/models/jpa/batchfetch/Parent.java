@@ -14,16 +14,13 @@
 
 package org.eclipse.persistence.testing.models.jpa.batchfetch;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import java.util.Collection;
 

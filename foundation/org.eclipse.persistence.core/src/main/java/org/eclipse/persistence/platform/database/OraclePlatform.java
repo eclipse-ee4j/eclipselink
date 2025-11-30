@@ -47,7 +47,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -70,6 +69,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -133,7 +133,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write('\'');
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
             writer.write('\'');
         } else {
             super.appendByteArray(bytes, writer);

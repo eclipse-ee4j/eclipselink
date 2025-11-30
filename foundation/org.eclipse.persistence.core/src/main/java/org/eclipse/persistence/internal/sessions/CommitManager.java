@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -479,7 +479,7 @@ public class CommitManager {
      * stack size, and acts as a deadlock avoidance mechanism.
      */
     public void initializeCommitOrder() {
-        Vector<ClassDescriptor> descriptors = Helper.buildVectorFromMapElements(getSession().getDescriptors());
+        Vector<ClassDescriptor> descriptors = new Vector<>(getSession().getDescriptors().values());
 
         // Must ensure uniqueness, some descriptor my be register twice for interfaces.
         descriptors = Helper.addAllUniqueToVector(new Vector<>(descriptors.size()), descriptors);

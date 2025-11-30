@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -390,7 +390,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
             exceptionThrown = true;
-            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50027);
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.jaxb.JAXBException)ex).getErrorCode() == 50027);
         }
         if(!exceptionThrown) {
             fail("Expected exception now thrown.");
@@ -434,7 +434,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
             exceptionThrown = true;
-            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.jaxb.JAXBException)ex).getErrorCode() == 50076);
         }
         if(!exceptionThrown) {
             fail("Expected exception now thrown.");
@@ -560,11 +560,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
         try{
             JAXBContextFactory.createContext(listClasses, properties, loader);
-        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        }catch(org.eclipse.persistence.jaxb.JAXBException ex){
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
-        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
     }
 
     public void testBindingFormatJSONInvalid() throws Exception {
@@ -577,11 +577,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
 
         try{
             JAXBContextFactory.createContext(listClasses, properties, loader);
-        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        }catch(org.eclipse.persistence.jaxb.JAXBException ex){
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
-        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
     }
 
     public void testBindingFormatJSONInvalid2() throws Exception {
@@ -593,11 +593,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
         try{
             JAXBContextFactory.createContext(listClasses, properties, loader);
-        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        }catch(org.eclipse.persistence.jaxb.JAXBException ex){
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
-        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
 
     }
 
@@ -619,11 +619,11 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
                  org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
         try {
             JAXBContextFactory.createContext(listClasses, properties, loader);
-        } catch (org.eclipse.persistence.exceptions.JAXBException ex) {
-            assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        } catch (org.eclipse.persistence.jaxb.JAXBException ex) {
+            assertEquals(org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
             return;
         }
-        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.jaxb.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
 
     }
 
@@ -730,7 +730,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
             Map<String, Object> properties = new HashMap<>();
             properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, Thread.currentThread().getContextClassLoader().getResource((NO_PKG_OXM_XML)).openStream());
             JAXBContextFactory.createContext(new Class<?>[] {}, properties, loader);
-        } catch (org.eclipse.persistence.exceptions.JAXBException jaxbe) {
+        } catch (org.eclipse.persistence.jaxb.JAXBException jaxbe) {
             return;
         } catch (Exception e) {
             fail("The expected exception was not thrown, received " + e.getMessage());

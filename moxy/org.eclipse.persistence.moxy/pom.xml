@@ -152,16 +152,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgs combine.children="append">
-                        <arg>--add-exports</arg>
-                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
-                        <arg>--add-exports</arg>
-                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
-                        <arg>--add-exports</arg>
-                        <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
-                    </compilerArgs>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <compilerArgs combine.children="append">
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.conversion=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.core/org.eclipse.persistence.internal.oxm.schema.model=org.eclipse.persistence.moxy.test</arg>
+                                <arg>--add-exports</arg>
+                                <arg>org.eclipse.persistence.moxy/org.eclipse.persistence.internal.jaxb.cache=org.eclipse.persistence.moxy.test</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
@@ -707,7 +707,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
             } else {
                 XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
-                if(!theClass.equals(ClassConstants.OBJECT)){
+                if(!theClass.equals(CoreClassConstants.OBJECT)){
                     xmlMapping.setReferenceClass(theClass);
                 }
                 xmlMapping.setField(xmlField);

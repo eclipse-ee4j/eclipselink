@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.returning;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.ReturningPolicy;
 import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.XMLConversionException;
+import org.eclipse.persistence.oxm.exceptions.XMLConversionException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -253,7 +254,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return (T) buildBase64StringFromBytes((byte[]) sourceObject);
             }
-            return (T) Helper.buildHexStringFromBytes((byte[]) sourceObject);
+            return (T) HexFormat.of().formatHex((byte[]) sourceObject);
         } else if (sourceObject instanceof Byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return (T) buildBase64StringFromObjectBytes((Byte[]) sourceObject);
@@ -1643,7 +1644,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
         for (int i = 0; i < bytes.length; i++) {
             primitiveBytes[i] = bytes[i];
         }
-        return Helper.buildHexStringFromBytes(primitiveBytes);
+        return HexFormat.of().formatHex(primitiveBytes);
     }
 
     protected List<String> convertStringToList(Object sourceObject) throws ConversionException {
@@ -2050,7 +2051,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
             Object container = containerPolicy.containerInstance();
             while (tokenizer.hasMoreElements()) {
                 String token = tokenizer.nextToken();
-                byte[] bytes = Helper.buildBytesFromHexString(token);
+                byte[] bytes = HexFormat.of().parseHex(token);
                 containerPolicy.addInto(bytes, container, session);
             }
             return container;

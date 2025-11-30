@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.XMLHelper;
@@ -347,7 +347,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -367,7 +367,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -425,7 +425,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -512,7 +512,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -543,7 +543,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
     }
@@ -613,7 +613,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -695,7 +695,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 return handler.getResult();
             }
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -757,7 +757,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             hasThrownException = true;
             throw runtimeException;
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
             try {
                 inputStream.close();
             } catch (IOException e) {
@@ -780,7 +780,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         try {
             return unmarshal(inputStream, clazz);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
             try {
                 inputStream.close();
             } catch (IOException e) {
@@ -811,7 +811,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -845,7 +845,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } catch (SAXException e) {
                 throw convertSAXException(e);
             } finally {
-                xmlUnmarshaller.getStringBuffer().reset();
+                xmlUnmarshaller.getStringBuffer().setLength(0);
             }
             // resolve any mapping references
             saxUnmarshallerHandler.resolveReferences();
@@ -886,7 +886,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
 
         // resolve mapping references
@@ -928,7 +928,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -1010,7 +1010,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } catch (SAXException e) {
             throw convertSAXException(e);
         } finally {
-            xmlUnmarshaller.getStringBuffer().reset();
+            xmlUnmarshaller.getStringBuffer().setLength(0);
         }
     }
 
@@ -1067,7 +1067,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     private InputStream getInputStreamFromString(String stringValue) {
         if (stringValue.isEmpty()) {
-            throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+            throw XMLMarshalException.unmarshalFromStringException(stringValue, null);
         }
         URL url = null;
         try {
@@ -1076,17 +1076,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 try {
                     return url.openStream();
                 } catch (IOException e) {
-                    throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                    throw org.eclipse.persistence.oxm.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
                 }
             }
         } catch (MalformedURLException ex) {
             try {
                 return new FileInputStream(stringValue);
             } catch (FileNotFoundException e) {
-                throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                throw XMLMarshalException.unmarshalFromStringException(stringValue, e);
             }
         }
-        throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+        throw org.eclipse.persistence.oxm.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
     }
 
     private BufferedReader getBufferedReaderForInputSource(InputSource inputSource) {

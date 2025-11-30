@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,8 @@ package org.eclipse.persistence.internal.dynamic;
 
 //EclipseLink imports
 import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -53,28 +53,28 @@ public class DynamicPropertiesInitializatonPolicy {
         Object value = null;
         if (mapping.isDirectToFieldMapping() && mapping.getAttributeClassification().isPrimitive()) {
             Class<?> primClass = mapping.getAttributeClassification();
-            if (primClass == ClassConstants.PBOOLEAN) {
+            if (primClass == CoreClassConstants.PBOOLEAN) {
                 value = false;
             }
-            else if (primClass == ClassConstants.PINT) {
+            else if (primClass == CoreClassConstants.PINT) {
                 value = 0;
             }
-            else if (primClass == ClassConstants.PLONG) {
+            else if (primClass == CoreClassConstants.PLONG) {
                 value = 0L;
             }
-            else if (primClass == ClassConstants.PCHAR) {
+            else if (primClass == CoreClassConstants.PCHAR) {
                 value = Character.MIN_VALUE;
             }
-            else if (primClass == ClassConstants.PDOUBLE) {
+            else if (primClass == CoreClassConstants.PDOUBLE) {
                 value = 0.0d;
             }
-            else if (primClass == ClassConstants.PFLOAT) {
+            else if (primClass == CoreClassConstants.PFLOAT) {
                 value = 0.0f;
             }
-            else if (primClass == ClassConstants.PSHORT) {
+            else if (primClass == CoreClassConstants.PSHORT) {
                 value = Short.MIN_VALUE;
             }
-            else if (primClass == ClassConstants.PBYTE) {
+            else if (primClass == CoreClassConstants.PBYTE) {
                 value = Byte.MIN_VALUE;
             }
         }

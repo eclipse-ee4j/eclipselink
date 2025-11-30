@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,6 @@ package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -34,7 +32,7 @@ public class DatabaseException extends EclipseLinkException {
     protected SQLException exception;
     protected transient Call call;
     protected transient DatabaseQuery query;
-    protected transient AbstractRecord queryArguments;
+    protected transient DataRecord queryArguments;
     protected transient Accessor accessor;
     protected boolean isCommunicationFailure;
 
@@ -130,7 +128,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException databaseAccessorNotConnected(DatabaseAccessor databaseAccessor) {
+    public static DatabaseException databaseAccessorNotConnected(Accessor databaseAccessor) {
         Object[] args = {  };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, DATABASE_ACCESSOR_NOT_CONNECTED, args));
@@ -139,7 +137,7 @@ public class DatabaseException extends EclipseLinkException {
         return databaseException;
     }
 
-    public static DatabaseException databaseAccessorConnectionIsNull(DatabaseAccessor databaseAccessor, AbstractSession session) {
+    public static DatabaseException databaseAccessorConnectionIsNull(Accessor databaseAccessor, AbstractSession session) {
         Object[] args = {  };
 
         DatabaseException databaseException = new DatabaseException(ExceptionMessageGenerator.buildMessage(DatabaseException.class, DATABASE_ACCESSOR_CONNECTION_IS_NULL, args));
@@ -310,7 +308,7 @@ public class DatabaseException extends EclipseLinkException {
      * PUBLIC:
      * Set the query arguments used in the original query when exception is thrown
      */
-    public void setQueryArguments(AbstractRecord queryArguments) {
+    public void setQueryArguments(DataRecord queryArguments) {
         this.queryArguments = queryArguments;
     }
 

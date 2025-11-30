@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -49,6 +49,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -144,7 +145,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL() && (!usesByteArrayBinding())) {
             writer.write("0x");
-            Helper.writeHexString(bytes, writer);
+            writer.write(HexFormat.of().formatHex(bytes));
         } else {
             super.appendByteArray(bytes, writer);
         }

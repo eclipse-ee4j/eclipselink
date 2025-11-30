@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.asm.MethodVisitor;
 import org.eclipse.persistence.asm.Opcodes;
 import org.eclipse.persistence.asm.Type;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 
 /**
@@ -38,7 +38,7 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
     private static final String SET = "set";
     private static final String LJAVA_LANG_OBJECT = "Ljava/lang/Object;";
     private static final String LJAVA_LANG_STRING = "Ljava/lang/String;";
-    private static final String DYNAMIC_EXCEPTION = "org/eclipse/persistence/exceptions/DynamicException";
+    private static final String DYNAMIC_EXCEPTION = "org/eclipse/persistence/dynamic/DynamicException";
     private static final String GET = "get";
 
     /**
@@ -102,21 +102,21 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
 
             int asmTypeSort = asmType.getSort();
             if (asmTypeSort == Type.BOOLEAN) {
-                return Type.getType(ClassConstants.BOOLEAN);
+                return Type.getType(CoreClassConstants.BOOLEAN);
             } else if (asmTypeSort == Type.BYTE) {
-                return Type.getType(ClassConstants.BYTE);
+                return Type.getType(CoreClassConstants.BYTE);
             } else if (asmTypeSort == Type.CHAR) {
-                return Type.getType(ClassConstants.CHAR);
+                return Type.getType(CoreClassConstants.CHAR);
             } else if (asmTypeSort == Type.DOUBLE) {
-                return Type.getType(ClassConstants.DOUBLE);
+                return Type.getType(CoreClassConstants.DOUBLE);
             } else if (asmTypeSort == Type.FLOAT) {
-                return Type.getType(ClassConstants.FLOAT);
+                return Type.getType(CoreClassConstants.FLOAT);
             } else if (asmTypeSort == Type.INT) {
-                return Type.getType(ClassConstants.INTEGER);
+                return Type.getType(CoreClassConstants.INTEGER);
             } else if (asmTypeSort == Type.LONG) {
-                return Type.getType(ClassConstants.LONG);
+                return Type.getType(CoreClassConstants.LONG);
             } else if (asmTypeSort == Type.SHORT) {
-                return Type.getType(ClassConstants.SHORT);
+                return Type.getType(CoreClassConstants.SHORT);
             }
         }
 

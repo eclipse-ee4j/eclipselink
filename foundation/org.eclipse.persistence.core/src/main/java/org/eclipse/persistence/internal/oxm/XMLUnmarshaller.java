@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
@@ -147,7 +147,7 @@ public class XMLUnmarshaller<
     private Properties unmarshalProperties;
 
     private Class<?> unmappedContentHandlerClass;
-    private StrBuffer stringBuffer;
+    private StringBuilder stringBuffer;
     private MEDIA_TYPE mediaType;
     private ID_RESOLVER idResolver;
     private String valueWrapper = Constants.VALUE_WRAPPER;
@@ -201,14 +201,14 @@ public class XMLUnmarshaller<
 
     protected XMLUnmarshaller(CONTEXT xmlContext, Map<String, Boolean> parserFeatures) {
         super(xmlContext);
-        stringBuffer = new StrBuffer();
+        stringBuffer = new StringBuilder();
         initialize(parserFeatures);
         setErrorHandler(DEFAULT_ERROR_HANDLER);
     }
 
     protected XMLUnmarshaller(XMLUnmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
-        stringBuffer = new StrBuffer();
+        stringBuffer = new StringBuilder();
         initialize(null);
         setAttachmentUnmarshaller(xmlUnmarshaller.getAttachmentUnmarshaller());
         setEntityResolver(xmlUnmarshaller.getEntityResolver());
@@ -342,7 +342,7 @@ public class XMLUnmarshaller<
      * This is the text handler during unmarshal operations.
      */
     @Override
-    public StrBuffer getStringBuffer() {
+    public StringBuilder getStringBuffer() {
         return stringBuffer;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 
 /**
 Bug 211772 Model
@@ -70,12 +70,12 @@ public class DefineWithImportsExceptionTestCases extends XSDHelperDefineTestCase
     public void testDefine() {}
 
     /**
-    Exception [EclipseLink-45002] (Eclipse Persistence Services -  (Build )): org.eclipse.persistence.exceptions.SDOException
+    Exception [EclipseLink-45002] (Eclipse Persistence Services -  (Build )): org.eclipse.persistence.sdo.SDOException
     Exception Description: An error occurred processing the include with schemaLocation [Level2Include2.xsd] .
-    Internal Exception: Exception [EclipseLink-45001] (Eclipse Persistence Services -  (Build)): org.eclipse.persistence.exceptions.SDOException
+    Internal Exception: Exception [EclipseLink-45001] (Eclipse Persistence Services -  (Build)): org.eclipse.persistence.sdo.SDOException
     Exception Description: An error occurred processing the import with schemaLocation [Level3ImportRef.xsd] and namespace [my4.uri] .
     Internal Exception: java.lang.IllegalArgumentException: local part cannot be "null" when creating a QName
-        at org.eclipse.persistence.exceptions.SDOException.errorProcessingInclude(SDOException.java:106)
+        at org.eclipse.persistence.sdo.SDOException.errorProcessingInclude(SDOException.java:106)
         at org.eclipse.persistence.sdo.helper.SDOTypesGenerator.processInclude(SDOTypesGenerator.java:77)
         at org.eclipse.persistence.sdo.helper.SchemaParser.processIncludes(SchemaParser.java:120)
         at org.eclipse.persistence.sdo.helper.SchemaParser.processSchema(SchemaParser.java:87)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -60,9 +60,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.exceptions.XMLParseException;
+import org.eclipse.persistence.jpa.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.XMLException;

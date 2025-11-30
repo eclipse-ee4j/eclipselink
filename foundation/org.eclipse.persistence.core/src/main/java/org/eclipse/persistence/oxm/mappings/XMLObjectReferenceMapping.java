@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -120,7 +120,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         int idx = 0;
-        if(!(null == referenceClass || ClassConstants.OBJECT == getReferenceClass())) {
+        if(!(null == referenceClass || CoreClassConstants.OBJECT == getReferenceClass())) {
             idx = descriptor.getPrimaryKeyFields().indexOf(getSourceToTargetKeyFieldAssociations().get(xmlFld));
             if (idx == -1) {
                 return null;
@@ -154,7 +154,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
 
         Reference reference = resolver.getReference(this, srcObject);
         CacheId primaryKeys;
-        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+        if(null == referenceClass || CoreClassConstants.OBJECT == referenceClass) {
             if (reference == null) {
                 // if reference is null, create a new instance and set it on the resolver
                 primaryKeys = new CacheId(new Object[1]);
@@ -305,7 +305,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
      *
      */
     protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
-        return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+        return ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     /**
@@ -324,7 +324,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements Objec
                 setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(referenceClassName));
             }
         }
-        if(!(null == referenceClass || referenceClass == ClassConstants.OBJECT)) {
+        if(!(null == referenceClass || referenceClass == CoreClassConstants.OBJECT)) {
             super.initialize(session);
         }
 

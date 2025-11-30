@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.reuse;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -55,7 +55,7 @@ public class BinaryDataCollectionReuseProject extends Project {
         photosMapping.setShouldInlineBinaryData(false);
         photosMapping.setSwaRef(false);
         photosMapping.setMimeType("image");
-        photosMapping.setCollectionContentType(ClassConstants.APBYTE);
+        photosMapping.setCollectionContentType(CoreClassConstants.APBYTE);
         return descriptor;
     }
 

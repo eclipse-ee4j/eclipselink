@@ -68,7 +68,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;

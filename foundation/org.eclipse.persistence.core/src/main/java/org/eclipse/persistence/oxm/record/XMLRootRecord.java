@@ -17,7 +17,6 @@ package org.eclipse.persistence.oxm.record;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl;
@@ -32,7 +31,7 @@ import org.xml.sax.SAXException;
 public class XMLRootRecord extends UnmarshalRecordImpl {
 
     private Class<?> targetClass;
-    private StrBuffer characters;
+    private StringBuilder characters;
     private boolean shouldReadChars;
     private int elementCount;
     private XMLUnmarshaller unmarshaller;
@@ -49,7 +48,7 @@ public class XMLRootRecord extends UnmarshalRecordImpl {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         if (characters == null) {
-            characters = new StrBuffer();
+            characters = new StringBuilder();
         }
 
         if (shouldReadChars) {

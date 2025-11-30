@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_TIME_QNAME;
@@ -49,6 +49,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Vector;
 
@@ -58,14 +59,13 @@ import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.dbws.DBWSException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
@@ -450,7 +450,7 @@ public class QueryOperation extends Operation {
                         if (value instanceof Blob) {
                             value = xrService.getOXSession().
                                     getDatasourcePlatform().getConversionManager().
-                                    convertObject(value, ClassConstants.APBYTE);
+                                    convertObject(value, CoreClassConstants.APBYTE);
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                     }
@@ -613,7 +613,7 @@ public class QueryOperation extends Operation {
                     } else if (fieldValue instanceof Timestamp tsValue) {
                         fieldValue = conversionManager.convertObject(tsValue, STRING, DATE_TIME_QNAME);
                     } else if (fieldValue instanceof Blob) {
-                        fieldValue = conversionManager.convertObject(fieldValue, ClassConstants.APBYTE);
+                        fieldValue = conversionManager.convertObject(fieldValue, CoreClassConstants.APBYTE);
                     } else if (SQLXML.class.isAssignableFrom(fieldValue.getClass())) {
                         // handle XMLType case where an oracle.jdbc.driver.OracleSQLXML instance was returned
                         SQLXML sqlXml = (SQLXML) fieldValue;
@@ -664,7 +664,7 @@ public class QueryOperation extends Operation {
                     String fieldValueString = fieldValue.toString();
                     // handle binary content - attachments dealt with in invoke() above
                     if (result.getType().equals(BASE_64_BINARY_QNAME)) {
-                        fieldValueString = Helper.buildHexStringFromBytes(Base64.base64Encode((byte[])fieldValue));
+                        fieldValueString = HexFormat.of().formatHex(Base64.base64Encode((byte[])fieldValue));
                         columnElement.setAttributeNS(XMLNS_URL, XSD_STR, SCHEMA_URL);
                         columnElement.setAttributeNS(XMLNS_URL, XSI_STR, SCHEMA_INSTANCE_URL);
                         columnElement.setAttributeNS(SCHEMA_INSTANCE_URL, XSITYPE_STR, BASE64_BINARY_STR);

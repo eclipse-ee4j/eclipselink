@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
 
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
@@ -309,7 +310,7 @@ public class TypeInfo {
                 return;
             } else {
                 // Neither is transient - truly a duplicate property collision
-                throw org.eclipse.persistence.exceptions.JAXBException.duplicatePropertyName(name, this.getJavaClassName());
+                throw JAXBException.duplicatePropertyName(name, this.getJavaClassName());
             }
         }
         originalProperties.put(name, property);

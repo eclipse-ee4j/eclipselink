@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,6 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
 
-import org.eclipse.persistence.internal.helper.JavaSEPlatform;
-
 public class CompileUtil {
 
     private static CompileUtil _instance;
@@ -37,8 +35,7 @@ public class CompileUtil {
     }
 
     public int compile(String classpath, Object[] javaFiles) {
-        int jv = JavaSEPlatform.CURRENT.getMajor();
-        final String javaVersion = "" + ((jv >= 9) ? jv : JavaSEPlatform.CURRENT.toString());
+        final String javaVersion = String.valueOf(Runtime.version().feature());
 //        final String[] args = new String[javaFiles.length + ((jv >= 9) ? 9 : 7)];
         final String[] args = new String[javaFiles.length + 7];
         final String javac = getJavaC();

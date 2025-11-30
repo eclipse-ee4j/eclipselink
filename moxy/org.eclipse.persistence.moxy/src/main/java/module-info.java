@@ -33,6 +33,7 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.jaxb.compiler.facets;
     exports org.eclipse.persistence.jaxb.dynamic;
     exports org.eclipse.persistence.jaxb.dynamic.metadata;
+    exports org.eclipse.persistence.jaxb.i18n;
     exports org.eclipse.persistence.jaxb.javamodel;
     exports org.eclipse.persistence.jaxb.javamodel.oxm;
     exports org.eclipse.persistence.jaxb.javamodel.reflection;

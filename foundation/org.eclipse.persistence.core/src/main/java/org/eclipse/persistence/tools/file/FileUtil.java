@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.file;
 
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -135,9 +134,9 @@ public final class FileUtil {
                         "Cannot create directory '{0}'", new Object[] {jar.getParentFile()}, false);
             }
         }
-        JarOutputStream jarOut = null;
-        try {
-            jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());
+
+        try (JarOutputStream jarOut = new JarOutputStream(new FileOutputStream(jar), new Manifest());) {
+
             List<File> files = findFiles(jarDirectory, filtertedExtensions);
 
             for (int i = 0; i < files.size(); i++) {
@@ -146,12 +145,8 @@ public final class FileUtil {
                 String relativePathToDirectory = file.getAbsolutePath().substring(directory.getAbsolutePath().length() + 1);
                 String entryName = relativePathToDirectory.replace('\\', '/');
 
-                FileInputStream inStream = null;
-                ByteArrayOutputStream byteStream = null;
-
-                try {
-                    inStream = new FileInputStream(file);
-                    byteStream = new ByteArrayOutputStream();
+                try (FileInputStream inStream = new FileInputStream(file);
+                     ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {
 
                     int length = 0;
                     byte[] buffer = new byte[1024];
@@ -170,13 +165,8 @@ public final class FileUtil {
                     meta.setMethod(ZipEntry.STORED);
                     jarOut.write(arr, 0, arr.length);
                     jarOut.closeEntry();
-                } finally {
-                    Helper.close(byteStream);
-                    Helper.close(inStream);
                 }
             }
-        } finally {
-            Helper.close(jarOut);
         }
     }
 

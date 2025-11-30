@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.oxm.mappings;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -567,7 +567,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     // use the reference descriptor -  make sure it is non-abstract
                     if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
-                        throw DescriptorException.missingClassIndicatorField((org.eclipse.persistence.internal.oxm.record.XMLRecord) nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField(nestedRow.toString(), aDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
             }

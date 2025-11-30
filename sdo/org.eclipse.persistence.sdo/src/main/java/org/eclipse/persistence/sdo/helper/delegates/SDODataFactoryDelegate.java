@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.sdo.helper.delegates;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sdo.helper.SDODataFactory;

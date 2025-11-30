@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,6 +24,7 @@ package org.eclipse.persistence.internal.helper;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -49,6 +50,7 @@ import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -174,7 +176,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return null;
             }
         }
-        if (sourceObject.getClass() == javaClass || javaClass == null || javaClass == ClassConstants.OBJECT
+        if (sourceObject.getClass() == javaClass || javaClass == null || javaClass == CoreClassConstants.OBJECT
                 || javaClass == ClassConstants.BLOB || javaClass == ClassConstants.CLOB
                 // JSON has its own default converter registered. Direct jakarta.json class reference can't be used in core.
                 || javaClass.getName().contains("json")) {
@@ -182,9 +184,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         }
 
         try {
-            if (javaClass == ClassConstants.STRING) {
+            if (javaClass == CoreClassConstants.STRING) {
                 return (T) convertObjectToString(sourceObject);
-            } else if (javaClass == ClassConstants.UTILDATE) {
+            } else if (javaClass == CoreClassConstants.UTILDATE) {
                 return (T) convertObjectToUtilDate(sourceObject);
             } else if (javaClass == ClassConstants.SQLDATE) {
                 return (T) convertObjectToDate(sourceObject);
@@ -206,43 +208,43 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return (T) convertObjectToOffsetTime(sourceObject);
             } else if (javaClass == ClassConstants.TIME_YEAR) {
                 return (T) convertObjectToYear(sourceObject);
-            } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
+            } else if ((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR)) {
                 return (T) convertObjectToCalendar(sourceObject);
-            } else if ((javaClass == ClassConstants.CHAR) || (javaClass == ClassConstants.PCHAR && !(sourceObject instanceof Character))) {
+            } else if ((javaClass == CoreClassConstants.CHAR) || (javaClass == CoreClassConstants.PCHAR && !(sourceObject instanceof Character))) {
                 return (T) convertObjectToChar(sourceObject);
-            } else if ((javaClass == ClassConstants.INTEGER) || (javaClass == ClassConstants.PINT && !(sourceObject instanceof Integer))) {
+            } else if ((javaClass == CoreClassConstants.INTEGER) || (javaClass == CoreClassConstants.PINT && !(sourceObject instanceof Integer))) {
                 return (T) convertObjectToInteger(sourceObject);
-            } else if ((javaClass == ClassConstants.DOUBLE) || (javaClass == ClassConstants.PDOUBLE && !(sourceObject instanceof Double))) {
+            } else if ((javaClass == CoreClassConstants.DOUBLE) || (javaClass == CoreClassConstants.PDOUBLE && !(sourceObject instanceof Double))) {
                 return (T) convertObjectToDouble(sourceObject);
-            } else if ((javaClass == ClassConstants.FLOAT) || (javaClass == ClassConstants.PFLOAT && !(sourceObject instanceof Float))) {
+            } else if ((javaClass == CoreClassConstants.FLOAT) || (javaClass == CoreClassConstants.PFLOAT && !(sourceObject instanceof Float))) {
                 return (T) convertObjectToFloat(sourceObject);
-            } else if ((javaClass == ClassConstants.LONG) || (javaClass == ClassConstants.PLONG && !(sourceObject instanceof Long))) {
+            } else if ((javaClass == CoreClassConstants.LONG) || (javaClass == CoreClassConstants.PLONG && !(sourceObject instanceof Long))) {
                 return (T) convertObjectToLong(sourceObject);
-            } else if ((javaClass == ClassConstants.SHORT) || (javaClass == ClassConstants.PSHORT && !(sourceObject instanceof Short))) {
+            } else if ((javaClass == CoreClassConstants.SHORT) || (javaClass == CoreClassConstants.PSHORT && !(sourceObject instanceof Short))) {
                 return (T) convertObjectToShort(sourceObject);
-            } else if ((javaClass == ClassConstants.BYTE) || (javaClass == ClassConstants.PBYTE && !(sourceObject instanceof Byte))) {
+            } else if ((javaClass == CoreClassConstants.BYTE) || (javaClass == CoreClassConstants.PBYTE && !(sourceObject instanceof Byte))) {
                 return (T) convertObjectToByte(sourceObject);
-            } else if (javaClass == ClassConstants.BIGINTEGER) {
+            } else if (javaClass == CoreClassConstants.BIGINTEGER) {
                 return (T) convertObjectToBigInteger(sourceObject);
-            } else if (javaClass == ClassConstants.BIGDECIMAL) {
+            } else if (javaClass == CoreClassConstants.BIGDECIMAL) {
                 return (T) convertObjectToBigDecimal(sourceObject);
-            } else if (javaClass == ClassConstants.NUMBER) {
+            } else if (javaClass == CoreClassConstants.NUMBER) {
                 return (T) convertObjectToNumber(sourceObject);
-            } else if ((javaClass == ClassConstants.BOOLEAN) || (javaClass == ClassConstants.PBOOLEAN  && !(sourceObject instanceof Boolean))) {
+            } else if ((javaClass == CoreClassConstants.BOOLEAN) || (javaClass == CoreClassConstants.PBOOLEAN  && !(sourceObject instanceof Boolean))) {
                 return (T) convertObjectToBoolean(sourceObject);
-            } else if (javaClass == ClassConstants.APBYTE) {
+            } else if (javaClass == CoreClassConstants.APBYTE) {
                 return (T) convertObjectToByteArray(sourceObject);
-            } else if (javaClass == ClassConstants.ABYTE) {
+            } else if (javaClass == CoreClassConstants.ABYTE) {
                 return (T) convertObjectToByteObjectArray(sourceObject);
-            } else if (javaClass == ClassConstants.APCHAR) {
+            } else if (javaClass == CoreClassConstants.APCHAR) {
                 return (T) convertObjectToCharArray(sourceObject);
             } else if (javaClass == ClassConstants.ACHAR) {
                 return (T) convertObjectToCharacterArray(sourceObject);
-            } else if ((sourceObject.getClass() == ClassConstants.STRING) && (javaClass == ClassConstants.CLASS)) {
+            } else if ((sourceObject.getClass() == CoreClassConstants.STRING) && (javaClass == CoreClassConstants.CLASS)) {
                 return (T) convertObjectToClass(sourceObject);
-            } else if(javaClass == ClassConstants.URL_Class) {
+            } else if(javaClass == CoreClassConstants.URL_Class) {
                 return (T) convertObjectToUrl(sourceObject);
-            } else if(javaClass == ClassConstants.UUID) {
+            } else if(javaClass == CoreClassConstants.UUID) {
                 return (T) convertObjectToUUID(sourceObject);
             }
         } catch (ConversionException ce) {
@@ -252,14 +254,14 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         }
 
         // Check if object is instance of the real class for the primitive class.
-        if ((((javaClass == ClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) ||
-            ((javaClass == ClassConstants.PLONG) && (sourceObject instanceof Long) ) ||
-            ((javaClass == ClassConstants.PINT) && (sourceObject instanceof Integer)  ) ||
-            ((javaClass == ClassConstants.PFLOAT) && (sourceObject instanceof Float)) ||
-            ((javaClass == ClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) ||
-            ((javaClass == ClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) ||
-            ((javaClass == ClassConstants.PCHAR) &&  (sourceObject instanceof Character)) ||
-            ((javaClass == ClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
+        if ((((javaClass == CoreClassConstants.PBOOLEAN) && (sourceObject instanceof Boolean)  ) ||
+            ((javaClass == CoreClassConstants.PLONG) && (sourceObject instanceof Long) ) ||
+            ((javaClass == CoreClassConstants.PINT) && (sourceObject instanceof Integer)  ) ||
+            ((javaClass == CoreClassConstants.PFLOAT) && (sourceObject instanceof Float)) ||
+            ((javaClass == CoreClassConstants.PDOUBLE) &&  (sourceObject instanceof Double) ) ||
+            ((javaClass == CoreClassConstants.PBYTE) &&  (sourceObject instanceof Byte)) ||
+            ((javaClass == CoreClassConstants.PCHAR) &&  (sourceObject instanceof Character)) ||
+            ((javaClass == CoreClassConstants.PSHORT) &&  (sourceObject instanceof Short)))) {
             return (T) sourceObject;
         }
 
@@ -298,10 +300,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     bigDecimal = new BigDecimal(numberString);
                 }
             } else {
-                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGDECIMAL);
+                throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BIGDECIMAL);
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGDECIMAL, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BIGDECIMAL, exception);
         }
         return bigDecimal;
     }
@@ -331,10 +333,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             } else if (sourceObject instanceof byte[]) {
                 bigInteger = new BigInteger((byte[]) sourceObject);
             } else {
-                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGINTEGER);
+                throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BIGINTEGER);
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGINTEGER, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BIGINTEGER, exception);
         }
 
         return bigInteger;
@@ -371,7 +373,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
             return Boolean.FALSE;
         }
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BOOLEAN);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BOOLEAN);
     }
 
     /**
@@ -390,10 +392,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return ((Number) sourceObject).byteValue();
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BYTE, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BYTE, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BYTE);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BYTE);
     }
 
     /**
@@ -417,7 +419,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
             return bytes;
         } else if (sourceObject instanceof String) {
-            return Helper.buildBytesFromHexString((String)sourceObject);
+            return HexFormat.of().parseHex((String)sourceObject);
         } else if (sourceObject instanceof Blob blob) {
             try {
                 return blob.getBytes(1L, (int)blob.length());
@@ -434,13 +436,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 }
                 return outputStream.toByteArray();
             } catch (IOException ioException) {
-                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.APBYTE, ioException);
+                throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE, ioException);
             }
         } else if (sourceObject instanceof BigInteger) {
             return ((BigInteger)sourceObject).toByteArray();
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.APBYTE);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE);
     }
 
     /**
@@ -480,7 +482,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         if (sourceObject instanceof String) {
             if (((String) sourceObject).isEmpty()) {
                 // ELBug336192 - Return default null value of char instead of returning null.
-                return getDefaultNullValue(ClassConstants.PCHAR);
+                return getDefaultNullValue(CoreClassConstants.PCHAR);
             }
             return ((String) sourceObject).charAt(0);
         }
@@ -489,7 +491,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return (char) ((Number) sourceObject).byteValue();
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.CHAR);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.CHAR);
     }
 
     /**
@@ -531,7 +533,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     protected <T> Class<T> convertObjectToClass(Object sourceObject) throws ConversionException {
         Class<?> theClass = null;
         if (!(sourceObject instanceof String)) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.CLASS);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.CLASS);
         }
         try {
             // bug # 2799318
@@ -540,7 +542,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 theClass = Class.forName((String)sourceObject, true, getLoader());
             }
         } catch (Exception exception) {
-            throw ConversionException.couldNotBeConvertedToClass(sourceObject, ClassConstants.CLASS, exception);
+            throw ConversionException.couldNotBeConvertedToClass(sourceObject, CoreClassConstants.CLASS, exception);
         }
         return (Class<T>) theClass;
     }
@@ -556,7 +558,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             date = (java.sql.Date)sourceObject;//Helper date is not caught on class check.
         } else if (sourceObject instanceof java.sql.Timestamp) {
             date = Helper.dateFromTimestamp((java.sql.Timestamp)sourceObject);
-        } else if (sourceObject.getClass() == ClassConstants.UTILDATE) {
+        } else if (sourceObject.getClass() == CoreClassConstants.UTILDATE) {
             date = Helper.sqlDateFromUtilDate((java.util.Date)sourceObject);
         } else if (sourceObject instanceof Calendar) {
             return Helper.dateFromCalendar((Calendar)sourceObject);
@@ -585,9 +587,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return ((Number) sourceObject).doubleValue();
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.DOUBLE, exception);
         }
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DOUBLE);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.DOUBLE);
     }
 
     /**
@@ -604,10 +606,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 return ((Number) sourceObject).floatValue();
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.FLOAT, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.FLOAT);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.FLOAT);
     }
 
     /**
@@ -633,10 +635,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 }
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.INTEGER, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.INTEGER, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.INTEGER);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.INTEGER);
     }
 
     /**
@@ -668,10 +670,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 }
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.LONG, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.LONG, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.LONG);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.LONG);
     }
 
     /**
@@ -700,10 +702,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 }
             }
         } catch (NumberFormatException exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.NUMBER, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.NUMBER, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.NUMBER);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.NUMBER);
     }
 
     /**
@@ -730,10 +732,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                 }
             }
         } catch (Exception exception) {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.SHORT, exception);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.SHORT, exception);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.SHORT);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.SHORT);
     }
 
     /**
@@ -748,9 +750,9 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
         if (sourceObject instanceof java.lang.Number) {
             return sourceObject.toString();
-        } else if (sourceObjectClass == ClassConstants.BOOLEAN) {
+        } else if (sourceObjectClass == CoreClassConstants.BOOLEAN) {
             return sourceObject.toString();
-        } else if (sourceObjectClass == ClassConstants.UTILDATE) {
+        } else if (sourceObjectClass == CoreClassConstants.UTILDATE) {
             return Helper.printTimestamp(Helper.timestampFromDate((java.util.Date)sourceObject));
         } else if (sourceObject instanceof java.util.Calendar) {
             return Helper.printCalendar((Calendar)sourceObject);
@@ -760,18 +762,18 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return Helper.printDate((java.sql.Date)sourceObject);
         } else if (sourceObject instanceof java.sql.Time) {
             return Helper.printTime((java.sql.Time)sourceObject);
-        } else if (sourceObjectClass == ClassConstants.APBYTE) {
-            return Helper.buildHexStringFromBytes((byte[])sourceObject);
+        } else if (sourceObjectClass == CoreClassConstants.APBYTE) {
+            return HexFormat.of().formatHex((byte[])sourceObject);
             //Bug#3854296 Added support to convert Byte[], char[] and Character[] to String correctly
-        } else if (sourceObjectClass == ClassConstants.ABYTE) {
-            return Helper.buildHexStringFromBytes(convertObjectToByteArray(sourceObject));
-        } else if (sourceObjectClass == ClassConstants.APCHAR) {
+        } else if (sourceObjectClass == CoreClassConstants.ABYTE) {
+            return HexFormat.of().formatHex(convertObjectToByteArray(sourceObject));
+        } else if (sourceObjectClass == CoreClassConstants.APCHAR) {
             return new String((char[])sourceObject);
         } else if (sourceObjectClass == ClassConstants.ACHAR) {
             return new String(convertObjectToCharArray(sourceObject));
         } else if (sourceObject instanceof Class) {
             return ((Class<?>)sourceObject).getName();
-        } else if (sourceObjectClass == ClassConstants.CHAR) {
+        } else if (sourceObjectClass == CoreClassConstants.CHAR) {
             return sourceObject.toString();
         } else if (sourceObject instanceof Clob clob) {
             try {
@@ -798,7 +800,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
         if (sourceObject instanceof String) {
             time = Helper.timeFromString((String)sourceObject);
-        } else if (sourceObject.getClass() == ClassConstants.UTILDATE) {
+        } else if (sourceObject.getClass() == CoreClassConstants.UTILDATE) {
             time = Helper.timeFromDate((java.util.Date)sourceObject);
         } else if (sourceObject instanceof java.sql.Timestamp) {
             time = Helper.timeFromTimestamp((java.sql.Timestamp)sourceObject);
@@ -1129,16 +1131,16 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * @param sourceObject    Valid instance of java.net.URL, or String
      */
     protected URL convertObjectToUrl(Object sourceObject) throws ConversionException {
-        if(sourceObject.getClass() == ClassConstants.URL_Class) {
+        if(sourceObject.getClass() == CoreClassConstants.URL_Class) {
             return (URL) sourceObject;
-        } else if (sourceObject.getClass() == ClassConstants.STRING) {
+        } else if (sourceObject.getClass() == CoreClassConstants.STRING) {
             try {
                 return new URL((String) sourceObject);
             } catch(Exception e) {
-                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.URL_Class, e);
+                throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.URL_Class, e);
             }
         } else {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.URL_Class);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.URL_Class);
         }
     }
 
@@ -1148,16 +1150,16 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * @param sourceObject    Valid instance of java.util.UUID, or String
      */
     protected UUID convertObjectToUUID(Object sourceObject) throws ConversionException {
-        if(sourceObject.getClass() == ClassConstants.UUID) {
+        if(sourceObject.getClass() == CoreClassConstants.UUID) {
             return (UUID) sourceObject;
-        } else if (sourceObject.getClass() == ClassConstants.STRING) {
+        } else if (sourceObject.getClass() == CoreClassConstants.STRING) {
             try {
                 return UUID.fromString((String) sourceObject);
             } catch(Exception e) {
-                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UUID, e);
+                throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID, e);
             }
         } else {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UUID);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID);
         }
     }
 
@@ -1188,7 +1190,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof LocalDateTime) {
             date = Helper.utilDateFromTimestamp(java.sql.Timestamp.valueOf((LocalDateTime) sourceObject));
         } else {
-            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UTILDATE);
+            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UTILDATE);
         }
         return date;
     }
@@ -1275,7 +1277,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      */
     @SuppressWarnings({"unchecked"})
     public static <T> Class<T> loadClass(String className) {
-        return (Class<T>) getDefaultManager().convertObject(className, ClassConstants.CLASS);
+        return (Class<T>) getDefaultManager().convertObject(className, CoreClassConstants.CLASS);
     }
 
     /**
@@ -1290,34 +1292,34 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         }
 
         if (javaClass.isPrimitive()) {
-            if (javaClass == ClassConstants.PCHAR) {
-                return (Class<T>) ClassConstants.CHAR;
+            if (javaClass == CoreClassConstants.PCHAR) {
+                return (Class<T>) CoreClassConstants.CHAR;
             }
-            if (javaClass == ClassConstants.PINT) {
-                return (Class<T>) ClassConstants.INTEGER;
+            if (javaClass == CoreClassConstants.PINT) {
+                return (Class<T>) CoreClassConstants.INTEGER;
             }
-            if (javaClass == ClassConstants.PDOUBLE) {
-                return (Class<T>) ClassConstants.DOUBLE;
+            if (javaClass == CoreClassConstants.PDOUBLE) {
+                return (Class<T>) CoreClassConstants.DOUBLE;
             }
-            if (javaClass == ClassConstants.PFLOAT) {
-                return (Class<T>) ClassConstants.FLOAT;
+            if (javaClass == CoreClassConstants.PFLOAT) {
+                return (Class<T>) CoreClassConstants.FLOAT;
             }
-            if (javaClass == ClassConstants.PLONG) {
-                return (Class<T>) ClassConstants.LONG;
+            if (javaClass == CoreClassConstants.PLONG) {
+                return (Class<T>) CoreClassConstants.LONG;
             }
-            if (javaClass == ClassConstants.PSHORT) {
-                return (Class<T>) ClassConstants.SHORT;
+            if (javaClass == CoreClassConstants.PSHORT) {
+                return (Class<T>) CoreClassConstants.SHORT;
             }
-            if (javaClass == ClassConstants.PBYTE) {
-                return (Class<T>) ClassConstants.BYTE;
+            if (javaClass == CoreClassConstants.PBYTE) {
+                return (Class<T>) CoreClassConstants.BYTE;
             }
-            if (javaClass == ClassConstants.PBOOLEAN) {
-                return (Class<T>) ClassConstants.BOOLEAN;
+            if (javaClass == CoreClassConstants.PBOOLEAN) {
+                return (Class<T>) CoreClassConstants.BOOLEAN;
             }
-            } else if (javaClass == ClassConstants.APBYTE) {
-                return (Class<T>) ClassConstants.APBYTE;
-            } else if (javaClass == ClassConstants.APCHAR) {
-                return (Class<T>) ClassConstants.APCHAR;
+            } else if (javaClass == CoreClassConstants.APBYTE) {
+                return (Class<T>) CoreClassConstants.APBYTE;
+            } else if (javaClass == CoreClassConstants.APCHAR) {
+                return (Class<T>) CoreClassConstants.APCHAR;
             } else {
                 return (Class<T>) javaClass;
             }

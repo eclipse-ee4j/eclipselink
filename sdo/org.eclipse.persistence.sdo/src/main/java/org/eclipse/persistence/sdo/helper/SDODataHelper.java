@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -608,11 +610,11 @@ public class SDODataHelper implements DataHelper {
      * @return the original value converted based on the convertClass parameter.
      */
     public Object convertFromStringValue(String value, Class<?> convertClass) {
-        if (convertClass == ClassConstants.UTILDATE) {
+        if (convertClass == CoreClassConstants.UTILDATE) {
             return toDate(value);
-        } else if (convertClass == ClassConstants.CALENDAR) {
+        } else if (convertClass == CoreClassConstants.CALENDAR) {
             return toCalendar(value);
-        } else if(value == SDOConstants.EMPTY_STRING && (convertClass == ClassConstants.LONG || convertClass == ClassConstants.SHORT || convertClass == ClassConstants.INTEGER || convertClass == ClassConstants.FLOAT || convertClass == ClassConstants.DOUBLE || convertClass == ClassConstants.BOOLEAN || convertClass == ClassConstants.CHAR || convertClass == ClassConstants.QNAME )){
+        } else if(value == SDOConstants.EMPTY_STRING && (convertClass == CoreClassConstants.LONG || convertClass == CoreClassConstants.SHORT || convertClass == CoreClassConstants.INTEGER || convertClass == CoreClassConstants.FLOAT || convertClass == CoreClassConstants.DOUBLE || convertClass == CoreClassConstants.BOOLEAN || convertClass == CoreClassConstants.CHAR || convertClass == ClassConstants.QNAME )){
                return null;
         } else {
             return getXMLConversionManager().convertObject(value, convertClass);
@@ -659,9 +661,9 @@ public class SDODataHelper implements DataHelper {
      * @return the original value converted based on the convertClass parameter.
      */
     public Object convertFromStringValue(String value, Class<?> convertClass, QName schemaType) {
-        if (convertClass == ClassConstants.UTILDATE) {
+        if (convertClass == CoreClassConstants.UTILDATE) {
             return toDate(value);
-        } else if (convertClass == ClassConstants.CALENDAR) {
+        } else if (convertClass == CoreClassConstants.CALENDAR) {
             return toCalendar(value);
         } else {
             return getXMLConversionManager().convertObject(value, convertClass, schemaType);
@@ -689,7 +691,7 @@ public class SDODataHelper implements DataHelper {
      *         specified.
      */
     private String convertToStringValue(Object value, Type sdoType, QName xsdType) {
-        if (value.getClass() == ClassConstants.CALENDAR) {
+        if (value.getClass() == CoreClassConstants.CALENDAR) {
             if (sdoType.equals(SDOConstants.SDO_DATETIME)) {
                 return toDateTime((Calendar) value);
             } else if (sdoType.equals(SDOConstants.SDO_TIME)) {
@@ -709,7 +711,7 @@ public class SDODataHelper implements DataHelper {
             } else if (sdoType.equals(SDOConstants.SDO_YEARMONTHDAY)) {
                 return toYearMonthDay((Calendar) value);
             }
-        } else if (value.getClass() == ClassConstants.UTILDATE) {
+        } else if (value.getClass() == CoreClassConstants.UTILDATE) {
             if (sdoType.equals(SDOConstants.SDO_DATETIME)) {
                 return toDateTime((Date) value);
             } else if (sdoType.equals(SDOConstants.SDO_TIME)) {
@@ -741,10 +743,10 @@ public class SDODataHelper implements DataHelper {
                 String result = PrivilegedAccessHelper.invokeMethod(stringToDataHandlerMethod, helper, new Object[] { value, xsdType, ((SDOXMLHelper) getHelperContext().getXMLHelper()).getXmlContext().getSession() });
                 return result;
             } catch (Exception ex) {
-                return getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
+                return getXMLConversionManager().convertObject(value, CoreClassConstants.STRING, xsdType);
             }
         }
-        return getXMLConversionManager().convertObject(value, ClassConstants.STRING, xsdType);
+        return getXMLConversionManager().convertObject(value, CoreClassConstants.STRING, xsdType);
     }
 
     /**
@@ -767,9 +769,9 @@ public class SDODataHelper implements DataHelper {
             convertClass = ((org.eclipse.persistence.sdo.SDOType) type).getImplClass();
         }*/
 
-        if (value.getClass() == ClassConstants.STRING) {
+        if (value.getClass() == CoreClassConstants.STRING) {
             return convertFromStringValue((String) value, type);
-        } else if (convertClass == ClassConstants.STRING) {
+        } else if (convertClass == CoreClassConstants.STRING) {
             return convertToStringValue(value, type);
         } else {
             try {
@@ -829,7 +831,7 @@ public class SDODataHelper implements DataHelper {
             if (valueToConvert == null) {
                 return null;
             }
-            if (convertToClass == ClassConstants.STRING) {
+            if (convertToClass == CoreClassConstants.STRING) {
                 return convertToStringValue(valueToConvert, prop.getType(), ((SDOProperty) prop).getXsdType());
             } else {
                 SDOProperty sdoProp = (SDOProperty) prop;

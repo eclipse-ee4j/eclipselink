@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +24,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 /**
  * <p>
@@ -66,7 +65,7 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
 
     @Override
     public Expression<Integer> index() {
-        return new ExpressionImpl<>(this.metamodel, ClassConstants.INTEGER, this.currentNode.index());
+        return new ExpressionImpl<>(this.metamodel, CoreClassConstants.INTEGER, this.currentNode.index());
     }
 
     @Override
