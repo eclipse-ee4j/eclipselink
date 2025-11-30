@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,7 +76,7 @@ public class SDOXMLHelperDatatypeHexTestCases extends SDOXMLHelperDatatypeTestCa
      * Test to make sure that the when the XML doc is loaded, that the
      * String in the document is interpreted properly as HexBinary.
      *
-     * i.e. if "48656C6C6F20576F726C6421" is converted to a byte[]
+     * i.e. if "48656c6c6f20576f726c6421" is converted to a byte[]
      * using hexBinary conversion, a String created with the resulting
      * byte[] should read "Hello World!"
      */

@@ -280,7 +280,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
 
         try {
             String value = dataObject.getString(property);
-            assertEquals("0A64", value);
+            assertEquals("0a64", value);
         } catch (ClassCastException e) {
         }
     }

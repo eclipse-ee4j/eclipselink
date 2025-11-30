@@ -175,7 +175,7 @@ public class SDODataObjectGetStringWithIndexConversionTest extends SDODataObject
         dataObject.set(property, bytes);
         try {
             String value = dataObject.getString(PROPERTY_INDEX);
-            assertEquals("0A64", value);
+            assertEquals("0a64", value);
         } catch (ClassCastException e) {
         }
     }
