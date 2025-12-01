@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,8 @@ package org.eclipse.persistence.oxm.mappings;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -139,7 +139,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         Object primaryKey = objectBuilder.extractPrimaryKeyFromObject(targetObject, session);
         XMLField tgtXMLField = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlFld);
         int idx = 0;
-        if(!(null == referenceClass || ClassConstants.OBJECT == referenceClass)) {
+        if(!(null == referenceClass || CoreClassConstants.OBJECT == referenceClass)) {
             idx = descriptor.getPrimaryKeyFields().indexOf(tgtXMLField);
             if (idx == -1) {
                 return null;
@@ -181,7 +181,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             resolver.addReference(reference);
         }
         CacheId primaryKeys;
-        if(null == referenceClass || ClassConstants.OBJECT == referenceClass) {
+        if(null == referenceClass || CoreClassConstants.OBJECT == referenceClass) {
             HashMap primaryKeyMap = reference.getPrimaryKeyMap();
             CacheId pks = (CacheId) primaryKeyMap.get(null);
             if (pks == null){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 import java.io.StringWriter;
-import java.util.Vector;
+import java.util.List;
 
 public class XMLMarshallerCreateTestCases extends OXTestCase {
     private static String SESSION_NAME = "XMLMarshallerTestSession";
@@ -78,9 +78,9 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
             assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, exception.getErrorCode());
             return;
         } catch (IntegrityException exception) {
-            Vector exceptions = exception.getIntegrityChecker().getCaughtExceptions();
+            List<Exception> exceptions = exception.getIntegrityChecker().getCaughtExceptions();
             assertEquals("Too many exceptions were found...should have been 1.", 1, exceptions.size());
-            Exception e = (Exception)exceptions.elementAt(0);
+            Exception e = exceptions.get(0);
             assertSame("A DescriptorException should have been caught but wasn't.", e.getClass(), DescriptorException.class);
             assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, ((DescriptorException) e).getErrorCode());
             return;
@@ -105,9 +105,9 @@ public class XMLMarshallerCreateTestCases extends OXTestCase {
             assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, exception.getErrorCode());
             return;
         } catch (IntegrityException exception) {
-            Vector exceptions = exception.getIntegrityChecker().getCaughtExceptions();
+            List<Exception> exceptions = exception.getIntegrityChecker().getCaughtExceptions();
             assertEquals("Too many exceptions were found...should have been 1.", 1, exceptions.size());
-            Exception e = (Exception)exceptions.elementAt(0);
+            Exception e = (Exception)exceptions.get(0);
             assertSame("A DescriptorException should have been caught but wasn't.", e.getClass(), DescriptorException.class);
             assertEquals("An invalid mapping type exception should have been caught but wasn't.", DescriptorException.INVALID_MAPPING_TYPE, ((DescriptorException) e).getErrorCode());
             return;

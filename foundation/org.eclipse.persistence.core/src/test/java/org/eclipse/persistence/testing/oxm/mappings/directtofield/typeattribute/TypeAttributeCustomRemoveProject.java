@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -45,7 +45,7 @@ public class TypeAttributeCustomRemoveProject extends Project {
         field.setIsTypedTextField(true);
         field.setXPath("identifier/text()");
         QName qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.DOUBLE);
-        field.removeConversion(qname, ClassConstants.DOUBLE);
+        field.removeConversion(qname, CoreClassConstants.DOUBLE);
         identifierMapping.setField(field);
         descriptor.addMapping(identifierMapping);
 
@@ -54,7 +54,7 @@ public class TypeAttributeCustomRemoveProject extends Project {
         XMLField firstNamefield = new XMLField("first-name/text()");
         field.setIsTypedTextField(true);
         QName stringQname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.STRING);
-        firstNamefield.removeConversion(stringQname, ClassConstants.STRING);
+        firstNamefield.removeConversion(stringQname, CoreClassConstants.STRING);
         firstNameMapping.setField(firstNamefield);
         descriptor.addMapping(firstNameMapping);
 

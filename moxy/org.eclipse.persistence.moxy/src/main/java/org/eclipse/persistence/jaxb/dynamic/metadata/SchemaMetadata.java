@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,7 @@ public class SchemaMetadata extends Metadata {
                 }
             }
         } catch (ClassCastException cce) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjbNotSource());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.xjbNotSource());
         }
 
 
@@ -118,11 +118,11 @@ public class SchemaMetadata extends Metadata {
             // This will occur when trying to refreshMetadata from a closed stream (non-XML Node metadata)
             if (xpe.getCause() instanceof TransformerException te) {
                 if (te.getCause() instanceof IOException) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.cannotRefreshMetadata();
+                    throw org.eclipse.persistence.jaxb.JAXBException.cannotRefreshMetadata();
                 }
             }
         } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
     }
 
@@ -135,7 +135,7 @@ public class SchemaMetadata extends Metadata {
         } else if (node.getNodeType() == Node.ELEMENT_NODE) {
             element = (Element) node;
         } else {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotInitializeFromNode());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.cannotInitializeFromNode());
         }
 
         // Use XJC API to parse the schema and generate its JCodeModel
@@ -150,7 +150,7 @@ public class SchemaMetadata extends Metadata {
         S2JJAXBModel model = schemaCompiler.bind();
 
         if (model == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xjcBindingError());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.xjcBindingError());
         }
 
         JCodeModel codeModel = model.generateCode(new Plugin[0], null);
@@ -223,7 +223,7 @@ public class SchemaMetadata extends Metadata {
 
             return elinkClasses;
         } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(e));
         }
     }
 
@@ -260,22 +260,22 @@ public class SchemaMetadata extends Metadata {
 
         @Override
         public void error(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void fatalError(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void info(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
         @Override
         public void warning(SAXParseException arg0) {
-            throw org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(arg0);
+            throw org.eclipse.persistence.jaxb.JAXBException.errorCreatingDynamicJAXBContext(arg0);
         }
 
     }

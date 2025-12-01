@@ -22,8 +22,6 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.InjectionTarget;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.SessionLog;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -76,23 +74,22 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
     }
 
     @Override
-    public void cleanUp(AbstractSession session){
+    public void cleanUp(){
         Set<T> keys = new HashSet<>();
-        synchronized(injectionTargets){
-            keys.addAll(injectionTargets.keySet());
-            for (T listener: keys){
-                try{
+        try {
+            synchronized (injectionTargets) {
+                keys.addAll(injectionTargets.keySet());
+                for (T listener : keys) {
                     InjectionTarget<T> target = injectionTargets.get(listener);
                     target.preDestroy(listener);
                     target.dispose(listener);
                     injectionTargets.remove(listener);
-                } catch (Exception e){
-                    session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
                 }
             }
-        }
-        if (creationalContext != null){
-            creationalContext.release();
+        } finally {
+            if (creationalContext != null) {
+                creationalContext.release();
+            }
         }
     }
 

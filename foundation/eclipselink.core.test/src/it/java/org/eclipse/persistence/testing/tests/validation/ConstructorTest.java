@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.validation;
 
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityChecker;
@@ -71,7 +73,7 @@ public class ConstructorTest extends ExceptionTest {
 
             IntegrityChecker ic = new IntegrityChecker();
             ic = ((IntegrityException)caughtException).getIntegrityChecker();
-            java.util.Vector exceptionList = ic.getCaughtExceptions();
+            List<Exception> exceptionList = ic.getCaughtExceptions();
 
             for (int i = 0; i < exceptionList.size(); i++) {
                 if (exceptionList.get(i) instanceof DescriptorException) {

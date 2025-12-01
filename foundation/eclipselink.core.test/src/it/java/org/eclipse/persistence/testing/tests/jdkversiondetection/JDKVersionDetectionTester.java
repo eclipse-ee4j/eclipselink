@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.jdkversiondetection;
 
 import org.eclipse.persistence.Version;
-import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 
 /**
  *  Simple class for manual test of JDK version detection.
@@ -29,6 +28,5 @@ public class JDKVersionDetectionTester
     {
         System.out.println(Version.getProduct() + " " + Version.getVersion());
         System.out.println("Build " + Version.getVersionString() + " on " + Version.getBuildDate());
-        System.out.println("Java SE platform - " + JavaSEPlatform.CURRENT.toString());
     }
 }

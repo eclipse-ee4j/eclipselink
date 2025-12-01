@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.transaction;
 
 import jakarta.transaction.Synchronization;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -129,7 +128,7 @@ public abstract class AbstractSynchronizationListener implements Synchronization
 
             // If the uow is not active then somebody somewhere messed up
             if (!uow.isActive()) {
-                throw TransactionException.inactiveUnitOfWork(uow);
+                throw TransactionException.inactiveUnitOfWork(uow.toString());
             }
 
             // Bail out if we don't think we should actually issue the SQL
@@ -208,7 +207,7 @@ public abstract class AbstractSynchronizationListener implements Synchronization
                 this.session.startOperationProfile(SessionProfiler.JtsAfterCompletion);
                 // The uow should still be active even in rollback case
                 if (!uow.isActive()) {
-                    throw TransactionException.inactiveUnitOfWork(uow);
+                    throw TransactionException.inactiveUnitOfWork(uow.toString());
                 }
 
                 // Only do merge if txn was committed

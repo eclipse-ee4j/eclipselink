@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 /**
  * INTERNAL:
@@ -80,7 +81,7 @@ public class JaxbClassLoader extends ClassLoader {
                 TypeMappingInfo tmi = types[i];
                 Type nextType = tmi.getType();
                 if(nextType == null){
-                    throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(tmi.getXmlTagName());
+                    throw JAXBException.nullTypeOnTypeMappingInfo(tmi.getXmlTagName());
                 }
                 if (nextType instanceof Class) {
                     generatedClasses.put(((Class)nextType).getName(), nextType);

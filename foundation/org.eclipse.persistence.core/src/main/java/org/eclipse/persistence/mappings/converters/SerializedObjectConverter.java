@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,8 @@ package org.eclipse.persistence.mappings.converters;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -119,10 +119,10 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             return null;
         }
         Object data = fieldValue;
-        if (this.serializer.getType() == ClassConstants.APBYTE) {
+        if (this.serializer.getType() == CoreClassConstants.APBYTE) {
             byte[] bytes;
             try {
-                bytes = (byte[]) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
+                bytes = (byte[]) session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.APBYTE);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }
@@ -130,10 +130,10 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
                 return null;
             }
             data = bytes;
-        } else if (this.serializer.getType() == ClassConstants.STRING) {
+        } else if (this.serializer.getType() == CoreClassConstants.STRING) {
             String text;
             try {
-                text = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+                text = session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.STRING);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }

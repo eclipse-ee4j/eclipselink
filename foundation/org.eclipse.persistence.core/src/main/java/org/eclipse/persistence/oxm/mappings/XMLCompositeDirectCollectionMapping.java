@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.oxm.mappings;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -222,7 +222,7 @@ import java.util.Vector;
  * mapping.setAttributeName("myattribute");<br>
  * XMLUnionField field = new XMLUnionField("listOfUnions/text()");<br>
  * mapping.addSchemaType(new QName(url,XMLConstants.INT));<br>
- * mapping.addSchemaType(new QName(url,XMLConstants.DATE));<br>
+ * mapping.addSchemaType(new QName(url,Constants.DATE));<br>
  * mapping.setField(field);<br>
  * mapping.useSingleElement(false);<br>
  * </code>
@@ -356,7 +356,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         for (Iterator<Object> iterator = fieldValues.iterator(); iterator.hasNext();) {
             Object element = iterator.next();
             element = convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
-            if (element != null && element.getClass() == ClassConstants.STRING) {
+            if (element != null && element.getClass() == CoreClassConstants.STRING) {
                 if (isCollapsingStringValues) {
                     element = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)element);
                 } else if(isNormalizingStringValues) {

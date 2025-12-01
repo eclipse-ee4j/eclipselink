@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.sdo;
 import javax.xml.namespace.QName;
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.*;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 
@@ -121,41 +121,41 @@ public class SDOConstants {
     public static final Long LONG_DEFAULT = 0L;
     public static final Short SHORT_DEFAULT = (short)0;
 
-    public static final SDOType SDO_BOOLEAN = new SDODataType(SDO_URL, BOOLEAN, ClassConstants.PBOOLEAN, sdoTypeHelper, BOOLEAN_DEFAULT);
-    public static final SDOType SDO_BYTE = new SDODataType(SDO_URL, BYTE, ClassConstants.PBYTE, sdoTypeHelper, BYTE_DEFAULT);
-    public static final SDOType SDO_BYTES = new SDODataType(SDO_URL, BYTES, ClassConstants.APBYTE, sdoTypeHelper);
-    public static final SDOType SDO_CHARACTER = new SDODataType(SDO_URL, CHARACTER, ClassConstants.PCHAR, sdoTypeHelper, CHARACTER_DEFAULT);
-    public static final SDOType SDO_DATE = new SDODataType(SDO_URL, DATE, ClassConstants.UTILDATE, sdoTypeHelper);
-    public static final SDOType SDO_DATETIME = new SDODataType(SDO_URL, DATETIME, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_DAY = new SDODataType(SDO_URL, DAY, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_DECIMAL = new SDODataType(SDO_URL, DECIMAL, ClassConstants.BIGDECIMAL, sdoTypeHelper);
-    public static final SDOType SDO_DOUBLE = new SDODataType(SDO_URL, DOUBLE, ClassConstants.PDOUBLE, sdoTypeHelper, DOUBLE_DEFAULT);
-    public static final SDOType SDO_DURATION = new SDODataType(SDO_URL, DURATION, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_FLOAT = new SDODataType(SDO_URL, FLOAT, ClassConstants.PFLOAT, sdoTypeHelper, FLOAT_DEFAULT);
-    public static final SDOType SDO_INT = new SDODataType(SDO_URL, INT, ClassConstants.PINT, sdoTypeHelper, INTEGER_DEFAULT);
-    public static final SDOType SDO_INTEGER = new SDODataType(SDO_URL, INTEGER, ClassConstants.BIGINTEGER, sdoTypeHelper);
-    public static final SDOType SDO_LONG = new SDODataType(SDO_URL, LONG, ClassConstants.PLONG, sdoTypeHelper, LONG_DEFAULT);
-    public static final SDOType SDO_MONTH = new SDODataType(SDO_URL, MONTH, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_MONTHDAY = new SDODataType(SDO_URL, MONTHDAY, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_OBJECT = new SDODataType(SDO_URL, OBJECT, ClassConstants.OBJECT, sdoTypeHelper);
-    public static final SDOType SDO_SHORT = new SDODataType(SDO_URL, SHORT, ClassConstants.PSHORT, sdoTypeHelper, SHORT_DEFAULT);
-    public static final SDOType SDO_STRING = new SDODataType(SDO_URL, STRING, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_STRINGS = new SDODataType(SDO_URL, STRINGS, ClassConstants.List_Class, sdoTypeHelper);
-    public static final SDOType SDO_TIME = new SDODataType(SDO_URL, TIME, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_YEAR = new SDODataType(SDO_URL, YEAR, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_YEARMONTH = new SDODataType(SDO_URL, YEARMONTH, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_YEARMONTHDAY = new SDODataType(SDO_URL, YEARMONTHDAY, ClassConstants.STRING, sdoTypeHelper);
-    public static final SDOType SDO_URI = new SDODataType(SDO_URL, URI, ClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_BOOLEAN = new SDODataType(SDO_URL, BOOLEAN, CoreClassConstants.PBOOLEAN, sdoTypeHelper, BOOLEAN_DEFAULT);
+    public static final SDOType SDO_BYTE = new SDODataType(SDO_URL, BYTE, CoreClassConstants.PBYTE, sdoTypeHelper, BYTE_DEFAULT);
+    public static final SDOType SDO_BYTES = new SDODataType(SDO_URL, BYTES, CoreClassConstants.APBYTE, sdoTypeHelper);
+    public static final SDOType SDO_CHARACTER = new SDODataType(SDO_URL, CHARACTER, CoreClassConstants.PCHAR, sdoTypeHelper, CHARACTER_DEFAULT);
+    public static final SDOType SDO_DATE = new SDODataType(SDO_URL, DATE, CoreClassConstants.UTILDATE, sdoTypeHelper);
+    public static final SDOType SDO_DATETIME = new SDODataType(SDO_URL, DATETIME, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_DAY = new SDODataType(SDO_URL, DAY, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_DECIMAL = new SDODataType(SDO_URL, DECIMAL, CoreClassConstants.BIGDECIMAL, sdoTypeHelper);
+    public static final SDOType SDO_DOUBLE = new SDODataType(SDO_URL, DOUBLE, CoreClassConstants.PDOUBLE, sdoTypeHelper, DOUBLE_DEFAULT);
+    public static final SDOType SDO_DURATION = new SDODataType(SDO_URL, DURATION, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_FLOAT = new SDODataType(SDO_URL, FLOAT, CoreClassConstants.PFLOAT, sdoTypeHelper, FLOAT_DEFAULT);
+    public static final SDOType SDO_INT = new SDODataType(SDO_URL, INT, CoreClassConstants.PINT, sdoTypeHelper, INTEGER_DEFAULT);
+    public static final SDOType SDO_INTEGER = new SDODataType(SDO_URL, INTEGER, CoreClassConstants.BIGINTEGER, sdoTypeHelper);
+    public static final SDOType SDO_LONG = new SDODataType(SDO_URL, LONG, CoreClassConstants.PLONG, sdoTypeHelper, LONG_DEFAULT);
+    public static final SDOType SDO_MONTH = new SDODataType(SDO_URL, MONTH, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_MONTHDAY = new SDODataType(SDO_URL, MONTHDAY, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_OBJECT = new SDODataType(SDO_URL, OBJECT, CoreClassConstants.OBJECT, sdoTypeHelper);
+    public static final SDOType SDO_SHORT = new SDODataType(SDO_URL, SHORT, CoreClassConstants.PSHORT, sdoTypeHelper, SHORT_DEFAULT);
+    public static final SDOType SDO_STRING = new SDODataType(SDO_URL, STRING, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_STRINGS = new SDODataType(SDO_URL, STRINGS, CoreClassConstants.List_Class, sdoTypeHelper);
+    public static final SDOType SDO_TIME = new SDODataType(SDO_URL, TIME, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEAR = new SDODataType(SDO_URL, YEAR, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEARMONTH = new SDODataType(SDO_URL, YEARMONTH, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_YEARMONTHDAY = new SDODataType(SDO_URL, YEARMONTHDAY, CoreClassConstants.STRING, sdoTypeHelper);
+    public static final SDOType SDO_URI = new SDODataType(SDO_URL, URI, CoreClassConstants.STRING, sdoTypeHelper);
 
     /**Type objects for types in the commonj.sdo/java namespace */
-    public static final SDOType SDO_BOOLEANOBJECT = new SDODataType(SDOJAVA_URL, BOOLEANOBJECT, ClassConstants.BOOLEAN, sdoTypeHelper);
-    public static final SDOType SDO_BYTEOBJECT = new SDODataType(SDOJAVA_URL, BYTEOBJECT, ClassConstants.BYTE, sdoTypeHelper);
-    public static final SDOType SDO_CHARACTEROBJECT = new SDODataType(SDOJAVA_URL, CHARACTEROBJECT, ClassConstants.CHAR, sdoTypeHelper);
-    public static final SDOType SDO_DOUBLEOBJECT = new SDODataType(SDOJAVA_URL, DOUBLEOBJECT, ClassConstants.DOUBLE, sdoTypeHelper);
-    public static final SDOType SDO_FLOATOBJECT = new SDODataType(SDOJAVA_URL, FLOATOBJECT, ClassConstants.FLOAT, sdoTypeHelper);
-    public static final SDOType SDO_INTOBJECT = new SDODataType(SDOJAVA_URL, INTOBJECT, ClassConstants.INTEGER, sdoTypeHelper);
-    public static final SDOType SDO_LONGOBJECT = new SDODataType(SDOJAVA_URL, LONGOBJECT, ClassConstants.LONG, sdoTypeHelper);
-    public static final SDOType SDO_SHORTOBJECT = new SDODataType(SDOJAVA_URL, SHORTOBJECT, ClassConstants.SHORT, sdoTypeHelper);
+    public static final SDOType SDO_BOOLEANOBJECT = new SDODataType(SDOJAVA_URL, BOOLEANOBJECT, CoreClassConstants.BOOLEAN, sdoTypeHelper);
+    public static final SDOType SDO_BYTEOBJECT = new SDODataType(SDOJAVA_URL, BYTEOBJECT, CoreClassConstants.BYTE, sdoTypeHelper);
+    public static final SDOType SDO_CHARACTEROBJECT = new SDODataType(SDOJAVA_URL, CHARACTEROBJECT, CoreClassConstants.CHAR, sdoTypeHelper);
+    public static final SDOType SDO_DOUBLEOBJECT = new SDODataType(SDOJAVA_URL, DOUBLEOBJECT, CoreClassConstants.DOUBLE, sdoTypeHelper);
+    public static final SDOType SDO_FLOATOBJECT = new SDODataType(SDOJAVA_URL, FLOATOBJECT, CoreClassConstants.FLOAT, sdoTypeHelper);
+    public static final SDOType SDO_INTOBJECT = new SDODataType(SDOJAVA_URL, INTOBJECT, CoreClassConstants.INTEGER, sdoTypeHelper);
+    public static final SDOType SDO_LONGOBJECT = new SDODataType(SDOJAVA_URL, LONGOBJECT, CoreClassConstants.LONG, sdoTypeHelper);
+    public static final SDOType SDO_SHORTOBJECT = new SDODataType(SDOJAVA_URL, SHORTOBJECT, CoreClassConstants.SHORT, sdoTypeHelper);
 
     /** XML String names and QName constants missing from org.eclipse.persistence.oxm.XMLConstants  */
     public static final String ANY_TYPE = "anyType";

@@ -22,6 +22,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -822,7 +823,7 @@ public class FunctionExpression extends BaseExpression {
             } else if (baseExp.isExpressionBuilder()) {
                 if (((ExpressionBuilder)baseExp).getQueryClass() == null) {
                     if (item != null && item.getResultType() == null) {
-                        item.setResultType(ClassConstants.INTEGER);
+                        item.setResultType(CoreClassConstants.INTEGER);
                     }
                 } else {
                     newDescriptor = session.getDescriptor(((ExpressionBuilder)baseExp).getQueryClass());

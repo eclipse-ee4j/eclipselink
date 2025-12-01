@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,7 @@ import jakarta.persistence.metamodel.Type;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -480,7 +480,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
                 Class<?> superclass = aClass.getSuperclass();
                 // explicitly set the superType to null (just in case it is initialized to a non-null value in a constructor)
                 IdentifiableType<?> identifiableTypeSuperclass = null;
-                if(potentialIdentifiableType.isIdentifiableType() && (superclass != ClassConstants.OBJECT && superclass != null)) {
+                if(potentialIdentifiableType.isIdentifiableType() && (superclass != CoreClassConstants.OBJECT && superclass != null)) {
                     // Get the Entity or MappedSuperclass
                     // A hierarchy of Entity --> Entity or Entity --> MappedSuperclass will be found
                     identifiableTypeSuperclass = (IdentifiableType<?>)managedTypes.get(superclass.getName());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2021, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,6 +37,7 @@ import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -544,7 +545,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                             //selecting size not all databases support subselect in select clause so convert to count/groupby
                             PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl) nested).getChildExpressions().get(0);
                             ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                            reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                            reportQuery.addAttribute(nested.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                             reportQuery.addGrouping(fromExpression.getCurrentNode());
                         } else {
                             reportQuery.addAttribute(nested.getAlias(), ((SelectionImpl) nested).getCurrentNode(), nested.getJavaType());
@@ -696,7 +697,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     //selecting size not all databases support subselect in select clause so convert to count/groupby
                     PathImpl collectionExpression = (PathImpl) ((FunctionExpressionImpl)this.selection).getChildExpressions().get(0);
                     ExpressionImpl fromExpression = (ExpressionImpl) collectionExpression.getParentPath();
-                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                    reportQuery.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                     reportQuery.addGrouping(fromExpression.getCurrentNode());
                 }else{
                     reportQuery.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());
@@ -782,7 +783,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 // Selecting size not all databases support sub-select in select clause so convert to count/groupby
                 PathImpl<?> collectionExpression = (PathImpl<?>) ((FunctionExpressionImpl<?>) this.selection).getChildExpressions().get(0);
                 ExpressionImpl<?> fromExpression = (ExpressionImpl<?>) collectionExpression.getParentPath();
-                query.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), ClassConstants.INTEGER);
+                query.addAttribute(this.selection.getAlias(), collectionExpression.getCurrentNode().count(), CoreClassConstants.INTEGER);
                 query.addGrouping(fromExpression.getCurrentNode());
             }
             query.addAttribute(this.selection.getAlias(), this.selection.getCurrentNode(), this.selection.getJavaType());

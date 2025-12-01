@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -781,7 +781,7 @@ public class XMLProcessor {
                 JavaClass pType = jModelInput.getJavaModel().getClass("java.util.Map");
                 oldProperty.setType(pType);
             } else {
-                throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
+                throw org.eclipse.persistence.jaxb.JAXBException.anyAttributeOnNonMap(oldProperty.getPropertyName());
             }
         }
 

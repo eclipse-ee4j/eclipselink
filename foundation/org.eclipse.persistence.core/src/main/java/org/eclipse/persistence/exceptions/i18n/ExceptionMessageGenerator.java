@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,9 +20,10 @@ package org.eclipse.persistence.exceptions.i18n;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 /**
  * INTERNAL:
@@ -42,7 +43,14 @@ public final class ExceptionMessageGenerator {
      * Return the loader for loading the resource bundles.
      */
     public static ClassLoader getLoader() {
-        ClassLoader loader = ExceptionMessageGenerator.class.getClassLoader();
+        return getLoader(ExceptionMessageGenerator.class);
+    }
+
+    /**
+     * Return the loader for loading the resource bundles.
+     */
+    public static ClassLoader getLoader(Class<?> clazz) {
+        ClassLoader loader = clazz.getClassLoader();
 
         if (loader == null) {
             loader = ConversionManager.getDefaultManager().getLoader();
@@ -66,7 +74,7 @@ public final class ExceptionMessageGenerator {
             }
         }
 
-        bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n." + shortClassName + "Resource", Locale.getDefault(), getLoader());
+        bundle = ResourceBundle.getBundle(exceptionClass.getPackageName() + ".i18n." + shortClassName + "Resource", Locale.getDefault(), getLoader(exceptionClass));
 
         try {
             message = bundle.getString(String.valueOf(errorNumber));
@@ -92,7 +100,7 @@ public final class ExceptionMessageGenerator {
             ResourceBundle bundle = null;
             bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n.ExceptionResource", Locale.getDefault(), getLoader());
             String errorMessage = bundle.getString("ErrorFormattingMessage");
-            Vector<Object> vec = new Vector<>();
+            List<Object> vec = new ArrayList<>();
             if (arguments != null) {
                 for (int index = 0; index < arguments.length; index++) {
                     try {

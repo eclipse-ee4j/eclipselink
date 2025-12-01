@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis.mappings;
 
-import org.eclipse.persistence.eis.EISCollectionChangeRecord;
-import org.eclipse.persistence.eis.EISOrderedCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.EISCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.EISOrderedCollectionChangeRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;

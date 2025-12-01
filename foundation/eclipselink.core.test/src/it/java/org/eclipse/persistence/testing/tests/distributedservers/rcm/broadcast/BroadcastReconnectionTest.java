@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.tests.distributedservers.rcm.broadcast;
 
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;

@@ -19,7 +19,6 @@ package org.eclipse.persistence.transaction;
 import jakarta.transaction.Status;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
-import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 

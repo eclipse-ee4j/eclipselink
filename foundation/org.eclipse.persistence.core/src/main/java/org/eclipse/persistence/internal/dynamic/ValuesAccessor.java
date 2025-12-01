@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ package org.eclipse.persistence.internal.dynamic;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -81,7 +81,7 @@ public class ValuesAccessor extends AttributeAccessor {
         }
         else {
             if (mapping.getAttributeClassification() == null) {
-                return ClassConstants.OBJECT;
+                return CoreClassConstants.OBJECT;
             }
             return mapping.getAttributeClassification();
         }

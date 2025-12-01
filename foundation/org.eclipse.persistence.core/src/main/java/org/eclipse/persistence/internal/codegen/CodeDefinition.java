@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -203,15 +204,19 @@ public abstract class CodeDefinition {
 
     @Override
     public String toString() {
-        CodeGenerator generator = new CodeGenerator();
-        write(generator);
-        return generator.toString();
+        try {
+            CodeGenerator generator = new CodeGenerator();
+            write(generator);
+            return generator.toString();
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     /**
      * Write the code out to the generator's stream.
      */
-    public void write(CodeGenerator generator) {
+    public void write(CodeGenerator generator) throws IOException {
         if (!getComment().isEmpty()) {
             generator.writeln("/**");
             String comment = getComment();
@@ -237,5 +242,5 @@ public abstract class CodeDefinition {
     /**
      * Write the code out to the generator's stream.
      */
-    public abstract void writeBody(CodeGenerator generator);
+    public abstract void writeBody(CodeGenerator generator) throws IOException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -40,7 +40,6 @@ import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
@@ -435,7 +434,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         this.noNamespaceSchemaLocation = location;
     }
 
-    protected StrBuffer getStringBuffer() {
+    protected StringBuilder getStringBuffer() {
         return unmarshaller.getStringBuffer();
     }
 
@@ -1218,9 +1217,9 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
         return;
     }
         try {
-            int strBufferInitialLength = -1;
+            int sbInitialLength = -1;
             if (null != selfRecords) {
-                strBufferInitialLength = getStringBuffer().length();
+                sbInitialLength = getStringBuffer().length();
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
                     UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
@@ -1258,12 +1257,12 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
             NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
             if (null != unmarshalNodeValue && !unmarshalNodeValue.isWrapperNodeValue()) {
-                if(strBufferInitialLength == -1) {
+                if(sbInitialLength == -1) {
                     getStringBuffer().append(ch, start, length);
                 } else {
-                    StrBuffer strBuffer = getStringBuffer();
-                    if(strBufferInitialLength == strBuffer.length()) {
-                        strBuffer.append(ch, start, length);
+                    StringBuilder stringBuilder = getStringBuffer();
+                    if(sbInitialLength == stringBuilder.length()) {
+                        stringBuilder.append(ch, start, length);
                     }
                 }
             }
@@ -1522,7 +1521,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
     @Override
     public void resetStringBuffer() {
-        this.getStringBuffer().reset();
+        this.getStringBuffer().setLength(0);
         this.isBufferCDATA = false;
     }
 

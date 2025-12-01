@@ -17,7 +17,6 @@ package org.eclipse.persistence.core.queries;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.queries.CoreAttributeConverter;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.io.Serializable;
@@ -47,6 +46,14 @@ public class CoreAttributeGroup<
      *  Name parts separator. Used in {@link #toStringItems()} method to build output string.
      */
     private static final String FIELD_SEP = ", ";
+    /** Left brace. */
+    private static final char LEFT_BRACE = '{';
+    /** Right brace. */
+    private static final char RIGHT_BRACE = '}';
+    /** Left bracket. */
+    private static final char LEFT_BRACKET = '(';
+    /** Right bracket. */
+    private static final char RIGHT_BRACKET = ')';
 
     private int toStringLoopCount = 0;
 
@@ -744,7 +751,7 @@ public class CoreAttributeGroup<
         String className = getClass().getSimpleName();
         String name = String.valueOf(getName());
         if (toStringLoopCount >1) {
-            return className+StringHelper.LEFT_BRACKET+name+ " Loop detected "+ StringHelper.RIGHT_BRACKET;
+            return className+LEFT_BRACKET+name+ " Loop detected "+ RIGHT_BRACKET;
         }
         try {
             toStringLoopCount++;
@@ -753,9 +760,9 @@ public class CoreAttributeGroup<
             StringBuilder str = new StringBuilder(className.length() + name.length()
                     + additionalInfo.length() + items.length() + 4);
             str.append(className);
-            str.append(StringHelper.LEFT_BRACKET).append(name).append(StringHelper.RIGHT_BRACKET);
+            str.append(LEFT_BRACKET).append(name).append(RIGHT_BRACKET);
             str.append(additionalInfo);
-            str.append(StringHelper.LEFT_BRACE).append(items).append(StringHelper.RIGHT_BRACE);
+            str.append(LEFT_BRACE).append(items).append(RIGHT_BRACE);
             return str.toString();
         } finally {
             toStringLoopCount--;

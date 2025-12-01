@@ -41,6 +41,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.XMLNamespaceAware;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -68,7 +69,7 @@ import java.util.Vector;
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class EISDescriptor extends ClassDescriptor {
+public class EISDescriptor extends ClassDescriptor implements XMLNamespaceAware {
 
     /** Define the type of data the descriptor maps to. */
     protected String dataFormat;
@@ -111,6 +112,7 @@ public class EISDescriptor extends ClassDescriptor {
      * Return the XML namespace resolver.
      * XML type EIS descriptor can use a namespace resolver to support XML schema namespaces.
      */
+    @Override
     public NamespaceResolver getNamespaceResolver() {
         return namespaceResolver;
     }

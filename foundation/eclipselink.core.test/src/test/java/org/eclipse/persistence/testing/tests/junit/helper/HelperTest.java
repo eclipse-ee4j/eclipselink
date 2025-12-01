@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,9 +38,6 @@ public class HelperTest {
 
         Assert.assertEquals("Failed to replace single slash with double slashes from the String.",
                 "c:\\\\test1\\\\test2\\\\test3\\\\", Helper.doubleSlashes("c:\\test1\\test2\\test3\\"));
-
-        Assert.assertEquals("Failed to remove vowels from String.",
-                "llllll", Helper.removeVowels("lalelilolule"));
 
         Assert.assertEquals("Failed to remove Character to fit String.",
                 "123x", Helper.removeCharacterToFit("1x2x3x", 'x', 4));
@@ -123,14 +120,6 @@ public class HelperTest {
     }
 
     @Test
-    public void checkCompareByteArraysWithDifferentElementsTest() {
-        byte[] b1 = "12345".getBytes();
-        byte[] b2 = "12346".getBytes();
-        Assert.assertFalse("Helper.compareByteArrays(b1,b2) when comparing byte arrays with different elements.",
-                Helper.compareByteArrays(b1, b2));
-    }
-
-    @Test
     public void compareArrayContentTest() {
         Integer[] array1 = new Integer[3];
         Integer[] array2 = new Integer[3];
@@ -166,30 +155,6 @@ public class HelperTest {
                 Helper.compareArrays(array1, array2));
         Assert.assertFalse("Helper.compareArrays(Object[] array1, Object[] array2) does not recognize that object arrays are of different length.",
                 Helper.compareArrays(array1, array3));
-    }
-
-    @Test
-    public void compareCharArrayContentTest() {
-        char[] array1 = { 'a', 'b', 'c' };
-        char[] array2 = { 'a', 'b', 'c' };
-        char[] array3 = { 'x', 'y', 'z' };
-
-        Assert.assertTrue("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays contain the same elements.",
-                Helper.compareCharArrays(array1, array2));
-        Assert.assertFalse("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays contain different elements.",
-                Helper.compareCharArrays(array1, array3));
-    }
-
-    @Test
-    public void compareCharArrayLengthTest() {
-        char[] array1 = { 'a', 'b' };
-        char[] array2 = { 'a', 'b' };
-        char[] array3 = { 'a', 'b', 'c' };
-
-        Assert.assertTrue("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays are of same length.",
-                Helper.compareCharArrays(array1, array2));
-        Assert.assertFalse("Helper.compareCharArrays(char[] array1, char[] array2) does not recognize that arrays are of different length.",
-                Helper.compareCharArrays(array1, array3));
     }
 
     @Test

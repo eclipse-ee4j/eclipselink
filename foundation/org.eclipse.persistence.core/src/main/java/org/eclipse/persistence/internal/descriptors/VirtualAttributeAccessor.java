@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,11 @@
 package org.eclipse.persistence.internal.descriptors;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 public class VirtualAttributeAccessor extends MethodAttributeAccessor {
 
-    private Class<?> valueType = ClassConstants.OBJECT;
+    private Class<?> valueType = CoreClassConstants.OBJECT;
 
     /**
      * Gets the value of an instance variable in the object.

@@ -24,14 +24,11 @@ package org.eclipse.persistence.internal.helper;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -46,10 +43,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -99,13 +94,6 @@ public class Helper implements Serializable {
 
     /** Prime the platform-dependent current working directory */
     protected static String CURRENT_WORKING_DIRECTORY = null;
-
-    /**
-     *  Prime the platform-dependent temporary directory
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected static String TEMP_DIRECTORY = null;
 
     /** Backdoor to allow 0 to be used in primary keys.
      * @deprecated
@@ -227,14 +215,6 @@ public class Helper implements Serializable {
         getCalendarCache().offer(calendar);
     }
 
-    /**
-     * @deprecated Use {@linkplain Collection#addAll(Collection)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static <E> void addAllToVector(Vector<E> theVector, Vector<? extends E> elementsToAdd) {
-        theVector.addAll(elementsToAdd);
-    }
-
     public static <T> Vector<T> addAllUniqueToVector(Vector<T> objects, List<T> objectsToAdd) {
         if (objectsToAdd == null) {
             return objects;
@@ -261,44 +241,6 @@ public class Helper implements Serializable {
             }
         }
         return objects;
-    }
-
-    /**
-     * Convert the specified vector into an array.
-     * @deprecated Use {@linkplain Collection#toArray(Object[])} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static Object[] arrayFromVector(Vector<?> vector) {
-        return vector.toArray(new Object[0]);
-    }
-
-    /**
-     * Convert the HEX string to a byte array.
-     * HEX allows for binary data to be printed.
-     * @deprecated Use {@linkplain HexFormat#parseHex(CharSequence)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static byte[] buildBytesFromHexString(String hex) {
-        return HexFormat.of().parseHex(hex);
-    }
-
-    /**
-     * Convert the byte array to a HEX string.
-     * HEX allows for binary data to be printed.
-     * @deprecated Use {@linkplain HexFormat#formatHex(byte[])} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String buildHexStringFromBytes(byte[] bytes) {
-        return HexFormat.of().formatHex(bytes).toUpperCase();
-    }
-
-    /**
-      * Create a new Vector containing all of the map elements.
-     * @deprecated Use {@linkplain Vector#Vector(Collection)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static <T> Vector<T> buildVectorFromMapElements(Map<?, T> map) {
-        return new Vector<>(map.values());
     }
 
     /**
@@ -457,14 +399,6 @@ public class Helper implements Serializable {
         return res;
     }
 
-    /**
-     * @deprecated Use (@linkplain {@link #getClassFromClassName(String, ClassLoader)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static <T> Class<T> getClassFromClasseName(final String className, final ClassLoader classLoader) {
-        return getClassFromClassName(className, classLoader);
-    }
-
     public static <T> Class<T> getClassFromClassName(final String className, final ClassLoader classLoader) {
         if (className == null) {
             return null;
@@ -534,22 +468,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * @deprecated Use {@linkplain Arrays#compare(byte[], byte[])} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean compareByteArrays(byte[] array1, byte[] array2) {
-        return Arrays.compare(array1, array2) == 0;
-    }
-
-    /**
-     * @deprecated Use {@linkplain Arrays#compare(char[], char[])} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean compareCharArrays(char[] array1, char[] array2) {
-        return Arrays.compare(array1, array2) == 0;
-    }
-
-    /**
     * PUBLIC:
     * <p>
     * Compare two vectors of types. Return true if the size of the vectors is the
@@ -580,34 +498,6 @@ public class Helper implements Serializable {
     }
 
     /**
-      * PUBLIC:
-      * Compare the elements in 2 hashtables to see if they are equal
-      * <p>
-      * Added Nov 9, 2000 JED Patch 2.5.1.8
-     * @deprecated Unused.
-      */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean compareHashtables(Hashtable<?, ?> hashtable1, Hashtable<?, ?> hashtable2) {
-        Object element;
-
-        if (hashtable1.size() != hashtable2.size()) {
-            return false;
-        }
-
-        Hashtable<?, ?> clonedHashtable = (Hashtable<?, ?>)hashtable2.clone();
-
-        Iterator<?> iterator = hashtable1.values().iterator();
-        while (iterator.hasNext()) {
-            element = iterator.next();
-            if (clonedHashtable.remove(element) == null) {
-                return false;
-            }
-        }
-
-        return clonedHashtable.isEmpty();
-    }
-
-    /**
      * Compare two potential arrays and return true if they are the same. Will
      * check for BigDecimals as well.
      */
@@ -616,10 +506,10 @@ public class Helper implements Serializable {
         Class<?> secondClass = secondValue.getClass();
 
         // Arrays must be checked for equality because default does identity
-        if ((firstClass == ClassConstants.APBYTE) && (secondClass == ClassConstants.APBYTE)) {
-            return compareByteArrays((byte[])firstValue, (byte[])secondValue);
-        } else if ((firstClass == ClassConstants.APCHAR) && (secondClass == ClassConstants.APCHAR)) {
-            return compareCharArrays((char[])firstValue, (char[])secondValue);
+        if ((firstClass == CoreClassConstants.APBYTE) && (secondClass == CoreClassConstants.APBYTE)) {
+            return Arrays.compare((byte[])firstValue, (byte[])secondValue) == 0;
+        } else if ((firstClass == CoreClassConstants.APCHAR) && (secondClass == CoreClassConstants.APCHAR)) {
+            return Arrays.compare((char[])firstValue, (char[])secondValue) == 0;
         } else if ((firstClass.isArray()) && (secondClass.isArray())) {
             return compareArrays((Object[])firstValue, (Object[])secondValue);
         } else if (firstValue instanceof java.math.BigDecimal && secondValue instanceof java.math.BigDecimal) {
@@ -641,32 +531,6 @@ public class Helper implements Serializable {
         concatenation.putAll(second);
 
         return concatenation;
-    }
-
-    /**
-     * Return a new vector with no duplicated values.
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static <E> Vector<E> concatenateUniqueVectors(Vector<? extends E> first, Vector<? extends E> second) {
-        Vector<E> concatenation;
-        E element;
-
-        concatenation = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-
-        for (Iterator<? extends E> iterator = first.iterator(); iterator.hasNext();) {
-            concatenation.add(iterator.next());
-        }
-
-        for (Iterator<? extends E> iterator = second.iterator(); iterator.hasNext();) {
-            element = iterator.next();
-            if (!concatenation.contains(element)) {
-                concatenation.add(element);
-            }
-        }
-
-        return concatenation;
-
     }
 
     /**
@@ -734,19 +598,6 @@ public class Helper implements Serializable {
             CURRENT_WORKING_DIRECTORY = PrivilegedAccessHelper.getSystemProperty("user.dir");
         }
         return CURRENT_WORKING_DIRECTORY;
-    }
-
-    /**
-     * Return the name of the "temporary directory".
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String tempDirectory() {
-        // Bug 2756643
-        if (TEMP_DIRECTORY == null) {
-            TEMP_DIRECTORY = PrivilegedAccessHelper.getSystemProperty("java.io.tmpdir");
-        }
-        return TEMP_DIRECTORY;
     }
 
     /**
@@ -828,24 +679,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Returns true if the file of this name does indeed exist
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean doesFileExist(String fileName) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(fileName);
-        } catch (FileNotFoundException fnfException) {
-            return false;
-        } finally {
-        Helper.close(reader);
-        }
-
-        return true;
-    }
-
-    /**
      * Double up \ to allow printing of directories for source code generation.
      */
     public static String doubleSlashes(String path) {
@@ -859,18 +692,6 @@ public class Helper implements Serializable {
         }
 
         return buffer.toString();
-    }
-
-    /**
-     * Extracts the actual path to the jar file.
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String extractJarNameFromURL(java.net.URL url) {
-        String tempName = url.getFile();
-        int start = tempName.indexOf("file:") + 5;
-        int end = tempName.indexOf("!/");
-        return tempName.substring(start, end);
     }
 
     /**
@@ -952,36 +773,10 @@ public class Helper implements Serializable {
     }
 
     /**
-     *    Answers the unqualified class name for the provided class.
-     * @deprecated Use {@linkplain Class#getSimpleName()} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String getShortClassName(Class<?> javaClass) {
-        return javaClass.getSimpleName();
-    }
-
-    /**
      *    Answers the unqualified class name from the specified String.
      */
     public static String getShortClassName(String javaClassName) {
         return javaClassName.substring(javaClassName.lastIndexOf('.') + 1);
-    }
-
-    /**
-     *    Answers the unqualified class name for the specified object.
-     * @deprecated Use {@code object.getClass().getSimpleName()} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String getShortClassName(Object object) {
-        return getShortClassName(object.getClass());
-    }
-
-    /**
-     *    return a package name for the specified class.
-     * @deprecated Use {@linkplain Class#getPackageName()} instead.
-     */
-    public static String getPackageName(Class<?> javaClass) {
-        return javaClass.getPackageName();
     }
 
     /**
@@ -996,68 +791,11 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Returns the index of the first <code>null</code> element found in the specified
-     * <code>Vector</code> starting the search at the starting index specified.
-     * Return  an int &gt;= 0 and less than size if a <code>null</code> element was found.
-     * Return -1 if a <code>null</code> element was not found.
-     * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
-     * for a <code>null</code> element will result in a <code>NullPointerException</code>....
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static int indexOfNullElement(Vector<?> v, int index) {
-        int size = v.size();
-        for (int i = index; i < size; i++) {
-            if (v.get(i) == null) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * ADVANCED
      * returns true if the class in question is a primitive wrapper
      */
     public static boolean isPrimitiveWrapper(Class<?> classInQuestion) {
         return classInQuestion.equals(Character.class) || classInQuestion.equals(Boolean.class) || classInQuestion.equals(Byte.class) || classInQuestion.equals(Short.class) || classInQuestion.equals(Integer.class) || classInQuestion.equals(Long.class) || classInQuestion.equals(Float.class) || classInQuestion.equals(Double.class);
-    }
-
-    /**
-     * Returns true if the string given is an all upper case string
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean isUpperCaseString(String s) {
-        char[] c = s.toCharArray();
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isLowerCase(c[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns true if the character given is a vowel. I.e. one of a,e,i,o,u,A,E,I,O,U.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static boolean isVowel(char c) {
-        return (c == 'A') || (c == 'a') || (c == 'e') || (c == 'E') || (c == 'i') || (c == 'I') || (c == 'o') || (c == 'O') || (c == 'u') || (c == 'U');
-    }
-
-    /**
-     * Return an array of the files in the specified directory.
-     * This allows us to simplify jdk1.1 code a bit.
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static File[] listFilesIn(File directory) {
-        if (directory.isDirectory()) {
-            return directory.listFiles();
-        } else {
-            return new File[0];
-        }
     }
 
     /**
@@ -1162,43 +900,6 @@ public class Helper implements Serializable {
         return milliseconds + "ms";
     }
 
-    /**
-     * Given a Vector, print it, even if there is a null in it
-     /**
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String printVector(Vector<?> vector) {
-        StringWriter stringWriter = new StringWriter();
-        stringWriter.write("[");
-        Iterator<?> iterator = vector.iterator();
-        stringWriter.write(String.valueOf(iterator.next()));
-        while (iterator.hasNext()) {
-            stringWriter.write(" ");
-            stringWriter.write(String.valueOf(iterator.next()));
-        }
-        stringWriter.write("]");
-        return stringWriter.toString();
-
-    }
-
-    /**
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static <K, V> Hashtable<K, V> rehashHashtable(Hashtable<K, V> table) {
-        Hashtable<K, V> rehashedTable = new Hashtable<>(table.size() + 2);
-
-        Iterator<V> iterator1 = table.values().iterator();
-        for (Iterator<K> iterator = table.keySet().iterator(); iterator.hasNext();) {
-            K key = iterator.next();
-            V value = iterator1.next();
-            rehashedTable.put(key, value);
-        }
-
-        return rehashedTable;
-    }
-
     public static <K, V> Map<K, V> rehashMap(Map<K, V> table) {
         Map<K, V> rehashedTable = new HashMap<>(table.size() + 2);
 
@@ -1210,42 +911,6 @@ public class Helper implements Serializable {
         }
 
         return rehashedTable;
-    }
-
-    /**
-     * Returns a String which has had enough non-alphanumeric characters removed to be equal to
-     * the maximumStringLength.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String removeAllButAlphaNumericToFit(String s1, int maximumStringLength) {
-        int s1Size = s1.length();
-        if (s1Size <= maximumStringLength) {
-            return s1;
-        }
-
-        // Remove the necessary number of characters
-        StringBuilder buf = new StringBuilder();
-        int numberOfCharsToBeRemoved = s1.length() - maximumStringLength;
-        int s1Index = 0;
-        while ((numberOfCharsToBeRemoved > 0) && (s1Index < s1Size)) {
-            char currentChar = s1.charAt(s1Index);
-            if (Character.isLetterOrDigit(currentChar)) {
-                buf.append(currentChar);
-            } else {
-                numberOfCharsToBeRemoved--;
-            }
-            s1Index++;
-        }
-
-        // Append the rest of the character that were not parsed through.
-        // Is it quicker to build a substring and append that?
-        while (s1Index < s1Size) {
-            buf.append(s1.charAt(s1Index));
-            s1Index++;
-        }
-
-        //
-        return buf.toString();
     }
 
     /**
@@ -1276,28 +941,6 @@ public class Helper implements Serializable {
         // Is it quicker to build a substring and append that?
         while (s1Index < s1Size) {
             buf.append(s1.charAt(s1Index));
-            s1Index++;
-        }
-
-        //
-        return buf.toString();
-    }
-
-    /**
-     * Returns a String which has had enough of the specified character removed to be equal to
-     * the maximumStringLength.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String removeVowels(String s1) {
-        // Remove the vowels
-        StringBuilder buf = new StringBuilder();
-        int s1Size = s1.length();
-        int s1Index = 0;
-        while (s1Index < s1Size) {
-            char currentChar = s1.charAt(s1Index);
-            if (!isVowel(currentChar)) {
-                buf.append(currentChar);
-            }
             s1Index++;
         }
 
@@ -1341,69 +984,6 @@ public class Helper implements Serializable {
             len--;
         }
         return originalString.substring(0, len);
-    }
-
-    /**
-     * Returns a String which is a concatenation of two string which have had enough
-     * vowels removed from them so that the sum of the sized of the two strings is less than
-     * or equal to the specified size.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String shortenStringsByRemovingVowelsToFit(String s1, String s2, int maximumStringLength) {
-        int size = s1.length() + s2.length();
-        if (size <= maximumStringLength) {
-            return s1 + s2;
-        }
-
-        // Remove the necessary number of characters
-        int s1Size = s1.length();
-        int s2Size = s2.length();
-        StringBuilder buf1 = new StringBuilder();
-        StringBuilder buf2 = new StringBuilder();
-        int numberOfCharsToBeRemoved = size - maximumStringLength;
-        int s1Index = 0;
-        int s2Index = 0;
-        int modulo2 = 0;
-
-        // While we still want to remove characters, and not both string are done.
-        while ((numberOfCharsToBeRemoved > 0) && !((s1Index >= s1Size) && (s2Index >= s2Size))) {
-            if ((modulo2 % 2) == 0) {
-                // Remove from s1
-                if (s1Index < s1Size) {
-                    if (isVowel(s1.charAt(s1Index))) {
-                        numberOfCharsToBeRemoved--;
-                    } else {
-                        buf1.append(s1.charAt(s1Index));
-                    }
-                    s1Index++;
-                }
-            } else {
-                // Remove from s2
-                if (s2Index < s2Size) {
-                    if (isVowel(s2.charAt(s2Index))) {
-                        numberOfCharsToBeRemoved--;
-                    } else {
-                        buf2.append(s2.charAt(s2Index));
-                    }
-                    s2Index++;
-                }
-            }
-            modulo2++;
-        }
-
-        // Append the rest of the character that were not parsed through.
-        // Is it quicker to build a substring and append that?
-        while (s1Index < s1Size) {
-            buf1.append(s1.charAt(s1Index));
-            s1Index++;
-        }
-        while (s2Index < s2Size) {
-            buf2.append(s2.charAt(s2Index));
-            s2Index++;
-        }
-
-        //
-        return buf1.toString() + buf2;
     }
 
     /**
@@ -1741,15 +1321,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Can be used to mark code if a workaround is added for a JDBC driver or other bug.
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static void systemBug(String description) {
-        // Use sender to find what is needy.
-    }
-
-    /**
      * Answer a Time from a Date
      * <p>
      * This implementation is based on the java.sql.Date class, not java.util.Date.
@@ -1962,15 +1533,6 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Can be used to mark code as need if something strange is seen.
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static void toDo(String description) {
-        // Use sender to find what is needy.
-    }
-
-    /**
      * Convert dotted format class name to slashed format class name.
      * @return String
      */
@@ -1982,54 +1544,6 @@ public class Helper implements Serializable {
         }else{
           return dottedClassName;
         }
-    }
-
-    /**
-     * If the size of the original string is larger than the passed in size,
-     * this method will remove the vowels from the original string.
-     * <p>
-     * The removal starts backward from the end of original string, and stops if the
-     * resulting string size is equal to the passed in size.
-     * <p>
-     * If the resulting string is still larger than the passed in size after
-     * removing all vowels, the end of the resulting string will be truncated.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static String truncate(String originalString, int size) {
-        if (originalString.length() <= size) {
-            //no removal and truncation needed
-            return originalString;
-        }
-        String vowels = "AaEeIiOoUu";
-        StringBuilder newStringBufferTmp = new StringBuilder(originalString.length());
-
-        //need to remove the extra characters
-        int counter = originalString.length() - size;
-        for (int index = (originalString.length() - 1); index >= 0; index--) {
-            //search from the back to the front, if vowel found, do not append it to the resulting (temp) string!
-            //i.e. if vowel not found, append the chararcter to the new string buffer.
-            if (vowels.indexOf(originalString.charAt(index)) == -1) {
-                newStringBufferTmp.append(originalString.charAt(index));
-            } else {
-                //vowel found! do NOT append it to the temp buffer, and decrease the counter
-                counter--;
-                if (counter == 0) {
-                    //if the exceeded characters (counter) of vowel haven been removed, the total
-                    //string size should be equal to the limits, so append the reversed remaining string
-                    //to the new string, break the loop and return the shrunk string.
-                    StringBuilder newStringBuffer = new StringBuilder(size);
-                    newStringBuffer.append(originalString.substring(0, index));
-                    //need to reverse the string
-                    //bug fix: 3016423. append(BunfferString) is jdk1.4 version api. Use append(String) instead
-                    //in order to support jdk1.3.
-                    newStringBuffer.append(newStringBufferTmp.reverse());
-                    return newStringBuffer.toString();
-                }
-            }
-        }
-
-        //the shrunk string still too long, revrese the order back and truncate it!
-        return newStringBufferTmp.reverse().substring(0, size);
     }
 
     /**
@@ -2093,31 +1607,20 @@ public class Helper implements Serializable {
     }
 
     /**
-     * Convert the byte array to a HEX string.
-     * HEX allows for binary data to be printed.
-     * @deprecated Use {@linkplain HexFormat#formatHex(byte[])} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    @SuppressWarnings({"removal"})
-    public static void writeHexString(byte[] bytes, Writer writer) throws IOException {
-        writer.write(buildHexStringFromBytes(bytes));
-    }
-
-    /**
      * Check if the value is 0 (int/long) for primitive ids.
      */
     public static boolean isEquivalentToNull(Object value) {
         return (!isZeroValidPrimaryKey
-                    && (((value.getClass() == ClassConstants.LONG) && ((Long) value == 0L))
-                            || ((value.getClass() == ClassConstants.INTEGER) && ((Integer) value == 0))));
+                    && (((value.getClass() == CoreClassConstants.LONG) && ((Long) value == 0L))
+                            || ((value.getClass() == CoreClassConstants.INTEGER) && ((Integer) value == 0))));
     }
 
     /**
      * Returns true if the passed value is Number that is negative or equals to zero.
      */
     public static boolean isNumberNegativeOrZero(Object value) {
-        return ((value.getClass() == ClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) ||
-                ((value.getClass() == ClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
+        return ((value.getClass() == CoreClassConstants.BIGDECIMAL) && (((BigDecimal)value).signum() <= 0)) ||
+                ((value.getClass() == CoreClassConstants.BIGINTEGER) && (((BigInteger)value).signum() <= 0)) ||
                 ((value instanceof Number) && (((Number)value).longValue() <= 0));
     }
 
@@ -2323,13 +1826,5 @@ public class Helper implements Serializable {
             }
         }
         return false;
-    }
-
-    /**
-     * @deprecated Unused.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public static long timeWithRoundMiliseconds() {
-        return new Date().getTime() / 1000 * 1000;
     }
 }

@@ -23,7 +23,7 @@ package org.eclipse.persistence.testing.tests.dynamic.projectxml;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.junit.Test;
 

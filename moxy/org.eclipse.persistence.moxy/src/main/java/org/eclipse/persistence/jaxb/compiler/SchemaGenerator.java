@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
-import org.eclipse.persistence.exceptions.BeanValidationException;
+import org.eclipse.persistence.jaxb.BeanValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -62,6 +62,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMaxFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.DecimalMinFacet;
@@ -195,7 +196,7 @@ public class SchemaGenerator {
                 try{
                     elementName = info.getXmlNameTransformer().transformRootElementName(myClassName);
                 }catch (Exception ex){
-                    throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(myClassName, info.getXmlNameTransformer().getClass().getName(), ex);
+                    throw JAXBException.exceptionDuringNameTransformation(myClassName, info.getXmlNameTransformer().getClass().getName(), ex);
                 }
             }
             rootElement.setName(elementName);
@@ -2432,7 +2433,7 @@ public class SchemaGenerator {
      *
      * CAUTION - ORDER SENSITIVE: Longer patterns should come first, because they may contain one of the shorter pattern.
      * <p>
-     * Changes to this class should also be reflected in the opposite {@link org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator RegexMutator} class within XJC BeanValidation Plugin.
+     * Changes to this class should also be reflected in the opposite {@code org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin.RegexMutator} class within XJC BeanValidation Plugin.
      *
      * @see <a href="http://stackoverflow.com/questions/4304928/unicode-equivalents-for-w-and-b-in-java-regular-expressions">tchrist's work</a>
      * @see <a href="http://www.regular-expressions.info/shorthand.html#xml">Special shorthands in XML Schema.</a>

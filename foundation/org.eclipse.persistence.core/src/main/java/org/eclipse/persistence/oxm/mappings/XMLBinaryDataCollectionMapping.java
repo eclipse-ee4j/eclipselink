@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,8 @@ package org.eclipse.persistence.oxm.mappings;
 
 import jakarta.activation.DataHandler;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
@@ -91,7 +91,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
     private static final String INCLUDE = "Include";
 
     public XMLBinaryDataCollectionMapping() {
-        collectionContentType = ClassConstants.APBYTE;
+        collectionContentType = CoreClassConstants.APBYTE;
         mimeTypePolicy = new FixedMimeTypePolicy(null);
     }
 
@@ -232,7 +232,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             }else{
 
 
-                if(element.getClass() == ClassConstants.ABYTE) {
+                if(element.getClass() == CoreClassConstants.ABYTE) {
                     inline = true;
                 }
                 elements.add(element);
@@ -278,9 +278,9 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 //write as attachment
                 String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
-                if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
-                    if (getAttributeElementClass() == ClassConstants.ABYTE) {
-                        element = session.getDatasourcePlatform().getConversionManager().convertObject(element, ClassConstants.APBYTE);
+                if ((getAttributeElementClass() == CoreClassConstants.ABYTE) || (getAttributeElementClass() == CoreClassConstants.APBYTE)) {
+                    if (getAttributeElementClass() == CoreClassConstants.ABYTE) {
+                        element = session.getDatasourcePlatform().getConversionManager().convertObject(element, CoreClassConstants.APBYTE);
                     }
                     bytes = (byte[])element;
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.mimeTypePolicy.getMimeType(parent), field.getLastXPathFragment().getLocalName(),
@@ -331,7 +331,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                 }
             } else {
                 //inline
-                if (!((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE))) {
+                if (!((getAttributeElementClass() == CoreClassConstants.ABYTE) || (getAttributeElementClass() == CoreClassConstants.APBYTE))) {
                     element = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(element, marshaller, this.mimeTypePolicy.getMimeType(parent)).getData();
                 }
             }
@@ -374,7 +374,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         textField.setSchemaType(field.getSchemaType());
 
         Object valueToWrite = getValueToWrite(value, parent, record, field, includeField, session);
-        if(!isAttribute && valueToWrite.getClass() == ClassConstants.ABYTE) {
+        if(!isAttribute && valueToWrite.getClass() == CoreClassConstants.ABYTE) {
             //if the returned value is a byte[] and not an XMLRecord, just write it inline
             record.add(textField, valueToWrite);
         }
@@ -460,7 +460,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         field.setNamespaceResolver(tempResolver);
                         String includeValue = (String) record.get(field);
                         if (element != null && includeValue != null) {
-                            if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
+                            if ((getAttributeElementClass() == CoreClassConstants.ABYTE) || (getAttributeElementClass() == CoreClassConstants.APBYTE)) {
                                 fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
                             } else {
                                 fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);

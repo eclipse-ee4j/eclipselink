@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,8 @@ import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
     public DefineWithIncludesTestCases(String name) {
@@ -63,7 +63,7 @@ public class DefineWithIncludesTestCases extends XSDHelperDefineTestCases {
         QuantityTypeDO.set("name", "quantityType");
         SDOType quantityType = (SDOType) typeHelper.define(QuantityTypeDO);
         quantityType.addBaseType(intType);
-        quantityType.setInstanceClassName(ClassConstants.PINT.getName());
+        quantityType.setInstanceClassName(CoreClassConstants.PINT.getName());
 
         // create a new Type for SKU
         DataObject SkuDO = dataFactory.create("commonj.sdo", "Type");

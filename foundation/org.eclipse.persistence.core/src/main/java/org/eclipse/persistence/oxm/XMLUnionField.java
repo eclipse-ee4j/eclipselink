@@ -43,7 +43,7 @@ import java.util.Iterator;
  * <code>
  * In this example the age field could be a date or an int.<br>
  * XMLUnionField field = new XMLUnionField("age/text()");<br>
- * field.addSchemaType(XMLConstants.DATE_QNAME);<br>
+ * field.addSchemaType(Constants.DATE_QNAME);<br>
  * field.addSchemaType(XMLConstants.INT_QNAME)<br>
  * </code>
  *

@@ -14,15 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.HexFormat;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 //Bug#3854296.  Test if byte[], Byte[], char[] and Character[] are converted to String correctly.
 public class ConvertByteCharArrayToStringTest extends AutoVerifyTestCase {
-    String hexString = Helper.buildHexStringFromBytes(new byte[] { 1, 56, -128, 127 });
+    String hexString = HexFormat.of().formatHex(new byte[] { 1, 56, -128, 127 });
     String testString = "A test string";
     byte[] byteArray;
     Byte[] byteOArray;
@@ -40,19 +42,19 @@ public class ConvertByteCharArrayToStringTest extends AutoVerifyTestCase {
     @Override
     public void setup() {
         //Convert to an array first
-        byteArray = (byte[])ConversionManager.getDefaultManager().convertObject(hexString, ClassConstants.APBYTE);
-        byteOArray = (Byte[])ConversionManager.getDefaultManager().convertObject(hexString, ClassConstants.ABYTE);
-        charArray = (char[])ConversionManager.getDefaultManager().convertObject(testString, ClassConstants.APCHAR);
+        byteArray = (byte[])ConversionManager.getDefaultManager().convertObject(hexString, CoreClassConstants.APBYTE);
+        byteOArray = (Byte[])ConversionManager.getDefaultManager().convertObject(hexString, CoreClassConstants.ABYTE);
+        charArray = (char[])ConversionManager.getDefaultManager().convertObject(testString, CoreClassConstants.APCHAR);
         charOArray = (Character[])ConversionManager.getDefaultManager().convertObject(testString, ClassConstants.ACHAR);
     }
 
     @Override
     public void test() {
         //Convert back to a string
-        byteString = ConversionManager.getDefaultManager().convertObject(byteArray, ClassConstants.STRING);
-        byteOString = ConversionManager.getDefaultManager().convertObject(byteOArray, ClassConstants.STRING);
-        charString = ConversionManager.getDefaultManager().convertObject(charArray, ClassConstants.STRING);
-        charOString = ConversionManager.getDefaultManager().convertObject(charOArray, ClassConstants.STRING);
+        byteString = ConversionManager.getDefaultManager().convertObject(byteArray, CoreClassConstants.STRING);
+        byteOString = ConversionManager.getDefaultManager().convertObject(byteOArray, CoreClassConstants.STRING);
+        charString = ConversionManager.getDefaultManager().convertObject(charArray, CoreClassConstants.STRING);
+        charOString = ConversionManager.getDefaultManager().convertObject(charOArray, CoreClassConstants.STRING);
     }
 
     @Override

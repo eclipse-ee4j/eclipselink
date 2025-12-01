@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,7 +211,7 @@ public class DynamicJAXBContextFactory {
         if (contextPath != null) {
             return new DynamicJAXBContext(new SessionsXmlContextInput(contextPath, properties, classLoader));
         } else {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSessionName());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.nullSessionName());
         }
     }
 
@@ -222,7 +222,7 @@ public class DynamicJAXBContextFactory {
      * @see org.eclipse.persistence.jaxb.JAXBContext
      */
     public static DynamicJAXBContext createContext(Class<?>[] classes, Map<String, Object> properties) throws JAXBException {
-        throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.cannotCreateDynamicContextFromClasses());
+        throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.cannotCreateDynamicContextFromClasses());
     }
 
     /**
@@ -247,13 +247,13 @@ public class DynamicJAXBContextFactory {
      */
     public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaDOM == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullNode());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.nullNode());
         }
 
         if (resolver != null) {
             // If schema and resolver are both specified, this indicates a schema import
             // This is not supported when boostrapping from a Node.
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xsdImportNotSource());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.xsdImportNotSource());
         }
 
         DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaDOM, null, properties, classLoader));
@@ -283,7 +283,7 @@ public class DynamicJAXBContextFactory {
      */
     public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         if (schemaStream == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.nullInputStream());
         }
 
         DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaStream, resolver, properties, classLoader));
@@ -313,7 +313,7 @@ public class DynamicJAXBContextFactory {
      */
     public static DynamicJAXBContext createContextFromXSD(Source schemaSource, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaSource == null) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSource());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.nullSource());
         }
 
         DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaSource, resolver, properties, classLoader));
@@ -351,7 +351,7 @@ public class DynamicJAXBContextFactory {
      */
     public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         if (properties == null || (properties.get(JAXBContextProperties.OXM_METADATA_SOURCE) == null && properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null)) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
+            throw new JAXBException(org.eclipse.persistence.jaxb.JAXBException.oxmKeyNotFound());
         }
 
         return new DynamicJAXBContext(new MetadataContextInput(properties, classLoader));

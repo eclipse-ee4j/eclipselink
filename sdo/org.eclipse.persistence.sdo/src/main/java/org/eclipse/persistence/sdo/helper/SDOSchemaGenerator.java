@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -576,7 +577,7 @@ public class SDOSchemaGenerator {
         if (sdoProperty.isDefaultSet()) {
             if (!sdoProperty.isMany() && sdoProperty.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                elem.setDefaultValue(xmlConversionManager.convertObject(sdoProperty.getDefault(), ClassConstants.STRING, sdoProperty.getXsdType()));
+                elem.setDefaultValue(xmlConversionManager.convertObject(sdoProperty.getDefault(), CoreClassConstants.STRING, sdoProperty.getXsdType()));
             }
 
         }
@@ -682,7 +683,7 @@ public class SDOSchemaGenerator {
         if (((SDOProperty)property).isDefaultSet()) {
             if (!property.isMany() && property.getType().isDataType()) {
                 XMLConversionManager xmlConversionManager = ((SDOXMLHelper)aHelperContext.getXMLHelper()).getXmlConversionManager();
-                attr.setDefaultValue(xmlConversionManager.convertObject(property.getDefault(), ClassConstants.STRING, ((SDOProperty)property).getXsdType()));
+                attr.setDefaultValue(xmlConversionManager.convertObject(property.getDefault(), CoreClassConstants.STRING, ((SDOProperty)property).getXsdType()));
             }
         }
         addSimpleComponentAnnotations(attr, property, false);

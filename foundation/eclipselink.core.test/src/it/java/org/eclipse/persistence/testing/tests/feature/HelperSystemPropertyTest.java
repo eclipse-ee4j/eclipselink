@@ -36,11 +36,5 @@ public class HelperSystemPropertyTest extends AutoVerifyTestCase {
         if (!org.eclipse.persistence.internal.helper.Helper.currentWorkingDirectory().equals(System.getProperty("user.dir"))) {
             throw new TestErrorException("Helper.currentWorkingDirectory() returns the incorrect value.");
         }
-
-        Object tlTempDirectory = org.eclipse.persistence.internal.helper.Helper.tempDirectory();
-        Object sysTempDirectory = System.getProperty("java.io.tmpdir");
-        if (((tlTempDirectory == null) && (sysTempDirectory != null)) || !tlTempDirectory.equals(sysTempDirectory)) {
-            throw new TestErrorException("Helper.tempDirectory() returns the incorrect value.");
-        }
     }
 }

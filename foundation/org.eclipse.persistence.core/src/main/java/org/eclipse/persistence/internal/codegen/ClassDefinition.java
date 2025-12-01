@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -242,7 +243,7 @@ public class ClassDefinition extends CodeDefinition {
      * Write the code out to the generator's stream.
      */
     @Override
-    public void write(CodeGenerator generator) {
+    public void write(CodeGenerator generator) throws IOException {
         if (!getPackageName().isEmpty()) {
             generator.write("package ");
             generator.write(getPackageName());
@@ -265,7 +266,7 @@ public class ClassDefinition extends CodeDefinition {
      * Write the code out to the generator's stream.
      */
     @Override
-    public void writeBody(CodeGenerator generator) {
+    public void writeBody(CodeGenerator generator) throws IOException {
         sortMethods();
 
         if (isInterface()) {

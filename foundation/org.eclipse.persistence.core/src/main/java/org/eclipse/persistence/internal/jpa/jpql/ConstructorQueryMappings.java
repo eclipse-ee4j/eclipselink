@@ -15,8 +15,6 @@
 //
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
@@ -189,9 +187,9 @@ public final class ConstructorQueryMappings {
             this.queryContext = queryContext;
         }
 
-        private DynamicClassLoader classLoader() {
-            return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
-        }
+//        private DynamicClassLoader classLoader() {
+//            return (DynamicClassLoader) queryContext.getSession().getProperty(PersistenceUnitProperties.CLASSLOADER);
+//        }
 
         @Override
         public void visit(ConstructorExpression expression) {

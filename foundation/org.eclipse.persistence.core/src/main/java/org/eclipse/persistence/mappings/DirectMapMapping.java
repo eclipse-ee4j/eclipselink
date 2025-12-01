@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
@@ -959,7 +960,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     @Override
     public void useMapClass(Class<?> concreteClass) {
-        if (!Helper.classImplementsInterface(concreteClass, ClassConstants.Map_Class)) {
+        if (!Helper.classImplementsInterface(concreteClass, CoreClassConstants.Map_Class)) {
             throw DescriptorException.illegalContainerClass(concreteClass);
         }
         containerPolicy.setContainerClass(concreteClass);

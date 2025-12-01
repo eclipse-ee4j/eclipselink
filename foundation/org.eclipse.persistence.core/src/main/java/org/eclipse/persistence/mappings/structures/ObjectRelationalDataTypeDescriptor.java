@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     @Override
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) throws DatabaseException {
-        Object[] fields = Helper.arrayFromVector(directValues);
+        Object[] fields = directValues.toArray(new Object[0]);
         try {
             session.getAccessor().incrementCallCount(session);
             java.sql.Connection connection = session.getAccessor().getConnection();

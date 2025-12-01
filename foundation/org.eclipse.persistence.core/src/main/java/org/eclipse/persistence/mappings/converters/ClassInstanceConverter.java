@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.mappings.converters;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -52,7 +52,7 @@ public class ClassInstanceConverter implements Converter {
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
         if (fieldValue != null) {
-            Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+            Class<?> attributeClass = session.getDatasourcePlatform().convertObject(fieldValue, CoreClassConstants.CLASS);
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
@@ -96,7 +96,7 @@ public class ClassInstanceConverter implements Converter {
 
             // Allow user to specify field type to override computed value. (i.e. blob, nchar)
             if (directMapping.getFieldClassification() == null) {
-                directMapping.setFieldClassification(ClassConstants.STRING);
+                directMapping.setFieldClassification(CoreClassConstants.STRING);
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,8 +47,7 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
@@ -56,7 +55,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
@@ -890,7 +888,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 } else if (value instanceof String || value == null) {
                     xmlUnmarshaller.setUnmarshalAttributeGroup(value);
                 } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                    throw org.eclipse.persistence.jaxb.JAXBException.invalidValueForObjectGraph(value);
                 }
             }
             case UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME -> xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
@@ -1284,7 +1282,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
         private QName qName;
 
-        private StrBuffer stringBuffer = new StrBuffer();
+        private StringBuilder stringBuffer = new StringBuilder();
 
         private boolean xsiNil;
         private boolean singleNode;
@@ -1350,7 +1348,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 value = xcm.convertObject(stringBuffer.toString(), componentClass);
             }
             addValue(value);
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
 
         private void endElementSingleNode() {
@@ -1360,7 +1358,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
             if (xsiNil) {
                 addValue(null);
-                stringBuffer.reset();
+                stringBuffer.setLength(0);
                 return;
             }
 
@@ -1371,7 +1369,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 value = xcm.convertObject(nextToken, componentClass);
                 addValue(value);
             }
-            stringBuffer.reset();
+            stringBuffer.setLength(0);
         }
 
         private void addValue(E value) {

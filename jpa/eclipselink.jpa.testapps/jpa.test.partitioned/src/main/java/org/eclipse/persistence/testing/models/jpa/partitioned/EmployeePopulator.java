@@ -22,7 +22,6 @@ import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * <p><b>Purpose</b>: To build and populate the database for example and testing purposes.

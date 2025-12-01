@@ -14,7 +14,7 @@
 //     Chris Delahunt - initial API and implementation
 package org.eclipse.persistence.testing.tests.feature;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
@@ -38,7 +38,7 @@ public class ContainerCloningTest extends AutoVerifyTestCase {
     @Override
     public void test() {
         ContainerPolicy cp = new CollectionContainerPolicy();
-        cp.setContainerClass(ClassConstants.ArrayList_class);
+        cp.setContainerClass(CoreClassConstants.ArrayList_class);
         Collection<Employee> originalC = java.util.Arrays.asList(new Employee());
         Collection cloneC = (Collection)cp.cloneFor(originalC);
 

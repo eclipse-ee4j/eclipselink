@@ -15,7 +15,6 @@
 package org.eclipse.persistence.tools.security;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.JCEEncryptor;
 
@@ -30,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HexFormat;
 
 public final class JCEEncryptorCmd {
 
@@ -83,7 +83,7 @@ public final class JCEEncryptorCmd {
         }  catch (Exception u) {
             try {
                 // try AES/CBC second
-                bytePassword = Helper.buildBytesFromHexString(encryptedPwd);
+                bytePassword = HexFormat.of().parseHex(encryptedPwd);
                 password = new String(decryptCipherAES_CBC.doFinal(bytePassword), StandardCharsets.UTF_8);
             } catch (Exception w) {
                 try (ObjectInputStream oisAes = new ObjectInputStream(new CipherInputStream(new ByteArrayInputStream(bytePassword), decryptCipherAES_ECB))) {
@@ -118,15 +118,15 @@ public final class JCEEncryptorCmd {
 
         private static SecretKey getDESMultitasker() throws Exception {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("DES");
-            return factory.generateSecret(new DESKeySpec(Helper.buildBytesFromHexString("E60B80C7AEC78038")));
+            return factory.generateSecret(new DESKeySpec(HexFormat.of().parseHex("E60B80C7AEC78038")));
         }
 
         private static SecretKey getAESMultitasker() throws Exception {
-            return new SecretKeySpec(Helper.buildBytesFromHexString("3E7CFEF156E712906E1F603B59463C67"), "AES");
+            return new SecretKeySpec(HexFormat.of().parseHex("3E7CFEF156E712906E1F603B59463C67"), "AES");
         }
 
         private static SecretKey getAESCBCMultitasker() throws Exception {
-            return new SecretKeySpec(Helper.buildBytesFromHexString("2DB7354A48F1CA7B48ACA247540FC923"), "AES");
+            return new SecretKeySpec(HexFormat.of().parseHex("2DB7354A48F1CA7B48ACA247540FC923"), "AES");
         }
 
         private static IvParameterSpec getIvSpec() {

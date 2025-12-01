@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2018, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import java.io.Serial;
@@ -1089,7 +1088,7 @@ public class ExpressionOperator implements Serializable {
         // Like
         //conformLike(left, right);
         else if (((this.selector == Like) || (this.selector == NotLike)) && (right instanceof List<?> v && v.size() == 1)) {
-            Boolean doesLikeConform = JavaPlatform.conformLike(left, v.get(0));
+            Boolean doesLikeConform = ConformUtils.conformLike(left, v.get(0));
             if (doesLikeConform != null) {
                 if (doesLikeConform) {
                     return this.selector == Like;// Negate for NotLike
@@ -1100,7 +1099,7 @@ public class ExpressionOperator implements Serializable {
         }
         // Regexp
         else if ((this.selector == Regexp) && (right instanceof List<?> v && v.size() == 1)) {
-            Boolean doesConform = JavaPlatform.conformRegexp(left, v.get(0));
+            Boolean doesConform = ConformUtils.conformRegexp(left, v.get(0));
             if (doesConform != null) {
                 return doesConform;
             }

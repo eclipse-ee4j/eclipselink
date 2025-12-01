@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOProperty;
@@ -40,8 +42,7 @@ import org.eclipse.persistence.sdo.helper.SDOXSDHelper;
 import org.eclipse.persistence.sdo.helper.extension.SDOUtil;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sdo.types.*;
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.sdo.SDOException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -595,28 +596,28 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
     }
 
     private static void initSDOTypeForSimpleJavaTypeMap() {
-        sdoTypeForSimpleJavaType.put(ClassConstants.STRING, SDOConstants.SDO_STRING);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BOOLEAN, SDOConstants.SDO_BOOLEANOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PBOOLEAN, SDOConstants.SDO_BOOLEAN);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BYTE, SDOConstants.SDO_BYTEOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PBYTE, SDOConstants.SDO_BYTE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.ABYTE, SDOConstants.SDO_BYTES);
-        sdoTypeForSimpleJavaType.put(ClassConstants.APBYTE, SDOConstants.SDO_BYTES);
-        sdoTypeForSimpleJavaType.put(ClassConstants.CHAR, SDOConstants.SDO_CHARACTEROBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PCHAR, SDOConstants.SDO_CHARACTER);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BIGDECIMAL, SDOConstants.SDO_DECIMAL);
-        sdoTypeForSimpleJavaType.put(ClassConstants.UTILDATE, SDOConstants.SDO_DATE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.DOUBLE, SDOConstants.SDO_DOUBLEOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PDOUBLE, SDOConstants.SDO_DOUBLE);
-        sdoTypeForSimpleJavaType.put(ClassConstants.FLOAT, SDOConstants.SDO_FLOATOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PFLOAT, SDOConstants.SDO_FLOAT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.INTEGER, SDOConstants.SDO_INTOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PINT, SDOConstants.SDO_INT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.BIGINTEGER, SDOConstants.SDO_INTEGER);
-        sdoTypeForSimpleJavaType.put(ClassConstants.LONG, SDOConstants.SDO_LONGOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PLONG, SDOConstants.SDO_LONG);
-        sdoTypeForSimpleJavaType.put(ClassConstants.SHORT, SDOConstants.SDO_SHORTOBJECT);
-        sdoTypeForSimpleJavaType.put(ClassConstants.PSHORT, SDOConstants.SDO_SHORT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.STRING, SDOConstants.SDO_STRING);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BOOLEAN, SDOConstants.SDO_BOOLEANOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PBOOLEAN, SDOConstants.SDO_BOOLEAN);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BYTE, SDOConstants.SDO_BYTEOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PBYTE, SDOConstants.SDO_BYTE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.ABYTE, SDOConstants.SDO_BYTES);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.APBYTE, SDOConstants.SDO_BYTES);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.CHAR, SDOConstants.SDO_CHARACTEROBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PCHAR, SDOConstants.SDO_CHARACTER);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BIGDECIMAL, SDOConstants.SDO_DECIMAL);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.UTILDATE, SDOConstants.SDO_DATE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.DOUBLE, SDOConstants.SDO_DOUBLEOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PDOUBLE, SDOConstants.SDO_DOUBLE);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.FLOAT, SDOConstants.SDO_FLOATOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PFLOAT, SDOConstants.SDO_FLOAT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.INTEGER, SDOConstants.SDO_INTOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PINT, SDOConstants.SDO_INT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.BIGINTEGER, SDOConstants.SDO_INTEGER);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.LONG, SDOConstants.SDO_LONGOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PLONG, SDOConstants.SDO_LONG);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.SHORT, SDOConstants.SDO_SHORTOBJECT);
+        sdoTypeForSimpleJavaType.put(CoreClassConstants.PSHORT, SDOConstants.SDO_SHORT);
     }
 
     @Override

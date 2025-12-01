@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +46,8 @@ import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.BeanValidationException;
-import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
@@ -982,10 +980,10 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
                             xmlMarshaller.setMarshalAttributeGroup(null);
                         } else if (value instanceof ObjectGraphImpl) {
                             xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
-                        } else if (value.getClass() == ClassConstants.STRING) {
+                        } else if (value.getClass() == CoreClassConstants.STRING) {
                             xmlMarshaller.setMarshalAttributeGroup(value);
                         } else {
-                            throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                            throw org.eclipse.persistence.jaxb.JAXBException.invalidValueForObjectGraph(value);
                         }
                     }
                     case MarshallerProperties.BEAN_VALIDATION_MODE -> {

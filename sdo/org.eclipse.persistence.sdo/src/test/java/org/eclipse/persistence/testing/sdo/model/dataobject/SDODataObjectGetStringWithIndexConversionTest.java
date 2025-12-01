@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import java.util.TimeZone;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOConstants;
-import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.sdo.SDOException;
 
 public class SDODataObjectGetStringWithIndexConversionTest extends SDODataObjectConversionTestCases {
     public SDODataObjectGetStringWithIndexConversionTest(String name) {
@@ -175,7 +175,7 @@ public class SDODataObjectGetStringWithIndexConversionTest extends SDODataObject
         dataObject.set(property, bytes);
         try {
             String value = dataObject.getString(PROPERTY_INDEX);
-            assertEquals("0A64", value);
+            assertEquals("0a64", value);
         } catch (ClassCastException e) {
         }
     }

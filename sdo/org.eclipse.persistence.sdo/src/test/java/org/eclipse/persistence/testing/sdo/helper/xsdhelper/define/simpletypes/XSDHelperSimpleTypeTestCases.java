@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,11 @@ import commonj.sdo.Type;
 
 import java.util.List;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.testing.sdo.helper.xsdhelper.XSDHelperTestCases;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 
 public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
     public XSDHelperSimpleTypeTestCases(String name) {
@@ -256,7 +256,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
             if (type.getName().equals("my-int")) {
                 assertEquals(type.getName(), "my-int");
                 assertFalse(type.isAbstract());
-                assertEquals(ClassConstants.BIGINTEGER, type.getInstanceClass());
+                assertEquals(CoreClassConstants.BIGINTEGER, type.getInstanceClass());
                 assertEquals(0, type.getBaseTypes().size());
                 assertTrue(type.isDataType());
                 assertEquals(type.getURI(), "http://www.example.org");
@@ -268,7 +268,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
             if (type.getName().equals("my-other-int")) {
                 assertEquals(type.getName(), "my-other-int");
                 assertFalse(type.isAbstract());
-                assertEquals(ClassConstants.BIGINTEGER, type.getInstanceClass());
+                assertEquals(CoreClassConstants.BIGINTEGER, type.getInstanceClass());
                 assertEquals(1, type.getBaseTypes().size());
                 assertTrue(type.isDataType());
                 assertEquals(type.getURI(), "http://www.example.org");
@@ -288,7 +288,7 @@ public class XSDHelperSimpleTypeTestCases extends XSDHelperTestCases {
                 SDOProperty prop = (SDOProperty)type.getDeclaredProperties().get(0);
                 assertEquals("testElement", prop.getName());
                 assertEquals("my-int", prop.getType().getName());
-                assertEquals(ClassConstants.BIGINTEGER, prop.getType().getInstanceClass());
+                assertEquals(CoreClassConstants.BIGINTEGER, prop.getType().getInstanceClass());
             }
         }
     }

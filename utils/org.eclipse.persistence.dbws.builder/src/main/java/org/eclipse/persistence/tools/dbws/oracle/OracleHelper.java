@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,6 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.xr.Attachment;
 import org.eclipse.persistence.internal.xr.CollectionResult;
@@ -607,13 +606,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             for (Iterator<String> i = namePatterns.iterator(); i.hasNext(); ) {
                 out.append(i.next());
                 if (i.hasNext()) {
-                    out.append(StringHelper.VERTICAL_BAR);
+                    out.append('|');
                 }
             }
             return out.toString();
-        } else {
-            return StringHelper.EMPTY_STRING;
         }
+        return "";
     }
 
     /**
@@ -1313,10 +1311,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             ((StoredFunctionCall) call).setResult(null, ClassConstants.TIMESTAMP);
                         } else if (returnArg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
                             // special handling for XMLType types
-                            ((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR, ClassConstants.OBJECT);
+                            ((StoredFunctionCall) call).setResult(getJDBCTypeForTypeName(XMLTYPE_STR), XMLTYPE_STR, CoreClassConstants.OBJECT);
                         } else if (resultType == Types.OTHER || resultType == Types.CLOB) {
                             // default to OBJECT for OTHER, CLOB and LONG types
-                            ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                            ((StoredFunctionCall) call).setResult(null, CoreClassConstants.OBJECT);
                         } else {
                             ((StoredFunctionCall) call).setResult(null, resultType);
                         }

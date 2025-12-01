@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
                 if (actualTypeClassName != null) {
                     try {
                         // try the actual class of the field or property
-                        parameterTypes[0] = Helper.getClassFromClasseName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
+                        parameterTypes[0] = Helper.getClassFromClassName(actualTypeClassName, sourceMapping.getReferenceClass().getClassLoader());
                         setMethod = Helper.getDeclaredMethod(sourceMapping.getDescriptor().getJavaClass(), setMethodName, parameterTypes);
                     } catch (NoSuchMethodException nsme) {}
                     if (setMethod != null) {

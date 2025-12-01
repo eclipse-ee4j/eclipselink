@@ -14,8 +14,6 @@
 //     tware - initial implementation
 package org.eclipse.persistence.internal.sessions.cdi;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-
 import javax.naming.NamingException;
 
 public class DisabledInjectionManager<T> implements InjectionManager<T> {
@@ -26,7 +24,7 @@ public class DisabledInjectionManager<T> implements InjectionManager<T> {
     }
 
     @Override
-    public void cleanUp(AbstractSession session) {
+    public void cleanUp() {
     }
 
 }

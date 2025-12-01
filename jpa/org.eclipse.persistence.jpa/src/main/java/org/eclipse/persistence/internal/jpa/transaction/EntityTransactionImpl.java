@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import java.util.WeakHashMap;
 
 import jakarta.persistence.RollbackException;
 
-import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.transaction.TransactionException;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 

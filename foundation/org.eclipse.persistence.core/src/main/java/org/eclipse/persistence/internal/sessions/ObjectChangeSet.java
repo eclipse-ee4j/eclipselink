@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -349,7 +348,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public Class<?> getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
-            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
+            classType = session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), CoreClassConstants.CLASS);
         }
         return classType;
     }
@@ -1197,8 +1196,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
             this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.TIMESTAMP);
             this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.TIMESTAMP);
         } else if (descriptor.getOptimisticLockingPolicy() instanceof VersionLockingPolicy) {
-            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, ClassConstants.BIGDECIMAL);
-            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, ClassConstants.BIGDECIMAL);
+            this.writeLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.writeLockValue, CoreClassConstants.BIGDECIMAL);
+            this.initialWriteLockValue = session.getPlatform(descriptor.getJavaClass()).getConversionManager().convertObject(this.initialWriteLockValue, CoreClassConstants.BIGDECIMAL);
         }
     }
 

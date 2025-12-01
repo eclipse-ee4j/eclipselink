@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,6 +52,7 @@ import jakarta.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -464,8 +465,8 @@ public class QueryImpl {
             DatabaseQuery query = getDatabaseQueryInternal();
             if (query.isReadAllQuery()) {
                 Class<?> containerClass = ((ReadAllQuery) query).getContainerPolicy().getContainerClass();
-                if (!Helper.classImplementsInterface(containerClass, ClassConstants.List_Class)) {
-                    throw QueryException.invalidContainerClass(containerClass, ClassConstants.List_Class);
+                if (!Helper.classImplementsInterface(containerClass, CoreClassConstants.List_Class)) {
+                    throw QueryException.invalidContainerClass(containerClass, CoreClassConstants.List_Class);
                 }
             } else if (query.isReadObjectQuery()) {
                 List<Object> resultList = new ArrayList<>();

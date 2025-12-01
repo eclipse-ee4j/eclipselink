@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,12 +26,9 @@ package org.eclipse.persistence.internal.security;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -64,7 +61,7 @@ public class PrivilegedAccessHelper {
     private static boolean shouldCheckPrivilegedAccess = true;
     private static boolean shouldUsePrivilegedAccess = false;
 
-    private final static String[] legalProperties = { "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "user.dir",
+    private final static String[] legalProperties = { "java.io.tmpdir", "java.specification.version", "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
             PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION,
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
@@ -75,8 +72,8 @@ public class PrivilegedAccessHelper {
             SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE,
             SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK,
             SystemProperties.SECURITY_ENCRYPTOR_USE_STRONG_RANDOM_NUMBER_GENERATOR,
-            ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
-            XMLPlatformFactory.XML_PLATFORM_PROPERTY};
+            "eclipselink.register.run.mbean", "eclipselink.register.dev.mbean",
+            "eclipselink.xml.platform"};
     private final static Set<String> legalPropertiesSet = Set.of(legalProperties);
 
     private static final Set<String> exemptedPropertiesSet = Collections.emptySet();

@@ -237,8 +237,8 @@ public class TableCreatorClassGenerator {
 
         CodeGenerator generator = new CodeGenerator(useUnicode);
         generator.setOutput(getOutputWriter());
-        generateCreatorClass().write(generator);
         try {
+            generateCreatorClass().write(generator);
             getOutputWriter().flush();
             getOutputWriter().close();
         } catch (IOException exception) {

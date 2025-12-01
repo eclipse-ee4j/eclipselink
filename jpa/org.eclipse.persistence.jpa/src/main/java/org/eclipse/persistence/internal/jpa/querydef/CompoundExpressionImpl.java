@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,7 @@ import java.util.List;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.metamodel.Metamodel;
-
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 
 /**
  * <p>
@@ -42,11 +41,11 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     protected boolean isNegated = false;
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
-        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
+        super(metamodel, CoreClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
 
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
-        super(metamodel, ClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
+        super(metamodel, CoreClassConstants.BOOLEAN, expressionNode, compoundExpressions, operator);
     }
 
     /**

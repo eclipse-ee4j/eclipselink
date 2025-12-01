@@ -18,9 +18,9 @@ package org.eclipse.persistence.queries;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -189,7 +189,7 @@ public class ConstructorReportItem extends ReportItem  {
                     constructorArgTypes[index] = ((ConstantExpression)argumentItem.getAttributeExpression()).getValue().getClass();
                 } else {
                     // Use Object.class by default.
-                    constructorArgTypes[index] = ClassConstants.OBJECT;
+                    constructorArgTypes[index] = CoreClassConstants.OBJECT;
                 }
             }
         }

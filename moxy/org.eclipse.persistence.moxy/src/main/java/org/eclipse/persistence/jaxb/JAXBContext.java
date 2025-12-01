@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,6 @@ import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -374,7 +373,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             Marshaller m = getJsonSchemaMarshaller();
             m.marshal(schema, outputResolver.createOutput(null, rootClass.getName() + ".json"));
         } catch (Exception ex) {
-            throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringSchemaGeneration(ex);
+            throw JAXBException.exceptionDuringSchemaGeneration(ex);
         }
     }
 
@@ -1048,7 +1047,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                             additionalClasses.add(jClass);
                         }
                     } catch (ClassNotFoundException e) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                        throw JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                     }
                 }
             }
@@ -1225,7 +1224,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
                     Type type = typeMappingInfo.getType();
                     if (type == null) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
+                        throw org.eclipse.persistence.jaxb.JAXBException.nullTypeOnTypeMappingInfo(typeMappingInfo.getXmlTagName());
                     }
                     // ignore ParameterizedTypes
                     if (type instanceof Class) {
@@ -1246,7 +1245,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                             existingClasses.add(nextClass);
                         }
                     } catch (ClassNotFoundException e) {
-                        throw org.eclipse.persistence.exceptions.JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
+                        throw JAXBException.couldNotLoadClassFromMetadata(javaType.getName());
                     }
                 }
 

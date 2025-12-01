@@ -126,7 +126,7 @@ public class WriteLockManager {
 
     /* This attribute stores the list of threads that have had a problem acquiring locks */
     /*  the first element in this list will be the prevailing thread */
-    protected ExposedNodeLinkedList prevailingQueue;
+    protected ExposedNodeLinkedList<MergeManager> prevailingQueue;
 
     private final Lock toWaitOnLock = new ReentrantLock();
     private final Lock instancePrevailingQueueLock = new ReentrantLock();
@@ -134,7 +134,7 @@ public class WriteLockManager {
     private static final String ACQUIRE_LOCK_FOR_CLONE_METHOD_NAME = WriteLockManager.class.getName() + ".acquireLocksForClone(...)";
 
     public WriteLockManager() {
-        this.prevailingQueue = new ExposedNodeLinkedList();
+        this.prevailingQueue = new ExposedNodeLinkedList<>();
     }
 
     /**

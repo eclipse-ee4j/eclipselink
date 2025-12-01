@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.codegen;
 
+import java.io.IOException;
 
 /**
  * INTERNAL:
@@ -140,7 +141,7 @@ public class AccessLevel {
         this.level = level;
     }
 
-    public void write(CodeGenerator generator) {
+    public void write(CodeGenerator generator) throws IOException {
         boolean needsSpace = true;
         if (getLevel() == PUBLIC) {
             generator.write("public");

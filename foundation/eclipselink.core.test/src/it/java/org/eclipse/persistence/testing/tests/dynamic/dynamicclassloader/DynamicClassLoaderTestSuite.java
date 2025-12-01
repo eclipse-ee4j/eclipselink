@@ -25,7 +25,7 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
-import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.dynamic.DynamicException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
@@ -35,7 +35,7 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
-import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
+import static org.eclipse.persistence.dynamic.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

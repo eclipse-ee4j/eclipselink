@@ -88,7 +88,7 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
                 throw new TestErrorException("Failed to compiled the generated project file " + fileName + ". This could either be a legitimate compile " +
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }
-            //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, ClassConstants.CLASS);
+            //Class projectClass = (Class) getSession().getPlatform().getConversionManager().convertObject(projectShortClassName, CoreClassConstants.CLASS);
             Class<?> projectClass = Class.forName(projectShortClassName);
             generatedProject = (org.eclipse.persistence.sessions.Project)projectClass.getConstructor().newInstance();
         } catch (Exception exception) {

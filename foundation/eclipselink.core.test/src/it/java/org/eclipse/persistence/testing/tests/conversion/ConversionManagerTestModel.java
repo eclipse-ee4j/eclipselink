@@ -14,9 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.conversion;
 
+import java.util.HexFormat;
+
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.framework.DeleteObjectTest;
 import org.eclipse.persistence.testing.framework.InsertObjectTest;
 import org.eclipse.persistence.testing.framework.ReadAllTest;
@@ -170,29 +172,29 @@ public class ConversionManagerTestModel extends TestModel {
         suite.setDescription("This test suite verifies object conversion.");
 
         // test conversions
-        suite.addTest(new ConvertObjectTest(Helper.buildHexStringFromBytes(new byte[] { 4, 5, 6 }), ClassConstants.ABYTE));
+        suite.addTest(new ConvertObjectTest(HexFormat.of().formatHex(new byte[] { 4, 5, 6 }), CoreClassConstants.ABYTE));
         suite.addTest(new ConvertObjectTest(new char[] { 'a', 'b', 'c' }, ClassConstants.ACHAR));
-        suite.addTest(new ConvertObjectTest(new java.math.BigInteger("100"), ClassConstants.BIGDECIMAL));
-        suite.addTest(new ConvertObjectTest(new java.math.BigInteger("100"), ClassConstants.BIGINTEGER));
-        suite.addTest(new ConvertObjectTest("100", ClassConstants.BIGINTEGER));
-        suite.addTest(new ConvertObjectTest(100, ClassConstants.BIGINTEGER));
-        suite.addTest(new ConvertObjectTest('1', ClassConstants.BOOLEAN));
-        suite.addTest(new ConvertObjectTest('t', ClassConstants.BOOLEAN));
-        suite.addTest(new ConvertObjectTest('0', ClassConstants.BOOLEAN));
-        suite.addTest(new ConvertObjectTest('f', ClassConstants.BOOLEAN));
-        suite.addTest(new ConvertObjectTest(Helper.buildHexStringFromBytes(new byte[] { 4 }), ClassConstants.PBYTE));
-        suite.addTest(new ConvertObjectTest(100, ClassConstants.CHAR));
+        suite.addTest(new ConvertObjectTest(new java.math.BigInteger("100"), CoreClassConstants.BIGDECIMAL));
+        suite.addTest(new ConvertObjectTest(new java.math.BigInteger("100"), CoreClassConstants.BIGINTEGER));
+        suite.addTest(new ConvertObjectTest("100", CoreClassConstants.BIGINTEGER));
+        suite.addTest(new ConvertObjectTest(100, CoreClassConstants.BIGINTEGER));
+        suite.addTest(new ConvertObjectTest('1', CoreClassConstants.BOOLEAN));
+        suite.addTest(new ConvertObjectTest('t', CoreClassConstants.BOOLEAN));
+        suite.addTest(new ConvertObjectTest('0', CoreClassConstants.BOOLEAN));
+        suite.addTest(new ConvertObjectTest('f', CoreClassConstants.BOOLEAN));
+        suite.addTest(new ConvertObjectTest(HexFormat.of().formatHex(new byte[] { 4 }), CoreClassConstants.PBYTE));
+        suite.addTest(new ConvertObjectTest(100, CoreClassConstants.CHAR));
         //suite.addTest(new ConvertObjectTest(new org.eclipse.persistence.internal.helper.Date(1), ClassConstants.SQLDATE));
         suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.SQLDATE));
         suite.addTest(new ConvertObjectTest(100L, ClassConstants.SQLDATE));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.LONG));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), ClassConstants.LONG));
-        suite.addTest(new ConvertObjectTest("1", ClassConstants.NUMBER));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.NUMBER));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), ClassConstants.NUMBER));
-        suite.addTest(new ConvertObjectTest(1, ClassConstants.SHORT));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.SHORT));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), ClassConstants.SHORT));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.LONG));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), CoreClassConstants.LONG));
+        suite.addTest(new ConvertObjectTest("1", CoreClassConstants.NUMBER));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.NUMBER));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), CoreClassConstants.NUMBER));
+        suite.addTest(new ConvertObjectTest(1, CoreClassConstants.SHORT));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.SHORT));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("false"), CoreClassConstants.SHORT));
 
         //suite.addTest(new ConvertObjectTest(new org.eclipse.persistence.internal.helper.Time(100), ClassConstants.TIME));
         suite.addTest(new ConvertObjectTest("12:00:00", ClassConstants.TIME));
@@ -203,33 +205,33 @@ public class ConversionManagerTestModel extends TestModel {
         suite.addTest(new ConvertObjectTest("12:00:00", ClassConstants.TIMESTAMP));
         suite.addTest(new ConvertObjectTest(new java.util.Date(100), ClassConstants.TIMESTAMP));
         suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.TIMESTAMP));
-        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.UTILDATE));
-        suite.addTest(new ConvertObjectTest(100L, ClassConstants.UTILDATE));
+        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), CoreClassConstants.UTILDATE));
+        suite.addTest(new ConvertObjectTest(100L, CoreClassConstants.UTILDATE));
 
         // test exception handling
-        suite.addTest(new ConvertObjectTest('1', ClassConstants.BIGDECIMAL, true));
-        suite.addTest(new ConvertObjectTest('1', ClassConstants.BIGINTEGER, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.BIGINTEGER, true));
-        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), ClassConstants.BOOLEAN, true));
-        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), ClassConstants.BYTE, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.BYTE, true));
-        suite.addTest(new ConvertObjectTest(new char[] { 'a' }, ClassConstants.APBYTE, true));
-        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.CHAR, true));
+        suite.addTest(new ConvertObjectTest('1', CoreClassConstants.BIGDECIMAL, true));
+        suite.addTest(new ConvertObjectTest('1', CoreClassConstants.BIGINTEGER, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.BIGINTEGER, true));
+        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), CoreClassConstants.BOOLEAN, true));
+        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), CoreClassConstants.BYTE, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.BYTE, true));
+        suite.addTest(new ConvertObjectTest(new char[] { 'a' }, CoreClassConstants.APBYTE, true));
+        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), CoreClassConstants.CHAR, true));
         suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.SQLDATE, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.DOUBLE, true));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.DOUBLE, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.FLOAT, true));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.FLOAT, true));
-        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), ClassConstants.INTEGER, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.LONG, true));
-        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.LONG, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.NUMBER, true));
-        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.NUMBER, true));
-        suite.addTest(new ConvertObjectTest("a", ClassConstants.SHORT, true));
-        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), ClassConstants.SHORT, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.DOUBLE, true));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.DOUBLE, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.FLOAT, true));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.FLOAT, true));
+        suite.addTest(new ConvertObjectTest(new java.sql.Date(1), CoreClassConstants.INTEGER, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.LONG, true));
+        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), CoreClassConstants.LONG, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.NUMBER, true));
+        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), CoreClassConstants.NUMBER, true));
+        suite.addTest(new ConvertObjectTest("a", CoreClassConstants.SHORT, true));
+        suite.addTest(new ConvertObjectTest(new java.util.GregorianCalendar(), CoreClassConstants.SHORT, true));
         suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.TIME, true));
         suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.TIMESTAMP, true));
-        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), ClassConstants.UTILDATE, true));
+        suite.addTest(new ConvertObjectTest(Boolean.valueOf("true"), CoreClassConstants.UTILDATE, true));
         suite.addTest(new ConvertObjectTest(1, ConversionManager.class, true));
 
         suite.addTest(new ConvertByteCharArrayToStringTest());

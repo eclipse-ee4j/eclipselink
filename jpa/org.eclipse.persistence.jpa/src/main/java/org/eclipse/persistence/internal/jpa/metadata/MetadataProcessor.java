@@ -59,7 +59,7 @@ import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;

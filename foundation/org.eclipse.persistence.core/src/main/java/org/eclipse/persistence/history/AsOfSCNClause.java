@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,9 +16,9 @@
 package org.eclipse.persistence.history;
 
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 
 /**
@@ -69,7 +69,7 @@ public class AsOfSCNClause extends AsOfClause {
             }
         } else {
             ConversionManager converter = ConversionManager.getDefaultManager();
-            value = converter.convertObject(value, ClassConstants.LONG);
+            value = converter.convertObject(value, CoreClassConstants.LONG);
             printer.printPrimitive(value, true);
         }
         printer.printString(")");

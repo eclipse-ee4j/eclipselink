@@ -16,9 +16,7 @@
 package org.eclipse.persistence.internal.security;
 
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.Helper;
 
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -30,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
+import java.util.HexFormat;
 
 /**
  * EclipseLink reference implementation for password encryption.
@@ -75,7 +74,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             byte[] bytePassword = encryptCipherAES_GCM.doFinal(password.getBytes(StandardCharsets.UTF_8));
             byte[] result = Arrays.copyOf(ivGCM, IV_GCM_LENGTH + bytePassword.length);
             System.arraycopy(bytePassword, 0, result, IV_GCM_LENGTH, bytePassword.length);
-            return Helper.buildHexStringFromBytes(result);
+            return HexFormat.of().formatHex(result);
         } catch (Exception e) {
             throw ValidationException.errorEncryptingPassword(e);
         }
@@ -96,7 +95,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
         byte[] bytePassword = null;
 
         try {
-            input = Helper.buildBytesFromHexString(encryptedPswd);
+            input = HexFormat.of().parseHex(encryptedPswd);
             SecretKey skGCM = Synergizer.getAESGCMMultitasker();
             byte[] ivGCM = new byte[IV_GCM_LENGTH];
             System.arraycopy(input, 0, ivGCM, 0, IV_GCM_LENGTH);
@@ -106,7 +105,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
             password = new String(decryptCipherAES_GCM.doFinal(bytePassword), StandardCharsets.UTF_8);
-        } catch (ArrayIndexOutOfBoundsException | ConversionException | IllegalBlockSizeException | NumberFormatException ce) {
+        } catch (ArrayIndexOutOfBoundsException | IllegalBlockSizeException | NumberFormatException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
@@ -121,7 +120,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
     private static class Synergizer {
 
         private static SecretKey getAESGCMMultitasker() throws Exception {
-            return new SecretKeySpec(Helper.buildBytesFromHexString("64EF2D9B738ACA254A48F14754030FC2"), "AES");
+            return new SecretKeySpec(HexFormat.of().parseHex("64EF2D9B738ACA254A48F14754030FC2"), "AES");
         }
 
         private static byte[] getIvGCM() {

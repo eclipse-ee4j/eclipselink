@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -22,8 +23,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static org.eclipse.persistence.internal.helper.StringHelper.EMPTY_STRING;
 
 public class Oracle23Platform extends Oracle21Platform {
 
@@ -47,10 +46,10 @@ public class Oracle23Platform extends Oracle21Platform {
      * Allow for conversion from the Oracle type to the Java type. Used in cases when DB connection is needed like BLOB, CLOB.
      */
     @Override
-    public <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException, DatabaseException {
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ? ,?, ?> session) throws ConversionException, DatabaseException {
         //Handle special case when empty String ("") is passed from the entity into CLOB type column
-        if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && EMPTY_STRING.equals(sourceObject)) {
-            Connection connection = session.getAccessor().getConnection();
+        if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && "".equals(sourceObject)) {
+            Connection connection = ((AbstractSession) session).getAccessor().getConnection();
             Clob clob = null;
             try {
                 clob = connection.createClob();

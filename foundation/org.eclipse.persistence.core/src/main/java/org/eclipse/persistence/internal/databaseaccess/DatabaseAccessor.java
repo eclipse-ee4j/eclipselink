@@ -34,6 +34,7 @@ package org.eclipse.persistence.internal.databaseaccess;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -1380,12 +1381,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     } else if (isBlob(type)) {
                         // EL Bug 294578 - Store previous value of BLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
-                        value = platform.convertObject(value, ClassConstants.APBYTE);
+                        value = platform.convertObject(value, CoreClassConstants.APBYTE);
                         platform.freeTemporaryObject(originalValue);
                     } else if (isClob(type)) {
                         // EL Bug 294578 - Store previous value of CLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
-                        value = platform.convertObject(value, ClassConstants.STRING);
+                        value = platform.convertObject(value, CoreClassConstants.STRING);
                         platform.freeTemporaryObject(originalValue);
                     } else if (isArray(type)){
                         //Bug6068155 convert early if type is Array and Structs.
@@ -1452,23 +1453,23 @@ public class DatabaseAccessor extends DatasourceAccessor {
         boolean isPrimitive = false;
 
         // Optimize numeric values to avoid conversion into big-dec and back to primitives.
-        if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
+        if ((fieldType == CoreClassConstants.PLONG) || (fieldType == CoreClassConstants.LONG)) {
             value = resultSet.getLong(columnNumber);
             isPrimitive = (Long) value == 0L;
-        } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
+        } else if ((fieldType == CoreClassConstants.INTEGER) || (fieldType == CoreClassConstants.PINT)) {
             value = resultSet.getInt(columnNumber);
             isPrimitive = (Integer) value == 0;
-        } else if ((fieldType == ClassConstants.FLOAT) || (fieldType == ClassConstants.PFLOAT)) {
+        } else if ((fieldType == CoreClassConstants.FLOAT) || (fieldType == CoreClassConstants.PFLOAT)) {
             value = resultSet.getFloat(columnNumber);
             isPrimitive = (Float) value == 0f;
-        } else if ((fieldType == ClassConstants.DOUBLE) || (fieldType == ClassConstants.PDOUBLE)) {
+        } else if ((fieldType == CoreClassConstants.DOUBLE) || (fieldType == CoreClassConstants.PDOUBLE)) {
             value = resultSet.getDouble(columnNumber);
             isPrimitive = (Double) value == 0d;
-        } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
+        } else if ((fieldType == CoreClassConstants.SHORT) || (fieldType == CoreClassConstants.PSHORT)) {
             value = resultSet.getShort(columnNumber);
             isPrimitive = (Short) value == 0;
         // Sometimes field type is just Number and it's child type is stored as field.typeName
-        } else if (fieldType == ClassConstants.NUMBER) {
+        } else if (fieldType == CoreClassConstants.NUMBER) {
             isPrimitive = switch (field.typeName) {
                 case "java.lang.Byte" -> {
                     value = resultSet.getByte(columnNumber);
@@ -1496,7 +1497,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
                 default -> isPrimitive;
             };
-        } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
+        } else if ((fieldType == CoreClassConstants.BOOLEAN) || (fieldType == CoreClassConstants.PBOOLEAN))  {
             value = resultSet.getBoolean(columnNumber);
             isPrimitive = !((Boolean) value);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
@@ -1535,9 +1536,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                             : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
                 }
             }
-        } else if (fieldType == ClassConstants.BIGDECIMAL) {
+        } else if (fieldType == CoreClassConstants.BIGDECIMAL) {
             value = resultSet.getBigDecimal(columnNumber);
-        } else if (fieldType == ClassConstants.BIGINTEGER) {
+        } else if (fieldType == CoreClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);
             if (value != null) return ((BigDecimal)value).toBigInteger();
         }

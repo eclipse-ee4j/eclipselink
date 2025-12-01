@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.directtofield.typeattribute;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -43,7 +43,7 @@ public class TypeAttributeCustomAddProject extends Project {
         XMLField field = new XMLField("identifier/text()");
         field.setIsTypedTextField(true);
         QName intQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.INT);
-        field.addConversion(intQName, ClassConstants.INTEGER);
+        field.addConversion(intQName, CoreClassConstants.INTEGER);
         identifierMapping.setField(field);
 
         descriptor.addMapping(identifierMapping);

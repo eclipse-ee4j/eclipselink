@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.internal.sessions;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.internal.helper.DescriptorCompare;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -123,7 +122,7 @@ public class CommitOrderDependencyNode {
                     Vector ownedNodes = withAllSubclasses(node);
 
                     // I could remove duplicates here, but it's not that big a deal.
-                    Helper.addAllToVector(relatedNodes, ownedNodes);
+                    relatedNodes.addAll(ownedNodes);
                 } else if (mapping.hasInverseConstraintDependency()) {
                     Class<?> ownerClass;
                     ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
@@ -138,7 +137,7 @@ public class CommitOrderDependencyNode {
                     Vector ownedNodes = withAllSubclasses(this);
 
                     // I could remove duplicates here, but it's not that big a deal.
-                    Helper.addAllToVector(ownerNode.getRelatedNodes(), ownedNodes);
+                    ownerNode.getRelatedNodes().addAll(ownedNodes);
                 }
             }
         }
@@ -158,7 +157,7 @@ public class CommitOrderDependencyNode {
             Vector ownedNodes = withAllSubclasses(node);
 
             // I could remove duplicates here, but it's not that big a deal.
-            Helper.addAllToVector(relatedNodes, ownedNodes);
+            relatedNodes.addAll(ownedNodes);
         }
     }
 

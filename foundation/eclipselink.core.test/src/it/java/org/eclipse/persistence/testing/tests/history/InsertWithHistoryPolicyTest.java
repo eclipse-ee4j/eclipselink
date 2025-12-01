@@ -17,7 +17,6 @@ package org.eclipse.persistence.testing.tests.history;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.MySQLPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;

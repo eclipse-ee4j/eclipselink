@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,7 @@
 //     Denise Smith - 2.3 - initial implementation
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.sdo.SDOConstants;
 
@@ -101,15 +102,15 @@ public class LoadAndSaveSchemaTypesEmptyStringTestCases extends LoadAndSaveSchem
 
 
             //primitive types
-            assertEquals(0, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PINT));
-            assertEquals(0l, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PLONG));
-            assertEquals(0.0, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PDOUBLE));
-            assertEquals(0f, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PFLOAT));
+            assertEquals(0, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PINT));
+            assertEquals(0l, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PLONG));
+            assertEquals(0.0, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PDOUBLE));
+            assertEquals(0f, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PFLOAT));
             short testShort = 0;
-            assertEquals(testShort, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PSHORT));
+            assertEquals(testShort, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PSHORT));
             char testChar =0;
-            assertEquals(testChar, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PCHAR));
-            assertEquals(false, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PBOOLEAN));
+            assertEquals(testChar, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PCHAR));
+            assertEquals(false, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.PBOOLEAN));
 
 
             //wrappers
@@ -121,17 +122,17 @@ public class LoadAndSaveSchemaTypesEmptyStringTestCases extends LoadAndSaveSchem
             assertEquals(0, document.getRootObject().getInt("myIntegerWrapperTest"));
 
 
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.BIGINTEGER));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.BIGDECIMAL));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.INTEGER));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.LONG));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.SHORT));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.FLOAT));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.DOUBLE));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.BOOLEAN));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.BIGINTEGER));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.BIGDECIMAL));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.INTEGER));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.LONG));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.SHORT));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.FLOAT));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.DOUBLE));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.BOOLEAN));
 
             assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.QNAME));
-            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.CHAR));
+            assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, CoreClassConstants.CHAR));
 
         }
 

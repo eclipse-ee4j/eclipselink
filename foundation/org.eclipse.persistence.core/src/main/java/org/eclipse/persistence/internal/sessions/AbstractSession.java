@@ -67,7 +67,6 @@ import org.eclipse.persistence.internal.helper.DeferredLockManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.QueryCounter;
 import org.eclipse.persistence.internal.helper.ReadLockManager;
-import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
 import org.eclipse.persistence.internal.history.HistoricalSession;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
@@ -292,9 +291,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** PERF: Allow for finalizers to be enabled, currently enables client-session finalize. */
     protected boolean isFinalizersEnabled;
-
-    /** List of active command threads. */
-    transient protected ExposedNodeLinkedList activeCommandThreads;
 
     /**
      * Indicates whether the session is synchronized.
@@ -958,7 +954,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void cleanUpInjectionManager(){
         if (injectionManager != null){
-            injectionManager.cleanUp(this);
+            try {
+                injectionManager.cleanUp();
+            }  catch (RuntimeException exception) {
+                handleException(exception);
+            }
         }
     }
 
@@ -2125,17 +2125,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             }
         }
         return result;
-    }
-
-    /**
-     * INTERNAL:
-     */
-    public ExposedNodeLinkedList getActiveCommandThreads() {
-        if (activeCommandThreads == null) {
-            activeCommandThreads = new ExposedNodeLinkedList();
-        }
-
-        return activeCommandThreads;
     }
 
     /**

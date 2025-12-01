@@ -40,8 +40,7 @@ package org.eclipse.persistence.exceptions;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
-import org.eclipse.persistence.internal.helper.JavaVersion;
-import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -50,10 +49,12 @@ import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.Vector;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: This exception is used if incorrect state or method arguments are detected
@@ -157,7 +158,6 @@ public class ValidationException extends EclipseLinkException {
     // for flashback:
     public static final int HISTORICAL_SESSION_ONLY_SUPPORTED_ON_ORACLE = 7110;
     public static final int CANNOT_ACQUIRE_HISTORICAL_SESSION = 7111;
-    public static final int FEATURE_NOT_SUPPORTED_IN_JDK_VERSION = 7112;
     public static final int PLATFORM_DOES_NOT_SUPPORT_CALL_WITH_RETURNING = 7113;
     public static final int ISOLATED_DATA_NOT_SUPPORTED_IN_CLIENTSESSIONBROKER = 7114;
     public static final int CLIENT_SESSION_CANNOT_USE_EXCLUSIVE_CONNECTION = 7115;
@@ -476,7 +476,9 @@ public class ValidationException extends EclipseLinkException {
     public static final int NOT_AVAILABLE_ASM_SERVICE = 7359;
     public static final int DUPLICIT_RESULT_SET_MAPPING_IN_NATIVE_QUERY = 7364;
 
-    /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.exceptions.BeanValidationException}. */
+    public static final int STMT_WRITER_ERROR = 7365;
+
+    /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.jaxb.BeanValidationException}. */
 
     /**
      * INTERNAL:
@@ -738,7 +740,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException ejbFinderException(Object bean, Throwable finderException, Vector primaryKey) {
+    public static ValidationException ejbFinderException(Object bean, Throwable finderException, List<?> primaryKey) {
         Object[] args = { bean, bean.getClass(), primaryKey };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EJB_FINDER_EXCEPTION, args));
@@ -970,13 +972,6 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FATAL_ERROR_OCCURRED, args), exception);
         validationException.setErrorCode(FATAL_ERROR_OCCURRED);
-        return validationException;
-    }
-
-    public static ValidationException featureIsNotAvailableInRunningJDKVersion(String feature) {
-        Object[] args = { feature, JavaVersion.vmVersionString() };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FEATURE_NOT_SUPPORTED_IN_JDK_VERSION, args));
-        validationException.setErrorCode(FEATURE_NOT_SUPPORTED_IN_JDK_VERSION);
         return validationException;
     }
 
@@ -1729,7 +1724,7 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException nullCacheKeyFoundOnRemoval(IdentityMap map, Object clazz) {
+    public static ValidationException nullCacheKeyFoundOnRemoval(Map<?, ?> map, Object clazz) {
         Object[] args = { map, clazz, CR };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NULL_CACHE_KEY_FOUND_ON_REMOVAL, args));
         validationException.setErrorCode(NULL_CACHE_KEY_FOUND_ON_REMOVAL);
@@ -3079,5 +3074,13 @@ public class ValidationException extends EclipseLinkException {
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, NOT_AVAILABLE_ASM_SERVICE, args));
         validationException.setErrorCode(NOT_AVAILABLE_ASM_SERVICE);
         return validationException;
+    }
+
+    public static ValidationException tablesTruncationFailed(IOException ex) {
+        ValidationException databaseException = new ValidationException(
+                ExceptionLocalization.buildMessage("truncate_tables_failed"),
+                ex);
+        databaseException.setErrorCode(STMT_WRITER_ERROR);
+        return databaseException;
     }
 }

@@ -68,6 +68,7 @@ module eclipselink {
     exports org.eclipse.persistence.descriptors.partitioning;
     exports org.eclipse.persistence.dynamic;
     exports org.eclipse.persistence.eis;
+    exports org.eclipse.persistence.eis.i18n;
     exports org.eclipse.persistence.eis.interactions;
     exports org.eclipse.persistence.eis.mappings;
     exports org.eclipse.persistence.exceptions;
@@ -88,6 +89,8 @@ module eclipselink {
     exports org.eclipse.persistence.oxm.annotations;
     exports org.eclipse.persistence.oxm.attachment;
     exports org.eclipse.persistence.oxm.documentpreservation;
+    exports org.eclipse.persistence.oxm.exceptions;
+    exports org.eclipse.persistence.oxm.exceptions.i18n;
     exports org.eclipse.persistence.oxm.json;
     exports org.eclipse.persistence.oxm.mappings;
     exports org.eclipse.persistence.oxm.mappings.converters;
@@ -107,9 +110,11 @@ module eclipselink {
     exports org.eclipse.persistence.platform.database.partitioning;
     exports org.eclipse.persistence.platform.server;
     exports org.eclipse.persistence.platform.server.glassfish;
+    exports org.eclipse.persistence.platform.server.i18n;
     exports org.eclipse.persistence.platform.server.was;
     exports org.eclipse.persistence.platform.server.wls;
     exports org.eclipse.persistence.platform.xml;
+    exports org.eclipse.persistence.platform.xml.i18n;
     exports org.eclipse.persistence.queries;
     exports org.eclipse.persistence.sequencing;
     exports org.eclipse.persistence.services;
@@ -123,9 +128,11 @@ module eclipselink {
     exports org.eclipse.persistence.sessions.changesets;
     exports org.eclipse.persistence.sessions.coordination;
     exports org.eclipse.persistence.sessions.coordination.broadcast;
+    exports org.eclipse.persistence.sessions.coordination.i18n;
     exports org.eclipse.persistence.sessions.coordination.jms;
     exports org.eclipse.persistence.sessions.coordination.rmi;
     exports org.eclipse.persistence.sessions.factories;
+    exports org.eclipse.persistence.sessions.factories.i18n;
     exports org.eclipse.persistence.sessions.interceptors;
     exports org.eclipse.persistence.sessions.remote;
     exports org.eclipse.persistence.sessions.remote.rmi;
@@ -137,6 +144,7 @@ module eclipselink {
     exports org.eclipse.persistence.tools.tuning;
     exports org.eclipse.persistence.transaction;
     exports org.eclipse.persistence.transaction.glassfish;
+    exports org.eclipse.persistence.transaction.i18n;
     exports org.eclipse.persistence.transaction.jboss;
     exports org.eclipse.persistence.transaction.sap;
     exports org.eclipse.persistence.transaction.was;
@@ -157,8 +165,11 @@ module eclipselink {
     exports org.eclipse.persistence.jpa;
     exports org.eclipse.persistence.jpa.config;
     exports org.eclipse.persistence.jpa.dynamic;
+    exports org.eclipse.persistence.jpa.exceptions;
+    exports org.eclipse.persistence.jpa.exceptions.i18n;
     exports org.eclipse.persistence.jpa.metadata;
     exports org.eclipse.persistence.tools.weaving.jpa;
+    exports org.eclipse.persistence.tools.weaving.jpa.i18n;
 
     exports org.eclipse.persistence.jaxb;
     exports org.eclipse.persistence.jaxb.attachment;
@@ -168,6 +179,7 @@ module eclipselink {
     exports org.eclipse.persistence.jaxb.compiler.facets;
     exports org.eclipse.persistence.jaxb.dynamic;
     exports org.eclipse.persistence.jaxb.dynamic.metadata;
+    exports org.eclipse.persistence.jaxb.i18n;
     exports org.eclipse.persistence.jaxb.javamodel;
     exports org.eclipse.persistence.jaxb.javamodel.oxm;
     exports org.eclipse.persistence.jaxb.javamodel.reflection;
@@ -188,9 +200,11 @@ module eclipselink {
     exports org.eclipse.persistence.sdo.helper;
     exports org.eclipse.persistence.sdo.helper.delegates;
     exports org.eclipse.persistence.sdo.helper.jaxb;
+    exports org.eclipse.persistence.sdo.i18n;
     exports org.eclipse.persistence.sdo.types;
 
     exports org.eclipse.persistence.dbws;
+    exports org.eclipse.persistence.dbws.i18n;
     exports org.eclipse.persistence.jpa.rs;
     exports org.eclipse.persistence.jpa.rs.annotations;
     exports org.eclipse.persistence.jpa.rs.exceptions;
@@ -205,7 +219,6 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.util.list;
 
     //exported through EclipseLink PUBLIC API
-    exports org.eclipse.persistence.internal.cache;
     exports org.eclipse.persistence.internal.codegen;
     exports org.eclipse.persistence.internal.core.databaseaccess;
     exports org.eclipse.persistence.internal.core.descriptors;

@@ -141,7 +141,6 @@ public final class ValidationExceptionResource extends ListResourceBundle {
                                            { "7109", "The login in the project used to create the session is null, it must be a valid login." },
                                            { "7110", "At present HistoricalSession only works with Oracle 9R2 or later databases, as it uses Oracle''s Flashback feature." },
                                            { "7111", "You may not acquire a HistoricalSession from a UnitOfWork, another HistoricalSession, a ServerSession, or a ServerSessionBroker.  You may acquire one from a regular session, a ClientSession, or a ClientSessionBroker." },
-                                           { "7112", "You have specified that EclipseLink uses the feature : {0}, but this feature is not available in the currently running JDK version :{1}." },
                                            { "7113", "{0} does not support call with returning." },
                                            { "7114", "Isolated data is not currently supported within a client session broker. Session named {0} contains descriptors representing isolated data." },
                                            { "7115", "A Exclusive Connection cannot be used for ClientSession reads without isolated data.  Update the ConnectionPolicy used to remove ExclusiveConnection configuration or the project to set certain data to be exclusive." },

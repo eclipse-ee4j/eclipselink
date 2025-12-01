@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBException;
 import org.eclipse.persistence.jaxb.compiler.Property;
 import org.eclipse.persistence.jaxb.compiler.TypeInfo;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;

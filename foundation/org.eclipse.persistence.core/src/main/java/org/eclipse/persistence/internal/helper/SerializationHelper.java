@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,6 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
-
-import org.eclipse.persistence.exceptions.ValidationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +52,7 @@ public class SerializationHelper {
      */
     public static void serialize(Serializable obj, OutputStream outputStream) throws IOException {
         if (outputStream == null) {
-            throw ValidationException.invalidNullMethodArguments();
+            throw new IllegalArgumentException("The outputStream argument cannot be null");
         }
 
         try (ObjectOutputStream outStream = new ObjectOutputStream(outputStream)) {
@@ -99,7 +97,7 @@ public class SerializationHelper {
      */
     public static Object deserialize(byte[] objectBytes) throws IOException, ClassNotFoundException {
         if (objectBytes == null) {
-            throw ValidationException.invalidNullMethodArguments();
+            throw new IllegalArgumentException("The objectBytes argument cannot be null");
         }
         ByteArrayInputStream inStream = new ByteArrayInputStream(objectBytes);
         return deserialize(inStream);

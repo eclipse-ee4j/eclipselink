@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ import org.eclipse.persistence.eis.interactions.EISInteraction;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.QueryStringCall;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoInteractionSpec;
@@ -47,7 +48,6 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -100,7 +100,7 @@ public class MongoPlatform extends EISPlatform {
     public void setValueInRecord(String key, Object value, MappedRecord mappedRecord, EISAccessor accessor) {
         Object recordValue = value;
         if ((value instanceof BigDecimal) || (value instanceof BigInteger)) {
-            recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
+            recordValue = getConversionManager().convertObject(value, CoreClassConstants.STRING);
         }
         mappedRecord.put(key, recordValue);
     }

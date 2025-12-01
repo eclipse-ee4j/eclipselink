@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,9 @@
 //     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.core.databaseaccess;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public interface CorePlatform<CONVERSION_MANAGER extends CoreConversionManager> {
 
@@ -39,7 +39,7 @@ public interface CorePlatform<CONVERSION_MANAGER extends CoreConversionManager> 
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException;
+    <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ?, ?, ?> session) throws ConversionException;
 
 
     /**

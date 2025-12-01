@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,9 +41,9 @@ import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -638,7 +638,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
     protected void integrateRoot(RootImpl root) {
         if (this.roots.isEmpty()) {
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(this.queryType);
-            if ((type != null && type.getPersistenceType() == PersistenceType.ENTITY) || queryType.equals(ClassConstants.OBJECT)) {
+            if ((type != null && type.getPersistenceType() == PersistenceType.ENTITY) || queryType.equals(CoreClassConstants.OBJECT)) {
                 // this is the first root, set return type and selection and query type
                 if (this.selection == null) {
                     this.selection = root;

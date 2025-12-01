@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -326,7 +326,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
 
         try {
             String value = dataObject_a.getString(propertyPath_a_b_c);
-            assertEquals("0A64",value);
+            assertEquals("0a64",value);
         } catch (ClassCastException e) {
         }
     }

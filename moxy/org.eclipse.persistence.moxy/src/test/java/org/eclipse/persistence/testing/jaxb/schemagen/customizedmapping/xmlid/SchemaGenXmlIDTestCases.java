@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public class SchemaGenXmlIDTestCases  extends SchemaGenTestCases {
         try {
             generateSchema(new Class<?>[]{ MyInvalidClass.class }, outputResolver, null);
         } catch (Exception ex) {
-            if (ex instanceof JAXBException && ((org.eclipse.persistence.exceptions.JAXBException)((JAXBException) ex).getLinkedException()).getErrorCode() == 50016) {
+            if (ex instanceof JAXBException && ((org.eclipse.persistence.jaxb.JAXBException)((JAXBException) ex).getLinkedException()).getErrorCode() == 50016) {
                 exception = true;
             }
         }

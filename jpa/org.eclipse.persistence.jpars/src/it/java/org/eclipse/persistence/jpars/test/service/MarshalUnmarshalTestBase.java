@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 //           - Moved to separate package together with other 'no version' tests.
 package org.eclipse.persistence.jpars.test.service;
 
-import org.eclipse.persistence.exceptions.JPARSErrorCodes;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpars.test.BaseJparsTest;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;

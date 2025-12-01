@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -465,9 +465,9 @@ public class Util {
         if (CHAR_STR.equalsIgnoreCase(typeName) && fldType.getEnclosedType().isSizedType()) {
             SizedType sizedType = (SizedType) fldType.getEnclosedType();
             if (sizedType.getSize() == 1) {
-                attributeType = ClassConstants.CHAR.getName();
+                attributeType = CoreClassConstants.CHAR.getName();
             } else {
-                attributeType = ClassConstants.STRING.getName();
+                attributeType = CoreClassConstants.STRING.getName();
             }
         } else {
             attributeType = getClassNameFromJDBCTypeName(typeName.toUpperCase(), dbPlatform);
@@ -475,8 +475,8 @@ public class Util {
         // handle issue with java.sql.Timestamp conversion and Oracle11 platform
         if (attributeType.contains(ORACLE_TIMESTAMP_CLS_STR)) {
             attributeType = ClassConstants.TIMESTAMP.getName();
-        } else if (attributeType.contains(ClassConstants.ABYTE.getName())) {
-            attributeType = ClassConstants.APBYTE.getName();
+        } else if (attributeType.contains(CoreClassConstants.ABYTE.getName())) {
+            attributeType = CoreClassConstants.APBYTE.getName();
         }
         return attributeType;
     }

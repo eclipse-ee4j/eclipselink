@@ -47,8 +47,8 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import org.eclipse.persistence.internal.cache.AdvancedProcessor;
-import org.eclipse.persistence.internal.cache.ComputableTask;
+import org.eclipse.persistence.internal.jaxb.cache.AdvancedProcessor;
+import org.eclipse.persistence.internal.jaxb.cache.ComputableTask;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -479,7 +479,7 @@ public class SchemaModelGenerator {
 
     /**
      * Return the schema type for a given mapping's xmlfield.  If the field does not have a schema type
-     * set, the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
+     * set, the attribute classification will be used if non-null.  Otherwise, CoreClassConstants.STRING
      * will be returned.
      *
      */
@@ -489,7 +489,7 @@ public class SchemaModelGenerator {
 
     /**
      * Return the schema type for a given xmlfield.  If the field does not have a schema type set,
-     * the attribute classification will be used if non-null.  Otherwise, ClassConstants.STRING
+     * the attribute classification will be used if non-null.  Otherwise, CoreClassConstants.STRING
      * will be returned.
      *
      */

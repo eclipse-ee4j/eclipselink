@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,11 +25,11 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -973,8 +973,8 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
             }
             // If mapping a temporal type, use the project mutable default.
             if ((getAttributeClassification() != null)
-                    && (ClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
-                            || ClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification()))) {
+                    && (CoreClassConstants.UTILDATE.isAssignableFrom(getAttributeClassification())
+                            || CoreClassConstants.CALENDAR.isAssignableFrom(getAttributeClassification()))) {
                 setIsMutable(session.getProject().getDefaultTemporalMutable());
             }
         }
@@ -1280,7 +1280,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
-        if (this.attributeObjectClassification == ClassConstants.STRING) {
+        if (this.attributeObjectClassification == CoreClassConstants.STRING) {
             Object val;
             if(platform.shouldUseGetSetNString()){
                 val = resultSet.getNString(columnNumber);
@@ -1288,9 +1288,9 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 val = resultSet.getString(columnNumber);
             }
             return getObjectValueWithoutClassCheck(val, session);
-        } else if (this.attributeObjectClassification == ClassConstants.LONG) {
+        } else if (this.attributeObjectClassification == CoreClassConstants.LONG) {
             return getObjectValueWithoutClassCheck(resultSet.getLong(columnNumber), session);
-        } else if (this.attributeObjectClassification == ClassConstants.INTEGER) {
+        } else if (this.attributeObjectClassification == CoreClassConstants.INTEGER) {
             return getObjectValueWithoutClassCheck(resultSet.getInt(columnNumber), session);
         }
         Object fieldValue = accessor.getObject(resultSet, getField(), metaData, columnNumber, platform, true, session);

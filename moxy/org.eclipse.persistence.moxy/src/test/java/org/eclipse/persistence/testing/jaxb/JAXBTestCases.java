@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -301,7 +301,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                 xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
             } else if (metadata instanceof String) {
                 if(((String) metadata).isEmpty()) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                    throw org.eclipse.persistence.jaxb.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
                 }
                 URL url = null;
                 try {
@@ -313,13 +313,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                     xmlBindings = (XmlBindings)unmarshaller.unmarshal(url);
                 } else {
                     //throw exception
-                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                    throw org.eclipse.persistence.jaxb.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
                 }
             } else {
-                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+                throw org.eclipse.persistence.jaxb.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
             }
         } catch (JAXBException jaxbEx) {
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
+            throw org.eclipse.persistence.jaxb.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
         return xmlBindings;
     }

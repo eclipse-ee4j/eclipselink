@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.unit;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.exceptions.ServerPlatformException;
+import org.eclipse.persistence.platform.server.ServerPlatformException;
 import org.eclipse.persistence.internal.jpa.IsolatedHashMap;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;

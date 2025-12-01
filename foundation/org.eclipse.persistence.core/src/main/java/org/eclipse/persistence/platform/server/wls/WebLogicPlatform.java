@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.transaction.wls.WebLogicTransactionController;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
@@ -152,7 +151,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
         if (getWebLogicConnectionClass().isInstance(connection) && getVendorConnectionMethod() != null) {
             try {
                 return PrivilegedAccessHelper.invokeMethod(getVendorConnectionMethod(), connection);
-            } catch (IllegalAccessException | InvocationTargetException exception) {
+            } catch (ReflectiveOperationException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }
@@ -192,7 +191,7 @@ public class WebLogicPlatform extends JMXServerPlatformBase {
         if (this.shouldClearStatementCache && getWebLogicConnectionClass().isInstance(connection) && getClearStatementCacheMethod() != null) {
             try {
                 PrivilegedAccessHelper.invokeMethod(getClearStatementCacheMethod(), connection);
-            } catch (IllegalAccessException | InvocationTargetException exception) {
+            } catch (ReflectiveOperationException exception) {
                 getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, SessionLog.SERVER, exception);
             }
         }

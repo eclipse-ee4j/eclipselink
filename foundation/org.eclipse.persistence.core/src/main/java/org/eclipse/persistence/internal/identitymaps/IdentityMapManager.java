@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,6 +30,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
@@ -387,7 +388,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 return new CacheIdentityMap(size, descriptor, this.session, isIsolated);
             }
         }
-        final Class<?>[] parameters = new Class<?>[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
+        final Class<?>[] parameters = new Class<?>[]{CoreClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
         final Object[] values = new Object[]{size, descriptor, this.session, isIsolated};
         IdentityMap map = PrivilegedAccessHelper.callDoPrivilegedWithException(
                 () -> {
@@ -483,7 +484,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             }
         }
         Class<?> superClass = classThatChanged.getSuperclass();
-        if ((superClass != null) && (superClass != ClassConstants.OBJECT)) {
+        if ((superClass != null) && (superClass != CoreClassConstants.OBJECT)) {
             invalidateQueryCache(superClass);
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 import javax.xml.namespace.QName;
 
 // EclipseLink imports
-import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.dbws.DBWSException;
 
 /**
  * <p><b>INTERNAL:</b>Name and type ({@link QName}) for a bound argument.

@@ -186,6 +186,7 @@ import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.RemoteProtocol;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.sessions.SessionCustomizer;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -201,17 +202,16 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
-import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.jpa.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.IntegrityException;
-import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.jpa.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -4124,7 +4124,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(manType.getJavaType().getName(), getSession());
             try {
-                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, CoreClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 String fieldName = "";
@@ -4315,7 +4315,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             boolean classInitialized = false;
             String className = MetadataHelper.getQualifiedCanonicalName(((ManagedTypeImpl)manType).getJavaTypeName(), getSession());
             try {
-                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, ClassConstants.CLASS);
+                Class<?> clazz = this.getSession().getDatasourcePlatform().convertObject(className, CoreClassConstants.CLASS);
                 classInitialized=true;
                 this.getSession().log(SessionLog.FINER, SessionLog.METAMODEL, "metamodel_canonical_model_class_found", className);
                 Field[] fields = null;

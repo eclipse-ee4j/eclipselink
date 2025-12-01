@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -2291,13 +2290,13 @@ public class SDODataObject implements DataObject, SequencedObject {
             throw new IllegalArgumentException(SDOException.cannotPerformOperationOnNullArgument("convertObjectToValue"));
         }
 
-        if ((cls == ClassConstants.List_Class) && !property.isMany()) {
+        if ((cls == CoreClassConstants.List_Class) && !property.isMany()) {
             throw new ClassCastException("can not call getList for a property that has isMany false.");
         }
 
         Object obj;
         if (position == -1) {
-            if (cls == ClassConstants.List_Class) {
+            if (cls == CoreClassConstants.List_Class) {
                 obj = get(property);
             } else {
                 obj = unwrapListValue(property, get(property));

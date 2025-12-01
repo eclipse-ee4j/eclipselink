@@ -19,9 +19,9 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -225,7 +225,7 @@ public class VersionLockingPolicy implements OptimisticLockingPolicy, Serializab
      */
     @SuppressWarnings({"unchecked"})
     protected <T> Class<T> getDefaultLockingFieldType() {
-        return (Class<T>) ClassConstants.LONG;
+        return (Class<T>) CoreClassConstants.LONG;
 
     }
 

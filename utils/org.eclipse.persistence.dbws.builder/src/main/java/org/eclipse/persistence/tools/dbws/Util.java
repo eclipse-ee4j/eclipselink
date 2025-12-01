@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,9 +39,9 @@ import static java.sql.Types.VARCHAR;
 import static javax.xml.XMLConstants.DEFAULT_NS_PREFIX;
 import static javax.xml.XMLConstants.NULL_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
-import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
-import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BIGDECIMAL;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.BOOLEAN;
+import static org.eclipse.persistence.internal.core.helper.CoreClassConstants.STRING;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.internal.oxm.Constants.COLON;
 import static org.eclipse.persistence.internal.oxm.Constants.DATE_QNAME;
@@ -462,24 +462,24 @@ public class Util {
      */
     public static String getClassNameForType(int jdbcType) {
         String typeName = switch (jdbcType) {
-            case Types.NUMERIC -> ClassConstants.NUMBER.getName();
-            case Types.DECIMAL -> ClassConstants.BIGDECIMAL.getName();
-            case Types.CHAR -> ClassConstants.CHAR.getName();
-            case Types.FLOAT -> ClassConstants.FLOAT.getName();
-            case Types.DOUBLE, Types.REAL -> ClassConstants.DOUBLE.getName();
-            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ClassConstants.ABYTE.getName();
+            case Types.NUMERIC -> CoreClassConstants.NUMBER.getName();
+            case Types.DECIMAL -> CoreClassConstants.BIGDECIMAL.getName();
+            case Types.CHAR -> CoreClassConstants.CHAR.getName();
+            case Types.FLOAT -> CoreClassConstants.FLOAT.getName();
+            case Types.DOUBLE, Types.REAL -> CoreClassConstants.DOUBLE.getName();
+            case Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> CoreClassConstants.ABYTE.getName();
             case Types.BLOB -> ClassConstants.BLOB.getName();
             case Types.CLOB -> ClassConstants.CLOB.getName();
             case Types.NCLOB -> "java.sql.NClob";
             case Types.DATE -> ClassConstants.SQLDATE.getName();
             case Types.TIME -> ClassConstants.TIME.getName();
             case Types.TIMESTAMP -> ClassConstants.TIMESTAMP.getName();
-            case Types.BIGINT -> ClassConstants.BIGINTEGER.getName();
+            case Types.BIGINT -> CoreClassConstants.BIGINTEGER.getName();
             case Types.ARRAY -> ARRAY_CLS_STR;
             case Types.STRUCT -> STRUCT_CLS_STR;
             case Types.ROWID -> ROWID_CLS_STR;
             case OPAQUE -> OPAQUE_CLS_STR;
-            default -> ClassConstants.STRING.getName();
+            default -> CoreClassConstants.STRING.getName();
         };
         return typeName;
     }
@@ -523,7 +523,7 @@ public class Util {
                 return BIGDECIMAL;
             }
             if (INTEGER_STR.equals(typeName)) {
-                return org.eclipse.persistence.internal.helper.ClassConstants.INTEGER;
+                return CoreClassConstants.INTEGER;
             }
             if (BOOLEAN_STR.equals(typeName)) {
                 return BOOLEAN;
@@ -918,7 +918,7 @@ public class Util {
      *
      */
     public static boolean shouldSetJavaType(String typeName) {
-        if (typeName.equals(ClassConstants.STRING.getName())) {
+        if (typeName.equals(CoreClassConstants.STRING.getName())) {
             return false;
         }
         return true;

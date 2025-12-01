@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.oxm.xmlconversionmanager;
 
 import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -36,7 +36,7 @@ public class Base64TestCases extends OXTestCase {
     public void testIntegerToString_base64() {
         try {
             Integer integer = 1;
-            xcm.convertObject(integer, ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
+            xcm.convertObject(integer, CoreClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
         } catch (ConversionException e) {
             assertEquals("The incorrect exception was thrown", ConversionException.COULD_NOT_BE_CONVERTED, e.getErrorCode());
         }
@@ -46,7 +46,7 @@ public class Base64TestCases extends OXTestCase {
         try {
             String base64 = "PD94bWwgdmVyc2lvbj0iMS4wIj8+PGZhbGw+PG5hbWU+TmlhZ2FyYSBGYWxsczwvbmFtZT48L2Zh\r\n" +
             "bGw+";
-            xcm.convertObject(base64, ClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
+            xcm.convertObject(base64, CoreClassConstants.ABYTE, XMLConstants.BASE_64_BINARY_QNAME);
         } catch(Exception ex) {
             fail("an unexpected exception was thrown " + ex.getMessage());
         }

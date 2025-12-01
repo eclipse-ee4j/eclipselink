@@ -62,12 +62,14 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import javax.xml.transform.dom.DOMResult;
+
 import org.w3c.dom.Document;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -75,6 +77,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
@@ -84,7 +87,6 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -713,7 +715,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         if (value == null) {
             return null;
         }
-        if (value.getClass() == ClassConstants.UTILDATE) {
+        if (value.getClass() == CoreClassConstants.UTILDATE) {
             return Helper.timestampFromDate((java.util.Date)value);
         } else if (value instanceof Character) {
             return ((Character)value).toString();
@@ -724,9 +726,9 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         } else if (value instanceof char[]) {
             return new String((char[])value);
         } else if (value instanceof Character[]) {
-            return convertObject(value, ClassConstants.STRING);
+            return convertObject(value, CoreClassConstants.STRING);
         } else if (value instanceof Byte[]) {
-            return convertObject(value, ClassConstants.APBYTE);
+            return convertObject(value, CoreClassConstants.APBYTE);
         }
         return value;
     }
@@ -959,33 +961,33 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     public int getJDBCType(Class<?> javaType) {
         if (javaType == null) {
             return Types.VARCHAR;// Best guess, sometimes we cannot determine type from mapping, this may fail on some drivers, other dont care what type it is.
-        } else if (javaType == ClassConstants.STRING) {
+        } else if (javaType == CoreClassConstants.STRING) {
             return Types.VARCHAR;
-        } else if (javaType == ClassConstants.BIGDECIMAL) {
+        } else if (javaType == CoreClassConstants.BIGDECIMAL) {
             return Types.DECIMAL;
-        } else if (javaType == ClassConstants.BIGINTEGER) {
+        } else if (javaType == CoreClassConstants.BIGINTEGER) {
             return Types.BIGINT;
-        } else if (javaType == ClassConstants.BOOLEAN) {
+        } else if (javaType == CoreClassConstants.BOOLEAN) {
             return Types.BIT;
-        } else if (javaType == ClassConstants.BYTE) {
+        } else if (javaType == CoreClassConstants.BYTE) {
             return Types.TINYINT;
-        } else if (javaType == ClassConstants.CHAR) {
+        } else if (javaType == CoreClassConstants.CHAR) {
             return Types.CHAR;
-        } else if (javaType == ClassConstants.DOUBLE) {
+        } else if (javaType == CoreClassConstants.DOUBLE) {
             return Types.DOUBLE;
-        } else if (javaType == ClassConstants.FLOAT) {
+        } else if (javaType == CoreClassConstants.FLOAT) {
             return Types.FLOAT;
-        } else if (javaType == ClassConstants.INTEGER) {
+        } else if (javaType == CoreClassConstants.INTEGER) {
             return Types.INTEGER;
-        } else if (javaType == ClassConstants.LONG) {
+        } else if (javaType == CoreClassConstants.LONG) {
             return Types.BIGINT;
-        } else if (javaType == ClassConstants.NUMBER) {
+        } else if (javaType == CoreClassConstants.NUMBER) {
             return Types.DECIMAL;
-        } else if (javaType == ClassConstants.SHORT ) {
+        } else if (javaType == CoreClassConstants.SHORT ) {
             return Types.SMALLINT;
-        } else if (javaType == ClassConstants.CALENDAR ) {
+        } else if (javaType == CoreClassConstants.CALENDAR ) {
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.UTILDATE ) {//bug 5237080, return TIMESTAMP for java.util.Date as well
+        } else if (javaType == CoreClassConstants.UTILDATE ) {//bug 5237080, return TIMESTAMP for java.util.Date as well
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.TIME_INSTANT ) {
             return Types.TIMESTAMP;
@@ -1004,15 +1006,15 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             return Types.TIMESTAMP_WITH_TIMEZONE;
         } else if (javaType == ClassConstants.TIME_YEAR ) {
             return Types.INTEGER;
-        }else if (javaType == ClassConstants.ABYTE) {
+        }else if (javaType == CoreClassConstants.ABYTE) {
             return Types.LONGVARBINARY;
-        } else if (javaType == ClassConstants.APBYTE) {
+        } else if (javaType == CoreClassConstants.APBYTE) {
             return Types.LONGVARBINARY;
         } else if (javaType == ClassConstants.BLOB) {
             return Types.BLOB;
         } else if (javaType == ClassConstants.ACHAR) {
             return Types.LONGVARCHAR;
-        } else if (javaType == ClassConstants.APCHAR) {
+        } else if (javaType == CoreClassConstants.APCHAR) {
             return Types.LONGVARCHAR;
         } else if (javaType == ClassConstants.CLOB) {
             return Types.CLOB;
@@ -1062,7 +1064,9 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
                     return getStructConverters().get(structType).convertToObject((Struct)objectFromResultSet);
                 }
             } else if(type == Types.SQLXML) {
-                return JavaPlatform.getStringAndFreeSQLXML(objectFromResultSet);
+                String str = ((SQLXML) objectFromResultSet).getString();
+                ((SQLXML) objectFromResultSet).free();
+                return str;
             }
         }
         return objectFromResultSet;
@@ -2111,16 +2115,16 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         // Next process types that need conversion.
         else if (parameter instanceof Calendar) {
             statement.setTimestamp(index, Helper.timestampFromDate(((Calendar)parameter).getTime()));
-        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+        } else if (parameter.getClass() == CoreClassConstants.UTILDATE) {
             statement.setTimestamp(index, Helper.timestampFromDate((java.util.Date) parameter));
         } else if (parameter instanceof Character) {
             statement.setString(index, ((Character)parameter).toString());
         } else if (parameter instanceof char[]) {
             statement.setString(index, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
+            statement.setString(index, convertObject(parameter, CoreClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
-            statement.setBytes(index, (byte[])convertObject(parameter, ClassConstants.APBYTE));
+            statement.setBytes(index, (byte[])convertObject(parameter, CoreClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(index, (SQLXML) parameter);
         } else if (parameter instanceof Document) {
@@ -2134,7 +2138,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
         } else if (parameter instanceof UUID) {
-            statement.setString(index, convertObject(parameter, ClassConstants.STRING));
+            statement.setString(index, convertObject(parameter, CoreClassConstants.STRING));
         } else {
             statement.setObject(index, parameter);
         }
@@ -2223,16 +2227,16 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         // Next process types that need conversion.
         else if (parameter instanceof Calendar) {
             statement.setTimestamp(name, Helper.timestampFromDate(((Calendar)parameter).getTime()));
-        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+        } else if (parameter.getClass() == CoreClassConstants.UTILDATE) {
             statement.setTimestamp(name, Helper.timestampFromDate((java.util.Date) parameter));
         } else if (parameter instanceof Character) {
             statement.setString(name, ((Character)parameter).toString());
         } else if (parameter instanceof char[]) {
             statement.setString(name, new String((char[])parameter));
         } else if (parameter instanceof Character[]) {
-            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
+            statement.setString(name, convertObject(parameter, CoreClassConstants.STRING));
         } else if (parameter instanceof Byte[]) {
-            statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
+            statement.setBytes(name, (byte[])convertObject(parameter, CoreClassConstants.APBYTE));
         } else if (parameter instanceof SQLXML) {
             statement.setSQLXML(name, (SQLXML) parameter);
         } else if (parameter instanceof Document) {
@@ -2246,7 +2250,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(name, parameter);
         } else if (parameter instanceof UUID) {
-            statement.setString(name, convertObject(parameter, ClassConstants.STRING));
+            statement.setString(name, convertObject(parameter, CoreClassConstants.STRING));
         } else {
             statement.setObject(name, parameter);
         }
@@ -2408,7 +2412,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         writer.write("{b '");
-        Helper.writeHexString(bytes, writer);
+        writer.write(HexFormat.of().formatHex(bytes));
         writer.write("'}");
     }
 
@@ -2724,7 +2728,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
                     Class<?> type = ConversionManager.getObjectClass(field.getType());
                     // Default type to VARCHAR, if unknown.
                     if (type == null) {
-                        type = ConversionManager.getObjectClass(ClassConstants.STRING);
+                        type = ConversionManager.getObjectClass(CoreClassConstants.STRING);
                     }
                    fieldDef = new FieldDefinition(field.getNameDelimited(this), type);
                 } else {
