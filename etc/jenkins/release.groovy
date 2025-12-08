@@ -149,8 +149,15 @@ spec:
     }
     post {
         always {
-            archiveArtifacts artifacts: '/home/jenkins/agent/workspace/eclipselink-promote-master/target/central-publishing/central-bundle.zip', followSymlinks: false
-            archiveArtifacts '/home/jenkins/agent/workspace/eclipselink-promote-master/target/central-publishing/*.zip'
+            sshagent([SSH_CREDENTIALS_ID]) {
+                container('el-build') {
+                    sh """
+                            cd ${WORKSPACE}/target/central-publishing/
+                            ls
+                        """
+                    archiveArtifacts '${WORKSPACE}/target/central-publishing/*.zip'
+                }
+            }
         }
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
