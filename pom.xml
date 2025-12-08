@@ -18,19 +18,67 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.tests.bom</artifactId>
-        <version>5.0.0-SNAPSHOT</version>
-        <relativePath>boms/tests/pom.xml</relativePath>
-    </parent>
-
-    <artifactId>org.eclipse.persistence.project</artifactId>
+    <name>EclipseLink Parent</name>
+    <description>Comprehensive and universal persistence framework for Java.</description>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.parent</artifactId>
     <version>5.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>EclipseLink Project</name>
-    <description>Comprehensive and universal persistence framework for Java.</description>
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.9</version>
+        <relativePath/>
+    </parent>
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
+    </scm>
+
+    <organization>
+        <name>Eclipse.org - EclipseLink Project</name>
+        <url>http://www.eclipse.org/eclipselink</url>
+    </organization>
+
+    <inceptionYear>2007</inceptionYear>
+    <url>http://www.eclipse.org/eclipselink</url>
+
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>http://www.eclipse.org/legal/epl-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>Eclipse Distribution License - v 1.0</name>
+            <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>EclipseLink user's mailing list</name>
+            <post>eclipselink-users@eclipse.org</post>
+            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</subscribe>
+            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-users/</archive>
+        </mailingList>
+        <mailingList>
+            <name>EclipseLink developer's mailing list</name>
+            <post>eclipselink-dev@eclipse.org</post>
+            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</subscribe>
+            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-dev/</archive>
+        </mailingList>
+    </mailingLists>
 
     <properties>
         <!-- Minimum required JDK version -->
@@ -50,6 +98,8 @@
         <spotbugs.exclude/>
         <spotbugs.skip>false</spotbugs.skip>
         <spotbugs.threshold>Normal</spotbugs.threshold>
+        <spotbugs.version>4.8.3</spotbugs.version>
+        <findsecbugs.version>1.11.0</findsecbugs.version>
         <dependency-check.failonerror>false</dependency-check.failonerror>
 
         <!-- PROJECT Properties -->
@@ -128,28 +178,95 @@
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
+        <!--Eclipse Dependencies version-->
+        <eclipselink.asm.version>9.9.0</eclipselink.asm.version>
+        <asm.version>9.9</asm.version>
+        <activation-api.version>2.1.3</activation-api.version>
+        <angus-activation.version>2.0.2</angus-activation.version>
+        <annotation.version>3.0.0</annotation.version>
+        <cdi.version>4.1.0</cdi.version>
+        <ejb.version>4.0.1</ejb.version>
+        <el-api.version>5.0.1</el-api.version>
+        <el.version>5.0.0-M1</el.version>
+        <glassfish.version>8.0.0-JDK17-M7</glassfish.version>
+        <jaxwsrt.version>4.0.3</jaxwsrt.version>
+        <jaxb.version>4.0.5</jaxb.version>
+        <jaxb.api.version>4.0.2</jaxb.api.version>
+        <jersey.version>4.0.0-M2</jersey.version>
+        <jms.version>3.1.0</jms.version>
+        <json.version>2.1.3</json.version>
+        <jpa.api.version>3.2.0</jpa.api.version>
+        <mail-api.version>2.1.3</mail-api.version>
+        <angus-mail.version>2.0.4</angus-mail.version>
+        <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
+        <org.glassfish.corba.version>4.2.5</org.glassfish.corba.version>
+        <parsson.version>1.1.7</parsson.version>
+        <resource.version>2.1.0</resource.version>
+        <servlet.version>6.1.0</servlet.version>
+        <soap.api.version>3.0.2</soap.api.version>
+        <transaction.version>2.0.1</transaction.version>
+        <validation.version>3.1.0</validation.version>
+        <ws-api.version>4.0.2</ws-api.version>
+        <ws-rs.version>4.0.0</ws-rs.version>
+
+        <!--Third-Party Dependencies version-->
+        <!-- CQ #23046 -->
+        <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
+        <!-- CQ #21133 -->
+        <ant.version>1.10.15</ant.version>
+        <archunit.version>1.4.1</archunit.version>
+        <aspectj.version> 1.9.22.1</aspectj.version>
+        <commonj.sdo.version>2.1.1</commonj.sdo.version>
+        <derby.version>10.17.1.0</derby.version>
+        <db2.version>11.5.9.0</db2.version>
+        <h2.version>2.3.232</h2.version>
+        <!-- CQ #21134, 21135, 21136, 21137 -->
+        <exam.version>4.13.4</exam.version>
+        <!-- CQ #23048 -->
+        <hibernate.version>8.0.1.Final</hibernate.version>
         <checkstyle.version>10.18.1</checkstyle.version>
-        <spotbugs.version>4.8.3</spotbugs.version>
-        <findsecbugs.version>1.11.0</findsecbugs.version>
+        <!-- CQ #23049 -->
+        <jgroups.version>5.3.11.Final</jgroups.version>
+        <jmh.version>1.37</jmh.version>
+        <junit.version>4.13.2</junit.version>
+        <junit5.version>5.11.0</junit5.version>
+        <!-- CQ #24079 -->
+        <mongodb.version>5.1.4</mongodb.version>
+        <mysql.version>9.0.0</mysql.version>
+        <mariadb.version>3.4.1</mariadb.version>
+        <mssql.version>12.8.1.jre11</mssql.version>
+        <pgsql.version>42.7.7</pgsql.version>
+        <!-- CQ #21139, 21140 -->
+        <logback.version>1.5.13</logback.version>
+        <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
+        <!-- CQ #2437 -->
+        <oracle.aqapi.version>23.3.1.0</oracle.aqapi.version>
+        <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
+        <!-- CQ #21141 -->
+        <oracle.nosql.version>18.3.10</oracle.nosql.version>
+        <!-- CQ #24195 -->
+        <oracle.nosql.sdk.version>5.4.15</oracle.nosql.sdk.version>
+        <!-- CQ #21142 -->
+        <osgi.version>6.0.0</osgi.version>
+        <!-- CQ #21143 -->
+        <slf4j.version>2.0.12</slf4j.version>
+        <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
+        <springframework.version>6.1.20</springframework.version>
+        <!-- CQ #23233 -->
+        <weld-se.version>6.0.0.Beta4</weld-se.version>
+        <weblogic.version>12.2.1-3</weblogic.version>
+        <wildfly.version>27.0.0.Final</wildfly.version>
+        <wsdl4j.version>1.6.3</wsdl4j.version>
 
         <!--Documentation Dependencies version-->
         <asciidoctorj.version>3.0.0</asciidoctorj.version>
         <asciidoctorj.pdf.version>2.3.18</asciidoctorj.pdf.version>
         <asciidoctorj.epub.version>2.1.3</asciidoctorj.epub.version>
         <jruby.version>9.4.8.0</jruby.version>
-
-        <!--Server tests-->
-        <weblogic.version>12.2.1-3</weblogic.version>
-        <wildfly.version>27.0.0.Final</wildfly.version>
     </properties>
 
     <!-- Default modules set and added to by all profiles -->
     <modules>
-        <module>boms/parent</module>
-        <module>boms/bom</module>
-        <module>boms/dependencies</module>
-        <module>boms/tests</module>
-
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
         <module>foundation/org.eclipse.persistence.core</module>
@@ -185,6 +302,613 @@
         <!--EclipseLink Bundles-->
         <module>bundles</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- our artifacts TODO: this belongs to BOM pom-->
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.parent</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.asm</artifactId>
+                <version>${eclipselink.asm.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.corba</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.dbws</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.extension</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpars.server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpars</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.moxy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.nosql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracle</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.pgsql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.sdo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>eclipselink</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.utils.rename</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- our TEST artifacts TODO: this belongs to BOM pom-->
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.core.test</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.jpa.test</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.nosql</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <!--API/Implementation dependencies-->
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-tree</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-util</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${activation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-activation</artifactId>
+                <version>${angus-activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
+                <version>${mail-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-mail</artifactId>
+                <version>${angus-mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>${jaxwsrt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-eclipselink-plugin</artifactId>
+                <version>${jaxwsrt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ejb</groupId>
+                <artifactId>jakarta.ejb-api</artifactId>
+                <version>${ejb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${cdi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.jms</groupId>
+                <artifactId>jakarta.jms-api</artifactId>
+                <version>${jms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${jpa.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.resource</groupId>
+                <artifactId>jakarta.resource-api</artifactId>
+                <version>${resource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.transaction</groupId>
+                <artifactId>jakarta.transaction-api</artifactId>
+                <version>${transaction.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jaxb.api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.soap</groupId>
+                <artifactId>jakarta.xml.soap-api</artifactId>
+                <version>${soap.api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>${ws-api.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${ws-rs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${apache.felix.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>commonj.sdo</artifactId>
+                <version>${commonj.sdo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+                <version>${oracle.ddlparser.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.parsson</groupId>
+                <artifactId>parsson</artifactId>
+                <version>${parsson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>${org.glassfish.corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-orb</artifactId>
+                <version>${org.glassfish.corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jgroups</groupId>
+                <artifactId>jgroups</artifactId>
+                <version>${jgroups.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>wsdl4j</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>${wsdl4j.version}</version>
+            </dependency>
+            <!--NoSQL DBs-->
+            <!--Mongo DB-->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-sync</artifactId>
+                <version>${mongodb.version}</version>
+            </dependency>
+            <!--Oracle proprietary dependencies-->
+            <!--Oracle NoSQL DB-->
+            <dependency>
+                <groupId>com.oracle.kv</groupId>
+                <artifactId>oracle-nosql-client</artifactId>
+                <version>${oracle.nosql.version}</version>
+            </dependency>
+            <!--Oracle NoSQL SDK Driver-->
+            <dependency>
+                <groupId>com.oracle.nosql.sdk</groupId>
+                <artifactId>nosqldriver</artifactId>
+                <version>${oracle.nosql.sdk.version}</version>
+            </dependency>
+            <!-- All files as a Oracle JDBC driver CQ #21154 -->
+            <dependency>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc-bom</artifactId>
+                <version>${oracle.jdbc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--TODO resolve dependency later
+                                <dependency>
+                                    <groupId>com.oracle.spatial</groupId>
+                                    <artifactId>sdoapi</artifactId>
+                                    <version>${oracle.version}</version>
+                                </dependency>
+            -->
+            <dependency>
+                <groupId>com.oracle.database.messaging</groupId>
+                <artifactId>aqapi-jakarta</artifactId>
+                <version>${oracle.aqapi.version}</version>
+            </dependency>
+            <!--Test dependencies-->
+            <!--Test framework-->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!--Test framework to specify and assert architecture rules in plain Java-->
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit</artifactId>
+                <version>${archunit.version}</version>
+            </dependency>
+            <!--APIs and other libs used in test classes-->
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjtools</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.el</groupId>
+                <artifactId>jakarta.el-api</artifactId>
+                <version>${el-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se-core</artifactId>
+                <version>${weld-se.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>${el.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.main.appclient</groupId>
+                <artifactId>gf-client</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-instrument</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <!--JDBC drivers-->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ibm.db2</groupId>
+                <artifactId>jcc</artifactId>
+                <version>${db2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${pgsql.version}</version>
+            </dependency>
+            <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
+            <!-- Hibernate validator and it's dependencies -->
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <!--PaxExam -->
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-forked</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-junit4</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-link-mvn</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <!--Test Logging, required by Pax and extension module-->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <!--Test OSGi core-->
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -226,6 +950,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.4.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.13.0</version>
                 </plugin>
@@ -233,6 +962,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -247,6 +981,11 @@
                         <useModulePath>false</useModulePath>
                         <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -579,7 +1318,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>common-license</classifier>
                                     <type>zip</type>
@@ -598,7 +1337,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-defaults</classifier>
                                     <type>zip</type>
@@ -617,7 +1356,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>test-report</classifier>
                                     <type>zip</type>
@@ -636,7 +1375,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>spotbugs-filter</classifier>
                                     <type>zip</type>
@@ -655,7 +1394,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>javadoc-resources</classifier>
                                     <type>zip</type>
@@ -1367,6 +2106,98 @@
                 <!--Parent documentation module-->
                 <module>docs</module>
             </modules>
+        </profile>
+        <profile>
+            <id>license_check</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>dash-licenses-snapshots</id>
+                    <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.dash</groupId>
+                        <artifactId>license-tool-plugin</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <id>license-check</id>
+                                <goals>
+                                    <goal>license-check</goal>
+                                </goals>
+                                <configuration>
+                                    <failWhenReviewNeeded>true</failWhenReviewNeeded>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>license-check</id>
+            <pluginRepositories>
+                <pluginRepository>
+                    <!-- org.eclipse.dash:license-tool-plugin is nor final nor in central yet -->
+                    <id>dash-licenses-snapshots</id>
+                    <url>https://repo.eclipse.org/content/repositories/dash-licenses-snapshots/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.eclipse.dash</groupId>
+                            <artifactId>license-tool-plugin</artifactId>
+                            <version>0.0.1-SNAPSHOT</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.dash</groupId>
+                        <artifactId>license-tool-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>license-check</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>license-check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>snapshot-build</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
+                            <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

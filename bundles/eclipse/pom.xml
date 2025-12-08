@@ -251,7 +251,7 @@ https://stackoverflow.com/questions/22541301/jarsigner-doesnt-sign-plugin-depend
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.project</artifactId>
+                                    <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.version}</version>
                                     <classifier>common-license</classifier>
                                     <type>zip</type>
