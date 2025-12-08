@@ -106,7 +106,7 @@ echo '-[ Deploy artifacts to staging repository ]-----------------------------'
       -Dbuild.type=RELEASE -Ddoclint=none \
       -DstagingDescription="${ECLIPSELINK_STAGING_DESC}" \
       -Ddeploy \
-      clean ${MVN_DEPLOY_ARGS} -X)
+      clean ${MVN_DEPLOY_ARGS})
 
 echo '-[ Tag release ]----------------------------------------------------------------'
 git tag "${RELEASE_TAG}" -m "EclipseLink ${ECLIPSELINK_RELEASE_VERSION} release"
