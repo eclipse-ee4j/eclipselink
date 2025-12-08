@@ -1,4 +1,4 @@
-// Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -155,7 +155,6 @@ spec:
                             cd ${WORKSPACE}/target/central-publishing/
                             ls -al
                         """
-                    //archiveArtifacts allowEmptyArchive: true, artifacts: '/home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-publishing/*.zip, /home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-staging/*.zip', defaultExcludes: false, followSymlinks: false, onlyIfSuccessful: false
                     archiveArtifacts allowEmptyArchive: true, artifacts: 'target/central-publishing/**/*.zip', onlyIfSuccessful: false
                 }
             }

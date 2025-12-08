@@ -1,4 +1,4 @@
-#  Copyright (c) 2020, 2022 Oracle and/or its affiliates. All rights reserved.
+#  Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
 #
 #  This program and the accompanying materials are made available under the
 #  terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,6 +90,7 @@ set_version() {
         ${6} \
         -DnewVersion="${3}" \
         -DgenerateBackupPoms=false \
+        -DprocessAllModules=true \
         clean ${VERSIONS_PLUGIN}:set)
   echo '--[ Commit modified pom.xml files ]---------------------------------------------'
   local POM_FILES=`git status | grep -E 'modified:.*pom.*\.xml' | sed -e 's/[[:space:]][[:space:]]*modified:[[:space:]][[:space:]]*//'`
