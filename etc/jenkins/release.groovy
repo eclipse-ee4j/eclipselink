@@ -152,12 +152,11 @@ spec:
             sshagent([SSH_CREDENTIALS_ID]) {
                 container('el-build') {
                     sh """
-                            cd ${WORKSPACE}/target/central-staging/
-                            ls -al
                             cd ${WORKSPACE}/target/central-publishing/
                             ls -al
                         """
-                    archiveArtifacts allowEmptyArchive: true, artifacts: '/home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-publishing/*.zip, /home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-staging/*.zip', defaultExcludes: false, followSymlinks: false, onlyIfSuccessful: false
+                    //archiveArtifacts allowEmptyArchive: true, artifacts: '/home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-publishing/*.zip, /home/jenkins/agent/workspace/eclipselink-promote-master_test/target/central-staging/*.zip', defaultExcludes: false, followSymlinks: false, onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'target/central-publishing/**/*.zip', onlyIfSuccessful: false
                 }
             }
         }
