@@ -33,7 +33,7 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.CachePolicy;
-import org.eclipse.persistence.descriptors.clDescriptor;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
