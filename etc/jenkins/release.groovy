@@ -1,4 +1,4 @@
-// Copyright (c) 2020, 2023 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2025 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -148,6 +148,17 @@ spec:
         }
     }
     post {
+        always {
+            sshagent([SSH_CREDENTIALS_ID]) {
+                container('el-build') {
+                    sh """
+                            cd ${WORKSPACE}/target/central-publishing/
+                            ls -al
+                        """
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'target/central-publishing/**/*.zip', onlyIfSuccessful: false
+                }
+            }
+        }
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
