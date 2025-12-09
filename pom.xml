@@ -234,7 +234,7 @@
         <mongodb.version>5.1.4</mongodb.version>
         <mysql.version>9.0.0</mysql.version>
         <mariadb.version>3.4.1</mariadb.version>
-        <mssql.version>12.8.1.jre11</mssql.version>
+        <mssql.version>12.8.2.jre11</mssql.version>
         <pgsql.version>42.7.7</pgsql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.5.19</logback.version>
