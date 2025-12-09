@@ -33,7 +33,7 @@ import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.descriptors.CachePolicy;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.clDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -535,22 +535,27 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
     public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
-        if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
-            if (buildAttributesIntoObjectSOP(domainObject, cacheKey, databaseRow, query, joinManager, executionFetchGroup, forRefresh, targetSession)) {
-                return;
+        // Records are immutable - they are constructed with their values in buildNewRecordInstance().
+        // Attempting to set attributes on an already-constructed record will fail.
+        // Skip attribute setting for records since they were already properly initialized.
+        if (!domainObject.getClass().isRecord()) {
+            if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+                if (buildAttributesIntoObjectSOP(domainObject, cacheKey, databaseRow, query, joinManager, executionFetchGroup, forRefresh, targetSession)) {
+                    return;
+                }
             }
-        }
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List<DatabaseMapping> mappings = this.descriptor.getMappings();
+            // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
+            List<DatabaseMapping> mappings = this.descriptor.getMappings();
 
-        // PERF: Cache if all mappings should be read.
-        boolean readAllMappings = query.shouldReadAllMappings();
-        boolean isTargetProtected = targetSession.isProtectedSession();
-        int size = mappings.size();
-        for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = mappings.get(index);
-            if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
-                mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+            // PERF: Cache if all mappings should be read.
+            boolean readAllMappings = query.shouldReadAllMappings();
+            boolean isTargetProtected = targetSession.isProtectedSession();
+            int size = mappings.size();
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = mappings.get(index);
+                if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                    mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
+                }
             }
         }
 
@@ -765,7 +770,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             Object value;
         }
         Map<String, TypeValue> typeValueMap = new LinkedHashMap<>();
-        ReadObjectQuery query = new ReadObjectQuery();
+        // Set class at construction time for record classes
+        ReadObjectQuery query = new ReadObjectQuery(clazz);
         query.setSession(session);
         for (RecordComponent component : clazz.getRecordComponents()) {
             typeValueMap.put(component.getName(), new TypeValue(component.getType()));
@@ -2125,27 +2131,32 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * key and some direct attributes) and keep it on the UOW.
      */
     public void buildAttributesIntoShallowObject(Object original, AbstractRecord databaseRow, ObjectBuildingQuery query) throws DatabaseException, QueryException {
-        AbstractSession executionSession = query.getSession().getExecutionSession(query);
+        // Records are immutable - they are constructed with their values in buildNewRecordInstance().
+        // Attempting to set attributes on an already-constructed record will fail.
+        // Skip attribute setting for records since they were already properly initialized.
+        if (!original.getClass().isRecord()) {
+            AbstractSession executionSession = query.getSession().getExecutionSession(query);
 
-        // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
-        List<DatabaseMapping> pkMappings = getPrimaryKeyMappings();
-        int mappingsSize = pkMappings.size();
-        for (int i = 0; i < mappingsSize; i++) {
-            DatabaseMapping mapping = pkMappings.get(i);
+            // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
+            List<DatabaseMapping> pkMappings = getPrimaryKeyMappings();
+            int mappingsSize = pkMappings.size();
+            for (int i = 0; i < mappingsSize; i++) {
+                DatabaseMapping mapping = pkMappings.get(i);
 
-            //if (query.shouldReadMapping(mapping)) {
-            if (!mapping.isAbstractColumnMapping()) {
-                mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
+                //if (query.shouldReadMapping(mapping)) {
+                if (!mapping.isAbstractColumnMapping()) {
+                    mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
+                }
             }
-        }
-        List<DatabaseMapping> mappings = this.descriptor.getMappings();
-        mappingsSize = mappings.size();
-        for (int i = 0; i < mappingsSize; i++) {
-            DatabaseMapping mapping = mappings.get(i);
+            List<DatabaseMapping> mappings = this.descriptor.getMappings();
+            mappingsSize = mappings.size();
+            for (int i = 0; i < mappingsSize; i++) {
+                DatabaseMapping mapping = mappings.get(i);
 
-            //if (query.shouldReadMapping(mapping)) {
-            if (mapping.isAbstractColumnMapping()) {
-                mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
+                //if (query.shouldReadMapping(mapping)) {
+                if (mapping.isAbstractColumnMapping()) {
+                    mapping.buildShallowOriginalFromRow(databaseRow, original, null, query, executionSession);
+                }
             }
         }
     }
@@ -2156,20 +2167,25 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * populate the clone directly from the database row.
      */
     public void buildAttributesIntoWorkingCopyClone(Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, boolean forRefresh) throws DatabaseException, QueryException {
-        if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
-            if (buildAttributesIntoWorkingCopyCloneSOP(clone, sharedCacheKey, query, joinManager, databaseRow, unitOfWork, forRefresh)) {
-                return;
+        // Records are immutable - they are constructed with their values in buildNewRecordInstance().
+        // Attempting to set attributes on an already-constructed record will fail.
+        // Skip attribute setting for records since they were already properly initialized.
+        if (!clone.getClass().isRecord()) {
+            if (this.descriptor.hasSerializedObjectPolicy() && query.shouldUseSerializedObjectPolicy()) {
+                if (buildAttributesIntoWorkingCopyCloneSOP(clone, sharedCacheKey, query, joinManager, databaseRow, unitOfWork, forRefresh)) {
+                    return;
+                }
             }
-        }
-        // PERF: Cache if all mappings should be read.
-        boolean readAllMappings = query.shouldReadAllMappings();
-        List<DatabaseMapping> mappings = this.descriptor.getMappings();
-        int size = mappings.size();
-        FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
-        for (int index = 0; index < size; index++) {
-            DatabaseMapping mapping = mappings.get(index);
-            if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
-                mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+            // PERF: Cache if all mappings should be read.
+            boolean readAllMappings = query.shouldReadAllMappings();
+            List<DatabaseMapping> mappings = this.descriptor.getMappings();
+            int size = mappings.size();
+            FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
+            for (int index = 0; index < size; index++) {
+                DatabaseMapping mapping = mappings.get(index);
+                if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
+                    mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
+                }
             }
         }
 
