@@ -98,7 +98,7 @@
         <mariadb.version>3.4.1</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
         <db2.version>11.5.9.0</db2.version>
-        <mssql.version>12.8.1.jre11</mssql.version>
+        <mssql.version>12.8.2.jre11</mssql.version>
         <pgsql.version>42.7.7</pgsql.version>
     </properties>
 
