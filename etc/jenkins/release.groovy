@@ -152,10 +152,10 @@ spec:
             sshagent([SSH_CREDENTIALS_ID]) {
                 container('el-build') {
                     sh """
-                            cd ${WORKSPACE}/target/central-publishing/
+                            cd ${WORKSPACE}/boms/parent/target/central-publishing/
                             ls -al
                         """
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'target/central-publishing/**/*.zip', onlyIfSuccessful: false
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'boms/parent/target/central-publishing/**/*.zip', onlyIfSuccessful: false
                 }
             }
         }
