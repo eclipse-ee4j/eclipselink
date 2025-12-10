@@ -102,7 +102,7 @@ echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
 (cd ${ECLIPSELINK_DIR} && \
   mvn --no-transfer-progress -U -C -B -V \
-      -Poss-release,staging -DskipTests \
+      -Poss-release,staging,central-release -DskipTests \
       -Dbuild.type=RELEASE -Ddoclint=none \
       -DstagingDescription="${ECLIPSELINK_STAGING_DESC}" \
       -Ddeploy \
