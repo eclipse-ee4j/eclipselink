@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
@@ -504,7 +505,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean shouldBindPartialParameters() {
-        return this.shouldBindPartialParameters;
+        return true;
     }
 
     /**
@@ -1811,7 +1812,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
-        if(shouldForceBindAllParameters()) {
+        if(shouldForceBindAllParameters() || shouldBindPartialParameters()) {
             return false;
         }
         return !isCastRequired();
