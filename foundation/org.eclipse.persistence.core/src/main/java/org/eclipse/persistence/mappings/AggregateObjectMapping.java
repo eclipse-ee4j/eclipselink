@@ -489,9 +489,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
         }
         if (buildShallowOriginal) {
-            descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
+            if (!this.getReferenceClass().isRecord()) {
+                descriptor.getObjectBuilder().buildAttributesIntoShallowObject(aggregate, databaseRow, nestedQuery);
+            }
         } else if (executionSession.isUnitOfWork()) {
-            descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
+            if (!this.getReferenceClass().isRecord()) {
+                descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
+            }
         } else {
             if (!this.getReferenceClass().isRecord()) {
                 descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
