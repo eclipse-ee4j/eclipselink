@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,10 +19,17 @@ import java.util.Map;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 import junit.framework.Test;
+
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
+
+import static org.eclipse.persistence.tools.schemaframework.TableValidationException.DifferentColumns.Difference;
+import static org.eclipse.persistence.tools.schemaframework.TableValidationException.DifferentColumns.Type.TYPE_DIFFERENCE;
+import static org.eclipse.persistence.tools.schemaframework.TableValidationException.DifferentColumns.TypeDifference;
+import static org.eclipse.persistence.tools.schemaframework.TableValidationException.DifferentColumns;
 
 /**
  * Verify jakarta.persistence 3.2 API changes in {@link SchemaManager}.
@@ -46,6 +54,7 @@ public class SchemaManagerValidateOnModifiedColumnTest extends AbstractSchemaMan
     public void testValidateOnModifiedSchema() {
         // Make sure that tables exist
         createTables();
+        
         // Modify current schema
         TableCreator tableCreator = getDefaultTableCreator();
         Map<String, TableDefinition> tableDefinitions = new HashMap<>(tableCreator.getTableDefinitions().size());
@@ -55,24 +64,38 @@ public class SchemaManagerValidateOnModifiedColumnTest extends AbstractSchemaMan
                     : tableDefinition.getTable().getName();
             tableDefinitions.put(tableName, tableDefinition);
         }
+        
         // Modify "NAME" field in "PERSISTENCE32_TRAINER"
         TableDefinition trainer = tableDefinitions.get("PERSISTENCE32_TRAINER");
         FieldDefinition nameField = trainer.getField("NAME");
         trainer.dropFieldOnDatabase(emf.getDatabaseSession(), "NAME");
         FieldDefinition newNameField = new FieldDefinition();
         newNameField.setName("NAME");
+        
         // Different type
         newNameField.setTypeName("NUMERIC");
+        
         // Different type size
         newNameField.setSize(nameField.getSize()+5);
+        
         // Different nullable
         newNameField.setShouldAllowNull(nameField.shouldAllowNull());
         newNameField.setIsPrimaryKey(nameField.isPrimaryKey());
         newNameField.setUnique(nameField.isUnique());
         newNameField.setIsIdentity(nameField.isIdentity());
         trainer.addFieldOnDatabase(emf.getDatabaseSession(), newNameField);
+        
+        if (emf.getDatabaseSession().getPlatform().isDB2()) {
+            // After table modifications, DB2 needs a kind of secondary commit called a 'REORG'
+            // to make the table available again.
+            emf.getDatabaseSession()
+               .priviledgedExecuteNonSelectingCall(
+                   new SQLCall("CALL SYSPROC.ADMIN_CMD('REORG TABLE PERSISTENCE32_TRAINER')"));
+        }
+        
         // Do the validation
         SchemaManager schemaManager = emf.getSchemaManager();
+        
         try {
             // Test validation
             schemaManager.validate();
@@ -81,18 +104,21 @@ public class SchemaManagerValidateOnModifiedColumnTest extends AbstractSchemaMan
             // Validation is expected to fail and return all missing columns
             Exception[] exceptions = sve.getFailures();
             for (TableValidationException exception : (TableValidationException[]) exceptions) {
-                if (!(exception instanceof TableValidationException.DifferentColumns)) {
+                if (!(exception instanceof DifferentColumns)) {
+                    exception.printStackTrace();
                     fail("Exception is not an instance of TableValidationException.DifferentColumns");
                 }
-                List<TableValidationException.DifferentColumns.Difference> diffs
-                        = exception.unwrap(TableValidationException.DifferentColumns.class).getDifferences();
-                assertEquals(1, diffs.size());
-                for (TableValidationException.DifferentColumns.Difference diff : diffs) {
+                
+                List<Difference> differences = exception.unwrap(DifferentColumns.class).getDifferences();
+                assertEquals(1, differences.size());
+                
+                for (Difference difference : differences) {
                     assertEquals("PERSISTENCE32_TRAINER", exception.getTable());
-                    assertEquals(TableValidationException.DifferentColumns.Type.TYPE_DIFFERENCE, diff.getType());
-                    TableValidationException.DifferentColumns.TypeDifference typeDiff = diff.unwrap(TableValidationException.DifferentColumns.TypeDifference.class);
+                    assertEquals(TYPE_DIFFERENCE, difference.getType());
+                    TypeDifference typeDifference = difference.unwrap(TypeDifference.class);
+                    
                     // Type names are database specific so let's just check that they are not the same
-                    assertNotSame(typeDiff.getModelValue(), typeDiff.getDbValue());
+                    assertNotSame(typeDifference.getModelValue(), typeDifference.getDbValue());
                 }
             }
         }

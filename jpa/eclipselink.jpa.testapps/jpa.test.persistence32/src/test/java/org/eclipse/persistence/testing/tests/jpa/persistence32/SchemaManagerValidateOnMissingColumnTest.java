@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,6 +21,8 @@ import java.util.Set;
 import jakarta.persistence.SchemaManager;
 import jakarta.persistence.SchemaValidationException;
 import junit.framework.Test;
+
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableValidationException;
@@ -43,10 +46,11 @@ public class SchemaManagerValidateOnMissingColumnTest extends AbstractSchemaMana
         super(name);
     }
 
-    // Test SchemaManager validate method on existing valid schema
+    // Test SchemaManager#validate on a schema with a missing column
     public void testValidateOnMissingColumn() {
         // Make sure that tables exist
         createTables();
+        
         // Modify current schema
         TableCreator tableCreator = getDefaultTableCreator();
         Map<String, TableDefinition> tableDefinitions = new HashMap<>(tableCreator.getTableDefinitions().size());
@@ -56,9 +60,21 @@ public class SchemaManagerValidateOnMissingColumnTest extends AbstractSchemaMana
                     : tableDefinition.getTable().getName();
             tableDefinitions.put(tableName, tableDefinition);
         }
+        
         // Remove "NAME" field from "PERSISTENCE32_TEAM"
-        TableDefinition team = tableDefinitions.get("PERSISTENCE32_TEAM");
-        team.dropFieldOnDatabase(emf.getDatabaseSession(), "NAME");
+        tableDefinitions.get("PERSISTENCE32_TEAM")
+                        .dropFieldOnDatabase(
+                            emf.getDatabaseSession(), 
+                            "NAME");
+        
+        if (emf.getDatabaseSession().getPlatform().isDB2()) {
+            // After table modifications, DB2 needs a kind of secondary commit called a 'REORG'
+            // to make the table available again.
+            emf.getDatabaseSession()
+               .priviledgedExecuteNonSelectingCall(
+                   new SQLCall("CALL SYSPROC.ADMIN_CMD('REORG TABLE PERSISTENCE32_TEAM')"));
+        }
+        
         // Do the validation
         SchemaManager schemaManager = emf.getSchemaManager();
         try {
@@ -73,12 +89,14 @@ public class SchemaManagerValidateOnMissingColumnTest extends AbstractSchemaMana
                 if (!(exception instanceof TableValidationException.MissingColumns)) {
                     fail("Exception is not an instance of TableValidationException.MissingColumns");
                 }
+                
                 if (exception.getFailure() == TableValidationException.ValidationFailure.MISSING_COLUMNS) {
                     assertEquals("PERSISTENCE32_TEAM", exception.getTable());
 
                 } else {
                     fail("Exception type is not MISSING_COLUMNS");
                 }
+                
                 checkMissingColumns(missingColumns,
                                     exception.getTable(),
                                     exception.unwrap(TableValidationException.MissingColumns.class)
