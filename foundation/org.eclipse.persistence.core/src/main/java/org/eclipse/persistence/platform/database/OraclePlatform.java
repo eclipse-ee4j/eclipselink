@@ -252,6 +252,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
 
+        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("RAW", 16));
+
         return fieldTypeMapping;
     }
 
@@ -1404,4 +1406,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public int getINClauseLimit() {
         return 1000;
     }
+
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT uuid() FROM DUAL");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
+
 }

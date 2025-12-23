@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -821,5 +822,24 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, name, session);
         }
+    }
+
+    @Override
+    public ValueReadQuery getUUIDQuery() {
+        if (uuidQuery == null) {
+            uuidQuery = new ValueReadQuery();
+            uuidQuery.setSQLString("SELECT gen_random_uuid()");
+            uuidQuery.setAllowNativeSQLQuery(true);
+        }
+        return uuidQuery;
+    }
+
+    @Override
+    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        Object p = parameter;
+        if (p instanceof UUID uuid) {
+            p = uuid.toString();
+        }
+        return super.appendParameterInternal(call, writer, p);
     }
 }

@@ -1831,7 +1831,7 @@ public class MetadataProject {
             }
 
             if (! sequences.containsKey(DEFAULT_UUID_GENERATOR)) {
-                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata().process(m_logger));
+                sequences.put(DEFAULT_UUID_GENERATOR, new UuidGeneratorMetadata(DEFAULT_UUID_GENERATOR).process(m_logger));
             }
 
             // Use a temporary sequence generator to build a qualifier to set on
