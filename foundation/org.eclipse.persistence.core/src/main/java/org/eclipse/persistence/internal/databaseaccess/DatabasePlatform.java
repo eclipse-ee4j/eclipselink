@@ -2137,8 +2137,8 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
-        } else if (parameter instanceof UUID) {
-            statement.setString(index, convertObject(parameter, CoreClassConstants.STRING));
+        } else if (parameter instanceof UUID uuid) {
+            statement.setBytes(index, (byte[]) convertObject(uuid, CoreClassConstants.APBYTE));
         } else {
             statement.setObject(index, parameter);
         }
@@ -2249,8 +2249,8 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
             StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(name, parameter);
-        } else if (parameter instanceof UUID) {
-            statement.setString(name, convertObject(parameter, CoreClassConstants.STRING));
+        } else if (parameter instanceof UUID uuid) {
+            statement.setBytes(name, (byte[]) convertObject(uuid, CoreClassConstants.APBYTE));
         } else {
             statement.setObject(name, parameter);
         }
@@ -2381,8 +2381,8 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
                 // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
                 databaseCall.bindParameter(writer, dbValue);
                 nBoundParameters = 1;
-            } else if (parameter instanceof UUID) {
-                appendString(dbValue.toString(), writer);
+            } else if (parameter instanceof UUID uuid) {
+                nBoundParameters = appendParameterInternal(databaseCall, writer, convertObject(uuid, CoreClassConstants.APBYTE));
             } else {
                 // Assume database driver primitive that knows how to print itself, this is required for drivers
                 // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.

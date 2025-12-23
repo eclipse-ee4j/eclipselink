@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -440,6 +441,11 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             }
         } else if (sourceObject instanceof BigInteger) {
             return ((BigInteger)sourceObject).toByteArray();
+        } else if (sourceObject instanceof UUID uuid) {
+            ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+            bb.putLong(uuid.getMostSignificantBits());
+            bb.putLong(uuid.getLeastSignificantBits());
+            return bb.array();
         }
 
         throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.APBYTE);
@@ -1158,9 +1164,13 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             } catch(Exception e) {
                 throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID, e);
             }
-        } else {
-            throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID);
+        } else if (sourceObject.getClass() == CoreClassConstants.APBYTE) {
+            ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) sourceObject);
+            long high = byteBuffer.getLong();
+            long low = byteBuffer.getLong();
+            return new UUID(high, low);
         }
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.UUID);
     }
 
     /**

@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import java.util.UUID;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.UUIDConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 /**
  * INTERNAL:
@@ -86,7 +88,10 @@ public class UUIDMetadata extends MetadataConverter {
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         if (isValidUUIDType(referenceClass)) {
             setFieldClassification(mapping, java.util.UUID.class, isForMapKey);
-            setConverter(mapping, new UUIDConverter(), isForMapKey);
+            TypeConversionConverter converter = new TypeConversionConverter(mapping);
+            converter.setObjectClass(UUID.class);
+            converter.setDataClass(byte[].class);
+            setConverter(mapping, converter, isForMapKey);
         } else {
             throw ValidationException.invalidTypeForSerializedAttribute(mapping.getAttributeName(), accessor.getReferenceClass(), accessor.getJavaClass());
         }

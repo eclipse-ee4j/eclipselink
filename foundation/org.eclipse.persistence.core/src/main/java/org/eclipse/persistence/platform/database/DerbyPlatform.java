@@ -330,6 +330,8 @@ public class DerbyPlatform extends DB2Platform {
         fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
         fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
 
+        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("CHAR(16) FOR BIT DATA"));
+
         return fieldTypeMapping;
     }
 

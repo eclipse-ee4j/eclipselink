@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -64,6 +65,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 /**
@@ -274,6 +276,7 @@ public class MySQLPlatform extends DatabasePlatform {
         }
         fieldTypeMapping.put(java.time.OffsetTime.class, fd);
         fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("BINARY", 16));
         return fieldTypeMapping;
     }
 

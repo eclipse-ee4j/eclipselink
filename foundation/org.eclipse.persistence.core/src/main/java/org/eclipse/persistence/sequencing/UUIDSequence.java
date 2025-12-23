@@ -49,10 +49,14 @@ public class UUIDSequence extends Sequence {
             query = getDatasourcePlatform().getUUIDQuery();
         }
         if (query != null) {
-            return writeSession.executeQuery(query);
-        } else {
-            return UUID.randomUUID().toString();
+            Object result = writeSession.executeQuery(query);
+            if (result instanceof String s) {
+                return UUID.fromString(s);
+            }
+            //should not happen
+            return result;
         }
+        return UUID.randomUUID();
     }
 
     @Override

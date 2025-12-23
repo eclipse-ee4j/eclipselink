@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -55,6 +56,15 @@ public class UuidGeneratorMetadata extends ORMetadata {
     }
 
     /**
+     * INTERNAL
+     * This constructor is used to create a default sequence generator.
+     * @see MetadataProject processSequencingAccesssors.
+     */
+    public UuidGeneratorMetadata(String sequenceName) {
+        m_name = sequenceName;
+    }
+
+    /**
      * INTERNAL:
      */
     @Override
@@ -92,8 +102,7 @@ public class UuidGeneratorMetadata extends ORMetadata {
      * INTERNAL:
      */
     public UUIDSequence process(MetadataLogger logger) {
-        UUIDSequence sequence = new UUIDSequence();
-        return sequence;
+        return new UUIDSequence(m_name);
     }
 
     /**
