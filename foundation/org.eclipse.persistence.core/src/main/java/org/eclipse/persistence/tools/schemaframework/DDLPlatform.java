@@ -111,14 +111,14 @@ public interface DDLPlatform {
 
             Map.entry("BIGINT", java.math.BigInteger.class),
             Map.entry("DOUBLE PRECIS", Double.class),
-            Map.entry("IMAGE", Byte[].class),
+            Map.entry("IMAGE", byte[].class),
             Map.entry("LONGVARCHAR", Character[].class),
             Map.entry("REAL", Float.class),
             Map.entry("TINYINT", Short.class),
         //    Map.entry("VARBINARY", Byte[].class),
 
-            Map.entry("BLOB", Byte[].class),
-            Map.entry("CLOB", Character[].class)
+            Map.entry("BLOB", byte[].class),
+            Map.entry("CLOB", char[].class)
     );
 
     /**
@@ -159,6 +159,26 @@ public interface DDLPlatform {
      */
     default FieldDefinition.DatabaseType getDatabaseType(Class<?> type) {
         return getDatabaseTypes().get(type);
+    }
+
+    /**
+     * INTERNAL:
+     * Retrieve database platform specific field definition from database
+     * specific platform handler for existing type or build a new one when type
+     * is {@code null} and type for type name could not be found.
+     * @param type     Field type (will be processed first when available).
+     * @param name     Field type name (will be processed as backup option when
+     *                 type class is not available).
+     * @throws RuntimeException when provided type is not valid database type.
+     */
+    default FieldDefinition.DatabaseType getDatabaseType(Class<?> type, String name) {
+        FieldDefinition.DatabaseType dbType = null;
+        if (type != null) {
+            dbType = getDatabaseType(type);
+        } else if (name != null) {
+            dbType = getDatabaseType(name);
+        }
+        return dbType;
     }
 
     /**
@@ -539,6 +559,17 @@ public interface DDLPlatform {
 
     default boolean supportsDeleteOnCascade() {
         return supportsForeignKeyConstraints();
+    }
+
+    /**
+     * Override this method if the platform supports setting fractional seconds
+     * precision in a SQL time or timestamp data type.
+     *
+     * @return value of {@code true} when current database platform supports
+     *         fractional seconds precision or {@code false} otherwise
+     */
+    default boolean supportsFractionalTime() {
+        return false;
     }
 
     default boolean supportsForeignKeyConstraints() {

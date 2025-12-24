@@ -389,7 +389,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     public IndexDefinition buildIndex(AbstractSession session, String key, List<String> columnNames, boolean isUniqueSetOnField) {
-        String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField), session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
+        DDLPlatform platform = session.getPlatform();
+        String indexName = FrameworkHelper.buildConstraintName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField),
+                platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxIndexNameSize());
         IndexDefinition index = new IndexDefinition();
         index.setName(indexName);
         index.setTargetTable(getFullName());
@@ -403,8 +405,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
     public Writer buildIndexDeletionWriter(AbstractSession session, String key, Writer writer, boolean isUniqueSetOnField) {
-            String indexName = buildIndexName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField),
-                    session.getPlatform().getMaxIndexNameSize(), session.getPlatform());
+        DDLPlatform platform = session.getPlatform();
+        String indexName = FrameworkHelper.buildConstraintName(getName(), key, session.getPlatform().getIndexNamePrefix(isUniqueSetOnField),
+                platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxIndexNameSize());
         IndexDefinition index = new IndexDefinition();
         index.setName(indexName);
         index.setTargetTable(getFullName());
@@ -640,7 +643,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
         fkConstraint.setSourceFields(sourceFields);
         fkConstraint.setTargetFields(targetFields);
         fkConstraint.setTargetTable(targetTableName);
-        String tempName = buildForeignKeyConstraintName(this.getName(), field.getName(), platform.getMaxForeignKeyNameSize(), platform);
+        String tempName = FrameworkHelper.buildConstraintName(this.getName(), field.getName(), "FK_",
+                platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxForeignKeyNameSize());
 
         fkConstraint.setName(tempName);
         return fkConstraint;
@@ -661,77 +665,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         fkConstraint.setTargetTable(targetTable.getFullName());
         String fkFieldName = fkFieldNames.get(0);
-        String name = buildForeignKeyConstraintName(this.getName(), fkFieldName, platform.getMaxForeignKeyNameSize(), platform);
+        String name = FrameworkHelper.buildConstraintName(this.getName(), fkFieldName, "FK_",
+                platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxForeignKeyNameSize());
 
         fkConstraint.setName(name);
         return fkConstraint;
-    }
-
-    /**
-     * Return foreign key constraint name built from the table and field name with the specified maximum length. To
-     * make the name short enough we
-     * 1. Drop the "FK_" prefix.
-     * 2. Drop the underscore characters if any.
-     * 3. Drop the vowels from the table and field name.
-     * 4. Truncate the table name to zero length if necessary.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected String buildForeignKeyConstraintName(String tableName, String fieldName, int maximumNameLength, DDLPlatform platform) {
-        String startDelimiter = "";
-        String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || fieldName.startsWith(platform.getStartDelimiter()));
-        // we will only delimit our generated constraints if either of the names that composes them is already delimited
-        if (useDelimiters){
-            startDelimiter = platform.getStartDelimiter();
-            endDelimiter = platform.getEndDelimiter();
-        }
-        String adjustedTableName = tableName;
-        if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
-            //if table name has spaces and/or is quoted, remove this from the constraint name.
-            StringBuilder buff = new StringBuilder();
-            for(int i = 0; i < tableName.length(); i++) {
-                char c = tableName.charAt(i);
-                if(c != ' ' && c != '\"' && c != '`') {
-                    buff.append(c);
-                }
-            }
-            adjustedTableName = buff.toString();
-        }
-        StringBuilder buff = new StringBuilder();
-        for(int i = 0; i < fieldName.length(); i++) {
-            char c = fieldName.charAt(i);
-            if(c != ' ' && c != '\"' && c != '`') {
-                buff.append(c);
-            }
-        }
-        String adjustedFieldName = buff.toString();
-        String foreignKeyName = startDelimiter + "FK_" + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
-        if (foreignKeyName.length() > maximumNameLength) {
-            // First Remove the "FK_" prefix.
-            foreignKeyName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
-            if (foreignKeyName.length() > maximumNameLength) {
-                // Still too long: remove the underscore characters
-                foreignKeyName = startDelimiter + FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
-                if (foreignKeyName.length() > maximumNameLength) {
-                    // Still too long: remove vowels from the table name and field name.
-                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
-                    String onlyAlphaNumericFieldName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
-                    foreignKeyName = startDelimiter + FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
-                    if (foreignKeyName.length() > maximumNameLength) {
-                        // Still too long: remove vowels from the table name and field name and truncate the table name.
-                        String shortenedFieldName = FrameworkHelper.removeVowels(onlyAlphaNumericFieldName);
-                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
-                        int delimiterLength = startDelimiter.length() + endDelimiter.length();
-                        if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
-                            foreignKeyName = startDelimiter + FrameworkHelper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
-                        } else {
-                            foreignKeyName = startDelimiter + FrameworkHelper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
-                        }
-                    }
-                }
-            }
-        }
-        return foreignKeyName;
     }
 
     protected UniqueKeyConstraint buildUniqueKeyConstraint(String name, List<String> fieldNames, int serialNumber, DDLPlatform platform) {
@@ -745,7 +683,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         // If the name was not provided, default one, otherwise use the name provided.
         if (name == null || name.isEmpty()) {
-            unqConstraint.setName(buildUniqueKeyConstraintName(getName(), serialNumber, platform.getMaxUniqueKeyNameSize()));
+            unqConstraint.setName(FrameworkHelper.buildConstraintName(getName(), String.valueOf(serialNumber), "UNQ_",
+                    platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxUniqueKeyNameSize()));
         } else {
             // Hack if off if it exceeds the max size.
             if (name.length() > platform.getMaxUniqueKeyNameSize()) {
@@ -756,113 +695,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         return unqConstraint;
-    }
-
-    /**
-     * Return unique key constraint name built from the table name and sequence
-     * number with the specified maximum length. To make the name short enough we
-     * 1. Drop the "UNQ_" prefix.
-     * 2. Drop the underscore characters if any.
-     * 3. Drop the vowels from the table name.
-     * 4. Truncate the table name to zero length if necessary.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected String buildUniqueKeyConstraintName(String tableName, int serialNumber, int maximumNameLength) {
-        String uniqueKeyName = "UNQ_" + tableName + "_" + serialNumber;
-        if (uniqueKeyName.length() > maximumNameLength) {
-            // First Remove the "UNQ_" prefix.
-            uniqueKeyName = tableName + serialNumber;
-            if (uniqueKeyName.length() > maximumNameLength) {
-                // Still too long: remove the underscore characters
-                uniqueKeyName = FrameworkHelper.removeAllButAlphaNumericToFit(tableName + serialNumber, maximumNameLength);
-                if (uniqueKeyName.length() > maximumNameLength) {
-                    // Still too long: remove vowels from the table name
-                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(tableName, 0);
-                    String serialName = String.valueOf(serialNumber);
-                    uniqueKeyName = FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, serialName, maximumNameLength);
-                    if (uniqueKeyName.length() > maximumNameLength) {
-                        // Still too long: remove vowels from the table name and truncate the table name.
-                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
-                        uniqueKeyName = FrameworkHelper.truncate(shortenedTableName, maximumNameLength - serialName.length()) + serialName;
-                    }
-                }
-            }
-        }
-        return uniqueKeyName;
-    }
-
-    /**
-     * Return key constraint name built from the table and key name with the
-     * specified maximum length and index prefix. If indexPrefix is null,
-     * "IX_" is used for prefix. To make the name short enough we:
-     *
-     * <pre>
-     * 1. Drop the prefix.
-     * 2. Drop the underscore characters if any.
-     * 3. Drop the vowels from the table and key name.
-     * 4. Truncate the table name to zero length if necessary.
-     * </pre>
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected String buildIndexName(String tableName, String key, String indexPrefix, int maximumNameLength, DDLPlatform platform) {
-        String startDelimiter = "";
-        String endDelimiter = "";
-        boolean useDelimiters = !platform.getStartDelimiter().isEmpty() && (tableName.startsWith(platform.getStartDelimiter()) || key.startsWith(platform.getStartDelimiter()));
-        // we will only delimit our generated indices if either of the names that composes them is already delimited
-        if (useDelimiters){
-            startDelimiter = platform.getStartDelimiter();
-            endDelimiter = platform.getEndDelimiter();
-        }
-        String adjustedTableName = tableName;
-        if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
-            //if table name has spaces and/or is quoted, remove this from the constraint name.
-            StringBuilder buff = new StringBuilder();
-            for(int i = 0; i < tableName.length(); i++) {
-                char c = tableName.charAt(i);
-                if(c != ' ' && c != '\"' && c != '`') {
-                    buff.append(c);
-                }
-            }
-            adjustedTableName = buff.toString();
-        }
-        StringBuilder buff = new StringBuilder();
-        for(int i = 0; i < key.length(); i++) {
-            char c = key.charAt(i);
-            if(c != ' ' && c != '\"' && c != '`') {
-                buff.append(c);
-            }
-        }
-        String adjustedFieldName = buff.toString();
-        if (indexPrefix == null) {
-            indexPrefix = "IX_";
-        }
-        String indexName = startDelimiter + indexPrefix + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
-        if (indexName.length() > maximumNameLength) {
-            // First Remove the prefix.
-            indexName = startDelimiter + adjustedTableName + "_" + adjustedFieldName + endDelimiter;
-            if (indexName.length() > maximumNameLength) {
-                // Still too long: remove the underscore characters
-                indexName = startDelimiter + FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelimiter;
-                if (indexName.length() > maximumNameLength) {
-                    // Still too long: remove vowels from the table name and field name.
-                    String onlyAlphaNumericTableName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedTableName, 0);
-                    String onlyAlphaNumericFieldName = FrameworkHelper.removeAllButAlphaNumericToFit(adjustedFieldName, 0);
-                    indexName = startDelimiter + FrameworkHelper.shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelimiter;
-                    if (indexName.length() > maximumNameLength) {
-                        // Still too long: remove vowels from the table name and field name and truncate the table name.
-                        String shortenedFieldName = FrameworkHelper.removeVowels(onlyAlphaNumericFieldName);
-                        String shortenedTableName = FrameworkHelper.removeVowels(onlyAlphaNumericTableName);
-                        int delimiterLength = startDelimiter.length() + endDelimiter.length();
-                        if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
-                            indexName = startDelimiter + FrameworkHelper.truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelimiter;
-                        } else {
-                            indexName = startDelimiter + FrameworkHelper.truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelimiter;
-                        }
-                    }
-                }
-            }
-        }
-        return indexName;
     }
 
     /**
@@ -971,7 +803,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         for (UniqueKeyConstraint uniqueKey : getUniqueKeys()) {
-            session.priviledgedExecuteNonSelectingCall(new org.eclipse.persistence.queries.SQLCall(buildUniqueConstraintCreationWriter(session, uniqueKey, new StringWriter()).toString()));
+            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildUniqueConstraintCreationWriter(session, uniqueKey, new StringWriter()).toString()));
         }
     }
 

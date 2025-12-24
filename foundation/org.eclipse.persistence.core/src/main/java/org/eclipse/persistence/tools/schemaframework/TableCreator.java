@@ -20,6 +20,7 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.JDBCType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,12 +33,12 @@ import java.util.function.Consumer;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
@@ -142,7 +143,7 @@ public class TableCreator {
      * This creates the tables on the database.
      * If the table already exists this will fail.
      */
-    public void createTables(org.eclipse.persistence.sessions.DatabaseSession session) {
+    public void createTables(DatabaseSession session) {
         //CR2612669
         createTables(session, new SchemaManager(session));
     }
@@ -377,7 +378,7 @@ public class TableCreator {
                     session.getPlatform().writeTruncateTable(stmtWriter, ((AbstractSession) session), table);
                     ((AbstractSession) session)
                             .priviledgedExecuteNonSelectingCall(
-                                    new org.eclipse.persistence.queries.SQLCall(stmtWriter.toString()));
+                                    new SQLCall(stmtWriter.toString()));
                 } catch (DatabaseException ex) {
                     if (!shouldIgnoreDatabaseException()) {
                         throw ex;
@@ -832,42 +833,39 @@ public class TableCreator {
         private void checkExisting(FieldDefinition fieldDefinition, DatabaseField databaseField, AbstractRecord dbRecord) {
             // Existing columns validation only in full mode
             if (full) {
-                FieldTypeDefinition expectedDbType = DatabaseObjectDefinition.getFieldTypeDefinition(session.getPlatform(),
+                FieldDefinition.DatabaseType expectedDbType = session.getPlatform().getDatabaseType(
                         fieldDefinition.getType(),
                         fieldDefinition.getTypeName());
-                String dbTypeName = (String) dbRecord.get("TYPE_NAME");
-                if (dbTypeName != null) {
-                    // Type mismatch. DB typeName may be an alias, e.g. INT/INTEGER!
-                    if (!expectedDbType.isTypeName(dbTypeName, false)) {
-                        existingColumnsDiff.add(
-                                new TableValidationException.DifferentColumns.TypeDifference(databaseField.getName(),
-                                        expectedDbType.getName(),
-                                        dbTypeName));
-                    }
-                    // Nullable mismatch
-                    Nullable dbNullable = dbColumnNullable(dbRecord);
-                    // Check only for known definition
-                    if (dbNullable != Nullable.UNKNOWN) {
-                        // Based on identical check in FieldDefinition#appendDBString(Writer, AbstractSession, TableDefinition, String)
-                        boolean modelIsNullable = fieldDefinition.shouldPrintFieldNullClause(expectedDbType);
-                        switch (dbNullable) {
-                            case NO:
-                                if (modelIsNullable) {
-                                    existingColumnsDiff.add(
-                                            new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                    true,
-                                                    false));
-                                }
-                                break;
-                            case YES:
-                                if (!modelIsNullable) {
-                                    existingColumnsDiff.add(
-                                            new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
-                                                    false,
-                                                    true));
-                                }
-                                break;
-                        }
+                int dbTypeName = (int) dbRecord.get("DATA_TYPE");
+                if (dbTypeName != JDBCType.valueOf(expectedDbType.name()).getVendorTypeNumber()) {
+                    existingColumnsDiff.add(
+                            new TableValidationException.DifferentColumns.TypeDifference(databaseField.getName(),
+                                    expectedDbType.name(),
+                                    String.valueOf(dbTypeName)));
+                }
+                // Nullable mismatch
+                Nullable dbNullable = dbColumnNullable(dbRecord);
+                // Check only for known definition
+                if (dbNullable != Nullable.UNKNOWN) {
+                    // Based on identical check in FieldDefinition#appendDBString(Writer, AbstractSession, TableDefinition, String)
+                    boolean modelIsNullable = fieldDefinition.shouldAllowNull() && expectedDbType.allowNull();
+                    switch (dbNullable) {
+                        case NO:
+                            if (modelIsNullable) {
+                                existingColumnsDiff.add(
+                                        new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
+                                                true,
+                                                false));
+                            }
+                            break;
+                        case YES:
+                            if (!modelIsNullable) {
+                                existingColumnsDiff.add(
+                                        new TableValidationException.DifferentColumns.NullableDifference(databaseField.getName(),
+                                                false,
+                                                true));
+                            }
+                            break;
                     }
                 }
             }

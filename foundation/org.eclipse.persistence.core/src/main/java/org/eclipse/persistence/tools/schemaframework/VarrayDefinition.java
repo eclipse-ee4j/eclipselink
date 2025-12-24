@@ -46,7 +46,7 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
         try {
-            final FieldDefinition.DatabaseType fieldType = getFieldTypeDefinition(session, type, typeName).toDatabaseType();
+            final FieldDefinition.DatabaseType fieldType = session.getPlatform().getDatabaseType(type, typeName);
             writer.write(fieldType.name());
             if ((fieldType.allowSize()) && ((typeSize != 0) || (fieldType.requireSize()))) {
                 writer.write("(");

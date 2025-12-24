@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -42,15 +41,15 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(Writer writer, AbstractSession session) throws ValidationException {
         try {
-            FieldTypeDefinition fieldType;
+            FieldDefinition.DatabaseType fieldType;
             if (getType() == null) {
                 throw ValidationException.oracleObjectTypeIsNotDefined(getTypeName());
             } else if (getTypeName() == "") {
                 throw ValidationException.oracleObjectTypeNameIsNotDefined(getType());
             } else {
-                fieldType = new FieldTypeDefinition(getTypeName());
+                fieldType = new FieldDefinition.DatabaseType(getTypeName());
             }
-            writer.write(fieldType.getName());
+            writer.write(fieldType.name());
             if (!isNullAllowed) {
                 writer.write(" NOT NULL");
             }

@@ -44,7 +44,7 @@ public class NestedTableDefinition extends DatabaseObjectDefinition {
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
-        final FieldDefinition.DatabaseType fieldType = getFieldTypeDefinition(session, type, typeName).toDatabaseType();
+        final FieldDefinition.DatabaseType fieldType = session.getPlatform().getDatabaseType(type, typeName);
         try {
             writer.write(fieldType.name());
             if ((fieldType.allowSize()) && ((typeSize != 0) || (fieldType.requireSize()))) {

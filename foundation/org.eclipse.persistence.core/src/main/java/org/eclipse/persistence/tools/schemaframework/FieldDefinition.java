@@ -22,11 +22,10 @@ import java.io.Writer;
 import java.util.Objects;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 
 /**
  * <p>
@@ -126,19 +125,6 @@ public class FieldDefinition implements Serializable, Cloneable {
 
     /**
      * INTERNAL:
-     * Check whether field definition should allow {@code NULL} values.
-     *
-     * @param fieldType database platform specific field definition matching this field,
-     *                  e.g. {@code DatabaseObjectDefinition.getFieldTypeDefinition(session.getPlatform(), type, typeName)}
-     * @return Value of {@code true} when field definition should allow {@code NULL} values
-     *         or {@code false} otherwise
-     */
-    public boolean shouldPrintFieldNullClause(FieldTypeDefinition fieldType) {
-        return shouldAllowNull && fieldType.shouldAllowNull();
-    }
-
-    /**
-     * INTERNAL:
      * Append the database field definition string to the table creation/modification statement.
      *
      * @param writer  Target writer where to write field definition string.
@@ -167,7 +153,7 @@ public class FieldDefinition implements Serializable, Cloneable {
                 final DatabasePlatform platform = session.getPlatform();
                 // compose type definition - type name, size, unique, identity, constraints...
                 final DatabaseType fieldType
-                        = DatabaseObjectDefinition.getFieldTypeDefinition(platform, type, typeName).toDatabaseType();
+                        = platform.getDatabaseType(type, typeName);
 
                 String qualifiedName = table.getFullName() + '.' + name;
                 boolean shouldPrintFieldIdentityClause = isIdentity && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
@@ -193,7 +179,8 @@ public class FieldDefinition implements Serializable, Cloneable {
                     } else {
                         // Need to move the unique column to be a constraint.
                         setUnique(false);
-                        String constraintName = table.buildUniqueKeyConstraintName(table.getName(), table.getFields().indexOf(this), platform.getMaxUniqueKeyNameSize());
+                        String constraintName = FrameworkHelper.buildConstraintName(table.getName(), String.valueOf(table.getFields().indexOf(this)), "UNQ_",
+                                platform.getStartDelimiter(), platform.getEndDelimiter(), platform.getMaxUniqueKeyNameSize());
                         table.addUniqueKeyConstraint(constraintName, name);
                     }
                 }
@@ -226,7 +213,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
         final DatabaseType fieldType
-                = DatabaseObjectDefinition.getFieldTypeDefinition(session, type, typeName).toDatabaseType();
+                = session.getPlatform().getDatabaseType(type, typeName);
         try {
             writer.write(name);
             writer.write(" ");

@@ -23,6 +23,8 @@
 //       - New Jakarta Persistence 3.2 Features
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.util.HashMap;
@@ -37,7 +39,6 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -111,7 +112,7 @@ public class SchemaManager {
         try {
             schemaWriter.write(stringToWrite);
             schemaWriter.flush();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
     }
@@ -143,7 +144,7 @@ public class SchemaManager {
         try {
             schemaWriter.flush();
             schemaWriter.close();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
     }
@@ -651,25 +652,20 @@ public class SchemaManager {
      * or to a file.
      */
     public void generateStoredProceduresAndAmendmentClass(String path, String fullyQualifiedClassName) throws EclipseLinkException {
-        java.io.FileWriter fileWriter = null;
-        try {
-            StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
+        StoredProcedureGenerator storedProcedureGenerator = new StoredProcedureGenerator(this);
 
-            if (!(path.endsWith("\\") || path.endsWith("/"))) {
-                path = path + "\\";
-            }
+        if (!(path.endsWith("\\") || path.endsWith("/"))) {
+            path = path + "\\";
+        }
 
-            String className = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf('.') + 1);
-            String packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf('.'));
-            String fileName = path + className + ".java";
-            fileWriter = new java.io.FileWriter(fileName);
+        String className = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf('.') + 1);
+        String packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf('.'));
+        String fileName = path + className + ".java";
+        try (FileWriter fileWriter = new FileWriter(fileName);){
             storedProcedureGenerator.generateStoredProcedures();
             storedProcedureGenerator.generateAmendmentClass(fileWriter, packageName, className);
-            fileWriter.close();
-        } catch (java.io.IOException ioException) {
+        } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
-        } finally {
-            Helper.close(fileWriter);
         }
     }
 
@@ -956,12 +952,12 @@ public class SchemaManager {
 
     protected Writer getWriter(String fileName) {
         try {
-            return new java.io.FileWriter(fileName);
-        } catch (java.io.IOException ioException) {
+            return new FileWriter(fileName);
+        } catch (IOException ioException) {
             // Try a url next, otherwise throw the existing error.
             try {
                 URL url = new URL(fileName);
-                return new java.io.FileWriter(url.getFile());
+                return new FileWriter(url.getFile());
             } catch (Exception e) {
                 // MalformedURLException and IOException
                 throw ValidationException.fileError(ioException);

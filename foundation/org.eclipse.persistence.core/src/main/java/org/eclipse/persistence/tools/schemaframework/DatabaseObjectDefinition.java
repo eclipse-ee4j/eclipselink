@@ -23,13 +23,10 @@ package org.eclipse.persistence.tools.schemaframework;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.SQLCall;
 
@@ -44,76 +41,9 @@ import org.eclipse.persistence.queries.SQLCall;
  * </ul>
  */
 public abstract class DatabaseObjectDefinition implements Cloneable, Serializable {
-    /**
-     * @deprecated Use {@linkplain #getName()} and {@linkplain #setName(String)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public String name;
-    /**
-     * @deprecated Use {@linkplain #getQualifier()} and {@linkplain #setQualifier(String)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public String qualifier;
 
-    /**
-     * INTERNAL:
-     * Retrieve a database platform specific definition from session for
-     * existing type instance or build a new one when type is {@code null}.
-     * @param session Session to search for already existing instances.
-     * @param type    Field type class.
-     * @param name    Filed type name.
-     * @return Database platform specific definition instance.
-     * @throws ValidationException when provided type is not valid database type.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final AbstractSession session, final Class<?> type, final String name) {
-        final FieldTypeDefinition fieldType = type != null
-                ? session.getPlatform().getFieldTypeDefinition(type)
-                : new FieldTypeDefinition(name);
-        if (fieldType == null) {
-            throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
-        }
-        return fieldType;
-    }
-
-    /**
-     * INTERNAL:
-     * Retrieve database platform specific field definition from database
-     * specific platform handler for existing type or build a new one when type
-     * is {@code null} and type for type name could not be found.
-     * @param platform Specific database platform handler.
-     * @param type     Field type (will be processed first when available).
-     * @param name     Field type name (will be processed as backup option when
-     *                 type class is not available).
-     * @throws ValidationException when provided type is not valid database type.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected static final FieldTypeDefinition getFieldTypeDefinition(
-            final DatabasePlatform platform, final Class<?> type, final String name) {
-        FieldTypeDefinition fieldType;
-        if (type != null) { //translate Java 'type'
-            fieldType = platform.getFieldTypeDefinition(type);
-            if (fieldType == null) {
-                throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
-            }
-        } else if (name != null) { //translate generic type name
-            final Map<String, Class<?>> fieldTypes = platform.getClassTypes();
-            final Class<?> typeFromName = fieldTypes.get(name);
-            if (typeFromName == null) { // if unknown type name, use as it is
-                fieldType = new FieldTypeDefinition(name);
-            } else {
-                fieldType = platform.getFieldTypeDefinition(typeFromName);
-                if (fieldType == null) {
-                    throw ValidationException.javaTypeIsNotAValidDatabaseType(typeFromName);
-                }
-            }
-        } else {
-            // Both type and typeName is null
-            throw ValidationException.javaTypeIsNotAValidDatabaseType(null);
-        }
-        return fieldType;
-    }
+    private String name;
+    private String qualifier;
 
     protected DatabaseObjectDefinition() {
         this("", "");

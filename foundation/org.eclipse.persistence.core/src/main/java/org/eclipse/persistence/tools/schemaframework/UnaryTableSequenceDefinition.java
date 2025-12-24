@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.UnaryTableSequence;
@@ -110,7 +111,7 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
     @Deprecated(forRemoval = true, since = "4.0.9")
     @SuppressWarnings({"removal"})
     public boolean checkIfExist(AbstractSession session) throws DatabaseException {
-        List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM " + getName()));
+        List<?> results = session.priviledgedExecuteSelectingCall(new SQLCall("SELECT * FROM " + getName()));
         return !results.isEmpty();
     }
 
@@ -136,13 +137,5 @@ public class UnaryTableSequenceDefinition extends TableSequenceDefinition {
         } else {
             return (UnaryTableSequence)((DefaultSequence)sequence).getDefaultSequence();
         }
-    }
-
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public boolean isTableSequenceDefinition() {
-        return true;
     }
 }
