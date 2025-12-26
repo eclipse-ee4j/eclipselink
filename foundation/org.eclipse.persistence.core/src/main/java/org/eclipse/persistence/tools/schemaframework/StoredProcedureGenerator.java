@@ -46,6 +46,7 @@ import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Project;
 
 /**
  * <b>Purpose</b>: To generate StoredProcedures from EclipseLink Projects <p>
@@ -480,7 +481,7 @@ public class StoredProcedureGenerator {
      * INTERNAL: Generates the select and update stored procedures for this project.
      * no procedures are generated for native sequencing.  Note: reads are not supported in Oracle.
      */
-    protected void generateSequenceStoredProcedures(org.eclipse.persistence.sessions.Project project) {
+    protected void generateSequenceStoredProcedures(Project project) {
         DatabaseLogin login = (DatabaseLogin)project.getDatasourceLogin();
         if (login.shouldUseNativeSequencing()) {
             // There is nothing required for native SQL.
@@ -706,9 +707,9 @@ public class StoredProcedureGenerator {
      * INTERNAL:
      * Verify that this project and descriptors do not have optimistic locking.
      */
-    protected void verify() throws org.eclipse.persistence.exceptions.ValidationException {
+    protected void verify() throws ValidationException {
         if (getSession().getProject().usesOptimisticLocking()) {
-            throw org.eclipse.persistence.exceptions.ValidationException.optimisticLockingNotSupportedWithStoredProcedureGeneration();
+            throw ValidationException.optimisticLockingNotSupportedWithStoredProcedureGeneration();
         }
     }
 

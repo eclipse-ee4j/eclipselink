@@ -346,68 +346,6 @@ public class FieldTypeDefinition implements Serializable {
     }
 
     /**
-     * Check whether provided type name matches any known type alias.
-     * Check is case-insensitive. Provided type name shall not be null.
-     *
-     * @param typeName type name to check, not {@code null}
-     * @param checkSize whether to include {@code nameAlias} size definition in the check
-     * @return Value of {@code true} when provided name matches type name
-     *         or any of its name aliases or {@code false} otherwise.
-     */
-    public boolean isTypeName(String typeName, boolean checkSize) {
-        Objects.requireNonNull(typeName, "Checked type name is null.");
-        // Remove size definition from DB type name, e.g. VARCHAR(64) -> VARCHAR
-        if (!checkSize) {
-            typeName = removeSizeFromTypeName(typeName);
-            // Try exact match against type name and aliases
-            boolean match = typeName.equalsIgnoreCase(name) || aliases.contains(typeName.toUpperCase());
-            if (!match) {
-                // PERF: Following checks require full iteration over all type names defined for current field type
-                // Try match against model type name with size definition removed
-                match = checkTypeNameWithSizeRemoved(typeName, name, match);
-                // Try match against model type name aliases with size definition removed
-                if (!match) {
-                    for (Iterator<String> i = aliases.iterator(); !match && i.hasNext(); ) {
-                        String alias = i.next();
-                        match = checkTypeNameWithSizeRemoved(typeName, alias, match);
-                    }
-                }
-            }
-            return match;
-        } else {
-            return typeName.equalsIgnoreCase(name) || aliases.contains(typeName.toUpperCase());
-        }
-    }
-
-    // Helper for isTypeName: remove size definition from DB type name, e.g. VARCHAR(64) -> VARCHAR
-    private static String removeSizeFromTypeName(String typeName) {
-        int sizeBeg = typeName.indexOf('(');
-        if (sizeBeg > 0) {
-            typeName = typeName.substring(0, sizeBeg);
-        }
-        return typeName;
-    }
-
-    // Helper for isTypeName: match against removed size definition from provided type name, e.g. VARCHAR(64) -> VARCHAR
-    /**
-     * Match against removed size definition from provided type name, e.g. VARCHAR(64) -> VARCHAR.
-     *
-     * @param dbTypeName database type name, shall have size definition already removed
-     * @param typeName model type name, may contain size definition
-     * @param match current matching result, value of {@code false} means check should continue with this step
-     * @return whether database type name matches model type name with size definition removed
-     */
-    private static boolean checkTypeNameWithSizeRemoved(String dbTypeName, String typeName, boolean match) {
-        if (!match) {
-            int sizeBeg = typeName.indexOf('(');
-            if (sizeBeg > 0) {
-                match = dbTypeName.equalsIgnoreCase(typeName.substring(0, sizeBeg));
-            }
-        }
-        return match;
-    }
-
-    /**
     * Set this type to not allow a size specification.
     */
     public void setSizeDisallowed() {

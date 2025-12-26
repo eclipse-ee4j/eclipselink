@@ -16,6 +16,74 @@ final class FrameworkHelper {
     private FrameworkHelper() {}
 
     /**
+     * Return constraint name built from the table and field name with the specified maximum length. To
+     * make the name short enough we
+     * 1. Drop the prefix, such as "FK_", "IX_" or "UNQ_".
+     * 2. Drop the underscore characters if any.
+     * 3. Drop the vowels from the table and field name.
+     * 4. Truncate the table name to zero length if necessary.
+     */
+    static String buildConstraintName(String tableName, String fieldName, String namePrefix,
+                                      String startDelimiter, String endDelimiter, int maximumNameLength) {
+        String startDelim = "";
+        String endDelim = "";
+        boolean useDelimiters = !startDelimiter.isEmpty() && (tableName.startsWith(startDelimiter) || fieldName.startsWith(startDelimiter));
+        // we will only delimit our generated constraint name if either of the names that composes them is already delimited
+        if (useDelimiters){
+            startDelim = startDelimiter;
+            endDelim = endDelimiter;
+        }
+        String adjustedTableName = tableName;
+        if(adjustedTableName.indexOf(' ') != -1 || adjustedTableName.indexOf('\"') != -1 || adjustedTableName.indexOf('`') != -1) {
+            //if table name has spaces and/or is quoted, remove this from the constraint name.
+            StringBuilder buff = new StringBuilder();
+            for(int i = 0; i < tableName.length(); i++) {
+                char c = tableName.charAt(i);
+                if(c != ' ' && c != '\"' && c != '`') {
+                    buff.append(c);
+                }
+            }
+            adjustedTableName = buff.toString();
+        }
+        StringBuilder buff = new StringBuilder();
+        for(int i = 0; i < fieldName.length(); i++) {
+            char c = fieldName.charAt(i);
+            if(c != ' ' && c != '\"' && c != '`') {
+                buff.append(c);
+            }
+        }
+        String adjustedFieldName = buff.toString();
+        String prefix = namePrefix == null ? "" : namePrefix;
+        String constraintName = startDelim + prefix + adjustedTableName + "_" + adjustedFieldName + endDelim;
+        if (constraintName.length() > maximumNameLength) {
+            // First Remove the prefix.
+            constraintName = startDelim + adjustedTableName + "_" + adjustedFieldName + endDelim;
+            if (constraintName.length() > maximumNameLength) {
+                // Still too long: remove the underscore characters
+                constraintName = startDelim + removeAllButAlphaNumericToFit(adjustedTableName + adjustedFieldName, maximumNameLength) + endDelim;
+                if (constraintName.length() > maximumNameLength) {
+                    // Still too long: remove vowels from the table name and field name.
+                    String onlyAlphaNumericTableName = removeAllButAlphaNumericToFit(adjustedTableName, 0);
+                    String onlyAlphaNumericFieldName = removeAllButAlphaNumericToFit(adjustedFieldName, 0);
+                    constraintName = startDelim + shortenStringsByRemovingVowelsToFit(onlyAlphaNumericTableName, onlyAlphaNumericFieldName, maximumNameLength) + endDelim;
+                    if (constraintName.length() > maximumNameLength) {
+                        // Still too long: remove vowels from the table name and field name and truncate the table name.
+                        String shortenedFieldName = removeVowels(onlyAlphaNumericFieldName);
+                        String shortenedTableName = removeVowels(onlyAlphaNumericTableName);
+                        int delimiterLength = startDelim.length() + endDelim.length();
+                        if (shortenedFieldName.length() + delimiterLength >= maximumNameLength) {
+                            constraintName = startDelim + truncate(shortenedFieldName, maximumNameLength - delimiterLength) + endDelim;
+                        } else {
+                            constraintName = startDelim + truncate(shortenedTableName, maximumNameLength - shortenedFieldName.length() - delimiterLength) + shortenedFieldName + endDelim;
+                        }
+                    }
+                }
+            }
+        }
+        return constraintName;
+    }
+
+    /**
      * Returns true if the character given is a vowel. I.e. one of a,e,i,o,u,A,E,I,O,U.
      */
     static boolean isVowel(char c) {

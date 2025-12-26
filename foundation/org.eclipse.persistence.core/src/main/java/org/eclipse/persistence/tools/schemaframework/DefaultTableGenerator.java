@@ -36,8 +36,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.MethodBasedFieldTransformation;
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
@@ -64,6 +62,7 @@ import org.eclipse.persistence.mappings.TransformationMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -72,6 +71,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -144,9 +144,9 @@ public class DefaultTableGenerator {
      */
     public DefaultTableGenerator(Project project) {
         this.project = project;
-        if (project.getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform){
-            this.databasePlatform = (DatabasePlatform)project.getDatasourceLogin().getDatasourcePlatform();
-            this.generateFKConstraints = this.databasePlatform.supportsForeignKeyConstraints();
+        if (project.getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform dbPlatform){
+            this.databasePlatform = dbPlatform;
+            this.generateFKConstraints = dbPlatform.supportsForeignKeyConstraints();
         }
         this.tableMap = new LinkedHashMap<>();
         this.fieldMap = new LinkedHashMap<>();
@@ -218,7 +218,7 @@ public class DefaultTableGenerator {
 
         try {
             //table existence check.
-            java.sql.Connection conn = null;
+            Connection conn = null;
             if (session.isServerSession()) {
                 //acquire a connection from the pool
                 conn = ((ServerSession)session).getDefaultConnectionPool().acquireConnection().getConnection();
@@ -817,7 +817,7 @@ public class DefaultTableGenerator {
                 fieldDef.setTypeDefinition(dbField.getColumnDefinition());
             } else {
                 Class<?> fieldType = dbField.getType();
-                FieldTypeDefinition fieldTypeDef = (fieldType == null) ? null : databasePlatform.getFieldTypeDefinition(fieldType);
+                FieldDefinition.DatabaseType fieldTypeDef = (fieldType == null) ? null : databasePlatform.getDatabaseType(fieldType);
 
                 // Check if the user field is a String and only then allow the length specified
                 // in the @Column annotation to be set on the field.
@@ -830,7 +830,7 @@ public class DefaultTableGenerator {
                         fieldDef.setSize(dbField.getPrecision());
                         fieldDef.setSubSize(dbField.getScale());
                     // @Column(secondPrecision = <precision>), default value is -1 (not set)
-                    // Support of this feature must be explicitly turned on in specific DatabasePlatform
+                    // Support of this feature must be explicitly turned on in specific DDLPlatform
                     } else if (dbField.getSecondPrecision() >= 0 && databasePlatform.supportsFractionalTime()) {
                         fieldDef.setSize(dbField.getSecondPrecision());
                     }

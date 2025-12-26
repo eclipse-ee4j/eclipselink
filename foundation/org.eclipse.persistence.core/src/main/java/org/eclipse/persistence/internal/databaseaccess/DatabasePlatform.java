@@ -3380,18 +3380,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         throw new UnsupportedOperationException("Connection user name is not supported.");
     }
 
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports setting fractional seconds
-     * precision in a SQL time or timestamp data type.
-     *
-     * @return value of {@code true} when current database platform supports
-     *         fractional seconds precision or {@code false} otherwise
-     */
-    public boolean supportsFractionalTime() {
-        return false;
-    }
-
     // Value of shouldCheckResultTableExistsQuery must be false.
     /**
      * INTERNAL:
@@ -3471,16 +3459,12 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     @Override
     public FieldDefinition.DatabaseType getDatabaseType(Class<?> type) {
         FieldTypeDefinition fieldType = getFieldTypeDefinition(type);
-        if (fieldType == null) {
-            throw ValidationException.javaTypeIsNotAValidDatabaseType(type);
-        }
-        return fieldType.toDatabaseType();
+        return fieldType == null ? null : fieldType.toDatabaseType();
     }
 
     @Override
     public FieldDefinition.DatabaseType getDatabaseType(String typeName) {
-        final Map<String, Class<?>> fieldTypes = getClassTypes();
-        final Class<?> typeFromName = fieldTypes.get(typeName);
+        final Class<?> typeFromName = getClassTypes().get(typeName);
         if (typeFromName == null) { // if unknown type name, use as it is
             return new FieldDefinition.DatabaseType(typeName);
         }

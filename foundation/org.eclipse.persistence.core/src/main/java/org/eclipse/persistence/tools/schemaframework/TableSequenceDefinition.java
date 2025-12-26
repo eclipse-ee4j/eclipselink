@@ -31,6 +31,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sequencing.TableSequence;
@@ -138,7 +139,7 @@ public class TableSequenceDefinition extends SequenceDefinition {
         buffer.append(" = '");
         buffer.append(getName());
         buffer.append("'");
-        List<?> results = session.priviledgedExecuteSelectingCall(new org.eclipse.persistence.queries.SQLCall(buffer.toString()));
+        List<?> results = session.priviledgedExecuteSelectingCall(new SQLCall(buffer.toString()));
         return !results.isEmpty();
     }
 

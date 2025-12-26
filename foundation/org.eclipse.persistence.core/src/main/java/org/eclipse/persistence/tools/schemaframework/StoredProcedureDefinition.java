@@ -315,7 +315,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             final AbstractSession session) throws IOException {
         final DDLPlatform platform = session.getPlatform();
         final FieldDefinition.DatabaseType fieldType
-                = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
+                = session.getPlatform().getDatabaseType(argument.type, argument.typeName);
 
         writer.write(platform.getProcedureArgumentString());
 
@@ -361,7 +361,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
         try {
             final DDLPlatform platform = session.getPlatform();
             final FieldDefinition.DatabaseType fieldType
-                    = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
+                    = session.getPlatform().getDatabaseType(argument.type, argument.typeName);
 
             writer.write(platform.getProcedureArgumentString());
 
@@ -416,7 +416,7 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
         try {
             final DDLPlatform platform = session.getPlatform();
             final FieldDefinition.DatabaseType fieldType
-                    = getFieldTypeDefinition(session, argument.type, argument.typeName).toDatabaseType();
+                    = session.getPlatform().getDatabaseType(argument.type, argument.typeName);
 
             writer.write(platform.getProcedureArgumentString());
 
