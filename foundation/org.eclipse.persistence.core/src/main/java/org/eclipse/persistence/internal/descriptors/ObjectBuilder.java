@@ -765,7 +765,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             Object value;
         }
         Map<String, TypeValue> typeValueMap = new LinkedHashMap<>();
-        ReadObjectQuery query = new ReadObjectQuery();
+        // Set class at construction time for record classes
+        ReadObjectQuery query = new ReadObjectQuery(clazz);
         query.setSession(session);
         for (RecordComponent component : clazz.getRecordComponents()) {
             typeValueMap.put(component.getName(), new TypeValue(component.getType()));
