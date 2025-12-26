@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2005, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
@@ -174,6 +175,18 @@ public class DerbyPlatform extends DB2Platform {
         //This class inherits from DB2. But it is not DB2
         return false;
     }
+    
+    /**
+     * Used to determine if the platform should perform partial parameter binding or not
+     * Enabled for DB2 and DB2 for zOS to add support for partial binding
+     */
+    @Override
+    public boolean shouldBindPartialParameters() {
+        // This class inherits from DB2. But it is not DB2
+        return this.shouldBindPartialParameters;
+    }
+    
+    
 
     @Override
     public String getSelectForUpdateString() {
@@ -907,20 +920,6 @@ public class DerbyPlatform extends DB2Platform {
         operator.setArgumentIndices(argumentIndices);
         operator.setIsBindingSupported(false);
         return operator;
-    }
-
-    /**
-     * INTERNAL
-     * Derby has some issues with using parameters on certain functions and relations.
-     * This allows statements to disable binding, for queries, only in these cases.
-     * If users set casting on, then casting is used instead of dynamic SQL.
-     */
-    @Override
-    public boolean isDynamicSQLRequiredForFunctions() {
-        if(shouldForceBindAllParameters()) {
-            return false;
-        }
-        return !isCastRequired();
     }
 
     /**

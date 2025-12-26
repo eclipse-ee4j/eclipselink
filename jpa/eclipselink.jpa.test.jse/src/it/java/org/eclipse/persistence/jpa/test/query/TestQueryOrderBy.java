@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -175,7 +176,9 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1", _sql.remove(0));
+            } else if (platform.isDB2Z() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
@@ -187,13 +190,16 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            
+            if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
+            } else if (platform.isDB2Z() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
 
-            // equivalent CriteriaBuilder
+            // Equivalent CriteriaBuilder
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Integer> cquery = cb.createQuery(Integer.class);
             Root<EntityTbl01> root = cquery.from(EntityTbl01.class);
@@ -206,7 +212,10 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            
+            if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
+            } else if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
@@ -442,8 +451,11 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            
+            if (platform.isDB2Z() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql.remove(0));
             }
@@ -455,8 +467,11 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            
+            if (platform.isDB2Z() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
@@ -476,8 +491,11 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            
+            if (platform.isDB2Z() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql.remove(0));
+            } else if (platform.isDB2()) {
+                assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
@@ -504,7 +522,7 @@ public class TestQueryOrderBy {
 
         // DB2 and Derby does not support untyped parameter binding in ORDER BY clause
         // 'emf2' sets 'shouldBindLiterals=true', which makes literal values bind as untyped parameters
-        if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+        if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
             return;
         }
 
@@ -516,7 +534,7 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ?", _sql2.remove(0));
@@ -529,7 +547,7 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
@@ -550,7 +568,7 @@ public class TestQueryOrderBy {
             assertNotNull(dto01);
             assertEquals(3, dto01.size());
             assertEquals(1, _sql2.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = 'B') ORDER BY 1 ASC", _sql2.remove(0));
             } else {
                 assertEquals("SELECT ITEM_INTEGER1 FROM SIMPLE_TBL01 WHERE (ITEM_STRING2 = ?) ORDER BY ? ASC", _sql2.remove(0));
