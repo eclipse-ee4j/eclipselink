@@ -57,7 +57,6 @@ public class EnumTypeConverter extends ObjectTypeConverter {
         m_enumClass = enumClass;
         m_enumClassName = enumClass.getName();
         m_useOrdinalValues = useOrdinalValues;
-        initializeConversions(m_enumClass);
     }
 
     /**
