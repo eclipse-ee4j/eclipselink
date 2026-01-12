@@ -44,7 +44,6 @@ public class Oracle21Platform extends Oracle19Platform {
      * INTERNAL:
      * Allow for conversion from the Oracle type to the Java type. Used in cases when DB connection is needed like BLOB, CLOB.
      */
-    @Override
     public <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ? ,?, ?> session) throws ConversionException, DatabaseException {
         //Handle special case when empty String ("") is passed from the entity into CLOB type column
         if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && "".equals(sourceObject)) {
