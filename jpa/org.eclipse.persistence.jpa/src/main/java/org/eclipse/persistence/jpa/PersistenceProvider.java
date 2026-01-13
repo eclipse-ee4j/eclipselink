@@ -211,7 +211,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 rootURL = PrivilegedAccessHelper.callDoPrivileged(
                         () -> {
                             Class<?> declaringClass = frame.getDeclaringClass();
-                            return computeRootURL(configuration, declaringClass,
+                            return computeRootURL(configuration.name(), declaringClass,
                                     declaringClass.getProtectionDomain().getCodeSource().getLocation());
                         }
                 );
@@ -224,7 +224,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                             ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller_class_url",
                                                                new String[] {configuration.name(), callerClass.getName()}));
                 }
-                rootURL = computeRootURL(configuration, callerClass, rootURL);
+                rootURL = computeRootURL(configuration.name(), callerClass, rootURL);
             }
         } else {
             throw new PersistenceException(
@@ -593,14 +593,14 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
         return classloader;
     }
 
-    private static URL computeRootURL(PersistenceConfiguration configuration, Class<?> callerClass, URL rootURL) {
+    private static URL computeRootURL(String configurationName, Class<?> callerClass, URL rootURL) {
         String classSuffix = callerClass.getName().replaceAll("\\.", "/") + ".class";
         try {
             rootURL = PersistenceUnitProcessor.computePURootURL(rootURL, classSuffix);
         } catch (IOException | URISyntaxException ex) {
             throw new PersistenceException(
                     ExceptionLocalization.buildMessage("custom_pu_create_error",
-                            new String[] {configuration.name()}),
+                            new String[] { configurationName }),
                     ex);
         }
         return rootURL;
