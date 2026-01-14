@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -305,7 +306,7 @@ public class Oracle9Platform extends Oracle8Platform {
         addOperator(SpatialExpressionOperators.relate());
         addOperator(SpatialExpressionOperators.filter());
         addOperator(SpatialExpressionOperators.nearestNeighbor());
-        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "CURRENT_TIMESTAMP"));
+        addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalTime, "TIMESTAMP '1970-01-01 00:00:00' + (CURRENT_TIMESTAMP - TRUNC(CURRENT_TIMESTAMP))"));
         addOperator(ExpressionOperator.simpleFunctionNoParentheses(ExpressionOperator.LocalDateTime, "CURRENT_TIMESTAMP"));
     }
 
