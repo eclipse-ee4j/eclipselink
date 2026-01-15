@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -765,7 +765,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             Object value;
         }
         Map<String, TypeValue> typeValueMap = new LinkedHashMap<>();
-        ReadObjectQuery query = new ReadObjectQuery();
+        // Set class at construction time for record classes
+        ReadObjectQuery query = new ReadObjectQuery(clazz);
         query.setSession(session);
         for (RecordComponent component : clazz.getRecordComponents()) {
             typeValueMap.put(component.getName(), new TypeValue(component.getType()));
