@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2022, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +15,7 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -24,8 +26,6 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Hashtable;
-
-import static org.eclipse.persistence.internal.helper.StringHelper.EMPTY_STRING;
 
 public class Oracle21Platform extends Oracle19Platform {
     public Oracle21Platform() {
@@ -40,23 +40,25 @@ public class Oracle21Platform extends Oracle19Platform {
         return fieldTypes;
     }
 
-        /**
+    /**
      * INTERNAL:
      * Allow for conversion from the Oracle type to the Java type. Used in cases when DB connection is needed like BLOB, CLOB.
      */
-    @Override
-    public <T> T convertObject(Object sourceObject, Class<T> javaClass, AbstractSession session) throws ConversionException, DatabaseException {
+    public <T> T convertObject(Object sourceObject, Class<T> javaClass, CoreSession<?, ?, ? ,?, ?> session) throws ConversionException, DatabaseException {
         //Handle special case when empty String ("") is passed from the entity into CLOB type column
-        if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && EMPTY_STRING.equals(sourceObject)) {
-            Connection connection = session.getAccessor().getConnection();
-            Clob clob = null;
+        if (ClassConstants.CLOB.equals(javaClass) && sourceObject instanceof String && "".equals(sourceObject)) {
+            AbstractSession abstractSession = (AbstractSession) session;
             try {
-                clob = connection.createClob();
+                abstractSession.getAccessor().incrementCallCount(abstractSession);
+                Connection connection = abstractSession.getAccessor().getConnection();
+                Clob clob = connection.createClob();
                 clob.setString(1, (String)sourceObject);
+                return (T) clob;
             } catch (SQLException e) {
                 throw ConversionException.couldNotBeConvertedToClass(sourceObject, ClassConstants.CLOB, e);
+            } finally {
+                abstractSession.getAccessor().decrementCallCount();
             }
-            return (T) clob;
         }
         return super.convertObject(sourceObject, javaClass);
     }
