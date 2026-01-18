@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,8 +94,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
@@ -104,8 +107,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
@@ -116,8 +121,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
@@ -140,8 +147,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
@@ -157,8 +166,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
@@ -177,8 +188,10 @@ public class TestQuerySyntaxUpdateTests {
             query.executeUpdate();
             em.getTransaction().commit();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = 9 WHERE (STRVAL2 = LCASE('HELLO'))", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LCASE(?))", _sql.remove(0));
             } else {
                 Assert.assertEquals("UPDATE QUERYSYNTAXENTITY SET INTVAL1 = ? WHERE (STRVAL2 = LOWER(?))", _sql.remove(0));
             }
