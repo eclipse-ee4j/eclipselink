@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -441,7 +441,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         // Check for a valid session - should never occur though
         if(null != getDatabaseSession() && null != getDatabaseSession().getName()) {
             // remove any JMX reserved characters when the session name is file:/drive:/directory
-            return getDatabaseSession().getName().replaceAll("[=,:]", "_");
+            return getDatabaseSession().getName().replaceAll("[=,:?]", "_");
         } else {
             getAbstractSession().log(SessionLog.WARNING, SessionLog.SERVER, "session_key_for_mbean_name_is_null");
             return null;

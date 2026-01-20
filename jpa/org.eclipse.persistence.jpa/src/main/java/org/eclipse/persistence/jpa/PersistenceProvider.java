@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -209,7 +209,11 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
             // getProtectionDomain() may be restricted by SecurityManager
             try {
                 rootURL = PrivilegedAccessHelper.callDoPrivileged(
-                        () -> frame.getDeclaringClass().getProtectionDomain().getCodeSource().getLocation()
+                        () -> {
+                            Class<?> declaringClass = frame.getDeclaringClass();
+                            return computeRootURL(configuration.name(), declaringClass,
+                                    declaringClass.getProtectionDomain().getCodeSource().getLocation());
+                        }
                 );
             // fallback Root URL retrieval (unreliable and worse performance), remove when SecurityManager is no longer in Java
             } catch (SecurityException e) {
@@ -220,15 +224,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                             ExceptionLocalization.buildMessage("custom_pu_create_error_no_caller_class_url",
                                                                new String[] {configuration.name(), callerClass.getName()}));
                 }
-                String classSuffix = callerClass.getName().replaceAll("\\.", "/")+".class";
-                try {
-                    rootURL = PersistenceUnitProcessor.computePURootURL(rootURL, classSuffix);
-                } catch (IOException | URISyntaxException ex) {
-                    throw new PersistenceException(
-                            ExceptionLocalization.buildMessage("custom_pu_create_error",
-                                                               new String[] {configuration.name()}),
-                            ex);
-                }
+                rootURL = computeRootURL(configuration.name(), callerClass, rootURL);
             }
         } else {
             throw new PersistenceException(
@@ -595,6 +591,19 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
             classloader = Thread.currentThread().getContextClassLoader();
         }
         return classloader;
+    }
+
+    private static URL computeRootURL(String configurationName, Class<?> callerClass, URL rootURL) {
+        String classSuffix = callerClass.getName().replaceAll("\\.", "/") + ".class";
+        try {
+            rootURL = PersistenceUnitProcessor.computePURootURL(rootURL, classSuffix);
+        } catch (IOException | URISyntaxException ex) {
+            throw new PersistenceException(
+                    ExceptionLocalization.buildMessage("custom_pu_create_error",
+                            new String[] { configurationName }),
+                    ex);
+        }
+        return rootURL;
     }
 }
 
