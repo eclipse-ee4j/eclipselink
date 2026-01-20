@@ -247,6 +247,22 @@ public class ParameterExpression extends BaseExpression {
             }
 
             if (descriptor == null) {
+                // Handle @IdClass composite key objects
+                // When descriptor is null, the value might be an @IdClass object (not an entity)
+                // We need to extract the field value using reflection
+                if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
+                    // Try to extract the field value from the @IdClass object using reflection
+                    try {
+                        // Get the field value using the field name
+                        java.lang.reflect.Field field = value.getClass().getDeclaredField(this.field.getName());
+                        field.setAccessible(true);
+                        value = field.get(value);
+                        return value;
+                    } catch (Exception e) {
+                        // If reflection fails, fall through to validation
+                    }
+                }
+
                 // Bug 245268 validate parameter type against mapping
                 validateParameterValueAgainstMapping(value, true);
             } else {
