@@ -38,6 +38,7 @@ import org.eclipse.persistence.expressions.ExpressionMath;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.DateConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -87,6 +88,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -742,6 +744,35 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
         // Now create the comparison expression
         String comparaison = expression.getComparisonOperator();
 
+        // Handle ID() function with composite keys on left side
+        if (expression.getLeftExpression() instanceof IdExpression) {
+            IdExpression idExpression = (IdExpression) expression.getLeftExpression();
+            Collection<StateFieldPathExpression> stateFieldPaths = idExpression.getStateFieldPathExpressions();
+
+            // If composite key (multiple fields), create AND/OR expression for each field
+            if (stateFieldPaths.size() > 1) {
+                queryExpression = buildCompositeKeyComparison(
+                    stateFieldPaths, rightExpression, comparaison, visitor);
+                type[0] = Boolean.class;
+                return;
+            }
+        }
+
+        // Handle ID() function with composite keys on right side
+        if (expression.getRightExpression() instanceof IdExpression) {
+            IdExpression idExpression = (IdExpression) expression.getRightExpression();
+            Collection<StateFieldPathExpression> stateFieldPaths = idExpression.getStateFieldPathExpressions();
+
+            // If composite key (multiple fields), create AND/OR expression for each field
+            if (stateFieldPaths.size() > 1) {
+                queryExpression = buildCompositeKeyComparison(
+                    stateFieldPaths, leftExpression, comparaison, visitor);
+                type[0] = Boolean.class;
+                return;
+            }
+        }
+
+        // Standard comparison for non-composite keys
         // =
         if (comparaison == ComparisonExpression.EQUAL) {
             queryExpression = leftExpression.equal(rightExpression);
@@ -774,6 +805,85 @@ final class ExpressionBuilderVisitor extends JPQLFunctionsAbstractBuilder implem
 
         // Set the expression type
         type[0] = Boolean.class;
+    }
+
+    /**
+     * Builds a comparison expression for composite keys by creating individual field comparisons
+     * and combining them with AND/OR operators.
+     *
+     * @param stateFieldPaths The collection of field paths from the ID() expression
+     * @param parameterExpression The parameter expression (e.g., ?1)
+     * @param operator The comparison operator (=, !=, etc.)
+     * @param visitor The visitor for building sub-expressions
+     * @return The combined expression for all key fields
+     */
+    private Expression buildCompositeKeyComparison(
+            Collection<StateFieldPathExpression> stateFieldPaths,
+            Expression parameterExpression,
+            String operator,
+            ComparisonExpressionVisitor visitor) {
+
+        Expression result = null;
+
+        // Check if parameter expression is a ParameterExpression
+        boolean isParameter = parameterExpression instanceof ParameterExpression;
+
+        for (StateFieldPathExpression fieldPath : stateFieldPaths) {
+            // Build expression for this field: e.g., c.name
+            fieldPath.accept(visitor);
+            Expression fieldExpression = queryExpression;
+
+            // Extract the field name from the path (last segment)
+            // For "c.name", pathSize() is 2, and getPath(1) returns "name"
+            int lastIndex = fieldPath.pathSize() - 1;
+            String fieldName = fieldPath.getPath(lastIndex);
+
+            // Create a NEW ParameterExpression for this field
+            // We create it with just the field name, and set the baseExpression to the original parameter
+            // This will cause getValue() to extract the field value from the composite key object
+            DatabaseField dbField = new DatabaseField(fieldName);
+            ParameterExpression paramFieldExpression = new ParameterExpression(dbField);
+            
+            // Set the base expression to the original parameter so it knows where to get the CityId object from
+            if (parameterExpression instanceof ParameterExpression) {
+                paramFieldExpression.setBaseExpression(parameterExpression);
+            }
+            
+            // CRITICAL: Set the localBase to the field expression from the entity side
+            // This provides the mapping information needed to extract the field value
+            paramFieldExpression.setLocalBase(fieldExpression);
+
+            // Create comparison for this field
+            Expression fieldComparison;
+            if (operator.equals(ComparisonExpression.EQUAL)) {
+                fieldComparison = fieldExpression.equal(paramFieldExpression);
+            }
+            else if (operator.equals(ComparisonExpression.DIFFERENT) ||
+                     operator.equals(ComparisonExpression.NOT_EQUAL)) {
+                fieldComparison = fieldExpression.notEqual(paramFieldExpression);
+            }
+            else {
+                throw new IllegalArgumentException(
+                    "Comparison operator " + operator + " is not supported for composite keys");
+            }
+
+            // Combine with previous comparisons
+            if (result == null) {
+                result = fieldComparison;
+            }
+            else {
+                // For EQUAL: use AND (all fields must match)
+                // For NOT_EQUAL: use OR (any field can differ)
+                if (operator.equals(ComparisonExpression.EQUAL)) {
+                    result = result.and(fieldComparison);
+                }
+                else {
+                    result = result.or(fieldComparison);
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
