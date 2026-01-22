@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -304,8 +305,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 ASC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
@@ -313,8 +316,10 @@ public class TestQuerySyntaxOrderingTests {
             query = em.createQuery("SELECT s.intVal1, s.intVal2 FROM QuerySyntaxEntity s WHERE s.intVal1 = 36 ORDER BY 1 ASC");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 ASC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
@@ -323,8 +328,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(1, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if(platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 ASC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 ASC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? ASC", _sql.remove(0));
             }
@@ -345,8 +352,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(intParam2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -361,8 +370,10 @@ public class TestQuerySyntaxOrderingTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -379,8 +390,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(intParam4, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -829,8 +842,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -838,8 +853,10 @@ public class TestQuerySyntaxOrderingTests {
             query = em.createQuery("SELECT s.intVal1, s.intVal2 FROM QuerySyntaxEntity s WHERE s.intVal1 = 36 ORDER BY 1 DESC");
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -848,8 +865,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(1, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -870,8 +889,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(intParam2, 1);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -886,8 +907,10 @@ public class TestQuerySyntaxOrderingTests {
             query = em.createQuery(cquery2);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }
@@ -904,8 +927,10 @@ public class TestQuerySyntaxOrderingTests {
             query.setParameter(intParam4, 36);
             query.getResultList();
             Assert.assertEquals(1, _sql.size());
-            if(platform.isDB2Z() || platform.isDB2() || platform.isDerby()) {
+            if (platform.isDB2Z() || platform.isDerby()) {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = 36) ORDER BY 1 DESC", _sql.remove(0));
+            } else if(platform.isDB2()) {
+                Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY 1 DESC", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT INTVAL1, INTVAL2 FROM QUERYSYNTAXENTITY WHERE (INTVAL1 = ?) ORDER BY ? DESC", _sql.remove(0));
             }

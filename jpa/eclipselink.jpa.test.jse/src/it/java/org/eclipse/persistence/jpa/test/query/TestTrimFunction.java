@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 2021 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -246,7 +247,7 @@ public class TestTrimFunction {
 
             Platform platform = getPlatform(emf);
             // Add more platform specific diction to support more platforms
-            if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
+            if (platform.isDB2() || platform.isMySQL() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT LTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
@@ -265,7 +266,7 @@ public class TestTrimFunction {
             Assert.assertEquals(1, _sql.size());
 
             // Add more platform specific diction to support more platforms
-            if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
+            if (platform.isDB2() || platform.isMySQL() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
                 Assert.assertEquals("SELECT LTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
