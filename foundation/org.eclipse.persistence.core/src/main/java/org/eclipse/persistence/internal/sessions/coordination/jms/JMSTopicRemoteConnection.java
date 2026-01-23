@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -267,6 +267,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      */
     @Override
     protected void closeInternal() throws JMSException {
+        if (subscriber != null) {
+            try {
+                subscriber.close();
+            } catch (JMSException closeException) {
+                Object[] args = { displayString, closeException };
+                rcm.logWarning("exception_thrown_when_attempting_to_close_subscriber", args);
+            }
+        }
         //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local
         //connections will eventually cause topicConnection.close() in their listening thread, so it should not be called here
         if(areAllResourcesFreedOnClose() && topicConnection!=null) {
