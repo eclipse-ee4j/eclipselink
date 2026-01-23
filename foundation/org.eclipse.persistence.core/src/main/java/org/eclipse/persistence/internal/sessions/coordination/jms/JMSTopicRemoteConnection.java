@@ -272,7 +272,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 subscriber.close();
             } catch (JMSException closeException) {
                 Object[] args = { displayString, closeException };
-                rcm.logWarning("exception_thrown_when_attempting_to_close_subscriber", args);
+                rcm.logWarning("broadcast_exception_thrown_when_attempting_to_close_subscriber", args);
             }
         }
         //this method should be a no-op now that external connections open/close TopicConnection when needed.  Close on Local

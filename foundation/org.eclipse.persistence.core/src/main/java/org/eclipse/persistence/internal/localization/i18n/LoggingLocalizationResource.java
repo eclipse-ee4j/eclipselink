@@ -364,7 +364,7 @@ Current thread (id: {3} name: {4}) stack trace:
 
         { "update_all_query_cannot_use_binding_on_this_platform", "UpdateAllQuery cannot use binding on this database platform. Changed query setting to execute without binding." },
 
-        { "exception_thrown_when_attempting_to_close_subscriber", "Warning: {0}: attempt to close subscriber caused exception {1}" },
+        { "broadcast_exception_thrown_when_attempting_to_close_subscriber", "Warning: {0}: attempt to close subscriber caused exception {1}" },
         { "broadcast_exception_thrown_when_attempting_to_close_connection", "Warning: {0}: attempt to close connection caused exception {1}" },
         { "broadcast_connection_already_closed", "Warning: {0}: attempt to close connection which has been already closed. Ignoring." },
         { "broadcast_connection_already_closing", "Warning: {0}: attempt to close connection which is currently closing. Ignoring." },
