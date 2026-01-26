@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,7 +34,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
@@ -55,12 +54,15 @@ import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -68,10 +70,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -85,7 +88,7 @@ import java.util.regex.Pattern;
  *
  * @since TOPLink/Java 1.0
  */
-public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class OraclePlatform extends DatabasePlatform {
 
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
@@ -105,7 +108,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         super();
         this.cursorCode = -10;
         this.pingSQL = "SELECT 1 FROM DUAL";
-        this.storedProcedureTerminationToken = "";
+        setStoredProcedureTerminationToken("");
         this.shouldPrintForUpdateClause = true;
     }
 
@@ -208,51 +211,51 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER(1) default 0", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("NUMBER(1) default 0", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 10));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("NUMBER", 19, 4));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("NUMBER", 19, 4));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMBER", 5));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMBER", 3));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMBER", 38));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 38).setLimits(38, -38, 38));
+        fieldTypeMapping.put(Integer.class, TYPE_INTEGER);
+        fieldTypeMapping.put(Long.class, TYPE_LONG);
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("NUMBER", 19, 4));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("NUMBER", 19, 4));
+        fieldTypeMapping.put(Short.class, TYPE_SHORT);
+        fieldTypeMapping.put(Byte.class, TYPE_BYTE);
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("NUMBER", 38));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("NUMBER", 38, 0, 38, -38, 38));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("NUMBER", 38, 0, 38, -38, 38));
 
         if(getUseNationalCharacterVaryingTypeForString()){
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR2", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR2", DEFAULT_VARCHAR_SIZE));
         }else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR2", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR2", DEFAULT_VARCHAR_SIZE));
         }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("CLOB", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("CLOB", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("CLOB", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         //bug 5871089 the default generator requires definitions based on all java types
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.util.Calendar.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.Date.class, TYPE_TIMESTAMP);
         // Local classes have no TZ information included
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalDate.class, TYPE_DATE);
+        fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIMESTAMP);
         // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
         // but TIMESTAMP WITH TIME ZONE is not supported until 10g
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.Instant.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
 
-        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("RAW", 16));
+        fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("RAW", 16));
 
         return fieldTypeMapping;
     }
@@ -864,40 +867,40 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, 9.9999E125);
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
         values.put(Float.class, Float.MAX_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
+        values.put(BigInteger.class, new BigInteger("0"));
+        values.put(BigDecimal.class, new BigDecimal(new BigInteger("0"), 38));
         return values;
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
         values.put(Double.class, -1E-129);
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.MIN_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("0"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal(new java.math.BigInteger("0"), 38));
+        values.put(BigInteger.class, new BigInteger("0"));
+        values.put(BigDecimal.class, new BigDecimal(new BigInteger("0"), 38));
         return values;
     }
 

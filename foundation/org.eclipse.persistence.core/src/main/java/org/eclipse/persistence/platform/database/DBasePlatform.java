@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -15,14 +15,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.database;
 
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *    <p><b>Purpose</b>: Provides DBase specific behavior.
@@ -32,7 +35,7 @@ import java.util.Hashtable;
  *
  * @since TOPLink/Java 1.0
  */
-public class DBasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class DBasePlatform extends DatabasePlatform {
 
     /**
      * Default constructor.
@@ -42,33 +45,33 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, TYPE_BOOLEAN);
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 11));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("NUMBER", 12, 5).setLimits(19, 0, 19));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("NUMBER", 10, 5).setLimits(19, 0, 19));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMBER", 6));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMBER", 4));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 19).setLimits(19, 0, 9));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMBER", 19).setLimits(19, 0, 9));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("NUMBER", 11));
+        fieldTypeMapping.put(Long.class, TYPE_LONG);
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("NUMBER", 12, 5, 19, 0, 19));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("NUMBER", 10, 5, 19, 0, 19));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("NUMBER", 6));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("NUMBER", 4));
+        fieldTypeMapping.put(BigInteger.class, TYPE_LONG);
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("NUMBER", 19, 0, 19, 0, 9));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("NUMBER", 19, 0, 19, 0, 9));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("CHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("CHAR", DEFAULT_VARCHAR_SIZE));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BINARY"));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("MEMO"));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BINARY"));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("MEMO"));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BINARY"));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("MEMO"));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BINARY"));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("MEMO"));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BINARY"));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("MEMO"));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("BINARY"));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("MEMO"));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("CHAR", 15));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("CHAR", 25));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("CHAR", 15));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("CHAR", 25));
 
         return fieldTypeMapping;
     }
@@ -135,13 +138,13 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.valueOf("922337203685478000"));
@@ -149,19 +152,19 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.valueOf("99999999.999999999"));
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("922337203685478000"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("999999.999999999"));
+        values.put(BigInteger.class, new BigInteger("922337203685478000"));
+        values.put(BigDecimal.class, new BigDecimal("999999.999999999"));
         return values;
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.valueOf("-922337203685478000"));
@@ -169,8 +172,8 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.valueOf("-99999999.999999999"));
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("-922337203685478000"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-999999.999999999"));
+        values.put(BigInteger.class, new BigInteger("-922337203685478000"));
+        values.put(BigDecimal.class, new BigDecimal("-999999.999999999"));
         return values;
     }
 

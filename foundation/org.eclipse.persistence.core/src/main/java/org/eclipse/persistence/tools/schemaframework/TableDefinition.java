@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,7 +87,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table, default sizes are used.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -96,7 +95,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -105,7 +103,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -114,7 +111,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type to a nested type.
      * @param typeName is the name of the nested type.
      */
@@ -123,7 +119,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table.
      */
     public void addField(FieldDefinition field) {
@@ -188,7 +183,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add a foreign key constraint to the table.
      * If there is a same name foreign key constraint already, nothing will happen.
      */
@@ -198,7 +192,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add a unique key constraint to the table.
      */
     public void addUniqueKeyConstraint(String name, String sourceField) {
@@ -207,7 +200,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add a unique key constraint to the table.
      */
     public void addUniqueKeyConstraint(String name, String[] sourceFields) {
@@ -216,7 +208,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add a foreign key constraint to the table.
      * If there is a same name foreign key constraint already, nothing will happen.
      */
@@ -229,7 +220,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add a unique key constraint to the table.
      */
     public void addUniqueKeyConstraint(UniqueKeyConstraint uniqueKey) {
@@ -245,7 +235,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add an index to the table.
      */
     public void addIndex(IndexDefinition index) {
@@ -253,7 +242,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table, default sizes are used.
      * Identity fields are used on Sybase for native sequencing,
      * The field must be of number type and cannot have a subsize.
@@ -267,7 +255,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table, default sizes are used.
      * Identity fields are used on Sybase for native sequencing,
      * The field must be of number type and cannot have a subsize.
@@ -281,7 +268,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table, default sizes are used.
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
@@ -293,7 +279,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the table, default sizes are used.
      * This field is set as part of the primary key.
      * @param type is the Java class type corresponding to the database type.
@@ -444,7 +429,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the schema associated with this table.
      */
     @Override
@@ -698,7 +682,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Performs a deep copy of this table definition.
      */
     @Override
@@ -1168,7 +1151,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the field the corresponds to the name.
      */
     public FieldDefinition getField(String fieldName) {
@@ -1181,14 +1163,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public List<FieldDefinition> getFields() {
         return fields;
     }
 
     /**
-     * PUBLIC:
      * Returns the ForeignKeyConstraint list.
      */
     public Collection<ForeignKeyConstraint> getForeignKeys() {
@@ -1196,21 +1176,18 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public List<UniqueKeyConstraint> getUniqueKeys() {
         return uniqueKeys;
     }
 
     /**
-     * PUBLIC:
      */
     public void setIndexes(List<IndexDefinition> indexes) {
         this.indexes = indexes;
     }
 
     /**
-     * PUBLIC:
      */
     public void setCreateVPDCalls(boolean createVPDCalls, String tenantFieldName) {
         this.createVPDCalls = createVPDCalls;
@@ -1218,14 +1195,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public List<IndexDefinition> getIndexes() {
         return indexes;
     }
 
     /**
-     * PUBLIC:
      */
     public List<String> getPrimaryKeyFieldNames() {
         List<String> keyNames = new ArrayList<>();
@@ -1262,14 +1237,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public void setFields(List<FieldDefinition> fields) {
         this.fields = fields;
     }
 
     /**
-     * PUBLIC:
      * Set the ForeignKeyConstraint list.
      * If the list contains the same name foreign key constraints, only the first one of that name will be added.
      */
@@ -1283,14 +1256,12 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public void setUniqueKeys(List<UniqueKeyConstraint> uniqueKeys) {
         this.uniqueKeys = uniqueKeys;
     }
 
     /**
-     * PUBLIC:
      * Set the foreign key constraints for this table.
      */
     public void setUserDefinedForeignKeyConstraints(Map<String, ForeignKeyConstraint> foreignKeyConstraints) {
@@ -1324,7 +1295,6 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public void setCreateSQLFiles(boolean genFlag) {
         this.createSQLFiles = genFlag;

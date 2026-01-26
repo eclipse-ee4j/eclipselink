@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -33,7 +33,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
@@ -47,26 +46,28 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataReadQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-import java.util.Vector;
+import java.util.Map;
 
 /**
  * <p><b>Purpose</b>: Provides MySQL specific behavior.
@@ -86,8 +87,6 @@ public class MySQLPlatform extends DatabasePlatform {
     private static final String LIMIT = " LIMIT ";
     private static final String OFFSET = " OFFSET ";
 
-    /** Support fractional seconds in time values since MySQL v. 5.6.4. */
-    private boolean isFractionalTimeSupported;
     private boolean isConnectionDataInitialized;
     private boolean supportsForUpdateNoWait;
 
@@ -113,11 +112,6 @@ public class MySQLPlatform extends DatabasePlatform {
         // Database supports NOWAIT since 8.0.1
         this.supportsForUpdateNoWait = Helper.compareVersions(databaseVersion, "8.0.1") >= 0;
         this.isConnectionDataInitialized = true;
-    }
-
-    @Override
-    public boolean supportsFractionalTime() {
-        return isFractionalTimeSupported;
     }
 
     /**
@@ -191,95 +185,6 @@ public class MySQLPlatform extends DatabasePlatform {
         }
     }
 
-    /**
-     * Return the mapping of class types to database types for the schema framework.
-     */
-    @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT(1) default 0", false));
-
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false, "INT"));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("TINYINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL",38));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL",38));
-
-        if(getUseNationalCharacterVaryingTypeForString()){
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));
-        } else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
-        }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGBLOB", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONGTEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONGBLOB", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGTEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGBLOB", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGTEXT", false));
-
-        // Mapping for JSON type.
-        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
-
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        FieldTypeDefinition fd = new FieldTypeDefinition("TIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        }
-        fieldTypeMapping.put(java.sql.Time.class, fd);
-        fd = new FieldTypeDefinition("DATETIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        }
-        fieldTypeMapping.put(java.sql.Timestamp.class, fd);
-
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-
-        fd = new FieldTypeDefinition("DATETIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        } else {
-            fd.setDefaultSize(6);
-            fd.setIsSizeRequired(true);
-        }
-        fieldTypeMapping.put(java.time.LocalDateTime.class,fd); //no timezone info
-
-        fd = new FieldTypeDefinition("TIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        } else {
-            fd.setDefaultSize(6);
-            fd.setIsSizeRequired(true);
-        }
-        fieldTypeMapping.put(java.time.LocalTime.class, fd);
-
-        fd = new FieldTypeDefinition("DATETIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        } else {
-            fd.setDefaultSize(6);
-            fd.setIsSizeRequired(true);
-        }
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, fd); //no timezone info
-
-        fd = new FieldTypeDefinition("TIME");
-        if (!supportsFractionalTime()) {
-            fd.setIsSizeAllowed(false);
-        } else {
-            fd.setDefaultSize(6);
-            fd.setIsSizeRequired(true);
-        }
-        fieldTypeMapping.put(java.time.OffsetTime.class, fd);
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("BINARY", 16));
-        return fieldTypeMapping;
-    }
-
     @Override
     public int getJDBCType(Class<?> javaType) {
         if (javaType == ClassConstants.TIME_ODATETIME) {
@@ -321,11 +226,11 @@ public class MySQLPlatform extends DatabasePlatform {
      * <p>
      * MySQL uses case #2 and therefore the maxResults has to be altered based on the firstResultIndex
      *
-     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     * @see MySQLPlatform
      */
     @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults){
-        return maxResults - ((firstResultIndex >= 0) ? firstResultIndex : 0);
+        return maxResults - Math.max(firstResultIndex, 0);
     }
 
     /**
@@ -335,24 +240,6 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
         return true;
-    }
-
-    /**
-     * INTERNAL:
-     * Used for constraint deletion.
-     */
-    @Override
-    public String getConstraintDeletionString() {
-        return " DROP FOREIGN KEY ";
-    }
-
-    /**
-     * INTERNAL:
-     * Used for unique constraint deletion.
-     */
-    @Override
-    public String getUniqueConstraintDeletionString() {
-        return " DROP KEY ";
     }
 
     /**
@@ -692,19 +579,6 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * Append the receiver's field 'identity' constraint clause to a writer.
-     */
-    @Override
-    public void printFieldIdentityClause(Writer writer) throws ValidationException {
-        try {
-            writer.write(" AUTO_INCREMENT");
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * JDBC defines an outer join syntax which many drivers do not support. So we normally avoid it.
      */
     @Override
@@ -788,14 +662,6 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Return the drop schema definition. Subclasses should override as needed.
-     */
-    @Override
-    public String getDropDatabaseSchemaString(String schema) {
-        return "DROP SCHEMA " + schema + " IF EXISTS";
-    }
-
-    /**
      * INTERNAL:
      * MySQL supports temp tables for update-all, delete-all queries.
      */
@@ -825,32 +691,6 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * MySQL uses the INOUT keyword for this.
-     */
-    @Override
-    public String getInOutputProcedureToken() {
-        return "INOUT";
-    }
-
-    /**
-     * MySQL does not use the AS token.
-     */
-    @Override
-    public String getProcedureAsString() {
-        return "";
-    }
-
-    /**
-     * INTERNAL:
-     * MySQL requires the direction at the start of the argument.
-     */
-    @Override
-    public boolean shouldPrintOutputTokenAtStart() {
-        return true;
-    }
-
-    /**
-     * INTERNAL:
      * Used for stored procedure calls.
      */
     @Override
@@ -858,23 +698,6 @@ public class MySQLPlatform extends DatabasePlatform {
         return "CALL ";
     }
 
-    /**
-     * INTERNAL:
-     * MySQL requires BEGIN.
-     */
-    @Override
-    public String getProcedureBeginString() {
-        return "BEGIN ";
-    }
-
-    /**
-     * INTERNAL:
-     * MySQL requires END.
-     */
-    @Override
-    public String getProcedureEndString() {
-        return "END";
-    }
 
     /**
      * INTERNAL:
@@ -975,42 +798,6 @@ public class MySQLPlatform extends DatabasePlatform {
         writer.write("\n\t RETURNS ");
     }
 
-    // Value of shouldCheckResultTableExistsQuery must be true.
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists.
-     * Query execution returns a row when table exists or empty result otherwise.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    @Override
-    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final DataReadQuery query = new DataReadQuery("SHOW TABLES LIKE '" + table.getFullName() + "'");
-        query.setMaxRows(1);
-        return query;
-    }
-
-    /**
-     * INTERNAL:
-     * Executes and evaluates query to check whether given table exists.
-     * Returned value depends on returned result set being empty or not.
-     * @param session current database session
-     * @param table database table meta-data
-     * @param suppressLogging whether to suppress logging during query execution
-     * @return value of {@code true} if given table exists or {@code false} otherwise
-     */
-    @Override
-    public boolean checkTableExists(final AbstractSession session,
-            final TableDefinition table, final boolean suppressLogging) {
-        try {
-            session.setLoggingOff(suppressLogging);
-            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
-            return !result.isEmpty();
-        } catch (Exception notFound) {
-            return false;
-        }
-    }
-
     /**
      * INTERNAL:
      * This method returns the query to select the UUID
@@ -1025,4 +812,165 @@ public class MySQLPlatform extends DatabasePlatform {
         }
         return uuidQuery;
     }
+
+    /*
+                                 ____  ____  __
+                                |    \|    \|  |
+                                |  |  |  |  |  |__
+                                |____/|____/|_____|
+     */
+
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_BOOLEAN = new FieldDefinition.DatabaseType("TINYINT(1) default 0", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_BIGINT = new FieldDefinition.DatabaseType("BIGINT", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_INTEGER = new FieldDefinition.DatabaseType("INTEGER", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_FLOAT = new FieldDefinition.DatabaseType("FLOAT", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DOUBLE = new FieldDefinition.DatabaseType("DOUBLE", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_SMALLINT = new FieldDefinition.DatabaseType("SMALLINT", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_TINYINT = new FieldDefinition.DatabaseType("TINYINT", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DECIMAL = new FieldDefinition.DatabaseType("DECIMAL", 38);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_CHAR = TYPE_CHAR.ofSize(1);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_VARCHAR = TYPE_VARCHAR.ofSize(DEFAULT_VARCHAR_SIZE);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_NVARCHAR = new FieldDefinition.DatabaseType("NVARCHAR", DEFAULT_VARCHAR_SIZE);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_LONGBLOB = new FieldDefinition.DatabaseType("LONGBLOB", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_LONGTEXT = new FieldDefinition.DatabaseType("LONGTEXT", false);
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_TIMESTAMP = TYPE_TIMESTAMP.ofNoSize();
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_TIME = TYPE_TIME.ofNoSize(); //no timezone info
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_TIME_6 = TYPE_TIME.ofSize(6); //no timezone info
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DATE = TYPE_DATE.ofNoSize();
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DATETIME_DEF = new FieldDefinition.DatabaseType("DATETIME");
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DATETIME = MYSQL_TYPE_DATETIME_DEF.ofNoSize(); //no timezone info
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_DATETIME_6 = MYSQL_TYPE_DATETIME_DEF.ofSize(6); //no timezone info
+    private static final FieldDefinition.DatabaseType MYSQL_TYPE_BINARY = new FieldDefinition.DatabaseType("BINARY", 16);
+
+    /** Support fractional seconds in time values since MySQL v. 5.6.4. */
+    private boolean isFractionalTimeSupported;
+
+    @Override
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, MYSQL_TYPE_BOOLEAN);
+
+        fieldTypeMapping.put(Integer.class, MYSQL_TYPE_INTEGER);
+        fieldTypeMapping.put(Long.class, MYSQL_TYPE_BIGINT);
+        fieldTypeMapping.put(Float.class, MYSQL_TYPE_FLOAT);
+        fieldTypeMapping.put(Double.class, MYSQL_TYPE_DOUBLE);
+        fieldTypeMapping.put(Short.class, MYSQL_TYPE_SMALLINT);
+        fieldTypeMapping.put(Byte.class, MYSQL_TYPE_TINYINT);
+        fieldTypeMapping.put(BigInteger.class, MYSQL_TYPE_BIGINT);
+        fieldTypeMapping.put(BigDecimal.class, MYSQL_TYPE_DECIMAL);
+        fieldTypeMapping.put(Number.class, MYSQL_TYPE_DECIMAL);
+
+        if(getUseNationalCharacterVaryingTypeForString()){
+            fieldTypeMapping.put(String.class, MYSQL_TYPE_NVARCHAR);
+        } else {
+            fieldTypeMapping.put(String.class, MYSQL_TYPE_VARCHAR);
+        }
+        fieldTypeMapping.put(Character.class, MYSQL_TYPE_CHAR);
+
+        fieldTypeMapping.put(Byte[].class, MYSQL_TYPE_LONGBLOB);
+        fieldTypeMapping.put(Character[].class, MYSQL_TYPE_LONGTEXT);
+        fieldTypeMapping.put(byte[].class, MYSQL_TYPE_LONGBLOB);
+        fieldTypeMapping.put(char[].class, MYSQL_TYPE_LONGTEXT);
+        fieldTypeMapping.put(java.sql.Blob.class, MYSQL_TYPE_LONGBLOB);
+        fieldTypeMapping.put(java.sql.Clob.class, MYSQL_TYPE_LONGTEXT);
+
+        if (supportsFractionalTime()) {
+            fieldTypeMapping.put(java.sql.Time.class, TYPE_TIME);
+            fieldTypeMapping.put(java.sql.Timestamp.class, MYSQL_TYPE_DATETIME_DEF);
+            fieldTypeMapping.put(java.time.LocalDateTime.class, MYSQL_TYPE_DATETIME_6);
+            fieldTypeMapping.put(java.time.LocalTime.class, MYSQL_TYPE_TIME_6);
+            fieldTypeMapping.put(java.time.OffsetDateTime.class, MYSQL_TYPE_DATETIME_6);
+            fieldTypeMapping.put(java.time.OffsetTime.class, MYSQL_TYPE_TIME_6);
+        } else {
+            fieldTypeMapping.put(java.sql.Time.class, MYSQL_TYPE_TIME);
+            fieldTypeMapping.put(java.sql.Timestamp.class, MYSQL_TYPE_DATETIME);
+            fieldTypeMapping.put(java.time.LocalDateTime.class, MYSQL_TYPE_DATETIME);
+            fieldTypeMapping.put(LocalTime.class, MYSQL_TYPE_TIME);
+            fieldTypeMapping.put(java.time.OffsetDateTime.class, MYSQL_TYPE_DATETIME);
+            fieldTypeMapping.put(java.time.OffsetTime.class, MYSQL_TYPE_TIME);
+        }
+        fieldTypeMapping.put(java.sql.Date.class, MYSQL_TYPE_DATE);
+        fieldTypeMapping.put(java.time.LocalDate.class, TYPE_DATE);
+
+        fieldTypeMapping.put(java.time.Instant.class, MYSQL_TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.UUID.class, MYSQL_TYPE_BINARY);
+        // Mapping for JSON type.
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
+        return fieldTypeMapping;
+    }
+
+    @Override
+    public boolean checkTableExists(final AbstractSession session,
+                                    final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            final List<?> result = (List<?>)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
+    @Override
+    public String getConstraintDeletionString() {
+        return " DROP FOREIGN KEY ";
+    }
+
+    @Override
+    public String getDropDatabaseSchemaString(String schema) {
+        return "DROP SCHEMA " + schema + " IF EXISTS";
+    }
+
+    @Override
+    public String getInOutputProcedureToken() {
+        return "INOUT";
+    }
+
+    @Override
+    public String getProcedureAsString() {
+        return "";
+    }
+
+    @Override
+    public String getProcedureBeginString() {
+        return "BEGIN ";
+    }
+
+    @Override
+    public String getProcedureEndString() {
+        return "END";
+    }
+
+    // Value of shouldCheckResultTableExistsQuery must be true.
+    @Override
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final DataReadQuery query = new DataReadQuery("SHOW TABLES LIKE '" + table.getFullName() + "'");
+        query.setMaxRows(1);
+        return query;
+    }
+
+    @Override
+    public String getUniqueConstraintDeletionString() {
+        return " DROP KEY ";
+    }
+
+    @Override
+    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+        try {
+            writer.write(" AUTO_INCREMENT");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+    }
+
+    @Override
+    public boolean shouldPrintOutputTokenAtStart() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsFractionalTime() {
+        return isFractionalTimeSupported;
+    }
+
 }

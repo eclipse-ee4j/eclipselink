@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,18 @@
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Hashtable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 /**
  * Support the Pointbase database.
  */
-public class PointBasePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class PointBasePlatform extends DatabasePlatform {
 
     /**
      * Default constructor.
@@ -67,8 +68,8 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
 
         classTypeMapping.put("FLOAT", Double.class);
         classTypeMapping.put("DOUBLE PRECISION", Double.class);
@@ -81,23 +82,22 @@ public class PointBasePlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN"));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BOOLEAN"));
 
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMERIC", 5));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMERIC", 3));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 19));
+        fieldTypeMapping.put(Long.class, TYPE_NUMERIC.ofSize(19));
+        fieldTypeMapping.put(Byte.class, TYPE_NUMERIC.ofSize(3));
+        fieldTypeMapping.put(BigInteger.class, TYPE_NUMERIC.ofSize(19));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("REAL", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL"));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL"));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("REAL", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DECIMAL"));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DECIMAL"));
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHARACTER"));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHARACTER"));
 
         return fieldTypeMapping;
     }

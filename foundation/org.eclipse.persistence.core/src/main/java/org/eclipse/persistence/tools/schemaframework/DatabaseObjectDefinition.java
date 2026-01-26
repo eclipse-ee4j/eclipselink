@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -103,7 +103,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     public abstract Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException;
 
     /**
-     * PUBLIC:
      */
     @Override
     public Object clone() {
@@ -240,7 +239,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     /**
-     * PUBLIC:
      * Return the database schema associated with this database object.
      *
      * @see TableDefinition
@@ -263,7 +261,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     /**
-     * PUBLIC:
      * Return the name of the object.
      * i.e. the table name or the sequence name.
      */
@@ -272,7 +269,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     /**
-     * PUBLIC:
      * Most major databases support a creator name scope.
      * This means whenever the database object is referenced, it must be qualified.
      */
@@ -303,7 +299,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     /**
-     * PUBLIC:
      * Set the name of the object.
      * i.e. the table name or the sequence name.
      */
@@ -312,7 +307,6 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
     }
 
     /**
-     * PUBLIC:
      * Most major databases support a creator name scope.
      * This means whenever the database object is referenced, it must be qualified.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,6 @@ public class TypeTableDefinition extends TableDefinition {
     }
 
     /**
-     * PUBLIC:
      * The name of the type that this table is of.
      */
     @Deprecated(forRemoval = true, since = "4.0.9")
@@ -76,7 +75,6 @@ public class TypeTableDefinition extends TableDefinition {
     }
 
     /**
-     * PUBLIC:
      * The name of the type that this table is of.
      */
     public String getAdditional() {
@@ -84,7 +82,6 @@ public class TypeTableDefinition extends TableDefinition {
     }
 
     /**
-     * PUBLIC:
      * The name of the type that this table is of.
      */
     public String getTypeName() {
@@ -92,7 +89,6 @@ public class TypeTableDefinition extends TableDefinition {
     }
 
     /**
-     * PUBLIC:
      * The name of the type that this table is of.
      */
     public void setAdditional(String additional) {
@@ -100,7 +96,6 @@ public class TypeTableDefinition extends TableDefinition {
     }
 
     /**
-     * PUBLIC:
      * The name of the type that this table is of.
      */
     public void setTypeName(String typeName) {

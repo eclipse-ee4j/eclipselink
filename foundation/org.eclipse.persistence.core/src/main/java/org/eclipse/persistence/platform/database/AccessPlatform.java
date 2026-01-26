@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,6 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -24,7 +23,9 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Hashtable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,7 +33,7 @@ import java.util.Map;
  *
  * @since TOPLink/Java 1.0
  */
-public class AccessPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class AccessPlatform extends DatabasePlatform {
 
     /**
      * Default constructor.
@@ -42,8 +43,8 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
 
         // In access LONG means numeric not CLOB like in Oracle
         classTypeMapping.put("LONG", Long.class);
@@ -53,32 +54,32 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("LONG", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SHORT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("BYTE", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("LONG", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SHORT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("BYTE", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE", false));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("TEXT", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("TEXT", 1));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGBINARY", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("MEMO", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONGBINARY", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("MEMO", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGBINARY", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("MEMO", false));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("TEXT", DEFAULT_VARCHAR_SIZE));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("TEXT", 1));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("LONGBINARY", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("MEMO", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("LONGBINARY", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("MEMO", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("LONGBINARY", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("MEMO", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("DATETIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("DATETIME", false));
 
         return fieldTypeMapping;
     }
@@ -125,13 +126,13 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
@@ -139,19 +140,19 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
         values.put(Float.class, 123456789F);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("99999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("99999999999999999999.9999999999999999999"));
         return values;
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
@@ -159,8 +160,8 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, (float) -123456789);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("-999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("-999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
     }
 
@@ -213,7 +214,7 @@ public class AccessPlatform extends org.eclipse.persistence.platform.database.Da
     }
 
     @Override
-    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldDefinition.DatabaseType fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {
             super.printFieldTypeSize(writer, field, fieldType,
                     shouldPrintFieldIdentityClause);

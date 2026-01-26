@@ -17,14 +17,14 @@ package org.eclipse.persistence.platform.database.oracle;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * <p><b>Purpose:</b>
@@ -53,10 +53,10 @@ public class Oracle23Platform extends Oracle21Platform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
-        fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
-        fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypes = super.buildDatabaseTypes();
+        fieldTypes.put(java.time.LocalDateTime.class, new FieldDefinition.DatabaseType("TIMESTAMP", 9));
+        fieldTypes.put(java.time.LocalTime.class, new FieldDefinition.DatabaseType("TIMESTAMP", 9));
         return fieldTypes;
     }
 

@@ -31,6 +31,7 @@ public class PrimaryKeyConstraint extends KeyConstraintObjectDefinition {
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
      */
+    @Override
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendDBString(Writer writer, AbstractSession session) {
         try {

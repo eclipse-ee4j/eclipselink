@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 package org.eclipse.persistence.platform.database.oracle;
 
 import java.sql.Statement;
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 
 import oracle.jdbc.OraclePreparedStatement;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <p><b>Purpose:</b>
@@ -38,12 +38,12 @@ public class Oracle10Platform extends Oracle9Platform  {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypes = super.buildDatabaseTypes();
         // Offset classes contain an offset from UTC/Greenwich in the ISO-8601 calendar system so TZ should be included
         // TIMESTAMP WITH TIME ZONE is supported since 10g
-        fieldTypes.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
-        fieldTypes.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE"));
+        fieldTypes.put(java.time.OffsetDateTime.class, new FieldDefinition.DatabaseType("TIMESTAMP WITH TIME ZONE"));
+        fieldTypes.put(java.time.OffsetTime.class, new FieldDefinition.DatabaseType("TIMESTAMP WITH TIME ZONE"));
         return fieldTypes;
     }
 

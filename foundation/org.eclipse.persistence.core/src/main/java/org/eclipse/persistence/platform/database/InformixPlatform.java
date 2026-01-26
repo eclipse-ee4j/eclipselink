@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2023 IBM Corporation and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 Payara Foundation and/or its affiliates.
  *
@@ -23,7 +23,6 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
@@ -31,10 +30,13 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *    <p><b>Purpose</b>: Provides Informix specific behavior.
@@ -45,7 +47,7 @@ import java.util.Hashtable;
  *
  * @since TOPLink/Java 1.0.1
  */
-public class InformixPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class InformixPlatform extends DatabasePlatform {
 
 
     /**
@@ -151,38 +153,38 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT default 0", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("SMALLINT default 0", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT(16)", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, TYPE_NUMERIC.ofSize(19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT(16)", false));
         // Bug 218183: Informix 11 FLOAT precision max is 16 - substitute DECIMAL(32) for FLOAT(32)
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DECIMAL(32)", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("DECIMAL", 32));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 32).setLimits(32, -19, 19));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DECIMAL(32)", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("DECIMAL", 32));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DECIMAL", 32, 0, 32, -19, 19));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DECIMAL", 32, 0, 32, -19, 19));
 
         if (getUseNationalCharacterVaryingTypeForString()) {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR", DEFAULT_VARCHAR_SIZE));
         } else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BYTE", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BYTE", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTE", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BYTE", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BYTE", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("BYTE", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("DATETIME HOUR TO SECOND", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME YEAR TO FRACTION(5)", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("DATETIME HOUR TO SECOND", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("DATETIME YEAR TO FRACTION(5)", false));
 
         return fieldTypeMapping;
     }
@@ -247,16 +249,16 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, (double) Float.MAX_VALUE);
         values.put(Short.class, Short.MAX_VALUE);
         values.put(Byte.class, Byte.MAX_VALUE);
         values.put(Float.class, Float.MAX_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("99999999999999999999999999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("9999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("99999999999999999999999999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("9999999999999999999.9999999999999999999"));
         return values;
     }
 
@@ -266,16 +268,16 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
         values.put(Double.class, 1.4012984643247149E-44);// The double values are weird. They lose precision at E-45
         values.put(Short.class, Short.MIN_VALUE);
         values.put(Byte.class, Byte.MIN_VALUE);
         values.put(Float.class, Float.MIN_VALUE);
-        values.put(java.math.BigInteger.class, new java.math.BigInteger("-99999999999999999999999999999999999999"));
-        values.put(java.math.BigDecimal.class, new java.math.BigDecimal("-9999999999999999999.9999999999999999999"));
+        values.put(BigInteger.class, new BigInteger("-99999999999999999999999999999999999999"));
+        values.put(BigDecimal.class, new BigDecimal("-9999999999999999999.9999999999999999999"));
         return values;
     }
 
@@ -285,7 +287,7 @@ public class InformixPlatform extends org.eclipse.persistence.platform.database.
      */
     @Override
     public void printFieldTypeSize(Writer writer, FieldDefinition field,
-            FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+            FieldDefinition.DatabaseType fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause)
             printFieldTypeSize(writer, field, fieldType);
     }

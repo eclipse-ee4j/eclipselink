@@ -15,9 +15,9 @@
 //       - 1391: JSON support in JPA
 package org.eclipse.persistence.json;
 
-import java.util.Hashtable;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 public class MySQLJsonPlatform extends JsonPlatform {
 
@@ -27,10 +27,10 @@ public class MySQLJsonPlatform extends JsonPlatform {
  * @param fieldTypeMapping {@code Map} with mappings to be updated.
  */
     @Override
-    public void updateFieldTypes(final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping) {
-        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldTypeDefinition("JSON"));
-        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldTypeDefinition("JSON"));
-        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldTypeDefinition("JSON"));
+    public void updateFieldTypes(final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping) {
+        fieldTypeMapping.put(jakarta.json.JsonObject.class, new FieldDefinition.DatabaseType("JSON"));
+        fieldTypeMapping.put(jakarta.json.JsonArray.class, new FieldDefinition.DatabaseType("JSON"));
+        fieldTypeMapping.put(jakarta.json.JsonValue.class, new FieldDefinition.DatabaseType("JSON"));
     }
 
     /**

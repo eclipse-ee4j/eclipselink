@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -150,13 +150,13 @@ public class FieldDefinition implements Serializable, Cloneable {
                 writer.write(typeDefinition);
 
             } else {
-                final DatabasePlatform platform = session.getPlatform();
+                final DDLPlatform platform = session.getPlatform();
                 // compose type definition - type name, size, unique, identity, constraints...
                 final DatabaseType fieldType
                         = platform.getDatabaseType(type, typeName);
 
                 String qualifiedName = table.getFullName() + '.' + name;
-                boolean shouldPrintFieldIdentityClause = isIdentity && platform.shouldPrintFieldIdentityClause(session, qualifiedName);
+                boolean shouldPrintFieldIdentityClause = isIdentity && ((DatabasePlatform) platform).shouldPrintFieldIdentityClause(session, qualifiedName);
                 platform.printFieldTypeSize(writer, this, fieldType, shouldPrintFieldIdentityClause);
 
                 if (shouldPrintFieldIdentityClause) {
@@ -212,28 +212,13 @@ public class FieldDefinition implements Serializable, Cloneable {
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendTypeString(final Writer writer, final AbstractSession session)
             throws ValidationException {
+        final DDLPlatform platform = session.getPlatform();
         final DatabaseType fieldType
-                = session.getPlatform().getDatabaseType(type, typeName);
+                = platform.getDatabaseType(type, typeName);
         try {
             writer.write(name);
             writer.write(" ");
-            writer.write(fieldType.name());
-            if ((fieldType.allowSize()) && ((size != 0) || (fieldType.requireSize()))) {
-                writer.write("(");
-                if (size == 0) {
-                    writer.write(Integer.toString(fieldType.defaultSize()));
-                } else {
-                    writer.write(Integer.toString(size));
-                }
-                if (subSize != 0) {
-                    writer.write(",");
-                    writer.write(Integer.toString(subSize));
-                } else if (fieldType.defaultSubSize() != 0) {
-                    writer.write(",");
-                    writer.write(Integer.toString(fieldType.defaultSubSize()));
-                }
-                writer.write(")");
-            }
+            platform.printFieldTypeSize(writer, this, fieldType);
             if (additional != null) {
                 writer.write(" " + additional);
             }
@@ -247,9 +232,6 @@ public class FieldDefinition implements Serializable, Cloneable {
         }
     }
 
-    /**
-     * PUBLIC:
-     */
     @Override
     public Object clone() {
         try {
@@ -260,7 +242,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return any additional information about this field to be given when the table is created.
      */
     public String getAdditional() {
@@ -272,7 +253,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return any constraint of this field.
      * i.e. "BETWEEN 0 AND 1000000".
      */
@@ -285,7 +265,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the name of the field.
      */
     public String getName() {
@@ -302,7 +281,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the size of the field, this is only required for some field types.
      */
     public int getSize() {
@@ -310,7 +288,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the sub-size of the field.
      * This is used as the decimal precision for numeric values only.
      */
@@ -319,7 +296,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -328,7 +304,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the type name of the field.
      * This is the generic database type name, which can be used instead of the Java class 'type'.
      * This is translated to a particular database type based on platform.
@@ -338,7 +313,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return the type definition of the field.
      * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".
      * If this is given, other additional type constraint fields(size, unique, null) are meaningless.
@@ -348,7 +322,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Answer whether the receiver is an identity field.
      * Identity fields are Sybase specific,
      * they ensure that on insert a unique sequential value is stored in the row.
@@ -358,7 +331,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Answer whether the receiver is a primary key.
      * If the table has a multipart primary key this should be set in each field.
      */
@@ -367,7 +339,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Answer whether the receiver is a unique constraint field.
      */
     public boolean isUnique() {
@@ -375,7 +346,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set any additional information about this field to be given when the table is created.
      */
     public void setAdditional(String string) {
@@ -387,7 +357,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set any constraint of this field.
      * i.e. "BETWEEN 0 AND 1000000".
      */
@@ -400,7 +369,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set whether the receiver is an identity field.
      * Identity fields are Sybase specific,
      * they ensure that on insert a unique sequential value is stored in the row.
@@ -413,7 +381,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set whether the receiver is a primary key.
      * If the table has a multipart primary key this should be set in each field.
      */
@@ -425,7 +392,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the name of the field.
      */
     public void setName(String name) {
@@ -443,7 +409,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set whether the receiver should allow null values.
      */
     public void setShouldAllowNull(boolean value) {
@@ -451,7 +416,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the size of the field, this is only required for some field types.
      */
     public void setSize(int size) {
@@ -459,7 +423,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the sub-size of the field.
      * This is used as the decimal precision for numeric values only.
      */
@@ -468,7 +431,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -477,7 +439,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the type name of the field.
      * This is the generic database type name, which can be used instead of the Java class 'type'.
      * This is translated to a particular database type based on platform.
@@ -487,7 +448,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set the type definition of the field.
      * This is database-specific complete type definition like "VARCHAR2(50) UNIQUE NOT NULL".
      * If this is given, other additional type constraint fields(size, unique, null) are meaningless.
@@ -497,7 +457,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Set whether the receiver is a unique constraint field.
      */
     public void setUnique(boolean value) {
@@ -505,7 +464,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      * Return whether the receiver should allow null values.
      */
     public boolean shouldAllowNull() {
@@ -518,7 +476,6 @@ public class FieldDefinition implements Serializable, Cloneable {
     }
 
     /**
-     * PUBLIC:
      *  <b>Purpose</b>: Define a database-platform-specific definition for a platform independent Java class type.
      *  This is used for the field creation within a table creation statement.
      *  <p><b>Responsibilities</b>:
@@ -531,6 +488,7 @@ public class FieldDefinition implements Serializable, Cloneable {
     public static final class DatabaseType {
         //TODO: switch to 'record'?
         private final String name;
+        private final String suffix;
         private final boolean allowNull;
         private final boolean allowSize;
         private final boolean requireSize;
@@ -541,39 +499,51 @@ public class FieldDefinition implements Serializable, Cloneable {
         private final int maxScale;
 
         public DatabaseType(String name) {
-            this(name, true, true, false,
+            this(name, "", true, true, false,
                     10, 0, 10, 0, 0);
         }
 
         public DatabaseType(String name, int defaultSize) {
-            this(name, true, true, true,
+            this(name, "", true, true, true,
+                    defaultSize, 0, defaultSize, 0, 0);
+        }
+
+        public DatabaseType(String name, int defaultSize, String suffix) {
+            this(name, suffix, true, true, true,
                     defaultSize, 0, defaultSize, 0, 0);
         }
 
         public DatabaseType(String name, int defaultSize, int defaultSubSize) {
-            this(name, true, true, true,
+            this(name, "", true, true, true,
                     defaultSize, defaultSubSize, defaultSize, 0, defaultSubSize);
         }
 
         public DatabaseType(String name, int defaultSize, int defaultSubSize,
                             int maxPrecision, int minScale, int maxScale) {
-            this(name, true, true, true,
+            this(name, "", true, true, true,
                     defaultSize, defaultSubSize, maxPrecision, minScale, maxScale);
         }
 
         public DatabaseType(String name, boolean allowSize) {
-            this(name, true, allowSize, false,
+            this(name, "", true, allowSize, false,
                     10, 0, 10, 0, 0);
         }
 
         public DatabaseType(String name, boolean allowSize, boolean allowNull) {
-            this(name, allowNull, allowSize, false,
+            this(name, "", allowNull, allowSize, false,
                     10, 0, 10, 0, 0);
         }
 
-        public DatabaseType(String name, boolean allowNull, boolean allowSize, boolean requireSize,
+//        public DatabaseType(String name, boolean allowNull, boolean allowSize, boolean requireSize,
+//                            int defaultSize, int defaultSubSize, int maxPrecision, int minScale, int maxScale) {
+//            this(name, "", allowNull, allowSize, false,
+//                    10, 0, 10, 0, 0);
+//        }
+
+        public DatabaseType(String name, String suffix, boolean allowNull, boolean allowSize, boolean requireSize,
                             int defaultSize, int defaultSubSize, int maxPrecision, int minScale, int maxScale) {
             this.name = name;
+            this.suffix = suffix;
             this.allowNull = allowNull;
             this.allowSize = allowSize;
             this.requireSize = requireSize;
@@ -582,6 +552,18 @@ public class FieldDefinition implements Serializable, Cloneable {
             this.maxPrecision = maxPrecision;
             this.minScale = minScale;
             this.maxScale = maxScale;
+        }
+
+        public DatabaseType ofSize(int size) {
+            return new DatabaseType(name, suffix, allowNull,
+                    true, true, size, defaultSubSize,
+                    size, minScale, maxScale);
+        }
+
+        public DatabaseType ofNoSize() {
+            return new DatabaseType(name, suffix, allowNull,
+                    false, false, 0, defaultSubSize,
+                    0, minScale, maxScale);
         }
 
         /**
@@ -663,6 +645,10 @@ public class FieldDefinition implements Serializable, Cloneable {
 
         public int minScale() {
             return minScale;
+        }
+
+        public String suffix() {
+            return suffix;
         }
 
         @Override

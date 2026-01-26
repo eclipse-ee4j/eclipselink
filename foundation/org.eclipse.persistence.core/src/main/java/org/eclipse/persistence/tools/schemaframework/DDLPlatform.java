@@ -19,8 +19,6 @@ import java.util.Map;
  * This interface provides a contract for database platform-specific DDL generation behaviors.
  * Implementations of this interface can be used to customize or extend DDL printing logic
  * without modifying the core {@code org.eclipse.persistence.platform.database.DatabasePlatform} class.
- *
- * @deprecated Evolving API
  */
 public interface DDLPlatform {
 
@@ -31,15 +29,18 @@ public interface DDLPlatform {
     FieldDefinition.DatabaseType TYPE_TIMESTAMP = new FieldDefinition.DatabaseType("TIMESTAMP");
     FieldDefinition.DatabaseType TYPE_CHAR = new FieldDefinition.DatabaseType("CHAR");
     FieldDefinition.DatabaseType TYPE_VARCHAR = new FieldDefinition.DatabaseType("VARCHAR");
-    FieldDefinition.DatabaseType TYPE_BOOLEAN = new FieldDefinition.DatabaseType("NUMBER", 1);
-    FieldDefinition.DatabaseType TYPE_INTEGER = new FieldDefinition.DatabaseType("NUMBER", 10);
-    FieldDefinition.DatabaseType TYPE_LONG = new FieldDefinition.DatabaseType("NUMBER", 19);
+    FieldDefinition.DatabaseType TYPE_NUMBER = new FieldDefinition.DatabaseType("NUMBER");
+    FieldDefinition.DatabaseType TYPE_NUMERIC = new FieldDefinition.DatabaseType("NUMERIC");
+    FieldDefinition.DatabaseType TYPE_BOOLEAN = TYPE_NUMBER.ofSize(1);
+    FieldDefinition.DatabaseType TYPE_INTEGER = TYPE_NUMBER.ofSize(10);
+    FieldDefinition.DatabaseType TYPE_LONG = TYPE_NUMBER.ofSize(19);
     FieldDefinition.DatabaseType TYPE_FLOAT = new FieldDefinition.DatabaseType("NUMBER", 12, 5, 19, 0, 19);
     FieldDefinition.DatabaseType TYPE_DOUBLE = new FieldDefinition.DatabaseType("NUMBER", 10, 5, 19, 0, 19);
-    FieldDefinition.DatabaseType TYPE_SHORT = new FieldDefinition.DatabaseType("NUMBER", 5);
-    FieldDefinition.DatabaseType TYPE_BYTE = new FieldDefinition.DatabaseType("NUMBER", 3);
+    FieldDefinition.DatabaseType TYPE_SHORT = TYPE_NUMBER.ofSize(5);
+    FieldDefinition.DatabaseType TYPE_BYTE = TYPE_NUMBER.ofSize(3);
     FieldDefinition.DatabaseType TYPE_BIG_DECIMAL = new FieldDefinition.DatabaseType("NUMBER", 19, 0, 19, 0, 19);
-    FieldDefinition.DatabaseType TYPE_BIG_INTEGER = new FieldDefinition.DatabaseType("NUMBER", 19);
+    FieldDefinition.DatabaseType TYPE_BIG_INTEGER = TYPE_NUMBER.ofSize(19);
+    FieldDefinition.DatabaseType TYPE_BINARY = TYPE_NUMBER.ofSize(16);
 
     Map<Class<?>, FieldDefinition.DatabaseType> DB_TYPES = Map.ofEntries(
             Map.entry(Boolean.class, TYPE_BOOLEAN),
@@ -71,7 +72,8 @@ public interface DDLPlatform {
             Map.entry(java.time.OffsetTime.class, TYPE_TIME),
             Map.entry(java.time.Year.class, TYPE_INTEGER),
             Map.entry(java.util.Calendar.class, TYPE_TIMESTAMP),
-            Map.entry(java.util.Date.class, TYPE_TIMESTAMP)
+            Map.entry(java.util.Date.class, TYPE_TIMESTAMP),
+            Map.entry(java.util.UUID.class, TYPE_BINARY)
     );
 
     Map<String, Class<?>> CLASS_TYPES = Map.ofEntries(
@@ -98,7 +100,7 @@ public interface DDLPlatform {
             Map.entry("LONGVARBINARY", Byte[].class),
             Map.entry("TEXT", Character[].class),
             Map.entry("LONGTEXT", Character[].class),
-        //    Map.entry("BINARY", Byte[].class),
+            Map.entry("BINARY", Byte[].class),
             Map.entry("MEMO", Character[].class),
             Map.entry("VARCHAR2", String.class),
             Map.entry("LONG RAW", Byte[].class),
@@ -288,6 +290,13 @@ public interface DDLPlatform {
     }
 
     /**
+     * Used for constraint deletion.
+     */
+    default String getConstraintDeletionString() {
+        return " DROP CONSTRAINT ";
+    }
+
+    /**
      * Returns the platform-specific string for creating a view (e.g., "CREATE VIEW" or "CREATE OR REPLACE VIEW").
      *
      * @return the create view string
@@ -379,6 +388,13 @@ public interface DDLPlatform {
 
     default String getStoredProcedureTerminationToken() {
         return ";";
+    }
+
+    /**
+     * Used for constraint deletion.
+     */
+    default String getUniqueConstraintDeletionString() {
+        return getConstraintDeletionString();
     }
 
     /**
@@ -629,7 +645,6 @@ public interface DDLPlatform {
     }
 
     /**
-     * PUBLIC:
      * Get the String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
      * stored on the DatabaseTable or TableDefinition.

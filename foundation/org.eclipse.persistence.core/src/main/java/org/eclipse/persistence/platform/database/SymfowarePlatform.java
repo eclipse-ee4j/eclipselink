@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  * Copyright (c) 2009, 2024 Fujitsu Limited. All rights reserved.
  *
@@ -22,7 +22,6 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -31,14 +30,17 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,70 +165,70 @@ public class SymfowarePlatform extends DatabasePlatform {
      * Return the mapping of Java class types to database types for the schema
      * framework.
      *
-     * @return hashtable of Java types to FieldTypeDefinition instances
-     *         containing Symfoware SQL types.
+     * @return map of Java types to FieldDefinition.DatabaseType instances
+     * containing Symfoware SQL types.
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
 
         // boolean type
-        fieldTypeMapping.put(java.lang.Boolean.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType(
                 "SMALLINT default 0", false));
 
         // numeric types
-        fieldTypeMapping.put(java.lang.Byte.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType(
                 "SMALLINT", false));
-        fieldTypeMapping.put(java.lang.Short.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType(
                 "SMALLINT", false));
-        fieldTypeMapping.put(java.lang.Integer.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType(
                 "INTEGER", false));
-        fieldTypeMapping.put(java.lang.Long.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType(
                 "NUMERIC", 18));
-        fieldTypeMapping.put(java.lang.Float.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType(
                 "NUMERIC", 18, 4));
-        fieldTypeMapping.put(java.lang.Double.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType(
                 "NUMERIC", 18, 4));
-        fieldTypeMapping.put(java.math.BigDecimal.class,
-                new FieldTypeDefinition("DECIMAL", 18).setLimits(18, -18, 18));
-        fieldTypeMapping.put(java.math.BigInteger.class,
-                new FieldTypeDefinition("NUMERIC", 18).setLimits(18, -18, 18));
-        fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(BigDecimal.class,
+                new FieldDefinition.DatabaseType("DECIMAL", 18, 0, 18, -18, 18));
+        fieldTypeMapping.put(BigInteger.class,
+                new FieldDefinition.DatabaseType("NUMERIC", 18, 0, 18, -18, 18));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType(
                 "DECIMAL", 18));
 
         // character types
-        fieldTypeMapping.put(java.lang.String.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType(
                 "VARCHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(java.lang.Character.class,
-                new FieldTypeDefinition("CHARACTER", 1));
+        fieldTypeMapping.put(Character.class,
+                new FieldDefinition.DatabaseType("CHARACTER", 1));
 
         // array, binary and Lob types
         fieldTypeMapping.put(byte[].class,
-                new FieldTypeDefinition("BLOB", 1024));
-        fieldTypeMapping.put(java.lang.Byte[].class, new FieldTypeDefinition(
+                new FieldDefinition.DatabaseType("BLOB", 1024));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType(
                 "BLOB", 1024));
         // Symfoware's range for a VARCHAR is 1-32000, but the default value of
         // @jakarta.persistence.Column#length is 255
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR",
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("VARCHAR",
                 255));
-        fieldTypeMapping.put(java.lang.Character[].class,
-                new FieldTypeDefinition("VARCHAR", 255));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(Character[].class,
+                new FieldDefinition.DatabaseType("VARCHAR", 255));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType(
                 "BLOB", 1024));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType(
                 "VARCHAR", 255));
 
         // temporal types
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType(
                 "DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType(
                 "TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType(
                 "TIMESTAMP", false));
 
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.util.Calendar.class, new FieldDefinition.DatabaseType(
                 "TIMESTAMP", false));
-        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition(
+        fieldTypeMapping.put(java.util.Date.class, new FieldDefinition.DatabaseType(
                 "TIMESTAMP", false));
 
         return fieldTypeMapping;
@@ -239,26 +241,26 @@ public class SymfowarePlatform extends DatabasePlatform {
      * @return the mappings.
      */
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
+    protected Map<String, Class<?>> buildJavaTypes() {
         // use what is defined in DatabasePlatform and override those entries
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
-        classTypeMapping.put("SMALLINT", java.lang.Short.class);
-        classTypeMapping.put("INTEGER", java.lang.Integer.class);
-        classTypeMapping.put("NUMERIC", java.lang.Long.class);
-        classTypeMapping.put("REAL", java.lang.Float.class);
-        classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
+        classTypeMapping.put("SMALLINT", Short.class);
+        classTypeMapping.put("INTEGER", Integer.class);
+        classTypeMapping.put("NUMERIC", Long.class);
+        classTypeMapping.put("REAL", Float.class);
+        classTypeMapping.put("DECIMAL", BigDecimal.class);
         classTypeMapping.put("DATE", java.sql.Date.class);
         classTypeMapping.put("TIME", java.sql.Time.class);
         classTypeMapping.put("TIMESTAMP", java.sql.Timestamp.class);
-        classTypeMapping.put("BLOB", java.lang.Byte[].class);
-        classTypeMapping.put("BINARY LARGE OBJECT", java.lang.Byte[].class);
-        classTypeMapping.put("CHARACTER", java.lang.String.class);
-        classTypeMapping.put("VARCHAR", java.lang.String.class);
-        classTypeMapping.put("CHAR VARYING", java.lang.String.class);
-        classTypeMapping.put("NCHAR", java.lang.String.class);
-        classTypeMapping.put("NCHAR VARYING", java.lang.String.class);
-        classTypeMapping.put("FLOAT", java.lang.Double.class);
-        classTypeMapping.put("DOUBLE PRECISION", java.lang.Double.class);
+        classTypeMapping.put("BLOB", Byte[].class);
+        classTypeMapping.put("BINARY LARGE OBJECT", Byte[].class);
+        classTypeMapping.put("CHARACTER", String.class);
+        classTypeMapping.put("VARCHAR", String.class);
+        classTypeMapping.put("CHAR VARYING", String.class);
+        classTypeMapping.put("NCHAR", String.class);
+        classTypeMapping.put("NCHAR VARYING", String.class);
+        classTypeMapping.put("FLOAT", Double.class);
+        classTypeMapping.put("DOUBLE PRECISION", Double.class);
 
         return classTypeMapping;
     }
@@ -542,7 +544,7 @@ public class SymfowarePlatform extends DatabasePlatform {
         exOperator.bePrefix();
         int[] indices = { 1, 0, 0, 1, 0, 1};
         exOperator.setArgumentIndices(indices);
-        exOperator.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
+        exOperator.setNodeClass(FunctionExpression.class);
         return exOperator;
     }
 

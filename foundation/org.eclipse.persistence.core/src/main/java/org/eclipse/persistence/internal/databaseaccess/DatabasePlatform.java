@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,7 +61,6 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.HexFormat;
 import java.util.Iterator;
 import java.util.List;
@@ -125,19 +124,9 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * currently provides sequence number retrieval behavior, this will move to a sequence manager (when it is
  * implemented).
  *
- * @see AccessPlatform
- * @see DB2Platform
- * @see DBasePlatform
- * @see OraclePlatform
- * @see SybasePlatform
- *
  * @since TOPLink/Java 1.0
  */
 public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform {
-
-    /** Holds a map of values used to map JAVA types to database types for table creation */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected transient Map<Class<?>, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
      Only used with Oracle, Sybase and DB2 */
@@ -215,9 +204,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     protected boolean shouldOptimizeDataConversion;
 
-    /** Stores mapping of class types to database types for schema creation. */
-    protected transient Map<String, Class<?>> classTypes;
-
     /** Allow for case in field names to be ignored as some databases are not case sensitive and when using custom this can be an issue. */
     public static boolean shouldIgnoreCaseOnFieldComparisons = false;
 
@@ -258,27 +244,11 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     protected boolean shouldBindLiterals = true;
 
-    /**
-     * String used on all table creation statements generated from the DefaultTableGenerator
-     * with a session using this project.  This value will be appended to CreationSuffix strings
-     * stored within the DatabaseTable creationSuffix.
-     */
-    protected String tableCreationSuffix;
-
-    /**
-     * The delimiter between stored procedures in multiple stored procedure
-     * calls.
-     */
-    protected String storedProcedureTerminationToken;
-
 
     /**
      * Used to integrate with data partitioning in an external DataSource such as UCP.
      */
     protected DataPartitioningCallback partitioningCallback;
-
-    /** Allows auto-indexing for foreign keys to be set. */
-    protected boolean shouldCreateIndicesOnForeignKeys;
 
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
@@ -379,18 +349,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
-     * Get the String used on all table creation statements generated from the DefaultTableGenerator
-     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
-     * stored on the DatabaseTable or TableDefinition.
-     */
-    @Override
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public String getTableCreationSuffix(){
-        return this.tableCreationSuffix;
-    }
-
-    /**
      * INTERNAL:
      * Get the map of TypeConverters
      * This map indexes StructConverters by the Java Class they are meant to
@@ -404,7 +362,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Add a StructConverter to this DatabasePlatform
      * This StructConverter will be invoked for all writes to the database for the class returned
      * by its getJavaType() method and for all reads from the database for the Structs described
@@ -480,62 +437,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public DatabaseCall buildCallWithReturning(SQLCall sqlCall, List<DatabaseField> returnFields) {
         throw ValidationException.platformDoesNotSupportCallWithReturning(getClass().getSimpleName());
-    }
-
-    /**
-     * Return the mapping of class types to database types for the schema framework.
-     * @deprecated Use {@linkplain #getJavaTypes()} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected Map<String, Class<?>> buildClassTypes() {
-        return classTypes != null ? classTypes : getJavaTypes();
-    }
-    /**
-     * Return the mapping of class types to database types for the schema framework.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("NUMBER", 1));
-
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMBER", 10));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("NUMBER", 12, 5).setLimits(19, 0, 19));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("NUMBER", 10, 5).setLimits(19, 0, 19));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMBER", 5));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMBER", 3));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMBER", 19));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMBER", 19, 0).setLimits(19, 0, 19));
-
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR"));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR"));
-
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB"));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB"));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BLOB"));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("CLOB"));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BLOB"));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("CLOB"));
-
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE"));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME"));
-        //bug 5871089 the default generator requires definitions based on all java types
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition("NUMBER", 10));
-
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE"));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.Year.class, new FieldTypeDefinition("NUMBER", 10));
-        // Mapping for JSON type.
-        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
-
-        return fieldTypeMapping;
     }
 
     /**
@@ -677,30 +578,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * Any platform that supports VPD should implement this method. Used for DDL
-     * generation.
-     */
-    public String getVPDCreationFunctionString(String tableName, String tenantFieldName) {
-        return null;
-    }
-
-    /**
-     * Any platform that supports VPD should implement this method. Used for DDL
-     * generation.
-     */
-    public String getVPDCreationPolicyString(String tableName, AbstractSession session) {
-        return null;
-    }
-
-    /**
-     * Any platform that supports VPD should implement this method. Used for DDL
-     * generation.
-     */
-    public String getVPDDeletionString(String tableName, AbstractSession session) {
-        return null;
-    }
-
-    /**
      * Any platform that supports VPD should implement this method.
      */
     public DatabaseQuery getVPDSetIdentifierQuery(String vpdIdentifier) {
@@ -811,20 +688,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * Used for constraint deletion.
-     */
-    public String getConstraintDeletionString() {
-        return " DROP CONSTRAINT ";
-    }
-
-    /**
-     * Used for constraint deletion.
-     */
-    public String getUniqueConstraintDeletionString() {
-        return getConstraintDeletionString();
-    }
-
-    /**
      * This method determines if any special processing needs to occur prior to writing a field.
      * <p>
      * It does things such as determining if a field must be bound and flagging the parameter as one
@@ -850,24 +713,11 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * Return the class type to database type mapping for the schema framework.
-     * @deprecated Use {@linkplain #getJavaTypes()} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public Map<String, Class<?>> getClassTypes() {
-        if (classTypes == null) {
-            classTypes = buildClassTypes();
-        }
-        return classTypes;
-    }
-
-    /**
      * Used for stored function calls.
      */
     public String getAssignmentString() {
         return "= ";
     }
-
 
     /**
      * ADVANCED:
@@ -893,28 +743,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public String getDefaultSequenceTableName() {
         return "SEQUENCE";
-    }
-
-    /**
-     * Return the field type object describing this databases platform specific representation
-     * of the Java primitive class name.
-     * @deprecated Use {@linkplain #getDatabaseType(Class)} instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public FieldTypeDefinition getFieldTypeDefinition(Class<?> javaClass) {
-        return getFieldTypes().get(javaClass);
-    }
-
-    /**
-     * Return the class type to database type mappings for the schema framework.
-     * @deprecated Use {@linkplain #getDatabaseTypes()}  instead.
-     */
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public Map<Class<?>, FieldTypeDefinition> getFieldTypes() {
-        if (this.fieldTypes == null) {
-            this.fieldTypes = buildFieldTypes();
-        }
-        return this.fieldTypes;
     }
 
     /**
@@ -1040,7 +868,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Allow for the max batch writing size to be set.
      * This allows for the batch size to be limited as most database have strict limits.
      * The size is in characters, the default is 32000 but the real value depends on the database configuration.
@@ -1178,11 +1005,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         }
     }
 
-    @Override
-    public int getSequencePreallocationSize() {
-        return getDefaultSequence().getPreallocationSize();
-    }
-
     public String getSequenceTableName() {
         if (getDefaultSequence().isTable()) {
             String tableName = ((TableSequence)getDefaultSequence()).getTableName();
@@ -1204,19 +1026,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
 
     public String getStoredProcedureParameterPrefix() {
         return "";
-    }
-
-    /**
-     * Returns the delimiter between stored procedures in multiple stored
-     * procedure calls.
-     */
-    @Override
-    public String getStoredProcedureTerminationToken() {
-        return storedProcedureTerminationToken;
-    }
-
-    public void setStoredProcedureTerminationToken(String storedProcedureTerminationToken) {
-        this.storedProcedureTerminationToken = storedProcedureTerminationToken;
     }
 
     public int getStringBindingSize() {
@@ -1293,12 +1102,12 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal maximums are dependent upon their precision &amp; Scale
      */
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
@@ -1312,12 +1121,12 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger &amp; BigDecimal minimums are dependent upon their precision &amp; Scale
      */
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
 
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
@@ -1466,11 +1275,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         castSizeForVarcharParameter = maxLength;
     }
 
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected void setClassTypes(Map<String, Class<?>> classTypes) {
-        this.classTypes = classTypes;
-    }
-
     /**
      * ADVANCED:
      * Set the code for preparing cursored output
@@ -1487,13 +1291,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         this.driverName = driverName;
     }
 
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected void setFieldTypes(Map<Class<?>, FieldTypeDefinition> theFieldTypes) {
-        fieldTypes = theFieldTypes;
-    }
-
     /**
-     * PUBLIC:
      * Allow for the max batch writing size to be set.
      * This allows for the batch size to be limited as most database have strict limits.
      * The size is in characters, the default is 32000 but the real value depends on the database configuration.
@@ -1575,7 +1373,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Set if our driver level data conversion optimization is enabled.
      * This can be disabled as some drivers perform data conversion themselves incorrectly.
      */
@@ -1606,7 +1403,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Get the String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
      * stored on the DatabaseTable or TableDefinition.
@@ -1680,7 +1476,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Set if SQL-Level pagination should be used for FirstResult and MaxRows settings.
      * Default is true.
      * <p>
@@ -1696,7 +1491,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Changes the way that OuterJoins are done on the database.  With a value of
      * true, outerjoins are performed in the where clause using the outer join token
      * for that database.
@@ -1708,7 +1502,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Changes the way that inner joins are printed in generated SQL for the database.
      * With a value of true, inner joins are printed in the WHERE clause,
      * if false, inner joins are printed in the FROM clause.
@@ -1747,11 +1540,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      */
     public boolean shouldCacheAllStatements() {
         return shouldCacheAllStatements;
-    }
-
-    @Override
-    public boolean shouldCreateIndicesOnForeignKeys() {
-        return shouldCreateIndicesOnForeignKeys;
     }
 
     /**
@@ -1868,7 +1656,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Return if Oracle ROWNUM pagination should be used for FirstResult and MaxRows settings.
      * Default is true.
      * <p>
@@ -2590,7 +2377,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * either supportsLocalTempTables() or supportsGlobalTempTables()
      * method.
      */
-     public boolean supportsTempTables() {
+     public final boolean supportsTempTables() {
          return supportsLocalTempTables() || supportsGlobalTempTables();
      }
 
@@ -2704,7 +2491,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * @param usedFields fields that will be used by operation for which temp table is created.
      * @param allFields all mapped fields for the original table.
      */
-     public void writeCreateTempTableSql(Writer writer, DatabaseTable table, AbstractSession session,
+     public final void writeCreateTempTableSql(Writer writer, DatabaseTable table, AbstractSession session,
                                          Collection<DatabaseField> pkFields,
                                          Collection<DatabaseField> usedFields,
                                          Collection<DatabaseField> allFields) throws IOException
@@ -2902,7 +2689,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * @param writer for writing the sql
      * @param table is original table for which temp table is created.
      */
-     public void writeCleanUpTempTableSql(Writer writer, DatabaseTable table) throws IOException {
+     public final void writeCleanUpTempTableSql(Writer writer, DatabaseTable table) throws IOException {
         if(supportsLocalTempTables()) {
             writer.write("DROP TABLE ");
         } else {
@@ -3017,68 +2804,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         }
     }
 
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public boolean shouldPrintFieldIdentityClause(AbstractSession session, String qualifiedFieldName) {
-        if (!supportsIdentity()) {
-            return false;
-        }
-        if ((session.getSequencing() == null) || (session.getSequencing().whenShouldAcquireValueForAll() == Sequencing.BEFORE_INSERT)) {
-            return false;
-        }
-
-        boolean shouldAcquireSequenceValueAfterInsert = false;
-        DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
-        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
-        while (descriptors.hasNext()) {
-            ClassDescriptor descriptor = descriptors.next();
-            if (!descriptor.usesSequenceNumbers()) {
-                continue;
-            }
-            if (descriptor.getSequenceNumberField().equals(field)) {
-                String seqName = descriptor.getSequenceNumberName();
-                Sequence sequence = getSequence(seqName);
-                shouldAcquireSequenceValueAfterInsert = sequence.shouldAcquireValueAfterInsert();
-                break;
-            }
-        }
-        return shouldAcquireSequenceValueAfterInsert;
-    }
-
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    public void printFieldTypeSize(Writer writer, FieldDefinition field,
-            FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
-        printFieldTypeSize(writer, field, fieldType);
-    }
-
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field,
-            FieldTypeDefinition fieldType) throws IOException {
-        writer.write(fieldType.getName());
-        if ((fieldType.isSizeAllowed()) && ((field.getSize() != 0) || (fieldType.isSizeRequired()))) {
-            writer.write("(");
-            if (field.getSize() == 0) {
-                writer.write(Integer.toString(fieldType.getDefaultSize()));
-            } else {
-                writer.write(Integer.toString(field.getSize()));
-            }
-            if (field.getSubSize() != 0) {
-                writer.write(",");
-                writer.write(Integer.toString(field.getSubSize()));
-            } else if (fieldType.getDefaultSubSize() != 0) {
-                writer.write(",");
-                writer.write(Integer.toString(fieldType.getDefaultSubSize()));
-            }
-            writer.write(")");
-        }
-    }
-
-    @Deprecated(forRemoval = true, since = "4.0.9")
-    protected void printFieldUnique(Writer writer) throws IOException {
-        if (supportsUniqueKeyConstraints()) {
-            writer.write(" UNIQUE");
-        }
-    }
-
     public void writeParameterMarker(Writer writer, ParameterExpression expression, AbstractRecord record, DatabaseCall call) throws IOException {
         writer.write("?");
     }
@@ -3144,7 +2869,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Allows platform to choose whether to bind literals in DatabaseCalls or not.
      */
     public boolean shouldBindLiterals() {
@@ -3152,7 +2876,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
     }
 
     /**
-     * PUBLIC:
      * Allows user to choose whether to bind literals in DatabaseCalls or not.
      */
     public void setShouldBindLiterals(boolean shouldBindLiterals) {
@@ -3266,34 +2989,6 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
 
     /**
      * INTERNAL:
-     * Don't override this method.
-     *
-     * @param fullTableName
-     *            qualified name of the table the index is to be created on
-     * @param indexName
-     *            name of the index
-     * @param columnNames
-     *            one or more columns the index is created for
-     */
-    public String buildCreateIndex(String fullTableName, String indexName, String... columnNames) {
-        return buildCreateIndex(fullTableName, indexName, "", false, columnNames);
-    }
-
-    /**
-     * INTERNAL:
-     * Don't override this method.
-     *
-     * @param fullTableName
-     *            qualified name of the table the index is to be removed from
-     * @param indexName
-     *            name of the index
-     */
-    public String buildDropIndex(String fullTableName, String indexName) {
-        return buildDropIndex(fullTableName, indexName, "");
-    }
-
-    /**
-     * INTERNAL:
      * Return if nesting outer joins is supported, i.e. each join must be followed by the ON clause.
      */
     public boolean supportsNestingOuterJoins() {
@@ -3324,12 +3019,304 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
 
     /**
      * INTERNAL:
+     * Override this method if the platform supports storing JDBC connection user name during
+     * {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code false}
+     */
+    public boolean supportsConnectionUserName() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection.
+     * @throws UnsupportedOperationException on every single call until overridden.
+     */
+    public String getConnectionUserName() {
+        throw new UnsupportedOperationException("Connection user name is not supported.");
+    }
+
+    // Eager initialization in constructor causes CORBA Extension tests to fail.
+    /**
+     * Get JSON support extension instance.
+     * This instance is initialized lazily with 1st JSON support request.
+     *
+     * @return JSON support extension instance
+     */
+    public DatabaseJsonPlatform getJsonPlatform() {
+        if (jsonPlatform != null) {
+            return jsonPlatform;
+        }
+        synchronized (this) {
+            if (jsonPlatform == null) {
+                jsonPlatform = JsonPlatformManager.getInstance().createPlatform(this.getClass());
+            }
+            return jsonPlatform;
+        }
+    }
+
+    /*
+                                 ____  ____  __
+                                |    \|    \|  |
+                                |  |  |  |  |  |__
+                                |____/|____/|_____|
+     */
+    // DDL related fields
+    /** Holds a map of values used to map JAVA types to database types for table creation */
+    private transient Map<Class<?>, FieldDefinition.DatabaseType> databaseTypes;
+
+    /** Stores mapping of class types to database types for schema creation. */
+    private transient Map<String, Class<?>> javaTypes;
+
+    /**
+     * String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project.  This value will be appended to CreationSuffix strings
+     * stored within the DatabaseTable creationSuffix.
+     */
+    private String tableCreationSuffix;
+
+    /** Allows auto-indexing for foreign keys to be set. */
+    private boolean shouldCreateIndicesOnForeignKeys;
+
+    /**
+     * The delimiter between stored procedures in multiple stored procedure
+     * calls.
+     */
+    private String storedProcedureTerminationToken;
+
+    // DDL related methods
+    /**
+     * INTERNAL:
+     * Don't override this method.
+     *
+     * @param fullTableName
+     *            qualified name of the table the index is to be created on
+     * @param indexName
+     *            name of the index
+     * @param columnNames
+     *            one or more columns the index is created for
+     */
+    public final String buildCreateIndex(String fullTableName, String indexName, String... columnNames) {
+        return buildCreateIndex(fullTableName, indexName, "", false, columnNames);
+    }
+
+    /**
+     * INTERNAL:
+     * Don't override this method.
+     *
+     * @param fullTableName
+     *            qualified name of the table the index is to be removed from
+     * @param indexName
+     *            name of the index
+     */
+    public final String buildDropIndex(String fullTableName, String indexName) {
+        return buildDropIndex(fullTableName, indexName, "");
+    }
+
+    /**
+     * Return the mapping of class types to database types for the schema framework.
+     */
+    protected Map<String, Class<?>> buildJavaTypes() {
+        if (javaTypes == null) {
+            javaTypes = CLASS_TYPES;
+        }
+        return javaTypes;
+    }
+
+    /**
+     * Return the mapping of class types to database types for the schema framework.
+     */
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = DB_TYPES;
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
+        return fieldTypeMapping;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given sequence exists.
+     * @param session current database session
+     * @param sequence database sequence meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given sequence exists or {@code false} otherwise
+     */
+    @SuppressWarnings({"removal"})
+    public boolean checkSequenceExists(final AbstractSession session,
+                                       final SequenceDefinition sequence, final boolean suppressLogging) {
+        //TODO: delete sequence.checkIfExist method
+        // and follow the pattern from checkTableExists
+        try {
+            session.setLoggingOff(suppressLogging);
+            return sequence.checkIfExist(session);
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value is always {@code true}, because an exception is thrown
+     * when given table does not exist.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final AbstractSession session,
+                                    final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
+    @Override
+    public FieldDefinition.DatabaseType getDatabaseType(String typeName) {
+        final Class<?> typeFromName = getJavaTypes().get(typeName);
+        if (typeFromName == null) { // if unknown type name, use as it is
+            return new FieldDefinition.DatabaseType(typeName);
+        }
+        FieldDefinition.DatabaseType fieldType = getDatabaseType(typeFromName);
+        if (fieldType == null) {
+            throw ValidationException.javaTypeIsNotAValidDatabaseType(typeFromName);
+        }
+        return fieldType;
+    }
+
+    @Override
+    public Map<Class<?>, FieldDefinition.DatabaseType> getDatabaseTypes() {
+        if (this.databaseTypes == null) {
+            this.databaseTypes = buildDatabaseTypes();
+        }
+        return this.databaseTypes;
+    }
+
+    /**
+     * Return the class type to database type mapping for the schema framework.
+     */
+    @Override
+    public Map<String, Class<?>> getJavaTypes() {
+        if (javaTypes == null) {
+            javaTypes = buildJavaTypes();
+        }
+        return javaTypes;
+    }
+
+    /**
+     * Returns the delimiter between stored procedures in multiple stored
+     * procedure calls.
+     */
+    @Override
+    public String getStoredProcedureTerminationToken() {
+        return storedProcedureTerminationToken;
+    }
+
+    /**
+     * Get the String used on all table creation statements generated from the DefaultTableGenerator
+     * with a session using this project (DDL generation).  This value will be appended to CreationSuffix strings
+     * stored on the DatabaseTable or TableDefinition.
+     */
+    @Override
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public String getTableCreationSuffix(){
+        return this.tableCreationSuffix;
+    }
+
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL
+     * generation.
+     */
+    public String getVPDCreationFunctionString(String tableName, String tenantFieldName) {
+        return null;
+    }
+
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL
+     * generation.
+     */
+    public String getVPDCreationPolicyString(String tableName, AbstractSession session) {
+        return null;
+    }
+
+    /**
+     * Any platform that supports VPD should implement this method. Used for DDL
+     * generation.
+     */
+    public String getVPDDeletionString(String tableName, AbstractSession session) {
+        return null;
+    }
+
+    // Value of shouldCheckResultTableExistsQuery must be false.
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists.
+     * Query execution throws an exception when no such table exists.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SELECT 1 FROM " + table.getFullName();
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
+    public void setDatabaseTypes(Map<Class<?>, FieldDefinition.DatabaseType> theFieldTypes) {
+        databaseTypes = theFieldTypes;
+    }
+
+    public void setJavaTypes(Map<String, Class<?>> classTypes) {
+        this.javaTypes = classTypes;
+    }
+
+    public void setStoredProcedureTerminationToken(String storedProcedureTerminationToken) {
+        this.storedProcedureTerminationToken = storedProcedureTerminationToken;
+    }
+
+    @Override
+    public boolean shouldCreateIndicesOnForeignKeys() {
+        return shouldCreateIndicesOnForeignKeys;
+    }
+
+    @Deprecated(forRemoval = true, since = "4.0.9")
+    public boolean shouldPrintFieldIdentityClause(AbstractSession session, String qualifiedFieldName) {
+        if (!supportsIdentity()) {
+            return false;
+        }
+        if ((session.getSequencing() == null) || (session.getSequencing().whenShouldAcquireValueForAll() == Sequencing.BEFORE_INSERT)) {
+            return false;
+        }
+
+        boolean shouldAcquireSequenceValueAfterInsert = false;
+        DatabaseField field = new DatabaseField(qualifiedFieldName, getStartDelimiter(), getEndDelimiter());
+        Iterator<ClassDescriptor> descriptors = session.getDescriptors().values().iterator();
+        while (descriptors.hasNext()) {
+            ClassDescriptor descriptor = descriptors.next();
+            if (!descriptor.usesSequenceNumbers()) {
+                continue;
+            }
+            if (descriptor.getSequenceNumberField().equals(field)) {
+                String seqName = descriptor.getSequenceNumberName();
+                Sequence sequence = getSequence(seqName);
+                shouldAcquireSequenceValueAfterInsert = sequence.shouldAcquireValueAfterInsert();
+                break;
+            }
+        }
+        return shouldAcquireSequenceValueAfterInsert;
+    }
+
+    /**
+     * INTERNAL:
      * May need to override this method if the platform supports ALTER TABLE ADD &lt;column&gt;
      * and the generated sql doesn't work.
      * Write the string that follows ALTER TABLE to create a sql statement for
      * the platform in order to append a new column to an existing table.
      */
-     public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
+    public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
         writer.write("ADD ");
         field.appendDBString(writer, session, table);
     }
@@ -3361,117 +3348,4 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
         writer.write(tableName);
     }
 
-    /**
-     * INTERNAL:
-     * Override this method if the platform supports storing JDBC connection user name during
-     * {@link #initializeConnectionData(Connection)}.
-     * @return Always returns {@code false}
-     */
-    public boolean supportsConnectionUserName() {
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Returns user name retrieved from JDBC connection.
-     * @throws UnsupportedOperationException on every single call until overridden.
-     */
-    public String getConnectionUserName() {
-        throw new UnsupportedOperationException("Connection user name is not supported.");
-    }
-
-    // Value of shouldCheckResultTableExistsQuery must be false.
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists.
-     * Query execution throws an exception when no such table exists.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SELECT 1 FROM " + table.getFullName();
-        final DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        return query;
-    }
-
-    /**
-     * INTERNAL:
-     * Executes and evaluates query to check whether given table exists.
-     * Returned value is always {@code true}, because an exception is thrown
-     * when given table does not exist.
-     * @param session current database session
-     * @param table database table meta-data
-     * @param suppressLogging whether to suppress logging during query execution
-     * @return value of {@code true} if given table exists or {@code false} otherwise
-     */
-    public boolean checkTableExists(final AbstractSession session,
-            final TableDefinition table, final boolean suppressLogging) {
-        try {
-            session.setLoggingOff(suppressLogging);
-            session.executeQuery(getTableExistsQuery(table));
-            return true;
-        } catch (Exception notFound) {
-            return false;
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Executes and evaluates query to check whether given sequence exists.
-     * @param session current database session
-     * @param sequence database sequence meta-data
-     * @param suppressLogging whether to suppress logging during query execution
-     * @return value of {@code true} if given sequence exists or {@code false} otherwise
-     */
-    @SuppressWarnings({"removal"})
-    public boolean checkSequenceExists(final AbstractSession session,
-            final SequenceDefinition sequence, final boolean suppressLogging) {
-        //TODO: delete sequence.checkIfExist method
-        // and follow the pattern from checkTableExists
-        try {
-            session.setLoggingOff(suppressLogging);
-            return sequence.checkIfExist(session);
-        } catch (Exception notFound) {
-            return false;
-        }
-    }
-
-    // Eager initialization in constructor causes CORBA Extension tests to fail.
-    /**
-     * Get JSON support extension instance.
-     * This instance is initialized lazily with 1st JSON support request.
-     *
-     * @return JSON support extension instance
-     */
-    public DatabaseJsonPlatform getJsonPlatform() {
-        if (jsonPlatform != null) {
-            return jsonPlatform;
-        }
-        synchronized (this) {
-            if (jsonPlatform == null) {
-                jsonPlatform = JsonPlatformManager.getInstance().createPlatform(this.getClass());
-            }
-            return jsonPlatform;
-        }
-    }
-
-    @Override
-    public FieldDefinition.DatabaseType getDatabaseType(Class<?> type) {
-        FieldTypeDefinition fieldType = getFieldTypeDefinition(type);
-        return fieldType == null ? null : fieldType.toDatabaseType();
-    }
-
-    @Override
-    public FieldDefinition.DatabaseType getDatabaseType(String typeName) {
-        final Class<?> typeFromName = getClassTypes().get(typeName);
-        if (typeFromName == null) { // if unknown type name, use as it is
-            return new FieldDefinition.DatabaseType(typeName);
-        }
-        FieldTypeDefinition fieldType = getFieldTypeDefinition(typeFromName);
-        if (fieldType == null) {
-            throw ValidationException.javaTypeIsNotAValidDatabaseType(typeFromName);
-        }
-        return fieldType.toDatabaseType();
-    }
 }

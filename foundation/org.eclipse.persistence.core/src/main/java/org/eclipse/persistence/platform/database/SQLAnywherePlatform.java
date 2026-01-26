@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008 Markus KARG(markus-karg@users.sourceforge.net).
  *
  * This program and the accompanying materials are made available under the
@@ -21,14 +21,14 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Provides SQL Anywhere specific behaviour.
@@ -39,42 +39,42 @@ public class SQLAnywherePlatform extends SybasePlatform {
 
     public SQLAnywherePlatform() {
         super();
-        this.storedProcedureTerminationToken = ";";
+        setStoredProcedureTerminationToken(";");
     }
 
 // TODO: can't use these field types: none of them has sizes.
 // That results is using defaults, that seem to be 9 for VARCHAR
 // and neither FeatureTestModel nor AggregateTestModel would setup because of that.
 // Untill this is fixed have to use the field types inherited from SybasePlatform.
-/*    protected Hashtable buildFieldTypes() {
-        Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<Class, FieldTypeDefinition>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("REAL", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(BigDecimal.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR"));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR"));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONG BINARY", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("LONG VARCHAR", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("LONG BINARY", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONG VARCHAR", false));
-        fieldTypeMapping.put(Blob.class, new FieldTypeDefinition("LONG BINARY", false));
-        fieldTypeMapping.put(Clob.class, new FieldTypeDefinition("LONG VARCHAR", false));
-        fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+/*    protected Map<Class<?>, FieldDefinition.DatabaseType> buildFieldTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashtMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("REAL", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(String.class, TYPE_VARCHAR);
+        fieldTypeMapping.put(Character.class, TYPE_CHAR);
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("LONG BINARY", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("LONG VARCHAR", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("LONG BINARY", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("LONG VARCHAR", false));
+        fieldTypeMapping.put(Blob.class, new FieldDefinition.DatabaseType("LONG BINARY", false));
+        fieldTypeMapping.put(Clob.class, new FieldDefinition.DatabaseType("LONG VARCHAR", false));
+        fieldTypeMapping.put(Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         return fieldTypeMapping;
     }*/
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT", false));
         return fieldTypeMapping;
     }
 

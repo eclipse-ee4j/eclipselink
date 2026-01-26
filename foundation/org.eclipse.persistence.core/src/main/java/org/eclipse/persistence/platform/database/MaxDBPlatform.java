@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  * Copyright (c) 2009, 2024 Markus Karg, SAP. All rights reserved.
  *
@@ -20,7 +20,6 @@ package org.eclipse.persistence.platform.database;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -36,8 +35,9 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <b>Database Platform for SAP MaxDB.</b>
@@ -83,9 +83,9 @@ import java.util.List;
 @SuppressWarnings("serial")
 public final class MaxDBPlatform extends DatabasePlatform {
 
-    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_CLOB = new FieldTypeDefinition("LONG UNICODE", false);
+    private static final FieldDefinition.DatabaseType FIELD_TYPE_DEFINITION_CLOB = new FieldDefinition.DatabaseType("LONG UNICODE", false);
 
-    private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_BLOB = new FieldTypeDefinition("LONG BYTE", false);
+    private static final FieldDefinition.DatabaseType FIELD_TYPE_DEFINITION_BLOB = new FieldDefinition.DatabaseType("LONG BYTE", false);
 
     /**
      * Maximum length of type VARCHAR UNICODE
@@ -115,33 +115,33 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO boolean
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("FIXED", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // TODO boolean
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE PRECISION", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("FIXED", 19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE PRECISION", false));
 
-        fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("FIXED",19));
-        fieldTypeMapping.put(BigDecimal.class, new FieldTypeDefinition("FIXED", 38));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("FIXED",19));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("FIXED", 38));
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1, "UNICODE"));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1, "UNICODE"));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", 255, "UNICODE"));
 
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed
         fieldTypeMapping.put(Byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(Blob.class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(Clob.class, FIELD_TYPE_DEFINITION_CLOB);
 
-        fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         return fieldTypeMapping;
     }
 
@@ -156,9 +156,9 @@ public final class MaxDBPlatform extends DatabasePlatform {
      * See also bugs 317597, 202448
      */
     @Override
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {
-        String typeName = fieldType.getName();
-        if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
+    public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType fieldType) throws IOException {
+        String typeName = fieldType.name();
+        if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.suffix())) {
             if (field.getSize() > MAX_VARCHAR_UNICODE_LENGTH) {
                 fieldType = FIELD_TYPE_DEFINITION_CLOB;
             }
@@ -166,8 +166,8 @@ public final class MaxDBPlatform extends DatabasePlatform {
 
 
         super.printFieldTypeSize(writer, field, fieldType);
-        if (fieldType.getTypesuffix() != null) {
-            writer.append(" " + fieldType.getTypesuffix());
+        if (fieldType.suffix() != null) {
+            writer.append(" " + fieldType.suffix());
         }
     }
 

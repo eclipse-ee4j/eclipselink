@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  * Copyright (c) 2012, 2024 SAP. All rights reserved.
  *
@@ -23,7 +23,6 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -50,8 +49,9 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <b>Database Platform for SAP HANA</b> <br>
@@ -136,36 +136,36 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("SMALLINT", false)); // TODO
                                                                                          // boolean
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
 
-        fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("DECIMAL", 34));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("DECIMAL", 34));
         fieldTypeMapping.put(BigDecimal.class,
-                new FieldTypeDefinition("DECIMAL", 34).setLimits(34, -34, 34));
+                new FieldDefinition.DatabaseType("DECIMAL", 34, 0, 34, -34, 34));
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("NCHAR", 1));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("NVARCHAR", 255));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("NVARCHAR", 255));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", 255));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("NCHAR", 1));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR", 255));
 
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("VARBINARY", 255));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("VARBINARY", 255));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 255));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 255));
 
-        fieldTypeMapping.put(Blob.class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Clob.class, new FieldTypeDefinition("NCLOB", false));
+        fieldTypeMapping.put(Blob.class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Clob.class, new FieldDefinition.DatabaseType("NCLOB", false));
 
-        fieldTypeMapping.put(Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
         return fieldTypeMapping;
     }
 
@@ -175,22 +175,22 @@ public final class HANAPlatform extends DatabasePlatform {
      * See also bugs 317597, 202348
      */
     @Override
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field,
-            FieldTypeDefinition fieldType) throws IOException {
-        String typeName = fieldType.getName();
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,
+            FieldDefinition.DatabaseType fieldType) throws IOException {
+        String typeName = fieldType.name();
         if ("NVARCHAR".equals(typeName)) {
             if (field.getSize() > MAX_VARTYPE_LENGTH) {
-                fieldType = new FieldTypeDefinition("NCLOB", false);
+                fieldType = new FieldDefinition.DatabaseType("NCLOB", false);
             }
         } else if ("VARBINARY".equals(typeName)) {
             if (field.getSize() > MAX_VARTYPE_LENGTH || field.getSize() == 0) {
-                fieldType = new FieldTypeDefinition("BLOB", false);
+                fieldType = new FieldDefinition.DatabaseType("BLOB", false);
             }
         }
 
         super.printFieldTypeSize(writer, field, fieldType);
-        if (fieldType.getTypesuffix() != null) {
-            writer.append(" " + fieldType.getTypesuffix());
+        if (fieldType.suffix() != null) {
+            writer.append(" " + fieldType.suffix());
         }
     }
 
