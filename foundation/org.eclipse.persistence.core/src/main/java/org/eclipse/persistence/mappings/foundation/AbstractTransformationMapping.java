@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.FieldTransformation;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
@@ -67,6 +66,7 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -850,10 +850,10 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 } else if (field.getColumnDefinition() != null) {
                     // Search for the type for this field definition.
                     if (session.getDatasourcePlatform() instanceof DatabasePlatform) {
-                        Iterator<Map.Entry<Class<?>, FieldTypeDefinition>> iterator = session.getPlatform().getFieldTypes().entrySet().iterator();
+                        Iterator<Map.Entry<Class<?>, FieldDefinition.DatabaseType>> iterator = session.getPlatform().getDatabaseTypes().entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry<Class<?>, FieldTypeDefinition> entry = iterator.next();
-                            if (entry.getValue().getName().equals(field.getColumnDefinition())) {
+                            Map.Entry<Class<?>, FieldDefinition.DatabaseType> entry = iterator.next();
+                            if (entry.getValue().name().equals(field.getColumnDefinition())) {
                                 field.setType(entry.getKey());
                                 break;
                             }

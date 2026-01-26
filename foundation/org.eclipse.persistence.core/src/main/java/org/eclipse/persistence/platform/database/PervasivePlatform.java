@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2012, 2026 Oracle and/or its affiliates. All Rights Reserved.
  * Copyright (c) 2012, 2024 Pervasive Software Inc. All Rights Reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,7 +27,6 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -35,8 +34,10 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,9 +69,7 @@ import java.util.Map;
 * </ul>
 *
 **/
-
-
-public class PervasivePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class PervasivePlatform extends DatabasePlatform {
 
     public static final int DEFAULT_CHAR_SIZE = 80;
 
@@ -85,8 +84,8 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     // Cloned from AccessPlatform.java
     //
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
 
         // Causes BLOB to translate to LONGVARBINARY(via java.sql.Blob) instead of BINARY (via Byte[])
         classTypeMapping.put("BLOB", java.sql.Blob.class);
@@ -95,36 +94,36 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_CHAR_SIZE));
-        // fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("TINYINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("REAL", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BINARY", DEFAULT_CHAR_SIZE ));
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("LONGVARBINARY", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CHAR", DEFAULT_CHAR_SIZE));
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("LONGVARBINARY", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("LONGVARCHAR", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_CHAR_SIZE));
+        // fieldTypeMapping.put(java.math.BigDecimal.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("TINYINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("REAL", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BINARY", DEFAULT_CHAR_SIZE ));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("LONGVARBINARY", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("CHAR", DEFAULT_CHAR_SIZE));
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("LONGVARBINARY", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("LONGVARCHAR", false));
 
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL",38, 0));        // From MySQL
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL",38,0));                      // From MySQL
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DECIMAL",38, 0));        // From MySQL
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DECIMAL",38,0));                      // From MySQL
 
 
-        // fieldTypeMapping.put(java.lang.Number.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("LONGVARCHAR", false));
-        fieldTypeMapping.put(java.util.Calendar.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.util.Date.class, new FieldTypeDefinition("TIMESTAMP"));
+        // fieldTypeMapping.put(java.lang.Number.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("LONGVARCHAR", false));
+        fieldTypeMapping.put(java.util.Calendar.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.Date.class, TYPE_TIMESTAMP);
 
         return fieldTypeMapping;
     }
@@ -411,14 +410,14 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
      * Taken from org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\AccessPlatform.java
      */
      @Override
-    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
+    public void printFieldTypeSize(Writer writer, FieldDefinition field,FieldDefinition.DatabaseType fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {
             // if type requires both precision and scale: NUMERIC, DECIMAL
-            if ((fieldType.getName().equals("NUMERIC")) || (fieldType.getName().equals("DECIMAL"))) {
-                writer.write(fieldType.getName());
+            if ((fieldType.name().equals("NUMERIC")) || (fieldType.name().equals("DECIMAL"))) {
+                writer.write(fieldType.name());
                 writer.write("(");
                 if (field.getSize() == 0) {
-                    writer.write(Integer.toString(fieldType.getDefaultSize()));
+                    writer.write(Integer.toString(fieldType.defaultSize()));
                 } else {
                     writer.write(Integer.toString(field.getSize()));
                 }
@@ -426,7 +425,7 @@ public class PervasivePlatform extends org.eclipse.persistence.platform.database
                 if (field.getSubSize() != 0) {
                     writer.write(Integer.toString(field.getSubSize()));
                 } else {
-                    writer.write(Integer.toString(fieldType.getDefaultSubSize()));
+                    writer.write(Integer.toString(fieldType.defaultSubSize()));
                 }
                 writer.write(")");
             } else {

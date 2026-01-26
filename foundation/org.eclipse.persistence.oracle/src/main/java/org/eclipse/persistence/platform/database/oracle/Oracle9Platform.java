@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -32,12 +32,12 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -50,7 +50,6 @@ import org.eclipse.persistence.internal.databaseaccess.BindCallCustomParameter;
 import org.eclipse.persistence.internal.databaseaccess.ConnectionCustomizer;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.expressions.SpatialExpressionOperators;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -76,6 +75,7 @@ import oracle.jdbc.OracleTypes;
 import oracle.sql.TIMESTAMP;
 import oracle.sql.TIMESTAMPLTZ;
 import oracle.sql.TIMESTAMPTZ;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * <p><b>Purpose:</b>
@@ -316,15 +316,15 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
-        fieldTypes.put(org.w3c.dom.Document.class, new FieldTypeDefinition("sys.XMLType"));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypes = super.buildDatabaseTypes();
+        fieldTypes.put(org.w3c.dom.Document.class, new FieldDefinition.DatabaseType("sys.XMLType"));
         //Bug#3381652 10g database does not accept Time for DATE field
-        fieldTypes.put(java.sql.Time.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldTypeDefinition("TIMESTAMP", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldTypeDefinition("TIMESTAMP WITH TIME ZONE", false));
-        fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldTypeDefinition("TIMESTAMP WITH LOCAL TIME ZONE", false));
+        fieldTypes.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMP, new FieldDefinition.DatabaseType("TIMESTAMP", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPTZ, new FieldDefinition.DatabaseType("TIMESTAMP WITH TIME ZONE", false));
+        fieldTypes.put(ORACLE_SQL_TIMESTAMPLTZ, new FieldDefinition.DatabaseType("TIMESTAMP WITH LOCAL TIME ZONE", false));
         return fieldTypes;
     }
 
@@ -343,8 +343,8 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
         classTypeMapping.put("TIMESTAMP WITH TIME ZONE", ORACLE_SQL_TIMESTAMPTZ);
         classTypeMapping.put("TIMESTAMP WITH LOCAL TIME ZONE", ORACLE_SQL_TIMESTAMPLTZ);
@@ -651,7 +651,7 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     protected List<Class<?>> buildToTIMESTAMPVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(java.util.Date.class);
         vec.add(Timestamp.class);
         vec.add(Calendar.class);
@@ -663,14 +663,14 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     protected List<Class<?>> buildToNStringCharVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(String.class);
         vec.add(Character.class);
         return vec;
     }
 
     protected List<Class<?>> buildToNClobVec() {
-        List<Class<?>> vec = new Vector<>();
+        List<Class<?>> vec = new ArrayList<>();
         vec.add(String.class);
         vec.add(Character[].class);
         vec.add(char[].class);
@@ -764,12 +764,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return the list of Classes that can be converted to from the passed in javaClass.
      * oracle.sql.TIMESTAMP and NCHAR types are added in some lists.
      * @param javaClass - the class that is converted from
-     * @return - a vector of classes
+     * @return - a list of classes
      */
     @Override
     public List<Class<?>> getDataTypesConvertedFrom(Class<?> javaClass) {
         if (dataTypesConvertedFromAClass == null) {
-            dataTypesConvertedFromAClass = new Hashtable<>(5);
+            dataTypesConvertedFromAClass = new HashMap<>(5);
         }
         List<Class<?>> dataTypes = dataTypesConvertedFromAClass.get(javaClass);
         if (dataTypes != null) {
@@ -795,12 +795,12 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return the list of Classes that can be converted from to the passed in javaClass.
      * A list is added for oracle.sql.TIMESTAMP and NCHAR types.
      * @param javaClass - the class that is converted to
-     * @return - a vector of classes
+     * @return - a list of classes
      */
     @Override
     public List<Class<?>> getDataTypesConvertedTo(Class<?> javaClass) {
         if (dataTypesConvertedToAClass == null) {
-            dataTypesConvertedToAClass = new Hashtable<>(5);
+            dataTypesConvertedToAClass = new HashMap<>(5);
         }
         List<Class<?>> dataTypes = dataTypesConvertedToAClass.get(javaClass);
         if (dataTypes != null) {

@@ -36,6 +36,7 @@ public class CheckConstraint extends ConstraintObjectDefinition {
      * INTERNAL:
      * Append the database field definition string to the table creation statement.
      */
+    @Override
     @Deprecated(forRemoval = true, since = "4.0.9")
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
@@ -59,14 +60,12 @@ public class CheckConstraint extends ConstraintObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public String getConstraint() {
         return constraint;
     }
 
     /**
-     * PUBLIC:
      */
     public void setConstraint(String constraint) {
         this.constraint = constraint;

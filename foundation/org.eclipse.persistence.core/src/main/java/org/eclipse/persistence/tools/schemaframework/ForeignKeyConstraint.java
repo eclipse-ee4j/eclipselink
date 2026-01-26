@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,6 @@ public class ForeignKeyConstraint extends KeyConstraintObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Enables delete cascading on the database.
      * This must be used carefully, i.e. only private relationships.
      */
@@ -101,7 +100,6 @@ public class ForeignKeyConstraint extends KeyConstraintObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Disables delete cascading on the database, this is the default.
      */
     public void dontCascadeOnDelete() {
@@ -137,7 +135,6 @@ public class ForeignKeyConstraint extends KeyConstraintObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Enables delete cascading on the database.
      * This must be used carefully, i.e. only private relationships.
      */

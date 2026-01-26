@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * <b>Purpose</b>: Provides DB2 Mainframe specific behavior.<p>
@@ -71,10 +71,10 @@ public class DB2MainframePlatform extends DB2Platform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> res = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> res = super.buildDatabaseTypes();
         if (getUseNationalCharacterVaryingTypeForString()) {
-            res.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+            res.replace(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
         return res;
     }

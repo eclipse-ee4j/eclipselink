@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,20 +18,23 @@ package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Database platform for the TimesTen database product.
@@ -123,33 +126,33 @@ public class TimesTenPlatform extends DatabasePlatform {
      * Return the mapping of class types to database types for the schema framework.
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("TINYINT", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("TINYINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL(38)", false));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL(38)", false));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("TINYINT", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DECIMAL(38)", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DECIMAL(38)", false));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("VARBINARY", 64000));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 64000));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("VARBINARY", 64000));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 64000));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("VARBINARY", 64000));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("VARCHAR", 64000));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 64000));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("VARCHAR", 64000));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("VARBINARY", 64000));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("VARCHAR", 64000));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("VARBINARY", 64000));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("VARCHAR", 64000));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
 
         return fieldTypeMapping;
     }
@@ -271,10 +274,10 @@ public class TimesTenPlatform extends DatabasePlatform {
         String parameterMarker = "?";
         Object type = parameter.getType();
         if (this.isCastRequired && (type != null)) {
-            FieldTypeDefinition fieldType;
-            fieldType = getFieldTypeDefinition((Class)type);
+            FieldDefinition.DatabaseType fieldType;
+            fieldType = getDatabaseType((Class<?>)type);
             if (fieldType != null){
-                parameterMarker = "CAST (? AS " + fieldType.getName() + " )";
+                parameterMarker = "CAST (? AS " + fieldType.name() + " )";
             }
         }
         writer.write(parameterMarker);

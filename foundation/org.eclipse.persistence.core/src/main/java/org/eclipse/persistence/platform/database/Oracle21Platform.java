@@ -14,9 +14,9 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
-import java.util.Hashtable;
+import java.util.Map;
 
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 public class Oracle21Platform extends Oracle19Platform {
     public Oracle21Platform() {
@@ -24,10 +24,10 @@ public class Oracle21Platform extends Oracle19Platform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypes = super.buildFieldTypes();
-        fieldTypes.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
-        fieldTypes.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP", 9));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypes = super.buildDatabaseTypes();
+        fieldTypes.put(java.time.LocalDateTime.class, new FieldDefinition.DatabaseType("TIMESTAMP", 9));
+        fieldTypes.put(java.time.LocalTime.class, new FieldDefinition.DatabaseType("TIMESTAMP", 9));
         return fieldTypes;
     }
 

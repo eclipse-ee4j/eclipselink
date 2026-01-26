@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -26,7 +26,6 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
@@ -45,15 +44,18 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -127,7 +129,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
      * PostGreSQL uses case #2 and therefore the maxResults has to be altered
      * based on the firstResultIndex
      *
-     * @see org.eclipse.persistence.platform.database.MySQLPlatform
+     * @see MySQLPlatform
      */
     @Override
     public int computeMaxRowsForSQL(int firstResultIndex, int maxResults) {
@@ -459,43 +461,43 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
 
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BOOLEAN", false));
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BOOLEAN", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("BIGINT", false));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DECIMAL", 38));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DECIMAL", 38));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("FLOAT", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(BigInteger.class, new FieldDefinition.DatabaseType("BIGINT", false));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DECIMAL", 38));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DECIMAL", 38));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BYTEA", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BYTEA", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTEA"));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BYTEA", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("BYTEA", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("BYTEA"));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, TYPE_TIME);
+        fieldTypeMapping.put(java.sql.Timestamp.class, TYPE_TIMESTAMP);
 
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("TIMESTAMP"));
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIME);
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIME);
+        fieldTypeMapping.put(java.time.Instant.class, TYPE_TIMESTAMP);
 
-        fieldTypeMapping.put(java.util.UUID.class, new FieldTypeDefinition("UUID", false));
+        fieldTypeMapping.put(java.util.UUID.class, new FieldDefinition.DatabaseType("UUID", false));
 
         return fieldTypeMapping;
     }
@@ -623,12 +625,6 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return " CASCADE";
     }
 
-    @Override
-    public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {
-        if (!shouldPrintFieldIdentityClause) {
-            super.printFieldTypeSize(writer, field, fieldType, shouldPrintFieldIdentityClause);
-        }
-    }
     @Override
     public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldDefinition.DatabaseType databaseType, boolean shouldPrintFieldIdentityClause) throws IOException {
         if (!shouldPrintFieldIdentityClause) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,6 @@
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.databaseaccess.SimpleAppendCallCustomParameter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -28,11 +27,12 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * <p><b>Purpose:</b>
@@ -60,11 +60,11 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("CLOB", false));
 
         return fieldTypeMapping;
     }

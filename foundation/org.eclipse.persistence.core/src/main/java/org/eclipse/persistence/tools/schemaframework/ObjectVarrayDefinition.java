@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,6 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return if the varray collection is allowed NULL or not
      */
     public boolean isNullAllowed() {
@@ -67,7 +66,6 @@ public class ObjectVarrayDefinition extends VarrayDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set if the varray collection is allowed NULL or not
      */
     public void setIsNullAllowed(boolean isNullAllowed) {

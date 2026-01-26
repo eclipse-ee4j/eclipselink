@@ -14,16 +14,15 @@
 //     13/01/2022-4.0.0 Tomas Kraus - 1391: JSON support in JPA
 package org.eclipse.persistence.platform.database;
 
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.DefaultSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -80,8 +79,8 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
      * @return database types to class types {@code Map} for the schema framework
      */
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        final Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        final Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         // Mapping for JSON type.
         getJsonPlatform().updateClassTypes(classTypeMapping);
         return classTypeMapping;
@@ -90,11 +89,11 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
     /**
      * Build the mapping of class types to database types for the schema framework.
      *
-     * @return {@code Hashtable} mapping class types to database types for the schema framework
+     * @return {@code Map} mapping class types to database types for the schema framework
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        final Hashtable<Class<?>, FieldTypeDefinition>fieldTypeMapping = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
         // Mapping for JSON type.
         getJsonPlatform().updateFieldTypes(fieldTypeMapping);
         return fieldTypeMapping;

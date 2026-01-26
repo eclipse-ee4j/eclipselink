@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,7 +126,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Close the schema writer.
      */
     public void closeDDLWriter() {
@@ -607,7 +606,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
      * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
@@ -618,7 +616,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
      * for your mappings and descriptors.  This should be used with caution as s maintenance
      * will be high.  Stored procedures may be generated either directly on the database
@@ -629,7 +626,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
      * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
@@ -645,7 +641,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Use this method to generate stored procedures based on the dynamic SQL generated
      * for your mappings and descriptors.  This should be used with caution as its maintenance
      * will be high.  Stored procedures may be generated either directly on the database
@@ -926,7 +921,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements directly to the database.
      */
     public void outputDDLToDatabase() {
@@ -935,7 +929,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements to a file writer specified by the name in the parameter.
      */
     public void outputDDLToFile(String fileName) {
@@ -966,7 +959,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Output all DDL statements to a writer specified in the parameter.
      */
     public void outputDDLToWriter(Writer schemaWriter) {
@@ -1184,7 +1176,6 @@ public class SchemaManager {
     }
 
     /**
-     * PUBLIC:
      * Return true if this SchemaManager should write to the database directly
      */
     public boolean shouldWriteToDatabase() {

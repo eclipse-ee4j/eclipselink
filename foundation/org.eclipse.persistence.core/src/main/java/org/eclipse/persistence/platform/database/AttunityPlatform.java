@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,17 @@
 package org.eclipse.persistence.platform.database;
 
 import org.eclipse.persistence.expressions.ExpressionOperator;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
-import java.util.Hashtable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  TopLink Platform class which works with Attunity's Connect JDBC driver.
  */
-public class AttunityPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class AttunityPlatform extends DatabasePlatform {
     public AttunityPlatform() {
         // For TEXT and IMAGE fields, streams must be used for binding
         usesStreamsForBinding = true;
@@ -31,38 +34,37 @@ public class AttunityPlatform extends org.eclipse.persistence.platform.database.
     }
 
     /**
-     *  Create a table which can translate between java types and Attunity Connect
-     *  data types.
-     *  @return java.util.Hashtable
+     * Create a table which can translate between java types and Attunity Connect
+     * data types.
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("TINYINT", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("TINYINT", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("NUMERIC", 10));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("NUMERIC", 19, 4));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("NUMERIC", 19, 4));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("NUMERIC", 5));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("NUMERIC", 3));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 38));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("DOUBLE", false));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
+        fieldTypeMapping.put(Integer.class, TYPE_NUMERIC.ofSize(10));
+        fieldTypeMapping.put(Long.class, TYPE_NUMERIC.ofSize(19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("NUMERIC", 19, 4));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("NUMERIC", 19, 4));
+        fieldTypeMapping.put(Short.class, TYPE_NUMERIC.ofSize(5));
+        fieldTypeMapping.put(Byte.class, TYPE_NUMERIC.ofSize(3));
+        fieldTypeMapping.put(BigInteger.class, TYPE_NUMERIC.ofSize(38));
+        fieldTypeMapping.put(BigDecimal.class, new FieldDefinition.DatabaseType("DOUBLE", false));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("DOUBLE", false));
 
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, new FieldDefinition.DatabaseType("TIME", false));
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("TIMESTAMP", false));
 
         return fieldTypeMapping;
     }

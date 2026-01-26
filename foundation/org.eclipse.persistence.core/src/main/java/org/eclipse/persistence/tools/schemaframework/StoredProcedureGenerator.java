@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -578,7 +578,6 @@ public class StoredProcedureGenerator {
     }
 
     /**
-     * PUBLIC:
      * generates all the stored procedures using the schema manager.  The schema manager
      * may be set to write directly to the database or to the file.  See
      * outputDDLToWriter(Writer) and outputDDLToDatabase() on SchemaManager
@@ -637,7 +636,6 @@ public class StoredProcedureGenerator {
     }
 
     /**
-     * PUBLIC:
      * generates all the stored procedures to the writer using
      * the schema manager outputDDLToWriter(Writer).
      */

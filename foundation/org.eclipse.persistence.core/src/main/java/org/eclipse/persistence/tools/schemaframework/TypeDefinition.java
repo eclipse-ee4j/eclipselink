@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type, default sizes are used.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -44,7 +43,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -53,7 +51,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
      * @param type is the Java class type corresponding to the database type.
      */
@@ -62,7 +59,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type to a nested type.
      * @param typeName is the name of the nested type.
      */
@@ -71,7 +67,6 @@ public class TypeDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Add the field to the type.
      */
     public void addField(FieldDefinition field) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,10 +25,10 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ExtractOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -58,7 +59,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ import java.util.Vector;
  *
  * @since TOPLink/Java 1.0
  */
-public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+public class SQLServerPlatform extends DatabasePlatform {
     
     /** MSSQL-specific JDBC type constants */
     private static final int DATETIMEOFFSET_TYPE = -155;
@@ -89,7 +90,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     public SQLServerPlatform(){
         super();
         this.pingSQL = "SELECT 1";
-        this.storedProcedureTerminationToken = " go";
+        setStoredProcedureTerminationToken(" go");
         this.supportsReturnGeneratedKeys = true;
     }
 
@@ -229,51 +230,53 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     @Override
-    protected Map<String, Class<?>> buildClassTypes() {
-        Map<String, Class<?>> classTypeMapping = super.buildClassTypes();
+    protected Map<String, Class<?>> buildJavaTypes() {
+        Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
         classTypeMapping.put("DATETIME2", java.sql.Timestamp.class);
         return classTypeMapping;
     }
 
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
-        fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("BIT default 0", false));
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>();
+        fieldTypeMapping.put(Boolean.class, new FieldDefinition.DatabaseType("BIT default 0", false));
 
-        fieldTypeMapping.put(Integer.class, new FieldTypeDefinition("INTEGER", false));
-        fieldTypeMapping.put(Long.class, new FieldTypeDefinition("NUMERIC", 19));
-        fieldTypeMapping.put(Float.class, new FieldTypeDefinition("FLOAT(16)", false));
-        fieldTypeMapping.put(Double.class, new FieldTypeDefinition("FLOAT(32)", false));
-        fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false));
-        fieldTypeMapping.put(java.math.BigInteger.class, new FieldTypeDefinition("NUMERIC", 28));
-        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldTypeDefinition("NUMERIC", 28).setLimits(28, -19, 19));
-        fieldTypeMapping.put(Number.class, new FieldTypeDefinition("NUMERIC", 28).setLimits(28, -19, 19));
+        fieldTypeMapping.put(Integer.class, new FieldDefinition.DatabaseType("INTEGER", false));
+        fieldTypeMapping.put(Long.class, TYPE_NUMERIC.ofSize(19));
+        fieldTypeMapping.put(Float.class, new FieldDefinition.DatabaseType("FLOAT(16)", false));
+        fieldTypeMapping.put(Double.class, new FieldDefinition.DatabaseType("FLOAT(32)", false));
+        fieldTypeMapping.put(Short.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(Byte.class, new FieldDefinition.DatabaseType("SMALLINT", false));
+        fieldTypeMapping.put(java.math.BigInteger.class, TYPE_NUMERIC.ofSize(28));
+        fieldTypeMapping.put(java.math.BigDecimal.class, new FieldDefinition.DatabaseType("NUMERIC", 28, 0, 28, -19, 19));
+        fieldTypeMapping.put(Number.class, new FieldDefinition.DatabaseType("NUMERIC", 28, 0, 28, -19, 19));
         // Create String column to support unicode characters
         if(getUseNationalCharacterVaryingTypeForString()){
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("NVARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("NVARCHAR", DEFAULT_VARCHAR_SIZE));
         }else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
+//            fieldTypeMapping.put(String.class, new FieldDefinition.DatabaseType("VARCHAR", DEFAULT_VARCHAR_SIZE));
+            fieldTypeMapping.put(String.class, TYPE_VARCHAR.ofSize(DEFAULT_VARCHAR_SIZE));
         }
 
-        fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
+        fieldTypeMapping.put(Character.class, new FieldDefinition.DatabaseType("CHAR", 1));
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("IMAGE", false));
-        fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(byte[].class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(char[].class, new FieldDefinition.DatabaseType("TEXT", false));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldDefinition.DatabaseType("IMAGE", false));
+        fieldTypeMapping.put(java.sql.Clob.class, new FieldDefinition.DatabaseType("TEXT", false));
 
-        fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("DATETIME2"));
-        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
-        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME"));
-        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("DATETIME2"));
-        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("DATETIME2"));
-        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("DATETIME2"));
-        fieldTypeMapping.put(java.time.Instant.class, new FieldTypeDefinition("DATETIME2"));
+        fieldTypeMapping.put(java.sql.Date.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.sql.Time.class, TYPE_TIME);
+        fieldTypeMapping.put(java.sql.Timestamp.class, new FieldDefinition.DatabaseType("DATETIME2"));
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldDefinition.DatabaseType("DATE", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, TYPE_TIME);
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldDefinition.DatabaseType("DATETIME2"));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldDefinition.DatabaseType("DATETIME2"));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldDefinition.DatabaseType("DATETIME2"));
+        fieldTypeMapping.put(java.time.Instant.class, new FieldDefinition.DatabaseType("DATETIME2"));
 
         return fieldTypeMapping;
     }
@@ -660,13 +663,13 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal maximums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> maximumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> maximumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MAX_VALUE);
         values.put(Long.class, Long.MAX_VALUE);
         values.put(Double.class, (double) 0);
@@ -679,13 +682,13 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
+     * Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger {@literal &} BigDecimal minimums are dependent upon their precision {@literal &} Scale
      */
     @Override
-    public Hashtable<Class<? extends Number>, ? super Number> minimumNumericValues() {
-        Hashtable<Class<? extends Number>, ? super Number> values = new Hashtable<>();
+    public Map<Class<? extends Number>, ? super Number> minimumNumericValues() {
+        Map<Class<? extends Number>, ? super Number> values = new HashMap<>();
         values.put(Integer.class, Integer.MIN_VALUE);
         values.put(Long.class, Long.MIN_VALUE);
         values.put(Double.class, (double) -9);
@@ -707,7 +710,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         v.add(" % ");
         result.printsAs(v);
         result.bePostfix();
-        result.setNodeClass(org.eclipse.persistence.internal.expressions.FunctionExpression.class);
+        result.setNodeClass(FunctionExpression.class);
         return result;
     }
 
@@ -895,6 +898,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         return false;
     }
 
+    @Override
     public boolean isSQLServer() {
         return true;
     }

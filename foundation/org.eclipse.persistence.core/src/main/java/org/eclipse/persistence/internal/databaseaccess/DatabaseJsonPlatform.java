@@ -18,8 +18,9 @@ package org.eclipse.persistence.internal.databaseaccess;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Map;
+
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
  * Database platform JSON extension.
@@ -46,7 +47,7 @@ public interface DatabaseJsonPlatform {
      *
      * @param fieldTypeMapping {@code Map} with mappings to be updated.
      */
-    default void updateFieldTypes(final Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping) {}
+    default void updateFieldTypes(final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping) {}
 
     /**
      * Update the mapping of class types to database types for the schema framework.

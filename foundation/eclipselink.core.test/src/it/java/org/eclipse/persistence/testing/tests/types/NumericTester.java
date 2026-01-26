@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,15 +16,15 @@ package org.eclipse.persistence.testing.tests.types;
 
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.TestException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -69,11 +69,11 @@ public class NumericTester extends TypeTester {
     }
 
     private static void addBigDecimalField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(BigDecimal.class);
+        FieldDefinition.DatabaseType fieldDef = platform.getDatabaseTypes().get(BigDecimal.class);
 
-        if (fieldDef.isSizeAllowed()) {
-            int scale = fieldDef.getMaxPrecision() / 2;
-            definition.addField("BIGDECF", Float.class, fieldDef.getMaxPrecision(), scale);
+        if (fieldDef.allowSize()) {
+            int scale = fieldDef.maxPrecision() / 2;
+            definition.addField("BIGDECF", Float.class, fieldDef.maxPrecision(), scale);
         } else {
             definition.addField("BIGDECF", Float.class);
         }
@@ -85,12 +85,12 @@ public class NumericTester extends TypeTester {
      *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addDoubleField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Double.class);
+        FieldDefinition.DatabaseType fieldDef = platform.getDatabaseTypes().get(Float.class);
 
-        if (fieldDef.isSizeAllowed()) {
-            int scale = fieldDef.getMaxPrecision() / 2;
-            definition.addField("DOUBLEF", Float.class, fieldDef.getMaxPrecision(), scale);
-            definition.addField("DOUBLEFC", Float.class, fieldDef.getMaxPrecision(), scale);
+        if (fieldDef.allowSize()) {
+            int scale = fieldDef.maxPrecision() / 2;
+            definition.addField("DOUBLEF", Float.class, fieldDef.maxPrecision(), scale);
+            definition.addField("DOUBLEFC", Float.class, fieldDef.maxPrecision(), scale);
         } else {
             definition.addField("DOUBLEF", Float.class);
             definition.addField("DOUBLEFC", Float.class);
@@ -103,12 +103,12 @@ public class NumericTester extends TypeTester {
      *    If building sizes it splits the number (ie. 38 -{@literal >} 19,19 or 19 -{@literal >} 10, 9)
      */
     private static void addFloatField(TableDefinition definition, DatabasePlatform platform) {
-        FieldTypeDefinition fieldDef = platform.getFieldTypes().get(Float.class);
+        FieldDefinition.DatabaseType fieldDef = platform.getDatabaseTypes().get(Float.class);
 
-        if (fieldDef.isSizeAllowed()) {
-            int scale = fieldDef.getMaxPrecision() / 2;
-            definition.addField("FLOATF", Float.class, fieldDef.getMaxPrecision(), scale);
-            definition.addField("FLOATFC", Float.class, fieldDef.getMaxPrecision(), scale);
+        if (fieldDef.allowSize()) {
+            int scale = fieldDef.maxPrecision() / 2;
+            definition.addField("FLOATF", Float.class, fieldDef.maxPrecision(), scale);
+            definition.addField("FLOATFC", Float.class, fieldDef.maxPrecision(), scale);
         } else {
             definition.addField("FLOATF", Float.class);
             definition.addField("FLOATFC", Float.class);
@@ -228,7 +228,7 @@ public class NumericTester extends TypeTester {
 
     protected static NumericTester maximumValues(DatabasePlatform platform) {
         NumericTester tester = new NumericTester("MAXIMUM");
-        Hashtable maximums = platform.maximumNumericValues();
+        Map<Class<? extends Number>, ? super Number> maximums = platform.maximumNumericValues();
 
         tester.setIntegerValue((Integer) maximums.get(Integer.class));
         tester.setIntegerClassValue((Integer)maximums.get(Integer.class));
@@ -250,7 +250,7 @@ public class NumericTester extends TypeTester {
 
     protected static NumericTester minimumValues(DatabasePlatform platform) {
         NumericTester tester = new NumericTester("MINIMUM");
-        Hashtable minimums = platform.minimumNumericValues();
+        Map<Class<? extends Number>, ? super Number> minimums = platform.minimumNumericValues();
 
         tester.setIntegerValue((Integer) minimums.get(Integer.class));
         tester.setIntegerClassValue((Integer)minimums.get(Integer.class));

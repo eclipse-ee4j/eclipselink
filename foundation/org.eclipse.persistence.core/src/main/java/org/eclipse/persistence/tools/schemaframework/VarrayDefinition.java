@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,7 +111,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the maximum size of the array.
      */
     public int getSize() {
@@ -119,7 +118,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -128,7 +126,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the type of the field.
      * This is the exact DB type name, which can be used instead of the Java class.
      */
@@ -137,7 +134,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the size of the element field, this is only required for some field types.
      */
     public int getTypeSize() {
@@ -145,7 +141,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the maximum size of the array.
      */
     public void setSize(int size) {
@@ -153,7 +148,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the type of the field.
      * This should be set to a java class, such as String.class, Integer.class or Date.class.
      */
@@ -162,7 +156,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the type of the field.
      * This is the exact DB type name, which can be used instead of the Java class.
      */
@@ -171,7 +164,6 @@ public class VarrayDefinition extends DatabaseObjectDefinition {
     }
 
     /**
-     * PUBLIC:
      * Set the size of the element field, this is only required for some field types.
      */
     public void setTypeSize(int typeSize) {

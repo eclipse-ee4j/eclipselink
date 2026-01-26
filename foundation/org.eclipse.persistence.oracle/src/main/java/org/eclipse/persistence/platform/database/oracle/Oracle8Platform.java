@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,9 @@ import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Struct;
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.databaseaccess.SimpleAppendCallCustomParameter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -38,6 +37,7 @@ import org.eclipse.persistence.queries.Call;
 
 import oracle.jdbc.OracleBlob;
 import oracle.jdbc.OracleClob;
+import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 
 /**
@@ -66,11 +66,11 @@ public class Oracle8Platform extends OraclePlatform {
      * INTERNAL:
      */
     @Override
-    protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = super.buildFieldTypes();
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
 
-        fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", false));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("CLOB", false));
+        fieldTypeMapping.put(Byte[].class, new FieldDefinition.DatabaseType("BLOB", false));
+        fieldTypeMapping.put(Character[].class, new FieldDefinition.DatabaseType("CLOB", false));
 
         return fieldTypeMapping;
     }

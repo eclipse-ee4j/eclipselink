@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -172,7 +172,6 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * PUBLIC:
      * Return the schema associated with this table sequence.
      */
     @Override
@@ -181,14 +180,12 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public String getSequenceCounterFieldName() {
         return sequenceCounterFieldName;
     }
 
     /**
-     * PUBLIC:
      */
     public String getSequenceNameFieldName() {
         return sequenceNameFieldName;
@@ -204,7 +201,6 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public List<IndexDefinition> getSequenceTableIndexes() {
         if  (sequenceTableIndexes == null) {
@@ -214,21 +210,18 @@ public class TableSequenceDefinition extends SequenceDefinition {
     }
 
     /**
-     * PUBLIC:
      */
     public String getSequenceTableName() {
         return sequenceTableName;
     }
 
     /**
-     * PUBLIC:
      */
     public String getSequenceTableQualifier() {
         return sequenceTableQualifier;
     }
 
     /**
-     * PUBLIC:
      */
     public String getSequenceTableQualifiedName() {
         return getSequenceTableQualifier().isBlank() ? getSequenceTableName() : getSequenceTableQualifier() + '.' + getSequenceTableName();
