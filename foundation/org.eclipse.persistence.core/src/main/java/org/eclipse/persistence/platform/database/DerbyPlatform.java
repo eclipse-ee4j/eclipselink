@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2005, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2024 IBM Corporation. All rights reserved.
  *
@@ -1004,7 +1004,6 @@ public class DerbyPlatform extends DB2Platform {
     private static final FieldDefinition.DatabaseType DERBY_TYPE_VARCHAR = TYPE_VARCHAR.ofSize(DEFAULT_VARCHAR_SIZE);;
     private static final FieldDefinition.DatabaseType DERBY_TYPE_BLOB = TYPE_BLOB.ofSize(MAX_BLOB);
     private static final FieldDefinition.DatabaseType DERBY_TYPE_CLOB = TYPE_CLOB.ofSize(MAX_CLOB);
-    private static final FieldDefinition.DatabaseType DERBY_TYPE_BINARY = new FieldDefinition.DatabaseType("CHAR", 16, "FOR BIT DATA");
 
     @Override
     protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
@@ -1021,8 +1020,6 @@ public class DerbyPlatform extends DB2Platform {
         fieldTypeMapping.replace(java.sql.Clob.class, DERBY_TYPE_CLOB);
 
         fieldTypeMapping.replace(java.time.LocalTime.class, TYPE_TIME);
-
-        fieldTypeMapping.put(java.util.UUID.class, DERBY_TYPE_BINARY);
 
         return fieldTypeMapping;
     }

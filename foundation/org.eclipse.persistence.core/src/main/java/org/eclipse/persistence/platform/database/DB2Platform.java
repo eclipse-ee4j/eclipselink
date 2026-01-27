@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
@@ -1850,6 +1850,7 @@ public class DB2Platform extends DatabasePlatform {
     private static final FieldDefinition.DatabaseType DB2_TYPE_DATE = TYPE_DATE.ofNoSize();
     private static final FieldDefinition.DatabaseType DB2_TYPE_BLOB = TYPE_BLOB.ofSize(64000);
     private static final FieldDefinition.DatabaseType DB2_TYPE_CLOB = TYPE_CLOB.ofSize(64000);
+    private static final FieldDefinition.DatabaseType DB2_TYPE_BINARY = new FieldDefinition.DatabaseType("CHAR", 16, "FOR BIT DATA");
 
     @Override
     protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
@@ -1889,6 +1890,7 @@ public class DB2Platform extends DatabasePlatform {
         fieldTypeMapping.put(java.time.OffsetDateTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.OffsetTime.class, TYPE_TIMESTAMP);
         fieldTypeMapping.put(java.time.Instant.class, DB2_TYPE_TIMESTAMP);
+        fieldTypeMapping.put(java.util.UUID.class, DB2_TYPE_BINARY);
 
         return fieldTypeMapping;
     }
