@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation and/or its affiliates. All rights reserved.
  *
@@ -1028,29 +1029,46 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw new PersistenceException(ExceptionLocalization.buildMessage("ejb30-wrong-lock_called_without_version_locking-index", null));
         }
 
-        Object result = null;
-
         try {
-            result = session.executeQuery(query);
+            return session.executeQuery(query);
         } catch (DatabaseException e) {
+            if (!isPessimistic(lockMode)) {
+                throw e;
+            }
+
             // If we catch a database exception as a result of executing a
             // pessimistic locking query we need to ask the platform which
             // JPA 2.0 locking exception we should throw. It will be either
             // be a PessimisticLockException or a LockTimeoutException (if
             // the query was executed using a wait timeout value)
-            if (lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
-                // ask the platform if it is a lock timeout
-                if (query.getExecutionSession().getPlatform().isLockTimeoutException(e)) {
-                    throw new LockTimeoutException(e);
-                } else {
-                    throw new PessimisticLockException(e);
-                }
-            } else {
-                throw e;
-            }
-        }
 
-        return result;
+            if (isUsingWaitTimeout(query) && isLockTimeoutException(query, e)) {
+                throw new LockTimeoutException(e);
+            }
+
+            throw new PessimisticLockException(e);
+        }
+    }
+
+    private boolean isPessimistic(LockModeType lockMode) {
+        return lockMode != null && lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_);
+    }
+
+    private boolean isUsingWaitTimeout(ReadObjectQuery query) {
+        Integer waitTimeout = query.getEffectiveWaitTimeout();
+
+        return waitTimeout != null && waitTimeout > 0;
+    }
+
+    /**
+     * Ask the platform if it is a lock timeout
+     *
+     * @param query the query for which the exception was thrown
+     * @param e the thrown exception
+     * @return true for a lock timeout, false otherwise
+     */
+    private boolean isLockTimeoutException(ReadObjectQuery query, DatabaseException e) {
+        return query.getExecutionSession().getPlatform().isLockTimeoutException(e);
     }
 
     /**

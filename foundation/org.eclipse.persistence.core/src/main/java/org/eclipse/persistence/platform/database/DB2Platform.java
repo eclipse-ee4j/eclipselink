@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, 2026 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2025 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2025 IBM Corporation. All rights reserved.
  *
@@ -30,6 +30,7 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -93,9 +94,11 @@ import java.util.Vector;
  *
  * @since TOPLink/Java 1.0
  */
-public class DB2Platform extends DatabasePlatform {
+public class DB2Platform2 extends DatabasePlatform {
+    
+    protected boolean supportsWaitForUpdate;
 
-    public DB2Platform() {
+    public DB2Platform2() {
         super();
         //com.ibm.db2.jcc.DB2Types.CURSOR
         this.cursorCode = -100008;
@@ -109,6 +112,11 @@ public class DB2Platform extends DatabasePlatform {
         // DB2 database doesn't support NVARCHAR column types and as such doesn't support calling
         // get/setNString() on the driver.
         this.driverSupportsNationalCharacterVarying = false;
+        
+        String databaseVersion = connection.getMetaData().getDatabaseProductVersion();
+
+        // Includes NOWAIT
+        this.supportsWaitForUpdate = Helper.compareVersions(databaseVersion, "11.5.6") >= 0;
     }
 
     /**
@@ -370,19 +378,48 @@ public class DB2Platform extends DatabasePlatform {
         return "CALL ";
     }
 
+    @Override
+    public boolean supportsWaitForUpdate() {
+        return supportsWaitForUpdate;
+    }
+
     /**
      * INTERNAL:
      * Used for pessimistic locking in DB2.
      * Without the "WITH RS" the lock is not held.
      */
-    // public String getSelectForUpdateString() { return " FOR UPDATE"; }
     @Override
     public String getSelectForUpdateString() {
         return " FOR READ ONLY WITH RS USE AND KEEP UPDATE LOCKS";
-        //return " FOR READ ONLY WITH RR";
-        //return " FOR READ ONLY WITH RS";
-        //return " FOR UPDATE WITH RS";
     }
+
+    /**
+     * INTERNAL: DB2 does not support NOWAIT before 11.5.6
+     */
+    @Override
+    public String getNoWaitString() {
+        return supportsWaitForUpdate() ? " NOWAIT" : "";
+    }
+
+    @Override
+    public String getSelectForUpdateWaitString(Integer waitTimeout) {
+        return getSelectForUpdateString() + " WAIT " + waitTimeout;
+    }
+
+    @Override
+    public boolean isLockTimeoutException(DatabaseException e) {
+        return
+            e.getInternalException() instanceof SQLException s &&
+
+            // -911/40001 means deadlock or timeout
+            s.getErrorCode() == -911 &&
+            "40001".equals(s.getSQLState()) &&
+
+            // 68 specifically makes it timeout
+            s.getMessage() != null &&
+            s.getMessage().contains("SQLERRMC=68");
+    }
+
 
     /**
      * Obtain the platform specific argument string
@@ -581,7 +618,7 @@ public class DB2Platform extends DatabasePlatform {
 
     // Create EXTRACT operator for DB2 platform
     private static ExpressionOperator db2ExtractOperator() {
-        return new DB2Platform.DB2ExtractOperator();
+        return new DB2Platform2.DB2ExtractOperator();
     }
 
     /**
@@ -1649,14 +1686,6 @@ public class DB2Platform extends DatabasePlatform {
     @Override
     protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
         return " LIKE " + table.getQualifiedNameDelimited(this);
-    }
-
-    /**
-     * INTERNAL: DB2 does not support NOWAIT.
-     */
-    @Override
-    public String getNoWaitString() {
-        return "";
     }
 
     /**
