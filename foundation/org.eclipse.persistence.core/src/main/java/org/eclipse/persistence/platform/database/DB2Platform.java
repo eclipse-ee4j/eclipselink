@@ -94,11 +94,11 @@ import java.util.Vector;
  *
  * @since TOPLink/Java 1.0
  */
-public class DB2Platform2 extends DatabasePlatform {
+public class DB2Platform extends DatabasePlatform {
     
     protected boolean supportsWaitForUpdate;
 
-    public DB2Platform2() {
+    public DB2Platform() {
         super();
         //com.ibm.db2.jcc.DB2Types.CURSOR
         this.cursorCode = -100008;
@@ -618,7 +618,7 @@ public class DB2Platform2 extends DatabasePlatform {
 
     // Create EXTRACT operator for DB2 platform
     private static ExpressionOperator db2ExtractOperator() {
-        return new DB2Platform2.DB2ExtractOperator();
+        return new DB2Platform.DB2ExtractOperator();
     }
 
     /**
