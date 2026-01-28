@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -184,18 +184,22 @@ public class PersistenceUnitProcessor {
         URL result;
         String protocol = pxmlURL.getProtocol();
         if("file".equals(protocol)) { // NOI18N
-            StringBuilder path = new StringBuilder();
-            boolean firstElement = true;
-            for (int i=0;i<descriptorDepth;i++){
-                if (!firstElement){
-                    path.append("/"); // 315097 URL use standard separators
+            if (pxmlURL.getPath().endsWith(descriptorLocation)) {
+                StringBuilder path = new StringBuilder();
+                boolean firstElement = true;
+                for (int i=0;i<descriptorDepth;i++){
+                    if (!firstElement){
+                        path.append("/"); // 315097 URL use standard separators
+                    }
+                    path.append("..");
+                    firstElement = false;
                 }
-                path.append("..");
-                firstElement = false;
+                // e.g. file:/tmp/META-INF/persistence.xml
+                // 210280: any file url will be assumed to always reference a file (not a directory)
+                result = new URL(pxmlURL, path.toString()); // NOI18N
+            } else {
+                result = new URL(pxmlURL.toString());
             }
-            // e.g. file:/tmp/META-INF/persistence.xml
-            // 210280: any file url will be assumed to always reference a file (not a directory)
-            result = new URL(pxmlURL, path.toString()); // NOI18N
         } else if("zip".equals(protocol) ||
                   "jar".equals(protocol) ||
                   "wsjar".equals(protocol)) {
@@ -242,10 +246,15 @@ public class PersistenceUnitProcessor {
         } else if ("bundleresource".equals(protocol)) {
             result = new URL("bundleresource://" + pxmlURL.getAuthority());
         } else {
-            StringBuilder path = new StringBuilder();
-            path.append("../".repeat(Math.max(0, descriptorDepth))); // 315097 URL use standard separators
-            // some other protocol
-            result = new URL(pxmlURL, path.toString()); // NOI18N
+            if (pxmlURL.getPath().endsWith(descriptorLocation)) {
+                StringBuilder path = new StringBuilder();
+                path.append("../".repeat(Math.max(0, descriptorDepth))); // 315097 URL use standard separators
+                // some other protocol
+                result = new URL(pxmlURL, path.toString()); // NOI18N
+            } else {
+                // some other protocol
+                result = new URL(pxmlURL.toString());
+            }
         }
         result = fixUNC(result);
         return result;
