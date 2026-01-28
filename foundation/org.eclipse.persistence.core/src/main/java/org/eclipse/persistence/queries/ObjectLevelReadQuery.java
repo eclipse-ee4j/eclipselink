@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -2212,6 +2213,16 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
+     * If no wait timeout was set from a query hint, grab the
+     * default one from the session if one is available.
+     */
+    public Integer getEffectiveWaitTimeout() {
+        return this.waitTimeout == null ?
+            this.session.getPessimisticLockTimeoutDefault() :
+            this.waitTimeout;
+    }
+
+    /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
@@ -2247,9 +2258,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             if (this.lockModeType.equals(NONE)) {
                 setLockMode(ObjectBuildingQuery.NO_LOCK);
             } else if (this.lockModeType.contains(PESSIMISTIC_)) {
-                // If no wait timeout was set from a query hint, grab the
-                // default one from the session if one is available.
-                Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
+                Integer timeout = getEffectiveWaitTimeout();
                 Long convertedTimeout =null;
                 TimeUnit timeoutUnit = (this.waitTimeoutUnit == null) ? this.session.getPessimisticLockTimeoutUnitDefault() : this.waitTimeoutUnit;
                 if (timeout == null) {
