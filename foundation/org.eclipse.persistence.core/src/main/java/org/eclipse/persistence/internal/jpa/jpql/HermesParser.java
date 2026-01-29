@@ -120,7 +120,7 @@ public final class HermesParser implements JPAQueryBuilder {
                 if (info == null) {
                     parameters.put(name, new ParameterInfo(type, parameterType));
                 } else {
-                info.merge(type);
+                    info.merge(type);
                 }
             }
             for (Map.Entry<String, ParameterInfo> entry : parameters.entrySet()) {
