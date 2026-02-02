@@ -1027,6 +1027,190 @@
             </properties>
         </profile>
         <profile>
+            <id>db2-start</id>
+            <build>
+                <plugins>
+                    <!-- Docker Maven Plugin 
+
+                        Note, macOS may need to set DOCKER_HOST via e.g. 
+                    
+                        DOCKER_HOST=unix:///Users/$(whoami)/.docker/run/docker.sock
+                    -->
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <id>gen-db2-init</id>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${project.build.directory}/db2-init" />
+
+                                        <echo file="${project.build.directory}/db2-init/init.sql"><![CDATA[
+                                        CONNECT TO ${db.name};
+                                        CREATE USER TEMPORARY TABLESPACE USR_TMP_4K PAGESIZE 4K MANAGED BY AUTOMATIC STORAGE BUFFERPOOL IBMDEFAULTBP;
+                                        CONNECT RESET;
+                                        TERMINATE;
+                                        ]]></echo>
+
+                                        <echo file="${project.build.directory}/db2-init/init-db2.sh"><![CDATA[
+                                        #!/usr/bin/env bash
+                                        set -euo pipefail
+                                        : "${DB2INSTANCE:?DB2INSTANCE not set}"
+                                        : "${DBNAME:?DBNAME not set}"
+                                        su - "$DB2INSTANCE" -c "db2 -tvsf /opt/db2-init/init.sql"
+                                        ]]></echo>
+
+                                        <chmod file="${project.build.directory}/db2-init/init-db2.sh" perm="755" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.48.0</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <!-- Declare the named volume "db2data" so we can create/remove it -->
+                            <volumes>
+                                <volume>
+                                    <name>db2data</name>
+                                    <driver>local</driver>
+                                </volume>
+                            </volumes>
+                            
+                            <images>
+                                <image>
+                                    <alias>db2</alias>
+                                    <name>icr.io/db2_community/db2</name>
+                                    <run>
+                                        <!-- Give the container a fixed name (like name db2server) -->
+                                        <containerNamePattern>db2server</containerNamePattern>
+
+                                        <hostname>db2host</hostname>
+
+                                        <ports>
+                                            <port>50000:${db.port}</port>
+                                        </ports>
+                                        
+                                        <platform>linux/amd64</platform>
+
+                                        <env>
+                                            <LICENSE>accept</LICENSE>
+                                            <DB2INSTANCE>${db.user}</DB2INSTANCE>
+                                            <DB2INST1_PASSWORD>${db.pwd}</DB2INST1_PASSWORD>
+                                            <DBNAME>${db.name}</DBNAME>
+                                        </env>
+
+                                        <privileged>true</privileged>
+
+                                        <volumes>
+                                            <bind>
+                                                <volume>db2data:/database</volume>
+                                                <volume>${project.build.directory}/db2-init:/opt/db2-init:ro</volume>
+                                            </bind>
+                                        </volumes>
+
+                                        <!-- 
+                                            Wait for DB2 to be ready before proceeding
+                                            
+                                            Note: this can take quite some time. On a M1 Pro:
+                                            DOCKER> [icr.io/db2_community/db2:latest] "db2": Waited on log out 'Setup has completed' 302450 ms 
+                                        -->
+                                        <wait>
+                                            <log>Setup has completed</log>
+                                            <time>300000</time> <!-- 5 minutes timeout -->
+                                            
+                                            <exec>
+                                                <postStart>bash /opt/db2-init/init-db2.sh</postStart>
+                                                <breakOnError>true</breakOnError>
+                                            </exec>
+                                        </wait>
+                                        <!-- Container is started detached by the plugin (no TTY needed). -->
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <!-- Force stop and remove specific container by name -->
+                            <execution>
+                                <id>force-remove-db2server</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                    <!-- Target specific container name -->
+                                    <containerNamePattern>db2server</containerNamePattern>
+                                    <!-- Force removal -->
+                                    <removeVolumes>false</removeVolumes>
+                                </configuration>
+                            </execution>
+
+                            <!-- Stop and remove any existing db2server container first -->
+                            <execution>
+                                <id>cleanup-old-container</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                    <goal>remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                    <!-- Remove all containers for this image -->
+                                    <allContainers>true</allContainers>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
+
+                            <!-- docker volume rm db2data (ignore error if it didn't exist) -->
+                            <execution>
+                                <id>cleanup-old-volume</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>volume-remove</goal>
+                                </goals>
+                                <configuration>
+                                    <verbose>true</verbose>
+                                </configuration>
+                            </execution>
+
+                            <!-- docker volume create db2data -->
+                            <execution>
+                                <id>create-db2-volume</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>volume-create</goal>
+                                </goals>
+                            </execution>
+
+                            <!-- docker run ... -->
+                            <execution>
+                                <id>start-db2</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>h2</id>
             <properties>
                 <test.properties.file>${user.home}/${test.h2.properties.file}</test.properties.file>
@@ -1049,6 +1233,62 @@
                 <db.driver.version>${mysql.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
+        </profile>
+        <profile>
+            <id>mysql-start</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.48.0</version>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>mysql</alias>
+                                    <name>mysql:8.0.43</name>
+
+                                    <run>
+                                        <containerNamePattern>mysqlserver</containerNamePattern>
+
+                                        <env>
+                                            <MYSQL_ROOT_PASSWORD>${db.pwd}</MYSQL_ROOT_PASSWORD>
+                                            <MYSQL_DATABASE>ecltests</MYSQL_DATABASE>
+                                        </env>
+
+                                        <ports>
+                                            <port>3306:3306</port>
+                                        </ports>
+
+                                        <cmd>
+                                            <exec>
+                                                <arg>--log-bin-trust-function-creators=1</arg>
+                                            </exec>
+                                        </cmd>
+
+                                        <!-- Wait until MySQL is really up -->
+                                        <wait>
+                                            <log><![CDATA[port: 3306  MySQL Community Server - GPL]]></log>
+                                            <time>600000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>start-mysql</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>mariadb</id>
