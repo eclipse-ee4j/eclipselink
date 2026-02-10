@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -157,6 +158,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor14<MetadataAnnotatedElem
         // set method with the boxed class which will not be found. We deal with
         // boxing the type when generating the canonical model.
         annotatedElement.setPrimitiveType(primitiveType);
+        annotatedElement.setType(primitiveType.getKind().toString().toLowerCase());
         return annotatedElement;
     }
 
