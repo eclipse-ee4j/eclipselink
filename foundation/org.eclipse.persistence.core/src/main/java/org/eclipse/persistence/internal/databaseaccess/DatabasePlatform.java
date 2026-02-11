@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2024 IBM Corporation. All rights reserved.
  *
@@ -3127,7 +3128,7 @@ public class DatabasePlatform extends DatasourcePlatform implements DDLPlatform 
      * Return the mapping of class types to database types for the schema framework.
      */
     protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
-        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = DB_TYPES;
+        Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = new HashMap<>(DB_TYPES);
         getJsonPlatform().updateFieldTypes(fieldTypeMapping);
         return fieldTypeMapping;
     }
