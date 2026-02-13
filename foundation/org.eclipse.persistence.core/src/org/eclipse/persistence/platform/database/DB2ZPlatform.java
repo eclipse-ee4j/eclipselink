@@ -389,19 +389,10 @@ public class DB2ZPlatform extends DB2Platform {
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for (int i = 0; i < items.size(); i++) {
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == (items.size() - 1)) {
-                        final int index = this.argumentIndices[i];
-                        Expression item = items.get(index);
+                        Expression item = items.get(i);
 
                         if(item.isParameterExpression()) {
                             ((ParameterExpression) item).setCanBind(false);
@@ -457,19 +448,10 @@ public class DB2ZPlatform extends DB2Platform {
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for (int i = 0; i < items.size(); i++) {
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == (items.size() - 1)) {
-                        final int index = this.argumentIndices[i];
-                        Expression item = items.get(index);
+                        Expression item = items.get(i);
 
                         if(item.isParameterExpression()) {
                             ((ParameterExpression) item).setCanBind(false);

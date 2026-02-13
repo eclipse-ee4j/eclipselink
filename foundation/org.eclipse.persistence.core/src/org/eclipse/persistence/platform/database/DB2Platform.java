@@ -29,15 +29,20 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.platform.database;
 
-import java.io.*;
-import java.sql.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.expressions.ListExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall.ParameterType;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
@@ -46,7 +51,14 @@ import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.StoredProcedureCall;
+import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 
 /**
@@ -546,14 +558,6 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for(Expression item : items) {
                     if(item.isParameterExpression()) {
                         ((ParameterExpression) item).setCanBind(false);
@@ -658,18 +662,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
-                    Expression item = items.get(index);
+                    Expression item = items.get(i);
                     boolean shouldBind = true;
 
                     // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
@@ -679,7 +674,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                     if(allBind) {
                         if(printer.getPlatform().shouldBindLiterals()) {
-                            if((i == (this.argumentIndices.length - 1))) {
+                            if((i == (items.size() - 1))) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -687,7 +682,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                             if(item.isConstantExpression()) {
                                 // The first literal has to be disabled
                                 shouldBind = allBind = false;
-                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                            } else if((i == (items.size() - 1)) && item.isParameterExpression()) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -972,22 +967,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     }
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int k = 0; k < this.argumentIndices.length; k++){
-                        this.argumentIndices[k] = k;
-                    }
-                }
-
                 for (int j = 0; j < items.size(); j++) {
-                    final int index = this.argumentIndices[j];
-                    Expression item = items.get(index);
+                    Expression item = items.get(j);
 
                     if(item.isParameterExpression()) {
-                        ((ParameterExpression) item).setCanBind(argumentBinding[index]);
+                        ((ParameterExpression) item).setCanBind(argumentBinding[j]);
                     } else if(item.isConstantExpression()) {
-                        ((ConstantExpression) item).setCanBind(argumentBinding[index]);
+                        ((ConstantExpression) item).setCanBind(argumentBinding[j]);
                     }
                 }
                 super.printCollection(items, printer);
@@ -1094,22 +1080,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     }
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int k = 0; k < this.argumentIndices.length; k++){
-                        this.argumentIndices[k] = k;
-                    }
-                }
-
                 for (int j = 0; j < items.size(); j++) {
-                    final int index = this.argumentIndices[j];
-                    Expression item = items.get(index);
+                    Expression item = items.get(j);
 
                     if(item.isParameterExpression()) {
-                        ((ParameterExpression) item).setCanBind(argumentBinding[index]);
+                        ((ParameterExpression) item).setCanBind(argumentBinding[j]);
                     } else if(item.isConstantExpression()) {
-                        ((ConstantExpression) item).setCanBind(argumentBinding[index]);
+                        ((ConstantExpression) item).setCanBind(argumentBinding[j]);
                     }
                 }
                 super.printCollection(items, printer);
@@ -1227,18 +1204,11 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
+                // #2259: As operator's state is shared among all threads, we cannot use this.argumentIndices
+                // Just iterate through items directly
                 boolean allBind = true;
                 for (int i = 0; i < items.size(); i++) {
-                    final int index = this.argumentIndices[i];
-                    Expression item = items.get(index);
+                    Expression item = items.get(i);
                     boolean shouldBind = true;
 
                     // If the item isn't a Constant/Parameter, this will suffice and the rest should bind
@@ -1248,7 +1218,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
                     if(allBind) {
                         if(printer.getPlatform().shouldBindLiterals()) {
-                            if((i == (this.argumentIndices.length - 1))) {
+                            if((i == (items.size() - 1))) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
@@ -1256,7 +1226,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
                             if(item.isConstantExpression()) {
                                 // The first literal has to be disabled
                                 shouldBind = allBind = false;
-                            } else if((i == (this.argumentIndices.length - 1)) && item.isParameterExpression()) {
+                            } else if((i == (items.size() - 1)) && item.isParameterExpression()) {
                                 // The last parameter has to be disabled
                                 shouldBind = allBind = false;
                             }
