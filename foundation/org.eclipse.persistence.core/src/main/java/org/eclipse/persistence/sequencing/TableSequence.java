@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -165,7 +166,7 @@ public class TableSequence extends QuerySequence {
     }
 
     public String getTableName() {
-        return getTable().getQualifiedName();
+        return getTable().getName();
     }
 
     public String getQualifiedTableName() {
