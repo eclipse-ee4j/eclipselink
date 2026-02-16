@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.workbenchintegration;
+
+import java.util.Iterator;
 
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -94,7 +96,9 @@ public class SequencingWorkbenchIntegrationTest extends AutoVerifyTestCase {
             login.getDatasourcePlatform().getSequences().size()) {
             throw new TestErrorException("Number of sequences has changed");
         }
-        for (Sequence sequence : originalLogin.getDatasourcePlatform().getSequences().values()) {
+        Iterator it = originalLogin.getDatasourcePlatform().getSequences().values().iterator();
+        while (it.hasNext()) {
+            Sequence sequence = (Sequence)it.next();
             if (!sequence.equals(login.getSequence(sequence.getName()))) {
                 throw new TestErrorException("Sequence " + sequence.getName() + " has changed");
             }

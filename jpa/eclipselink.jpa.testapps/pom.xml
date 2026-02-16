@@ -312,7 +312,6 @@
         <module>jpa.test.fetchgroups</module>
         <module>jpa.test.fieldaccess.advanced</module>
         <module>jpa.test.fieldaccess.relationships</module>
-        <module>jpa.test.identity</module>
         <module>jpa.test.inheritance</module>
         <module>jpa.test.inherited</module>
         <module>jpa.test.jpaadvancedproperties</module>

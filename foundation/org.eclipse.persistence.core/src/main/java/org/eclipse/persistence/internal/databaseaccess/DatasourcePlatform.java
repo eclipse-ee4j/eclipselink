@@ -13,8 +13,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-//     09/29/2016-2.7 Tomas Kraus
-//       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
 //     09/14/2017-2.6 Will Dazey
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     02/20/2018-2.7 Will Dazey
@@ -44,7 +42,6 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.QuerySequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -52,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -90,7 +86,7 @@ public class DatasourcePlatform implements Platform {
     protected Sequence defaultSequence;
 
     /** Store map of sequence names to sequences */
-    protected Map<String, Sequence> sequences;
+    protected Map sequences;
 
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
@@ -219,11 +215,11 @@ public class DatasourcePlatform implements Platform {
             setDefaultSequence(defaultSequenceClone);
         }
         if (getSequences() != null) {
-            Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
-            Map<String, Sequence> sequencesDeepClone = new HashMap<>(getSequences().size());
-            Iterator<Sequence> it = sequencesCopy.values().iterator();
+            HashMap sequencesCopy = new HashMap(getSequences());
+            HashMap sequencesDeepClone = new HashMap(getSequences().size());
+            Iterator it = sequencesCopy.values().iterator();
             while (it.hasNext()) {
-                Sequence sequence = it.next();
+                Sequence sequence = (Sequence)it.next();
                 if ((defaultSequenceClone != null) && (sequence == getDefaultSequence())) {
                     sequencesDeepClone.put(defaultSequenceClone.getName(), defaultSequenceClone);
                 } else {
@@ -696,11 +692,6 @@ public class DatasourcePlatform implements Platform {
     }
 
     @Override
-    public boolean isOracle12() {
-        return false;
-    }
-
-    @Override
     public boolean isOracle23() {
         return false;
     }
@@ -917,19 +908,18 @@ public class DatasourcePlatform implements Platform {
         synchronized(sequencesLock) {
             if (isSessionConnected) {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap<>();
+                    this.sequences = new HashMap();
                     this.sequences.put(sequence.getName(), sequence);
                 } else {
                     if (!this.sequences.containsKey(sequence.getName())) {
-                        @SuppressWarnings({"unchecked"})
-                        Map<String, Sequence> newSequences = (Map<String, Sequence>)((HashMap<String, Sequence>)this.sequences).clone();
+                        Map newSequences = (Map)((HashMap)this.sequences).clone();
                         newSequences.put(sequence.getName(), sequence);
                         this.sequences = newSequences;
                     }
                 }
             } else {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap<>();
+                    this.sequences = new HashMap();
                 }
                 this.sequences.put(sequence.getName(), sequence);
             }
@@ -945,7 +935,7 @@ public class DatasourcePlatform implements Platform {
             return getDefaultSequence();
         } else {
             if (this.sequences != null) {
-                return this.sequences.get(seqName);
+                return (Sequence)this.sequences.get(seqName);
             } else {
                 return null;
             }
@@ -968,7 +958,7 @@ public class DatasourcePlatform implements Platform {
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
             synchronized(sequencesLock) {
-                return this.sequences.remove(seqName);
+                return (Sequence)this.sequences.remove(seqName);
             }
         } else {
             return null;
@@ -988,7 +978,7 @@ public class DatasourcePlatform implements Platform {
      * Returns a map of sequence names to Sequences (may be null).
      */
     @Override
-    public Map<String, Sequence> getSequences() {
+    public Map getSequences() {
         return this.sequences;
     }
 
@@ -997,15 +987,15 @@ public class DatasourcePlatform implements Platform {
      * Used only for writing into XML or Java.
      */
     @Override
-    public Map<String, Sequence> getSequencesToWrite() {
+    public Map getSequencesToWrite() {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
-        Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
-        Map<String, Sequence> sequencesToWrite = new HashMap<>();
-        Iterator<Sequence> it = sequencesCopy.values().iterator();
+        Map sequencesCopy = new HashMap(getSequences());
+        Map sequencesToWrite = new HashMap();
+        Iterator it = sequencesCopy.values().iterator();
         while (it.hasNext()) {
-            Sequence sequence = it.next();
+            Sequence sequence = (Sequence)it.next();
             if (!(sequence instanceof DefaultSequence) || ((DefaultSequence)sequence).hasPreallocationSize()) {
                 sequencesToWrite.put(sequence.getName(), sequence);
             }
@@ -1031,7 +1021,7 @@ public class DatasourcePlatform implements Platform {
      * Sets sequences - for XML support only
      */
     @Override
-    public void setSequences(Map<String, Sequence> sequences) {
+    public void setSequences(Map sequences) {
         this.sequences = sequences;
     }
 
@@ -1175,28 +1165,6 @@ public class DatasourcePlatform implements Platform {
      */
     public DatasourceCall buildNativeCall(String queryString) {
         return new SQLCall(queryString);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator) {
-    }
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    public void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames) {
     }
 
     /**
