@@ -576,9 +576,9 @@
     </target>
 
     <target name="test-less-jdk21" if="${is.less.21.jdk}">
-        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
         <echo message="DEBUG: java.version = ${java.version}"/> <!-- will be removed later -->
         <echo message="DEBUG: is.less.21.jdk: ${is.less.21.jdk}"/>
+        <test include="org.eclipse.persistence.testing.tests.security.SecurityTestModel"/>
     </target>
 
     <!-- Test target to run/debug single ${test.class}. -->
