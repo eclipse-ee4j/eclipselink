@@ -86,4 +86,8 @@ jobs:
       - name: Verify
         run: |
           export M2_HOME=/usr/share/apache-maven-${{ env.maven_version }}
-          ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true test-lrg
+          ant -f antbuild.xml \
+            -Dtest.fail.fast=true \
+            -Dfail.on.error=true \
+            -Dadditional.jvmargs="-Djava.security.manager=allow" \
+            test-lrg
