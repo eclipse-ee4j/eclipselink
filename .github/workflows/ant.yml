@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  maven_version: 3.9.11
+  maven_version: 3.9.12
 jobs:
   build:
     name: Test on JDK ${{ matrix.java_version }}
