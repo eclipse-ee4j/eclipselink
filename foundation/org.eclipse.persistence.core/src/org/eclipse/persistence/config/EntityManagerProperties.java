@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -319,6 +319,21 @@ public class EntityManagerProperties {
      * )
      */
     public static final String COMPOSITE_UNIT_PROPERTIES = PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES;
+    
+    /**
+     * Overrides the Bean Validation Group(s) that will execute during a prePersist event. This should be a class or class[].
+     */
+    public static final String VALIDATION_GROUP_PRE_UPDATET = "eclipselink.beanvalidation.group.pre-persist";
+    
+    /**
+     * Overrides the Bean Validation Group(s) that will execute during a preUpdate event. This should be a class or class[].
+     */
+    public static final String VALIDATION_GROUP_PRE_UPDATE = "eclipselink.beanvalidation.group.pre-update";
+    
+    /**
+     * Overrides the Bean Validation Group(s) that will execute during a preRemove event. This should be a class or class[].
+     */
+    public static final String VALIDATION_GROUP_PRE_REMOVE = "eclipselink.beanvalidation.group.pre-remove";
 
     private static final Set<String> supportedProperties = new HashSet<String>() {
 
@@ -344,6 +359,9 @@ public class EntityManagerProperties {
             add(PERSISTENCE_CONTEXT_COMMIT_ORDER);
             add(FLUSH_CLEAR_CACHE);
             add(COMPOSITE_UNIT_PROPERTIES);
+            add(VALIDATION_GROUP_PRE_PERSIST);
+            add(VALIDATION_GROUP_PRE_UPDATE);
+            add(VALIDATION_GROUP_PRE_REMOVE);
         }
     };
 
