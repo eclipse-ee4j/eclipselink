@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -76,8 +76,6 @@
 //       - 480787 : Wrap several privileged method calls with a doPrivileged block
 //     12/03/2015-2.6 Dalia Abo Sheasha
 //       - 483582: Add the jakarta.persistence.sharedCache.mode property
-//     09/29/2016-2.7 Tomas Kraus
-//       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
 //     09/14/2017-2.6 Will Dazey
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     10/24/2017-3.0 Tomas Kraus
@@ -833,7 +831,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (getDatabaseSession().isRemoteSession() && !getDatabaseSession().getAccessor().isConnected()) {
                         getDatabaseSession().getAccessor().connect(getDatabaseSession().getLogin(), getDatabaseSession());
                     }
-                    session.getDatasourcePlatform().initIdentitySequences(getDatabaseSession(), MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;

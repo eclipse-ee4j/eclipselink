@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.Serializable;
 import java.io.Writer;
@@ -288,29 +287,6 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
     boolean usesPlatformDefaultSequence();
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * This method is called from {@code EntityManagerSetupImpl} after login and optional schema generation.
-     * Method is also called from {@code TableCreator} class during tables creation and update..
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    void initIdentitySequences(final Session session, final String defaultIdentityGenerator);
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * Method is also called from {@code TableCreator} class during tables removal.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
 
     /**
      * INTERNAL:

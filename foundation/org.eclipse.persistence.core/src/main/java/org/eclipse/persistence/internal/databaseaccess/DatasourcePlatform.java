@@ -13,8 +13,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-//     09/29/2016-2.7 Tomas Kraus
-//       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
 //     09/14/2017-2.6 Will Dazey
 //       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     02/20/2018-2.7 Will Dazey
@@ -44,7 +42,6 @@ import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.QuerySequence;
 import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.Session;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -52,7 +49,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * DatasourcePlatform is private to TopLink. It encapsulates behavior specific to a datasource platform
@@ -1175,28 +1171,6 @@ public class DatasourcePlatform implements Platform {
      */
     public DatasourceCall buildNativeCall(String queryString) {
         return new SQLCall(queryString);
-    }
-
-    /**
-     * INTERNAL:
-     * Initialize platform specific identity sequences.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @since 2.7
-     */
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator) {
-    }
-
-    /**
-     * INTERNAL:
-     * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
-     * @param session Active database session (in connected state).
-     * @param defaultIdentityGenerator Default identity generator sequence name.
-     * @param tableNames Set of table names to check for identity sequence removal.
-     * @since 2.7
-     */
-    public void removeIdentitySequences(
-            final Session session, final String defaultIdentityGenerator, final Set<String> tableNames) {
     }
 
     /**

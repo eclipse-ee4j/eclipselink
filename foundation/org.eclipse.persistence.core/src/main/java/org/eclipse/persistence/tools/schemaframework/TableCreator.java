@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2026 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -53,10 +53,6 @@ import org.eclipse.persistence.sessions.Session;
  * @author Peter Krogh
  */
 public class TableCreator {
-    /** Default identity generator sequence name.
-     *  Copy of value from JPA: {@code MetadataProject.DEFAULT_IDENTITY_GENERATOR}. */
-    public static final String DEFAULT_IDENTITY_GENERATOR = "SEQ_GEN_IDENTITY";
-
     /** Flag to disable table existence check before create. */
     public static boolean CHECK_EXISTENCE = true;
 
@@ -206,7 +202,6 @@ public class TableCreator {
         createConstraints(missingTables, session, schemaManager, false);
 
         schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
-        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
     }
 
     /**
@@ -300,7 +295,6 @@ public class TableCreator {
                         }
                     }
                 }
-                session.getDatasourcePlatform().removeIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR, tableNames);
                 tables = failed;
             }
         } finally {
@@ -681,8 +675,6 @@ public class TableCreator {
         createConstraints(session, schemaManager, false);
 
         schemaManager.createSequences();
-        session.getDatasourcePlatform().initIdentitySequences(session, DEFAULT_IDENTITY_GENERATOR);
-
     }
 
     // Reads column information from the database.
