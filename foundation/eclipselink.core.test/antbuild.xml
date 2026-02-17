@@ -62,7 +62,7 @@
     <available file="../${ant.project.name}" type="dir" property="core_test.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="core_test.is.local"/>
     <condition property="is.less.21.jdk" value="true" else="false">
-        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-7]).*"/>
+        <matches string="${java.version}" pattern="^1\.(?:[8-9]|[1-9]\d)(?:\.\d+)*.*|^9.*|^1(?:[0-7]).*"/>
     </condition>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
