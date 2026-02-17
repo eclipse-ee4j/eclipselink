@@ -86,7 +86,7 @@ public class DatasourcePlatform implements Platform {
     protected Sequence defaultSequence;
 
     /** Store map of sequence names to sequences */
-    protected Map sequences;
+    protected Map<String, Sequence> sequences;
 
     /** Delimiter to use for fields and tables using spaces or other special values */
     protected String startDelimiter = null;
@@ -215,11 +215,11 @@ public class DatasourcePlatform implements Platform {
             setDefaultSequence(defaultSequenceClone);
         }
         if (getSequences() != null) {
-            HashMap sequencesCopy = new HashMap(getSequences());
-            HashMap sequencesDeepClone = new HashMap(getSequences().size());
-            Iterator it = sequencesCopy.values().iterator();
+            Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+            Map<String, Sequence> sequencesDeepClone = new HashMap<>(getSequences().size());
+            Iterator<Sequence> it = sequencesCopy.values().iterator();
             while (it.hasNext()) {
-                Sequence sequence = (Sequence)it.next();
+                Sequence sequence = it.next();
                 if ((defaultSequenceClone != null) && (sequence == getDefaultSequence())) {
                     sequencesDeepClone.put(defaultSequenceClone.getName(), defaultSequenceClone);
                 } else {
@@ -908,18 +908,19 @@ public class DatasourcePlatform implements Platform {
         synchronized(sequencesLock) {
             if (isSessionConnected) {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                     this.sequences.put(sequence.getName(), sequence);
                 } else {
                     if (!this.sequences.containsKey(sequence.getName())) {
-                        Map newSequences = (Map)((HashMap)this.sequences).clone();
+                        @SuppressWarnings({"unchecked"})
+                        Map<String, Sequence> newSequences = (Map<String, Sequence>)((HashMap<String, Sequence>)this.sequences).clone();
                         newSequences.put(sequence.getName(), sequence);
                         this.sequences = newSequences;
                     }
                 }
             } else {
                 if (this.sequences == null) {
-                    this.sequences = new HashMap();
+                    this.sequences = new HashMap<>();
                 }
                 this.sequences.put(sequence.getName(), sequence);
             }
@@ -935,7 +936,7 @@ public class DatasourcePlatform implements Platform {
             return getDefaultSequence();
         } else {
             if (this.sequences != null) {
-                return (Sequence)this.sequences.get(seqName);
+                return this.sequences.get(seqName);
             } else {
                 return null;
             }
@@ -958,7 +959,7 @@ public class DatasourcePlatform implements Platform {
     public Sequence removeSequence(String seqName) {
         if (this.sequences != null) {
             synchronized(sequencesLock) {
-                return (Sequence)this.sequences.remove(seqName);
+                return this.sequences.remove(seqName);
             }
         } else {
             return null;
@@ -978,7 +979,7 @@ public class DatasourcePlatform implements Platform {
      * Returns a map of sequence names to Sequences (may be null).
      */
     @Override
-    public Map getSequences() {
+    public Map<String, Sequence> getSequences() {
         return this.sequences;
     }
 
@@ -987,15 +988,15 @@ public class DatasourcePlatform implements Platform {
      * Used only for writing into XML or Java.
      */
     @Override
-    public Map getSequencesToWrite() {
+    public Map<String, Sequence> getSequencesToWrite() {
         if ((getSequences() == null) || getSequences().isEmpty()) {
             return null;
         }
-        Map sequencesCopy = new HashMap(getSequences());
-        Map sequencesToWrite = new HashMap();
-        Iterator it = sequencesCopy.values().iterator();
+        Map<String, Sequence> sequencesCopy = new HashMap<>(getSequences());
+        Map<String, Sequence> sequencesToWrite = new HashMap<>();
+        Iterator<Sequence> it = sequencesCopy.values().iterator();
         while (it.hasNext()) {
-            Sequence sequence = (Sequence)it.next();
+            Sequence sequence = it.next();
             if (!(sequence instanceof DefaultSequence) || ((DefaultSequence)sequence).hasPreallocationSize()) {
                 sequencesToWrite.put(sequence.getName(), sequence);
             }
@@ -1021,7 +1022,7 @@ public class DatasourcePlatform implements Platform {
      * Sets sequences - for XML support only
      */
     @Override
-    public void setSequences(Map sequences) {
+    public void setSequences(Map<String, Sequence> sequences) {
         this.sequences = sequences;
     }
 

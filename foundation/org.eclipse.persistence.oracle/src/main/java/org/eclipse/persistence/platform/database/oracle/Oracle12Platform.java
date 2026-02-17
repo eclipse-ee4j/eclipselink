@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.database.oracle;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -21,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Struct;
 import java.util.List;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -35,6 +38,21 @@ public class Oracle12Platform extends Oracle11Platform {
 
     public Oracle12Platform() {
         super();
+    }
+
+    /**
+     * INTERNAL:
+     * Append the receiver's field 'identity' constraint clause to a writer.
+     * @param writer Target writer.
+     * @since 2.7
+     */
+    @Override
+    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+        try {
+            writer.write(" GENERATED AS IDENTITY");
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
     }
 
     /**
