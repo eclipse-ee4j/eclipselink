@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, 2023 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2023 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -389,19 +389,10 @@ public class DB2ZPlatform extends DB2Platform {
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for (int i = 0; i < items.size(); i++) {
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == (items.size() - 1)) {
-                        final int index = this.argumentIndices[i];
-                        Expression item = items.get(index);
+                        Expression item = items.get(i);
 
                         if(item.isParameterExpression()) {
                             ((ParameterExpression) item).setCanBind(false);
@@ -457,19 +448,10 @@ public class DB2ZPlatform extends DB2Platform {
                     return;
                 }
 
-                // Initialize argumentIndices
-                if (this.argumentIndices == null) {
-                    this.argumentIndices = new int[items.size()];
-                    for (int i = 0; i < this.argumentIndices.length; i++){
-                        this.argumentIndices[i] = i;
-                    }
-                }
-
                 for (int i = 0; i < items.size(); i++) {
                     // Disable the first item, which should be <operand2> for this operator
                     if(i == (items.size() - 1)) {
-                        final int index = this.argumentIndices[i];
-                        Expression item = items.get(index);
+                        Expression item = items.get(i);
 
                         if(item.isParameterExpression()) {
                             ((ParameterExpression) item).setCanBind(false);

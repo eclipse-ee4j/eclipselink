@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2021, 2022 IBM Corporation. All rights reserved.
+ * Copyright (c) 2021, 2026 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,10 +95,10 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
      * Print SQL
      */
     public void printSQL(ExpressionSQLPrinter printer) {
-        ListExpressionOperator operator = (ListExpressionOperator) this.operator;
+        ListExpressionOperator platformOperator = (ListExpressionOperator) getPlatformOperator(printer.getPlatform());
 
-        operator.setIsComplete(true);
-        operator.printCollection(this.children, printer);
+        platformOperator.setIsComplete(true);
+        platformOperator.printCollection(this.children, printer);
     }
 
     @Override
