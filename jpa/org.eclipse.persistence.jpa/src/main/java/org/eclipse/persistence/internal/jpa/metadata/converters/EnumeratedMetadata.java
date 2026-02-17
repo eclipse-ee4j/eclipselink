@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -131,8 +132,10 @@ public class EnumeratedMetadata extends MetadataConverter {
         }
         List<MetadataField> annotatedFields = new ArrayList<>();
         Collection<MetadataField> fields = referenceClass.getFields().values();
+        boolean isOrdinal = true;
         for (MetadataField field : fields) {
             if (field.isAnnotationPresent(JPA_ENUMERATED_VALUE)) {
+                isOrdinal = !"java.lang.String".equals(field.getType());
                 annotatedFields.add(field);
             }
         }
@@ -146,8 +149,8 @@ public class EnumeratedMetadata extends MetadataConverter {
             annotatedField = metadataClass.getField(annotatedFields.get(0).getName());
             fieldType = MetadataHelper.getClassForName(annotatedField.getType(), getMetadataFactory().getLoader());
         }
-        boolean isOrdinal = true;
         if (m_enumeratedType != null) {
+            // this setting wins
             isOrdinal = m_enumeratedType.equals(JPA_ENUM_ORDINAL);
         }
         EnumTypeConverter enumTypeConverter = new EnumTypeConverter(mapping, referenceClass.getName());

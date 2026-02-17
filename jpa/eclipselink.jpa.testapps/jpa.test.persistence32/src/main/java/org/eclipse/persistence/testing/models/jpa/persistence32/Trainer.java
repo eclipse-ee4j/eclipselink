@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +17,6 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
@@ -27,8 +27,6 @@ import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import static jakarta.persistence.EnumType.ORDINAL;
-import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -56,11 +54,11 @@ public class Trainer {
     private Team team;
 
     @Column(name = "STATUS_ORDINAL")
-    @Enumerated(ORDINAL)
+    // same as @Enumerated(ORDINAL)
     private TrainerStatusOrdinal statusOrdinal;
 
     @Column(name = "STATUS_STRING")
-    @Enumerated(STRING)
+    //  same as @Enumerated(STRING)
     private TrainerStatusString statusString;
 
     @OneToMany(mappedBy = "trainer")
