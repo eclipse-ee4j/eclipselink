@@ -132,6 +132,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     boolean isOracle9();
 
+    boolean isOracle12();
+
     boolean isOracle23();
 
     boolean isPointBase();

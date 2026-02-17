@@ -42,12 +42,23 @@ public class Oracle12Platform extends Oracle11Platform {
 
     /**
      * INTERNAL:
+     * Check whether current platform is Oracle 12c or later.
+     * @return Always returns {@code true} for instances of Oracle 12c platform.
+     * @since 2.7
+     */
+    @Override
+    public boolean isOracle12() {
+        return true;
+    }
+
+    /**
+     * INTERNAL:
      * Append the receiver's field 'identity' constraint clause to a writer.
      * @param writer Target writer.
      * @since 2.7
      */
     @Override
-    public void printFieldIdentityClause(Writer writer) throws ValidationException {
+    public void printFieldIdentityClause(final Writer writer) throws ValidationException {
         try {
             writer.write(" GENERATED AS IDENTITY");
         } catch (IOException ioException) {
