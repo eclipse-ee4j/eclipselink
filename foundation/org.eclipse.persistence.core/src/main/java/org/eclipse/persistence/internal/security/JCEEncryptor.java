@@ -1,6 +1,6 @@
 /*
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public final class JCEEncryptor implements org.eclipse.persistence.security.Secu
             decryptCipherAES_GCM.init(Cipher.DECRYPT_MODE, skGCM, parameterSpecGCM);
             // try AES/GCM first
             password = new String(decryptCipherAES_GCM.doFinal(bytePassword), StandardCharsets.UTF_8);
-        } catch (ArrayIndexOutOfBoundsException | IllegalBlockSizeException | NumberFormatException ce) {
+        } catch (ArrayIndexOutOfBoundsException | IllegalBlockSizeException | IllegalArgumentException ce) {
             // buildBytesFromHexString failed, assume clear text
             password = encryptedPswd;
         } catch (Exception u) {
