@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2009, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -58,7 +59,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class<?>[] groupPreUpdate;
     private final Class<?>[] groupPreRemove;
     private static final Class<?>[] groupDefault = new Class<?>[]{Default.class};
-    private final Map<ClassDescriptor, Validator> validatorMap;
+    private final Map<String, Validator> validatorMap;
 
     public BeanValidationListener(ValidatorFactory validatorFactory, Class<?>[] groupPrePersit, Class<?>[] groupPreUpdate, Class<?>[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
@@ -136,12 +137,13 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private Validator getValidator(DescriptorEvent event) {
         ClassDescriptor descriptor = event.getDescriptor();
-        Validator res = validatorMap.get(descriptor);
+        String alias = descriptor.getAlias();
+        Validator res = validatorMap.get(alias);
         if (res == null) {
             TraversableResolver traversableResolver = new AutomaticLifeCycleValidationTraversableResolver(descriptor);
             res = validatorFactory.usingContext().traversableResolver(traversableResolver).getValidator();
 
-            Validator t = validatorMap.put(descriptor, res);
+            Validator t = validatorMap.put(alias, res);
             if (t != null) {
                 // Threading collision, use existing
                 res = t;
