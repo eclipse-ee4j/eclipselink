@@ -1058,11 +1058,11 @@ public class SQLServerPlatform extends DatabasePlatform {
             return;
         }
         
-        // OFFSET + FETCH NEXT requires ORDER BY, so add an ordering if there are none
-        // this SQL will satisfy the query parser without actually changing the ordering of the rows
+        // OFFSET + FETCH NEXT requires ORDER BY
         List<Expression> orderBy = statement.getOrderByExpressions();
         if (orderBy.isEmpty()) {
-            orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
         }
         
         // decide exact syntax to use, depending on whether a limit is specified (could just have an offset)
