@@ -60,6 +60,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -109,14 +110,48 @@ public final class HermesParser implements JPAQueryBuilder {
 
         if (queryContext.inputParameters != null) {
 
+            Map<String, ParameterInfo> parameters = new LinkedHashMap<>();
             for (Map.Entry<InputParameter, Expression> entry : queryContext.inputParameters.entrySet()) {
                 ParameterExpression parameter = (ParameterExpression) entry.getValue();
+                String name = parameter.getField().getName();
+                Class<?> type = (Class<?>) parameter.getType();
+                ParameterType parameterType = entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED;
+                ParameterInfo info = parameters.get(name);
+                if (info == null) {
+                    parameters.put(name, new ParameterInfo(type, parameterType));
+                } else {
+                    info.merge(type);
+                }
+            }
+            for (Map.Entry<String, ParameterInfo> entry : parameters.entrySet()) {
+                ParameterInfo info = entry.getValue();
+                databaseQuery.addArgument(entry.getKey(), info.type, info.parameterType);
+            }
+        }
+    }
 
-                databaseQuery.addArgument(
-                    parameter.getField().getName(),
-                    (Class<?>) parameter.getType(),
-                    entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED
-                );
+    private static final class ParameterInfo {
+        private Class<?> type;
+        private ParameterType parameterType;
+
+        private ParameterInfo(Class<?> type, ParameterType parameterType) {
+            this.type = type == null ? Object.class : type;
+            this.parameterType = parameterType;
+        }
+
+        private void merge(Class<?> nextType) {
+            if (nextType == null) {
+                return;
+            }
+            if (this.type == Object.class) {
+                this.type = nextType;
+                return;
+            }
+            if (nextType == Object.class) {
+                return;
+            }
+            if (!this.type.equals(nextType)) {
+                this.type = Object.class;
             }
         }
     }
