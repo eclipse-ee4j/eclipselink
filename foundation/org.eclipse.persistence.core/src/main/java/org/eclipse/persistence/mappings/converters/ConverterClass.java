@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
@@ -192,6 +193,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setConverter(null);
+                m.setFieldClassification(m.getAttributeClassification());
+                m.setFieldClassificationClassName(m.getAttributeClassificationName());
             } else {
                 m.setConverter(this);
                 m.setFieldClassification(fieldClassification);
@@ -202,6 +205,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setKeyConverter(null);
+                m.setDirectKeyFieldClassification(m.getDirectKeyField().getType());
+                m.setDirectKeyFieldClassificationName(m.getDirectKeyField().getTypeName());
             } else {
                 m.setKeyConverter(this);
                 m.setDirectKeyFieldClassification(fieldClassification);
@@ -212,6 +217,8 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
             if (disableConversion) {
                 m.setValueConverter(null);
+                m.setDirectFieldClassification(m.getDirectField().getType());
+                m.setDirectFieldClassificationName(m.getDirectField().getTypeName());
             } else {
                 m.setValueConverter(this);
                 m.setDirectFieldClassification(fieldClassification);

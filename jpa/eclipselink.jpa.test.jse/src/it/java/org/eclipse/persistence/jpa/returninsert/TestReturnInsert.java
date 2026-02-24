@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,10 +22,18 @@ import java.util.Date;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Query;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.jpa.returninsert.model.*;
+import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetail;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailEmbedded;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailEmbeddedEmbedded;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailJoined;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailPK;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertMaster;
+import org.eclipse.persistence.jpa.returninsert.model.ReturnInsertMasterPK;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Test;
 
@@ -44,18 +53,14 @@ public class TestReturnInsert {
 
     @Test
     public void test() {
-        boolean supported = true;
         emf = Persistence.createEntityManagerFactory("returninsert-pu");
         try {
-            EntityManager em = emf.createEntityManager();
-        } catch (Exception e) {
-            supported = false;
+            if (!emf.unwrap(JpaEntityManagerFactory.class).getServerSession().getPlatform().isOracle()) {
+                System.out.println("Non supported platform. This test can be executed on OraclePlatform only!");
+                return;
+            }
+        } catch (PersistenceException pe) {
             System.out.println("Non supported platform. This test can be executed on OraclePlatform only!");
-        }
-        if (em != null) {
-            em.close();
-        }
-        if(!supported) {
             return;
         }
         setup();

@@ -78,32 +78,6 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
     }
 
     /**
-     * Build the mapping of database types to class types for the schema framework.
-     *
-     * @return database types to class types {@code Map} for the schema framework
-     */
-    @Override
-    protected Map<String, Class<?>> buildJavaTypes() {
-        final Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
-        // Mapping for JSON type.
-        getJsonPlatform().updateClassTypes(classTypeMapping);
-        return classTypeMapping;
-    }
-
-    /**
-     * Build the mapping of class types to database types for the schema framework.
-     *
-     * @return {@code Map} mapping class types to database types for the schema framework
-     */
-    @Override
-    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
-        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
-        // Mapping for JSON type.
-        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
-        return fieldTypeMapping;
-    }
-
-    /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index.
      * This support a wide range of different parameter types, and is heavily optimized for common types.
@@ -149,6 +123,29 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
         }
     }
 
+    /*
+                                 ____  ____  __
+                                |    \|    \|  |
+                                |  |  |  |  |  |__
+                                |____/|____/|_____|
+     */
+
+    @Override
+    protected Map<Class<?>, FieldDefinition.DatabaseType> buildDatabaseTypes() {
+        final Map<Class<?>, FieldDefinition.DatabaseType> fieldTypeMapping = super.buildDatabaseTypes();
+        // Mapping for JSON type.
+        getJsonPlatform().updateFieldTypes(fieldTypeMapping);
+        return fieldTypeMapping;
+    }
+
+    @Override
+    protected Map<String, Class<?>> buildJavaTypes() {
+        final Map<String, Class<?>> classTypeMapping = super.buildJavaTypes();
+        // Mapping for JSON type.
+        getJsonPlatform().updateClassTypes(classTypeMapping);
+        return classTypeMapping;
+    }
+
     @Override
     public void printFieldIdentityClause(Writer writer) throws ValidationException {
         try {
@@ -157,5 +154,4 @@ public class PostgreSQL10Platform extends PostgreSQLPlatform {
             throw ValidationException.fileError(ioException);
         }
     }
-
 }

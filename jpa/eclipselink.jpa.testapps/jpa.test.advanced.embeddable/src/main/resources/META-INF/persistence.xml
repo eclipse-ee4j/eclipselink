@@ -1,5 +1,6 @@
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -16,6 +17,9 @@
 
     <persistence-unit name="embeddable">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Continent</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Country</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Description</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.embeddable.Visitor</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,6 +53,7 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
@@ -319,7 +321,7 @@ public class ForeignKeyTest extends JUnitTestCase {
             Throwable cause = e.getCause();
 
             if (cause instanceof DatabaseException) {
-                assertTrue("Error Deleting row with constraint with different error.", cause.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException);
+                assertTrue("Error Deleting row with constraint with different error.", cause.getCause() instanceof SQLException);
             } else { 
                 throw e;
             }

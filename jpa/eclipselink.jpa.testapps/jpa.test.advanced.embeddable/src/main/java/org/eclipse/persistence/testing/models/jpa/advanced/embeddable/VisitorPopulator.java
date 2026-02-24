@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -28,7 +29,7 @@ public class VisitorPopulator {
      * @return Initialized sample instance of {@link Visitor} class.
      */
     public static Visitor visitorExample1() {
-        return new Visitor("1", "Alan E. Frechette",
+        return new Visitor(1, "Alan E. Frechette",
                 new Country("USA", "United States"));
     }
 
@@ -37,22 +38,22 @@ public class VisitorPopulator {
      * @return Initialized sample instance of {@link Visitor} class.
      */
     public static Visitor visitorExample2() {
-        return new Visitor("2", "Arthur D. Frechette",
+        return new Visitor(2, "Arthur D. Frechette",
                 new Country("GBR", "England"));
     }
 
     public static Visitor visitorExample3() {
-        return new Visitor("10", "Pepa Novak",
+        return new Visitor(10, "Pepa Novak",
                 new Country("CZE", "Czech Republic", "Europe"));
     }
 
     public static Visitor visitorExample4() {
-        return new Visitor("11", "Arthur D. Frechette",
+        return new Visitor(11, "Arthur D. Frechette",
                 new Country("GBR", "England", "ANT"));
     }
 
     public static Visitor visitorExample5() {
-        Visitor v = new Visitor("12", "Arthur D. Frechette",
+        Visitor v = new Visitor(12, "Arthur D. Frechette",
                 new Country("GBR", "England", "AFR"));
         v.getCountry().getContinent().setDescription(new Description("Note about Africa"));
         return v;

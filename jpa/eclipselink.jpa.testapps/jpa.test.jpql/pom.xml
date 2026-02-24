@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2022, 2024 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -139,4 +140,16 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>pgsql</id>
+            <properties>
+                <surefire.excludes>
+                    org.eclipse.persistence.testing.tests.jpa.jpql.advanced.JUnitJPQLJakartaDataNoAliasTest,
+                    org.eclipse.persistence.testing.tests.jpa.jpql.advanced.JUnitJPQLModifyTest
+                </surefire.excludes>
+            </properties>
+        </profile>
+    </profiles>
 </project>

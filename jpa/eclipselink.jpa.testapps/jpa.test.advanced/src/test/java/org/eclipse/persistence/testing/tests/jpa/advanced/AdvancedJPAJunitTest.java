@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 IBM Corporation. All rights reserved.
  *
@@ -2790,8 +2791,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             if(session.getDatasourcePlatform().isSQLServer()) {
                 session.executeNonSelectingSQL("UPDATE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' FROM CMP3_EMPLOYEE t0 WHERE t0.EMP_ID=" + emp.getId());
                 session.executeNonSelectingSQL("UPDATE t1 SET t1.NAME='Xenobiology' FROM CMP3_DEPT t1 WHERE t1.ID=" + dept.getId());
-            }
-            else {
+            } else if (session.getDatasourcePlatform().isPostgreSQL()){
+                session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE SET F_NAME='Joe', L_NAME='Josephson' WHERE EMP_ID=" + emp.getId());
+                session.executeNonSelectingSQL("UPDATE CMP3_DEPT SET NAME='Xenobiology' WHERE ID=" + dept.getId());
+            } else {
                 session.executeNonSelectingSQL("UPDATE CMP3_EMPLOYEE t0 SET t0.F_NAME='Joe', t0.L_NAME='Josephson' WHERE t0.EMP_ID=" + emp.getId());
                 session.executeNonSelectingSQL("UPDATE CMP3_DEPT t1 SET t1.NAME='Xenobiology' WHERE t1.ID=" + dept.getId());
             }
