@@ -230,11 +230,11 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         Query query = em.createQuery("SELECT ID(p) FROM PhoneNumber p WHERE p.id = :idParam AND p.type = :typeParam");
         query.setParameter("idParam", PHONE_EXPECTED.getOwner().getId());
         query.setParameter("typeParam", PHONE_EXPECTED.getType());
-        Object[] result  = (Object[])query.getSingleResult();
+        // ID() function with composite key now returns IdClass instance, not Object[]
+        PhoneNumberPK result = (PhoneNumberPK)query.getSingleResult();
         assertNotNull(result);
-        //result array order is important too
-        assertEquals(PHONE_EXPECTED.getOwner().getId(), result[0]);
-        assertEquals(PHONE_EXPECTED.getType(), result[1]);
+        assertEquals(PHONE_EXPECTED.getOwner().getId(), result.getId());
+        assertEquals(PHONE_EXPECTED.getType(), result.getType());
     }
 
     public void queryID08CompositePKTestWithIdClass(){
@@ -244,11 +244,11 @@ public class JUnitJPQLFunctionsTest extends JUnitTestCase {
         Query query = em.createQuery("SELECT ID(this) FROM PhoneNumber WHERE this.id = :idParam AND this.type = :typeParam");
         query.setParameter("idParam", PHONE_EXPECTED.getOwner().getId());
         query.setParameter("typeParam", PHONE_EXPECTED.getType());
-        Object[] result  = (Object[])query.getSingleResult();
+        // ID() function with composite key now returns IdClass instance, not Object[]
+        PhoneNumberPK result = (PhoneNumberPK)query.getSingleResult();
         assertNotNull(result);
-        //result array order is important too
-        assertEquals(PHONE_EXPECTED.getOwner().getId(), result[0]);
-        assertEquals(PHONE_EXPECTED.getType(), result[1]);
+        assertEquals(PHONE_EXPECTED.getOwner().getId(), result.getId());
+        assertEquals(PHONE_EXPECTED.getType(), result.getType());
     }
 
     public void queryID09CompositePKTestWithIdClass(){
