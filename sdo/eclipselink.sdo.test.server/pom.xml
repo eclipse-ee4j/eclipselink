@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -185,13 +186,13 @@
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                     <!--Set system properties required for tests-->
                     <systemPropertiesFile>${testjee.properties.file}</systemPropertiesFile>
-                    <systemProperties>
+                    <systemPropertyVariables>
                         <sessionBean>${ejb-jndi-name}</sessionBean>
                         <securityPrincipal>${server.usr}</securityPrincipal>
                         <securityCredentials>${server.pwd}</securityCredentials>
                         <providerUrl>${server.rmi.protocol}://${server.host}:${server.rmi.port}</providerUrl>
                         <initialCtxFactory>${server.initialCtxFactory}</initialCtxFactory>
-                    </systemProperties>
+                    </systemPropertyVariables>
                 </configuration>
                 <executions>
                     <execution>
