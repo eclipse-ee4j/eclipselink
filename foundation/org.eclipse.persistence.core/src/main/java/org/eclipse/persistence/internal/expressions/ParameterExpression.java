@@ -251,21 +251,18 @@ public class ParameterExpression extends BaseExpression {
                 // When descriptor is null, the value might be an @IdClass object (not an entity)
                 // We need to extract the field value using the proper privileged access
                 if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
-                    // Try to extract the field value from the @IdClass object using PrivilegedAccessHelper
+        
                     try {
-                        // Get the field value using the field name  with proper security handling
                         java.lang.reflect.Field field = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredField(
                             value.getClass(),
                             this.field.getName(),
-                            true  //shouldSetAccessible
+                            true  
                         );
                         value = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, value);
                         return value;
                     } catch (NoSuchFieldException | IllegalAccessException e) {
-                        // Log the error with context for debugging
                         session.logThrowable(org.eclipse.persistence.logging.SessionLog.FINER,
                                            org.eclipse.persistence.logging.SessionLog.QUERY, e);
-                        // Fall through to validation if reflection fails
                     }
                 }
 
