@@ -1,6 +1,6 @@
 /*
+ * Copyright (c) 2024, 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2006, 2025 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2024 Contributors to the Eclipse Foundation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,23 +109,13 @@ public final class HermesParser implements JPAQueryBuilder {
     private void addArguments(JPQLQueryContext queryContext, DatabaseQuery databaseQuery) {
 
         if (queryContext.inputParameters != null) {
-
-            Map<String, ParameterInfo> parameters = new LinkedHashMap<>();
             for (Map.Entry<InputParameter, Expression> entry : queryContext.inputParameters.entrySet()) {
                 ParameterExpression parameter = (ParameterExpression) entry.getValue();
-                String name = parameter.getField().getName();
-                Class<?> type = (Class<?>) parameter.getType();
-                ParameterType parameterType = entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED;
-                ParameterInfo info = parameters.get(name);
-                if (info == null) {
-                    parameters.put(name, new ParameterInfo(type, parameterType));
-                } else {
-                    info.merge(type);
-                }
-            }
-            for (Map.Entry<String, ParameterInfo> entry : parameters.entrySet()) {
-                ParameterInfo info = entry.getValue();
-                databaseQuery.addArgument(entry.getKey(), info.type, info.parameterType);
+                databaseQuery.addArgument(
+                        parameter.getField().getName(),
+                        (Class<?>) parameter.getType(),
+                        entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED
+                );
             }
         }
     }

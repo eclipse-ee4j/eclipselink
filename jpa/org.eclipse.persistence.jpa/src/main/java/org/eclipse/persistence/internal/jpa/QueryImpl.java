@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
@@ -953,7 +954,8 @@ public class QueryImpl {
     protected void setParameterInternal(String name, Object value, boolean isIndex) {
         DatabaseQuery query = getDatabaseQueryInternal();
         if (query.getQueryMechanism().isJPQLCallQueryMechanism()) { // only non native queries
-            int index = query.getArguments().indexOf(name);
+            final List<String> queryArguments = query.getArguments();
+            int index = queryArguments.indexOf(name);
             if (index == -1) {
                 if (isIndex) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, query.getEJBQLString() }));
@@ -961,10 +963,14 @@ public class QueryImpl {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, query.getEJBQLString() }));
                 }
             }
-            Class<?> type = query.getArgumentTypes().get(index);
-            if (!isValidActualParameter(value, type)) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString() }));
-            }
+            do {
+                Class<?> type = query.getArgumentTypes().get(index);
+                if (!isValidActualParameter(value, type)) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[]{name, value.getClass(), query.getArgumentTypes().get(index), query.getEJBQLString()}));
+                }
+                int pos = queryArguments.subList(index + 1, queryArguments.size()).indexOf(name);
+                index = pos < 0 ? -1 : (pos + index + 1);
+            } while (index > - 1);
         } else {
             // native queries start a 1 not 0.
             if (isIndex && name.equals("0")) {

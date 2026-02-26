@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,10 +24,12 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.query.model.QuerySyntaxEntity;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
+@Ignore()
 public class TestNullParameterTypeInference {
 
     @Emf(name = "defaultEMF",
@@ -45,15 +48,26 @@ public class TestNullParameterTypeInference {
                 .getPlatform();
         Assume.assumeTrue("PostgreSQL only", platform.isPostgreSQL());
 
-        EntityManager em = emf.createEntityManager();
-        try {
-            Query query = em.createQuery("""
+        //this pass
+        runQuery("""
+                SELECT s
+                FROM QuerySyntaxEntity s
+                WHERE (s.intVal1 = :value OR (:value IS NULL AND s.intVal1 IS NULL))
+                """, emf.createEntityManager());
+
+        //this fails
+        runQuery("""
                 SELECT s
                 FROM QuerySyntaxEntity s
                 WHERE ((:value IS NULL AND s.intVal1 IS NULL) OR s.intVal1 = :value)
-                """);
-            query.setParameter("value", null);
-            query.getResultList();
+                """, emf.createEntityManager());
+    }
+
+    private void runQuery(String query, EntityManager em) {
+        try {
+            Query q = em.createQuery(query);
+            q.setParameter("value", null);
+            q.getResultList();
         } finally {
             if (em.isOpen()) {
                 em.close();

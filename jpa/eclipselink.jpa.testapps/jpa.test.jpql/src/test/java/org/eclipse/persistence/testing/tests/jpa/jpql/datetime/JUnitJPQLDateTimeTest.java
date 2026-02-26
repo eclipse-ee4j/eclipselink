@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,6 +15,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.jpql.datetime;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.TemporalType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -24,6 +26,7 @@ import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 import java.time.Instant;
 import java.time.Year;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -55,6 +58,7 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampToDate"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimestampToTime"));
         suite.addTest(new JUnitJPQLDateTimeTest("testUtilDate"));
+        suite.addTest(new JUnitJPQLDateTimeTest("testAssignWrongType"));
         suite.addTest(new JUnitJPQLDateTimeTest("testCalendarWithUtilDate"));
         suite.addTest(new JUnitJPQLDateTimeTest("testSqlDateWithCal"));
         suite.addTest(new JUnitJPQLDateTimeTest("testTimeWithCal"));
@@ -174,6 +178,23 @@ public class JUnitJPQLDateTimeTest extends JUnitTestCase {
             getResultList();
 
        assertEquals("There should be one result", 1, result.size());
+    }
+
+   public void testAssignWrongType() {
+       Date now = new Date();
+       try (EntityManager em = createEntityManager();) {
+           List<?> result = em.createQuery("SELECT o FROM DateTime o WHERE o.utilDate = :utilDate AND o.localDate = :utilDate").
+                   setParameter("utilDate", now).
+                   getResultList();
+           fail("parameter value assignment should fail on o.localDate");
+       } catch (Exception e) {}
+
+       try (EntityManager em = createEntityManager();) {
+           List<?> result = em.createQuery("SELECT o FROM DateTime o WHERE o.localDate = :utilDate AND o.utilDate = :utilDate ").
+                   setParameter("utilDate", now).
+                   getResultList();
+           fail("parameter value assignment should fail on o.localDate");
+       } catch (Exception e) {}
     }
 
     public void testCalendarWithUtilDate() {
