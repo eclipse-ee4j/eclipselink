@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -98,14 +99,6 @@
     </dependencies>
 
     <build>
-        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
-        <testResources>
-            <testResource>
-                <directory>${integration.test.resources.directory}</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-
         <plugins>
             <!--Required for EL Weaving (-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar})-->
             <plugin>

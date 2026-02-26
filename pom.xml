@@ -266,6 +266,7 @@
                     <configuration>
                         <nonFilteredFileExtensions>
                             <nonFilteredFileExtension>gar</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>war</nonFilteredFileExtension>
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
@@ -727,6 +728,7 @@
                             <resources>
                                 <resource>
                                     <directory>${integration.test.resources.directory}</directory>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>

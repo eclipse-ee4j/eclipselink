@@ -97,14 +97,6 @@
     </dependencies>
 
     <build>
-        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
-        <testResources>
-            <testResource>
-                <directory>${integration.test.resources.directory}</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-
         <plugins>
             <!--Required for XLST to configure Wildfly modules (see sdo/eclipselink.sdo.test.server.maven/src/test/resources/wildfly/elResources.xml)-->
             <plugin>
