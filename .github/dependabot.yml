@@ -25,6 +25,14 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "com.oracle.database.jdbc:*"
+        versions: [ ">23.3.0.23.09" ]
+      - dependency-name: "com.oracle.database.messaging:*"
+        versions: [ ">23.3.1.0" ]
+      # required by pax-exam
+      - dependency-name: "jakarta.inject:jakarta.inject-api"
+        versions: [ ">1.0" ]
     groups:
       maven-plugins:
         patterns:
