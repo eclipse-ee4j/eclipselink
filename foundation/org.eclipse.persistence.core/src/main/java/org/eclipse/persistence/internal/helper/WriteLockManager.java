@@ -273,8 +273,11 @@ public class WriteLockManager {
             for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
                 cacheKey.release();
             }
-            ConcurrencyManager.getDeferredLockManager(Thread.currentThread()).setIsThreadComplete(true);
-            ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
+            DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(Thread.currentThread());
+            if (lockManager != null) {
+                lockManager.setIsThreadComplete(true);
+                ConcurrencyManager.removeDeferredLockManager(Thread.currentThread());
+            }
             mergeManager.getAcquiredLocks().clear();
             throw ex;
         }
