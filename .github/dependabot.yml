@@ -30,7 +30,22 @@ updates:
         versions: [ ">23.3.0.23.09" ]
       - dependency-name: "com.oracle.database.messaging:*"
         versions: [ ">23.3.1.0" ]
-      # required by pax-exam
+      # handle by hand, see also https://github.com/eclipse-ee4j/ee4j/issues/116
+      - dependency-name: "org.eclipse.ee4j::*"
+        versions: [ ">1.3.3" ]
+      # corba tests need 1.3.3 (?)
+      - dependency-name: "jakarta.transaction:*"
+        versions: [ ">1.3.3" ]
+      # test locally first before updating
+      - dependency-name: "org.wildfly:*"
+        versions: [ ">27.0.0.Final" ]
+      # have multiple versions for running tests
+      - dependency-name: "org.apache.derby:*"
+        versions: [ ">10.16.1.1" ]
+      # newer breaks tests
+      - dependency-name: "org.jgroups:*"
+        versions: [ ">5.3.11.Final" ]
+      # required by pax-exam (?)
       - dependency-name: "jakarta.inject:jakarta.inject-api"
         versions: [ ">1.0" ]
     groups:
