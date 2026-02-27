@@ -1,4 +1,5 @@
 /*
+*  Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2016, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -80,12 +81,12 @@ public class OSGITestHelper {
                 bundle(pathToUrl(PLUGINS_DIR + "org.eclipse.persistence.core.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + ASM_JAR)),
 
+                bundle(pathToUrl(PLUGINS_DIR + "jboss-logging.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "jakarta.validation-api.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "hibernate-validator.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "classmate.jar")),
                 bundle(pathToUrl(PLUGINS_DIR + "jakarta.el-api.jar")),
-                bundle(pathToUrl(PLUGINS_DIR + "jakarta.el.jar")),
-                bundle(pathToUrl(PLUGINS_DIR + "jboss-logging.jar")),
+                bundle(pathToUrl(PLUGINS_DIR + "expressly.jar")),
                 cleanCaches(),
                 junitBundles()
         );

@@ -36,6 +36,9 @@ updates:
       # test locally first before updating
       - dependency-name: "org.wildfly:*"
         versions: [ ">27.0.0.Final" ]
+      # requires test update
+      - dependency-name: "org.jboss.weld.se:*"
+        versions: [ ">=6.1.0.Final" ]
       # have multiple versions for running tests
       - dependency-name: "org.apache.derby:*"
         versions: [ ">10.16.1.1" ]

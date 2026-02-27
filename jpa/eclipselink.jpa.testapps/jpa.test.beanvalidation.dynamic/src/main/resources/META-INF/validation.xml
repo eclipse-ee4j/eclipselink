@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2018, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -19,6 +20,6 @@
     <default-provider>org.hibernate.validator.HibernateValidator</default-provider>
     <message-interpolator>org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator</message-interpolator>
     <!-- <traversable-resolver>org.hibernate.validator.internal.engine.resolver.CachingJPATraversableResolverForSingleValidation</traversable-resolver> -->
-    <constraint-validator-factory>org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorFactoryImpl</constraint-validator-factory>
+    <!-- <constraint-validator-factory>org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorFactoryImpl</constraint-validator-factory> -->
     <constraint-mapping>META-INF/employee-constraints.xml</constraint-mapping>
 </validation-config>

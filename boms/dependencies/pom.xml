@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -49,7 +50,7 @@
         <resource.version>2.1.0</resource.version>
         <servlet.version>6.1.0</servlet.version>
         <transaction.version>2.0.1</transaction.version>
-        <validation.version>3.1.0</validation.version>
+        <validation.version>3.1.1</validation.version>
         <jaxb.api.version>4.0.2</jaxb.api.version>
         <soap.api.version>3.0.2</soap.api.version>
         <ws-api.version>4.0.2</ws-api.version>
@@ -79,14 +80,14 @@
         <junit5.version>5.11.0</junit5.version>
         <junit.version>4.13.2</junit.version>
         <archunit.version>1.4.1</archunit.version>
-        <el-api.version>5.0.1</el-api.version>
-        <weld-se.version>6.0.0.Beta4</weld-se.version>
-        <el.version>5.0.0-M1</el.version>
-        <jersey.version>4.0.0-M2</jersey.version>
+        <el-api.version>6.0.1</el-api.version>
+        <weld-se.version>6.0.4.Final</weld-se.version>
+        <expressly.version>6.0.0</expressly.version>
+        <jersey.version>4.0.0</jersey.version>
         <glassfish.version>8.0.0-JDK17-M7</glassfish.version>
         <jmh.version>1.37</jmh.version>
         <springframework.version>6.1.20</springframework.version>
-        <hibernate.version>8.0.1.Final</hibernate.version>
+        <hibernate.version>9.1.0.Final</hibernate.version>
         <aspectj.version> 1.9.22.1</aspectj.version>
         <exam.version>4.13.4</exam.version>
         <logback.version>1.5.25</logback.version>
@@ -386,9 +387,9 @@
                 <version>${weld-se.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>jakarta.el</artifactId>
-                <version>${el.version}</version>
+                <groupId>org.glassfish.expressly</groupId>
+                <artifactId>expressly</artifactId>
+                <version>${expressly.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
