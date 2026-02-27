@@ -36,7 +36,7 @@ updates:
       # test locally first before updating
       - dependency-name: "org.wildfly:*"
         versions: [ ">27.0.0.Final" ]
-      # requires test update
+      # v7 targets EE 12
       - dependency-name: "org.jboss.weld.se:*"
         versions: [ ">=6.1.0.Final" ]
       # have multiple versions for running tests
@@ -45,9 +45,6 @@ updates:
       # newer breaks tests
       - dependency-name: "org.jgroups:*"
         versions: [ ">5.3.11.Final" ]
-      # required by pax-exam (?)
-      - dependency-name: "jakarta.inject:jakarta.inject-api"
-        versions: [ ">1.0" ]
     groups:
       maven-plugins:
         patterns:
