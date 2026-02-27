@@ -40,8 +40,8 @@
 
         <!--Jakarta APIs-->
         <annotation.version>3.0.0</annotation.version>
-        <activation-api.version>2.1.3</activation-api.version>
-        <mail-api.version>2.1.3</mail-api.version>
+        <activation-api.version>2.1.4</activation-api.version>
+        <mail-api.version>2.1.5</mail-api.version>
         <ejb.version>4.0.1</ejb.version>
         <cdi.version>4.1.0</cdi.version>
         <jms.version>3.1.0</jms.version>
@@ -51,56 +51,56 @@
         <servlet.version>6.1.0</servlet.version>
         <transaction.version>2.0.1</transaction.version>
         <validation.version>3.1.1</validation.version>
-        <jaxb.api.version>4.0.2</jaxb.api.version>
+        <jaxb.api.version>4.0.5</jaxb.api.version>
         <soap.api.version>3.0.2</soap.api.version>
-        <ws-api.version>4.0.2</ws-api.version>
+        <ws-api.version>4.0.3</ws-api.version>
         <ws-rs.version>4.0.0</ws-rs.version>
 
         <!--Implementations-->
-        <asm.version>9.9</asm.version>
-        <angus-activation.version>2.0.2</angus-activation.version>
-        <angus-mail.version>2.0.4</angus-mail.version>
-        <jaxb.version>4.0.5</jaxb.version>
+        <asm.version>9.9.1</asm.version>
+        <angus-activation.version>2.0.3</angus-activation.version>
+        <angus-mail.version>2.0.5</angus-mail.version>
+        <jaxb.version>4.0.6</jaxb.version>
         <jaxwsrt.version>4.0.3</jaxwsrt.version>
         <ant.version>1.10.15</ant.version>
         <apache.felix.framework.version>7.0.5</apache.felix.framework.version>
         <parsson.version>1.1.7</parsson.version>
-        <org.glassfish.corba.version>4.2.5</org.glassfish.corba.version>
+        <org.glassfish.corba.version>5.0.0</org.glassfish.corba.version>
         <jgroups.version>5.3.11.Final</jgroups.version>
-        <slf4j.version>2.0.12</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
-        <mongodb.version>5.1.4</mongodb.version>
+        <mongodb.version>5.6.4</mongodb.version>
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
-        <oracle.nosql.sdk.version>5.4.15</oracle.nosql.sdk.version>
+        <oracle.nosql.sdk.version>5.4.19</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
         <oracle.aqapi.version>23.3.1.0</oracle.aqapi.version>
 
         <!--Test dependencies-->
         <!--Test framework-->
-        <junit5.version>5.11.0</junit5.version>
+        <junit5.version>6.0.3</junit5.version>
         <junit.version>4.13.2</junit.version>
         <archunit.version>1.4.1</archunit.version>
         <el-api.version>6.0.1</el-api.version>
         <weld-se.version>6.0.4.Final</weld-se.version>
         <expressly.version>6.0.0</expressly.version>
-        <jersey.version>4.0.0</jersey.version>
-        <glassfish.version>8.0.0-JDK17-M7</glassfish.version>
+        <jersey.version>4.0.2</jersey.version>
+        <glassfish.version>8.0.0-JDK17-M12</glassfish.version>
         <jmh.version>1.37</jmh.version>
-        <springframework.version>6.1.20</springframework.version>
+        <springframework.version>7.0.5</springframework.version>
         <hibernate.version>9.1.0.Final</hibernate.version>
-        <aspectj.version> 1.9.22.1</aspectj.version>
-        <exam.version>4.13.4</exam.version>
-        <logback.version>1.5.25</logback.version>
+        <aspectj.version>1.9.25.1</aspectj.version>
+        <exam.version>4.14.0</exam.version>
+        <logback.version>1.5.32</logback.version>
         <osgi.version>6.0.0</osgi.version>
 
         <!--JDBC Drivers-->
-        <h2.version>2.3.232</h2.version>
-        <mysql.version>9.0.0</mysql.version>
-        <mariadb.version>3.4.1</mariadb.version>
+        <h2.version>2.4.240</h2.version>
+        <mysql.version>9.6.0</mysql.version>
+        <mariadb.version>3.5.7</mariadb.version>
         <derby.version>10.17.1.0</derby.version>
-        <db2.version>11.5.9.0</db2.version>
-        <mssql.version>12.8.2.jre11</mssql.version>
-        <pgsql.version>42.7.7</pgsql.version>
+        <db2.version>12.1.3.0</db2.version>
+        <mssql.version>13.2.1.jre11</mssql.version>
+        <pgsql.version>42.7.10</pgsql.version>
     </properties>
 
     <dependencyManagement>
