@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation
     Copyright (c) 2019, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -21,7 +22,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.9</version>
+        <version>2.0.0</version>
         <relativePath/>
     </parent>
 
@@ -79,6 +80,11 @@
         <system>github</system>
         <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
     </issueManagement>
+
+    <properties>
+        <!-- see https://github.com/eclipse-ee4j/ee4j/issues/116 -->
+        <cyclonedx.skipNotDeployed>false</cyclonedx.skipNotDeployed>
+    </properties>
 
     <build>
         <pluginManagement>
