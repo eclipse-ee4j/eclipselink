@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -253,11 +254,7 @@ public class ParameterExpression extends BaseExpression {
                 if (getLocalBase() != null && getLocalBase().isQueryKeyExpression()) {
         
                     try {
-                        java.lang.reflect.Field field = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getDeclaredField(
-                            value.getClass(),
-                            this.field.getName(),
-                            true  
-                        );
+                        java.lang.reflect.Field field = Helper.getField(value.getClass(), this.field.getName());
                         value = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getValueFromField(field, value);
                         return value;
                     } catch (NoSuchFieldException | IllegalAccessException e) {
