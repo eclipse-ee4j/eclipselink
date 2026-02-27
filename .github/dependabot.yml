@@ -28,9 +28,7 @@ updates:
     ignore:
       - dependency-name: "com.oracle.database.jdbc:*"
         versions: [ ">23.3.0.23.09" ]
-      - dependency-name: "com.oracle.database.messaging:*"
-        versions: [ ">23.3.1.0" ]
-      # corba tests need 1.3.3 (?)
+      # corba tests need 1.3.3
       - dependency-name: "jakarta.transaction:*"
         versions: [ ">1.3.3" ]
       # test locally first before updating

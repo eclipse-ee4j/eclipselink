@@ -73,7 +73,7 @@
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
         <oracle.nosql.sdk.version>5.4.19</oracle.nosql.sdk.version>
         <oracle.jdbc.version>23.3.0.23.09</oracle.jdbc.version>
-        <oracle.aqapi.version>23.3.1.0</oracle.aqapi.version>
+        <oracle.aqapi.version>23.8.0.0</oracle.aqapi.version>
 
         <!--Test dependencies-->
         <!--Test framework-->
