@@ -129,15 +129,15 @@
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
-        <checkstyle.version>10.18.1</checkstyle.version>
-        <spotbugs.version>4.8.3</spotbugs.version>
+        <checkstyle.version>13.2.0</checkstyle.version>
+        <spotbugs.version>4.9.8</spotbugs.version>
         <findsecbugs.version>1.14.0</findsecbugs.version>
 
         <!--Documentation Dependencies version-->
-        <asciidoctorj.version>3.0.0</asciidoctorj.version>
-        <asciidoctorj.pdf.version>2.3.18</asciidoctorj.pdf.version>
-        <asciidoctorj.epub.version>2.1.3</asciidoctorj.epub.version>
-        <jruby.version>9.4.8.0</jruby.version>
+        <asciidoctorj.version>3.0.1</asciidoctorj.version>
+        <asciidoctorj.pdf.version>2.3.23</asciidoctorj.pdf.version>
+        <asciidoctorj.epub.version>2.2.0</asciidoctorj.epub.version>
+        <jruby.version>10.0.3.0</jruby.version>
 
         <!--Server tests-->
         <weblogic.version>12.2.1-3</weblogic.version>
@@ -453,7 +453,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>10.0.4</version>
+                    <version>12.2.0</version>
                     <configuration>
 <!--                        <failBuildOnCVSS>7</failBuildOnCVSS>-->
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
