@@ -98,7 +98,6 @@
                         <id>default-test</id>
                         <configuration>
                             <systemPropertyVariables>
-                                <eclipselink.asm.service>ow2</eclipselink.asm.service>
                                 <!--Following system properties must be initialized again as systemPropertyVariables reset environment.-->
                                 <db.driver>${db.driver}</db.driver>
                                 <db.url>${db.url}</db.url>

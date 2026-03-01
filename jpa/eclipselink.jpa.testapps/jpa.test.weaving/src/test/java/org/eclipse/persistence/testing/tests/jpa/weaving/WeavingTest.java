@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +21,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceObject;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -42,7 +42,7 @@ public class WeavingTest extends JUnitTestCase {
     private final String PU_NAME = "weaving-dir-test-pu";
     private final String WEAVING_ENTITY_CLASS = "org.eclipse.persistence.testing.models.jpa.weaving.WeavingEntity";
     private final String SOURCE_JAR = "source.jar";
-    private final String TARGET_JAR = "target" + System.getProperty(SystemProperties.ASM_SERVICE, "") + ".jar";
+    private final String TARGET_JAR = "targetWeavingBundle.jar";
 
     private final String DIR_WEAVING_ENTITY_CLASS = "org.eclipse.persistence.testing.models.jpa.weaving.WeavingEntityInDir";
     private final int ID = 1;

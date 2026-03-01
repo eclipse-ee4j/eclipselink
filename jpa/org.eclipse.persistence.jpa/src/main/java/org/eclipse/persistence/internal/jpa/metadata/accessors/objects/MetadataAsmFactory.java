@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 1998, 2025 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2024 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
@@ -109,7 +110,7 @@ public class MetadataAsmFactory extends MetadataFactory {
             SessionLog log = getLogger().getSession() != null ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
             if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
                 String sessionId = getLogger().getSession() != null ? getLogger().getSession().getSessionId() : null;
-                log.log(new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, sessionId, ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className}), iae));
+                log.log(new SessionLogEntry(SessionLog.SEVERE, SessionLog.METADATA, sessionId, ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] {className, ASMFactory.JAVA_LATEST_VERSION}), iae));
             }
             addMetadataClass(getVirtualMetadataClass(className));
         } catch (Exception exception) {

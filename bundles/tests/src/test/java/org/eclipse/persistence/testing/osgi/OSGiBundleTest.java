@@ -42,9 +42,6 @@ import org.osgi.framework.FrameworkUtil;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class OSGiBundleTest {
-    // ASM bundle symbolic name
-    private static final String ASM_BUNDLE_NAME = "org.eclipse.persistence.asm";
-
     // CORE bundle symbolic name
     private static final String CORE_BUNDLE_NAME = "org.eclipse.persistence.core";
 

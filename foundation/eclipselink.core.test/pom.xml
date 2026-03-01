@@ -143,14 +143,11 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>asm-ow2-test</id>
+                        <id>asm-test</id>
                         <goals>
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <systemPropertyVariables>
-                                <eclipselink.asm.service>ow2</eclipselink.asm.service>
-                            </systemPropertyVariables>
                             <includes>
                                 <include>org/eclipse/persistence/testing/tests/junit/asm/**/*Test</include>
                             </includes>

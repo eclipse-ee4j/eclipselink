@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -14,7 +15,6 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.asm;
 
-import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -225,16 +225,7 @@ public class ASMFactory {
     }
 
     public static String getAsmService() {
-        String asmService = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ASM_SERVICE);
-        if (asmService != null) {
-            if (ASM_SERVICE_OW2.equals(asmService) && isASMImplementationAvailable(ASM_OW2_CLASS_VISITOR)) {
-                LOG.finest("OW2 ASM implementation is used.");
-                return asmService;
-            } else {
-                throw ValidationException.incorrectASMServiceProvided();
-            }
-        }
-        //Fallback to default if ASM service is not specified
+        //Default if ASM service is not specified
         if (isASMImplementationAvailable(ASM_OW2_CLASS_VISITOR)) {
             LOG.finest("OW2 ASM implementation is used.");
             return ASM_SERVICE_OW2;

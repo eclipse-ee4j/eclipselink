@@ -278,19 +278,6 @@ public final class SystemProperties {
 
     /**
      * <p>
-     * This property control which ASM implementation is used for classes bytecode modification.
-     * </p>
-     * <p>
-     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
-     * <ul>
-     * <li>"{@code eclipselink}" - use ASM implementation from  <i>org.eclipse.persistence.asm</i> project.</li>
-     * <li>"{@code ow2}" (DEFAULT) - use ASM implementation from  <i>org.ow2.asm</i> project.</li>
-     * </ul>
-     */
-    public static final String ASM_SERVICE = "eclipselink.asm.service";
-
-    /**
-     * <p>
      * This property control the random number generator (RNG) used for password encryption.
      * <p>
      * <b>Allowed Values</b> (case sensitive String)<b>:</b>
