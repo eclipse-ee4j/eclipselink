@@ -1568,6 +1568,7 @@
                 <!--Helper parent pom for server side test modules-->
                 <module>testing/server</module>
                 <module>testing/server-oracle</module>
+                <module>foundation/org.eclipse.persistence.oxm.test</module>
                 <module>foundation/eclipselink.core.test</module>
                 <module>sdo/eclipselink.sdo.test.server</module>
 

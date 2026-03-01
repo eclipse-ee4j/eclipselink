@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
  * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,6 +26,5 @@ open module org.eclipse.persistence.moxy.test {
     requires com.sun.tools.xjc;
     requires org.eclipse.persistence.core;
     requires org.eclipse.persistence.moxy;
-    requires org.eclipse.persistence.core.test;
     requires junit;
 }

@@ -11,22 +11,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-
 open module org.eclipse.persistence.core.test {
 
     requires java.sql;
 
-    requires jakarta.mail;
-    requires jakarta.xml.bind;
     requires org.eclipse.persistence.core;
     requires junit;
     requires com.tngtech.archunit;
-
-    exports org.eclipse.persistence.testing.oxm;
-    exports org.eclipse.persistence.testing.oxm.classloader;
-    exports org.eclipse.persistence.testing.oxm.mappings;
-    exports org.eclipse.persistence.testing.oxm.mappings.choice;
-    exports org.eclipse.persistence.testing.oxm.xmlconversionmanager;
-    exports org.eclipse.persistence.testing.oxm.xmlmarshaller;
-    exports org.eclipse.persistence.testing.oxm.xmlroot;
 }
