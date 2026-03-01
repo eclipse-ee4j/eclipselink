@@ -141,11 +141,6 @@
                         <version>${junit.version}</version>
                     </dependency>
                     <dependency>
-                        <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>org.eclipse.persistence.asm</artifactId>
-                        <version>${eclipselink.asm.version}</version>
-                    </dependency>
-                    <dependency>
                         <groupId>org.ow2.asm</groupId>
                         <artifactId>asm</artifactId>
                         <version>${asm.version}</version>

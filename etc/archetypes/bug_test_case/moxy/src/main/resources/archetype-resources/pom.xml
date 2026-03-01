@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright (c) 2026 Contributors to the Eclipse Foundation. All rights reserved.
     Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -34,7 +35,6 @@
         <json.bug.version>${json.version}</json.bug.version>
         <parsson.bug.version>${parsson.version}</parsson.bug.version>
         <asm.bug.version>${asm.version}</asm.bug.version>
-        <eclipselink.asm.bug.version>${eclipselink.asm.version}</eclipselink.asm.bug.version>
         <junit.bug.version>${junit.version}</junit.bug.version>
     </properties>
 
@@ -63,11 +63,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>${eclipselink.bug.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${eclipselink.asm.bug.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>

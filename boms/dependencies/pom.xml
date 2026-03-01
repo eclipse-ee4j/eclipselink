@@ -34,7 +34,6 @@
 
     <properties>
         <!--EclipseLink sub-projects-->
-        <eclipselink.asm.version>9.9.0</eclipselink.asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <oracle.ddlparser.version>3.0.1</oracle.ddlparser.version>
 
@@ -105,11 +104,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${eclipselink.asm.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>commonj.sdo</artifactId>
